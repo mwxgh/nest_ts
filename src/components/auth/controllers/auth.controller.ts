@@ -38,7 +38,7 @@ export class AuthController {
     private config: ConfigService,
   ) {}
 
-  @Post('login/google')
+  @Post('loginGoogle')
   async googleAuthCallback(@Body() body: LoginGoogleParams): Promise<any> {
     const client = new OAuth2Client(this.config.get('GOOGLE_CONSUMER_KEY'));
     let ticket;
@@ -51,7 +51,7 @@ export class AuthController {
     }
     const payload = ticket.getPayload();
     if (!payload) {
-      throw new BadRequestException('can not parser idToken');
+      throw new BadRequestException('Can not parser idToken');
     }
     const email: string = payload.email;
     if (isNil(email) || email === '') {
