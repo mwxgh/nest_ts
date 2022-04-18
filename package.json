@@ -48,6 +48,7 @@
     "bcrypt": "^5.0.1",
     "class-transformer": "0.4.0",
     "class-validator": "^0.13.2",
+    "google-auth-library": "^6.0.5",
     "download": "^8.0.0",
     "fs": "^0.0.1-security",
     "moment": "^2.29.1",

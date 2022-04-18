@@ -33,6 +33,17 @@ export class ApiResponseService {
   }
 
   /**
+   * Bind an item to a object response
+   *
+   * @param {*} data
+   *
+   * @return Object data
+   */
+  object(data: any) {
+    return { data };
+  }
+
+  /**
    * Bind a collection to a transformer and start building a response
    *
    * @param {*} collection

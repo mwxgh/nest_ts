@@ -1,13 +1,14 @@
 import { UserService } from '../../user/services/user.service';
 import { ApiResponseService } from '../../../shared/services/api-response/api-response.service';
 import { JwtService } from '@nestjs/jwt';
-import { pick } from 'lodash';
+import { pick, isNil } from 'lodash';
 import {
   Controller,
   Post,
   Body,
   ConflictException,
   UnauthorizedException,
+  BadRequestException,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
@@ -18,6 +19,9 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { LoginParams, RegisterParams } from '../auth.dto';
+import { LoginGoogleParams } from '../validators/auth.validator';
+import { OAuth2Client } from 'google-auth-library';
+import { ConfigService } from '@nestjs/config';
 
 const authenticatedUserFields = ['id', 'email'];
 @ApiTags('Auth')
@@ -31,7 +35,40 @@ export class AuthController {
     private userService: UserService,
     private response: ApiResponseService,
     private jwtService: JwtService,
+    private config: ConfigService,
   ) {}
+
+  @Post('login/google')
+  async googleAuthCallback(@Body() body: LoginGoogleParams): Promise<any> {
+    const client = new OAuth2Client(this.config.get('GOOGLE_CONSUMER_KEY'));
+    let ticket;
+    try {
+      ticket = await client.verifyIdToken({
+        idToken: body.idToken,
+      });
+    } catch (e) {
+      throw new BadRequestException('Token is not valid');
+    }
+    const payload = ticket.getPayload();
+    if (!payload) {
+      throw new BadRequestException('can not parser idToken');
+    }
+    const email: string = payload.email;
+    if (isNil(email) || email === '') {
+      throw new BadRequestException('Can not get email address');
+    }
+    let user = await this.userService.first({ where: { email } });
+    if (!user) {
+      user = await this.userService.create({
+        email: this.userService.sanitizeEmail(email),
+        first_name: payload.given_name,
+        last_name: payload.family_name,
+      });
+    }
+    return this.response.object({
+      token: this.jwtService.sign(pick(user, authenticatedUserFields)),
+    });
+  }
 
   @Post('/register')
   @ApiResponse({ status: 201, description: 'User created' })
