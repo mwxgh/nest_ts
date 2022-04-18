@@ -1,9 +1,17 @@
 import { Notifiable } from '../../../shared/services/notification/decorators/notifiable.decorator';
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  DeleteDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 import { Product } from '../../../components/product/entities/product.entity';
 import { Category } from './category.entity';
 import { Post } from 'src/components/post/entities/post.entity';
-import { TimeStampEntity } from 'src/components/base/entities/base.entity';
 
 export enum CategoryAbleType {
   PRODUCT = 'products',
@@ -12,7 +20,27 @@ export enum CategoryAbleType {
 
 @Notifiable()
 @Entity({ name: 'categoryAble' })
-export class CategoryAble extends TimeStampEntity {
+export class CategoryAble {
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @CreateDateColumn({
+    type: 'timestamp',
+    precision: null,
+    default: () => 'NOW()',
+  })
+  public createdAt: Date;
+
+  @UpdateDateColumn({
+    type: 'timestamp',
+    precision: null,
+    default: () => 'NOW()',
+  })
+  public updatedAt: Date;
+
+  @DeleteDateColumn({ type: 'timestamp' })
+  public deletedAt: Date;
+
   @Column({ type: 'int' })
   public categoryId: number;
 

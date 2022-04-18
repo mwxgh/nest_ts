@@ -1,4 +1,12 @@
-import { Entity, Column, DeleteDateColumn, OneToMany } from 'typeorm';
+import {
+  Entity,
+  Column,
+  DeleteDateColumn,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 import { Notifiable } from '../../../shared/services/notification/decorators/notifiable.decorator';
 import { Image } from '../../image/entities/image.entity';
 import { CartItem } from '../../../components/cart/entities/cartItem.entity';
@@ -6,11 +14,30 @@ import { Comment } from '../../../components/comment/entities/comment.entity';
 import { CategoryAble } from 'src/components/category/entities/categoryAble.entity';
 import { TagAble } from 'src/components/tag/entities/tagAble.entity';
 import { OrderProduct } from 'src/components/order/entities/orderProduct.entity';
-import { TimeStampEntity } from 'src/components/base/entities/base.entity';
 
 @Notifiable()
 @Entity({ name: 'products' })
-export class Product extends TimeStampEntity {
+export class Product {
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @CreateDateColumn({
+    type: 'timestamp',
+    precision: null,
+    default: () => 'NOW()',
+  })
+  public createdAt: Date;
+
+  @UpdateDateColumn({
+    type: 'timestamp',
+    precision: null,
+    default: () => 'NOW()',
+  })
+  public updatedAt: Date;
+
+  @DeleteDateColumn({ type: 'timestamp' })
+  public deletedAt: Date;
+
   @Column({ type: 'varchar' })
   name: string;
 
@@ -34,9 +61,6 @@ export class Product extends TimeStampEntity {
 
   @Column({ type: 'timestamp' })
   public verifiedAt: Date;
-
-  @DeleteDateColumn({ type: 'timestamp' })
-  public deletedAt: Date;
 
   @OneToMany(() => OrderProduct, (orderItem) => orderItem.products)
   orders: OrderProduct[];

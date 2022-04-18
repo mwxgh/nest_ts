@@ -4,18 +4,13 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   DeleteDateColumn,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
 
 @Entity({ name: 'permissions' })
 export class Permission {
-  @Column({ type: 'varchar' })
-  name: string;
-
-  @Column({ type: 'varchar' })
-  slug: string;
-
-  @DeleteDateColumn({ type: 'timestamp' })
-  public deletedAt: Date;
+  @PrimaryGeneratedColumn()
+  id: number;
 
   @CreateDateColumn({
     type: 'timestamp',
@@ -30,4 +25,13 @@ export class Permission {
     default: () => 'NOW()',
   })
   public updatedAt: Date;
+
+  @DeleteDateColumn({ type: 'timestamp' })
+  public deletedAt: Date;
+
+  @Column({ type: 'varchar' })
+  name: string;
+
+  @Column({ type: 'varchar' })
+  slug: string;
 }

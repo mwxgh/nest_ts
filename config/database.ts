@@ -15,6 +15,8 @@ import { TagName } from '../src/components/tag/entities/tag.entity';
 import { TagAble } from '../src/components/tag/entities/tagAble.entity';
 import { Comment } from 'src/components/comment/entities/comment.entity';
 import { Image } from 'src/components/image/entities/image.entity';
+import { Contact } from 'src/components/contact/entities/contact.entity';
+import { Option } from 'src/components/option/entities/option.entity';
 import { Post } from 'src/components/post/entities/post.entity';
 
 export default (): any => ({
@@ -43,6 +45,8 @@ export default (): any => ({
     Image,
     Post,
     TagName,
+    Contact,
+    Option,
   ],
 
   // We are using migrations, synchronize should be set to false.

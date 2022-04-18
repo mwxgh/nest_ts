@@ -1,12 +1,11 @@
 # compiled output
 /dist
 /node_modules
-
+.env
 # Logs
 logs
 *.log
 npm-debug.log*
-pnpm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
@@ -28,8 +27,10 @@ lerna-debug.log*
 *.sublime-workspace
 
 # IDE - VSCode
+/vscode
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
+!.vscode/extensions.json
 !.vscode/extensions.json

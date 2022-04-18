@@ -1,7 +1,7 @@
 import * as Joi from '@hapi/joi';
 
 const validationSchema = Joi.object({
-  APP_NAME: Joi.string().default('Vicoders'),
+  APP_NAME: Joi.string().default('MWX BLOG'),
   APP_ENV: Joi.string()
     .valid('local', 'production', 'test', 'staging')
     .default('local'),

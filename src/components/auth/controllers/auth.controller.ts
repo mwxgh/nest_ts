@@ -19,7 +19,7 @@ import {
 } from '@nestjs/swagger';
 import { LoginParams, RegisterParams } from '../auth.dto';
 
-const autheticatedUserFields = ['id', 'email'];
+const authenticatedUserFields = ['id', 'email'];
 @ApiTags('Auth')
 @ApiHeader({
   name: 'Content-Type',
@@ -53,7 +53,7 @@ export class AuthController {
       },
     });
     return this.response.primitive({
-      token: this.jwtService.sign(pick(user, autheticatedUserFields)),
+      token: this.jwtService.sign(pick(user, authenticatedUserFields)),
     });
   }
 
@@ -67,7 +67,7 @@ export class AuthController {
       where: {
         email: this.userService.sanitizeEmail(email),
       },
-      select: [...autheticatedUserFields, 'password'],
+      select: [...authenticatedUserFields, 'password'],
     });
 
     if (!user) {
@@ -83,7 +83,7 @@ export class AuthController {
       throw new UnauthorizedException('Password does not match');
     }
     return this.response.primitive({
-      token: this.jwtService.sign(pick(user, autheticatedUserFields)),
+      token: this.jwtService.sign(pick(user, authenticatedUserFields)),
     });
   }
 }

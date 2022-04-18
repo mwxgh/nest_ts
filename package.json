@@ -1,9 +1,6 @@
 {
-  "name": "@vicoders/nestjs-starter",
+  "name": "assessment",
   "version": "0.0.1",
-  "description": "Vicoders NestJS Starter KIT",
-  "author": "Hieupv <hieupv@vicoders.com>",
-  "private": true,
   "license": "UNLICENSED",
   "scripts": {
     "prebuild": "rimraf dist",

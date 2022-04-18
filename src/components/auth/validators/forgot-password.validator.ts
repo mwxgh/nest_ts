@@ -1,5 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsNotEmpty, MaxLength, MinLength, IsEmail } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  MaxLength,
+  MinLength,
+  IsEmail,
+} from 'class-validator';
 
 export class SendResetLinkParams {
   @ApiProperty()

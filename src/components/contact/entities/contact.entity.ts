@@ -1,10 +1,36 @@
-import { TimeStampEntity } from 'src/components/base/entities/base.entity';
-import { Entity, Column } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+  DeleteDateColumn,
+} from 'typeorm';
 import { Notifiable } from '../../../shared/services/notification/decorators/notifiable.decorator';
 
 @Notifiable()
 @Entity({ name: 'contacts' })
-export class Contact extends TimeStampEntity {
+export class Contact {
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @CreateDateColumn({
+    type: 'timestamp',
+    precision: null,
+    default: () => 'NOW()',
+  })
+  public createdAt: Date;
+
+  @UpdateDateColumn({
+    type: 'timestamp',
+    precision: null,
+    default: () => 'NOW()',
+  })
+  public updatedAt: Date;
+
+  @DeleteDateColumn({ type: 'timestamp' })
+  public deletedAt: Date;
+
   @Column({ type: 'varchar' })
   email: string;
 

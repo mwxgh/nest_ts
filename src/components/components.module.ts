@@ -10,20 +10,22 @@ import { OrderModule } from './order/order.module';
 import { CartModule } from './cart/cart.module';
 import { OptionModule } from './option/option.module';
 import { ContactModule } from './contact/contact.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
-    UserModule,
-    CategoryModule,
-    PostModule,
-    TagModule,
-    CommentModule,
-    ProductModule,
-    ImageModule,
-    OrderModule,
+    AuthModule,
     CartModule,
-    OptionModule,
+    CategoryModule,
+    CommentModule,
     ContactModule,
+    ImageModule,
+    OptionModule,
+    OrderModule,
+    PostModule,
+    ProductModule,
+    TagModule,
+    UserModule,
   ],
 })
 export class ComponentsModule {}
