@@ -11,9 +11,9 @@ import { Notifiable } from '../../../shared/services/notification/decorators/not
 import { Image } from '../../image/entities/image.entity';
 import { CartItem } from '../../../components/cart/entities/cartItem.entity';
 import { Comment } from '../../../components/comment/entities/comment.entity';
-import { CategoryAble } from 'src/components/category/entities/categoryAble.entity';
-import { TagAble } from 'src/components/tag/entities/tagAble.entity';
-import { OrderProduct } from 'src/components/order/entities/orderProduct.entity';
+import { CategoryAble } from '../../category/entities/categoryAble.entity';
+import { TagAble } from '../../tag/entities/tagAble.entity';
+import { OrderProduct } from '../../order/entities/orderProduct.entity';
 
 @Notifiable()
 @Entity({ name: 'products' })

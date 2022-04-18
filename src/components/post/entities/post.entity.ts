@@ -10,8 +10,8 @@ import {
   DeleteDateColumn,
 } from 'typeorm';
 import { Notifiable } from '../../../shared/services/notification/decorators/notifiable.decorator';
-import { CategoryAble } from 'src/components/category/entities/categoryAble.entity';
-import { TagAble } from 'src/components/tag/entities/tagAble.entity';
+import { CategoryAble } from '../../category/entities/categoryAble.entity';
+import { TagAble } from '../../tag/entities/tagAble.entity';
 
 export enum JoinPostAbleType {
   images = 'posts.images',

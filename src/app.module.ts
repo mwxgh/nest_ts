@@ -7,10 +7,9 @@ import { ComponentsModule } from './components/components.module';
 import validationSchema from '../config/validationSchema';
 import configuration from '../config/configuration';
 import { SharedModule } from './shared/shared.module';
-import { CasbinModule } from './casbin/casbin.module';
-import TypeORMAdapter from 'typeorm-adapter';
-import { Adapter, Enforcer } from 'casbin';
-import { pick, path } from 'lodash';
+import { GatewayModule } from './gateway/gateway.module';
+import { ScheduleModule } from '@nestjs/schedule';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
@@ -29,31 +28,18 @@ import { pick, path } from 'lodash';
       useFactory: (config: ConfigService) => config.get('database'),
       inject: [ConfigService],
     }),
-    CasbinModule.forRootAsync({
-      imports: [ConfigModule],
-      useFactory: async (config: ConfigService) => {
-        const adapter = await TypeORMAdapter.newAdapter({
-          ...pick(config.get('database'), [
-            'type',
-            'host',
-            'port',
-            'username',
-            'password',
-            'database',
-          ]),
-          ...{ dropSchema: false },
-        });
-        const enforcer = await new Enforcer();
-        enforcer.initWithAdapter(
-          path.resolve(process.cwd(), 'src/casbin/rbac_model.conf'),
-          adapter as any as Adapter,
-        );
-        await enforcer.loadPolicy();
-        return enforcer;
-      },
-      inject: [ConfigService],
-    }),
     ComponentsModule,
+    GatewayModule,
+    ScheduleModule.forRoot(),
+    EventEmitterModule.forRoot({
+      wildcard: false,
+      delimiter: '.',
+      newListener: false,
+      removeListener: false,
+      maxListeners: 10,
+      verboseMemoryLeak: false,
+      ignoreErrors: false,
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],

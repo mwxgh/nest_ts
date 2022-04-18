@@ -35,6 +35,21 @@ export class CreateImagesTable1650207084687 implements MigrationInterface {
             default: 1,
             type: 'int',
           },
+          {
+            name: 'deletedAt',
+            isNullable: true,
+            type: 'datetime',
+          },
+          {
+            name: 'createdAt',
+            type: 'timestamp',
+            default: 'NOW()',
+          },
+          {
+            name: 'updatedAt',
+            type: 'timestamp',
+            default: 'NOW()',
+          },
         ],
       }),
       true,

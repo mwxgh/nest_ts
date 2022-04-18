@@ -3,8 +3,8 @@ import { ApiResponseService } from '../../../../shared/services/api-response/api
 import { PermissionService } from '../../services/permission.service';
 import { PermissionTransformer } from '../../transformers/permission.transformer';
 import { IPaginationOptions } from '../../../../shared/services/pagination';
-import { HasPermission } from '../../../../casbin/decorators/has-permission.decorator';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { Auth } from '../../decorators/auth.decorator';
 
 @ApiTags('Permissions')
 @ApiBearerAuth()
@@ -15,7 +15,7 @@ export class PermissionController {
     private permissionService: PermissionService,
   ) {}
   @Get()
-  @HasPermission('data1', 'read')
+  @Auth('admin')
   async index(): Promise<any> {
     const params: IPaginationOptions = {
       limit: 10000,

@@ -7,6 +7,13 @@ export class CreateUserRoleTable1650204109718 implements MigrationInterface {
         name: 'userRole',
         columns: [
           {
+            name: 'id',
+            type: 'int',
+            isPrimary: true,
+            isGenerated: true,
+            generationStrategy: 'increment',
+          },
+          {
             name: 'userId',
             type: 'int',
           },

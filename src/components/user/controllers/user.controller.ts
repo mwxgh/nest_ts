@@ -35,7 +35,7 @@ import { AdminCreateUserBodyParam } from '../dto/createUser.dto';
 import { AdminUpdateUserBodyParam } from '../dto/updateUser.dto';
 import { UserSendMailReportParams } from '../dto/userSendMailReport.dto';
 
-@ApiTags('users')
+@ApiTags('Users')
 @Controller('api/users')
 export class UserController {
   constructor(

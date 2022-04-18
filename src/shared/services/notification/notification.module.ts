@@ -14,6 +14,14 @@ export const channelFactory = {
   inject: [NotificationService],
 };
 
+export const optionFactory = {
+  provide: NOTIFICATION_OPTIONS,
+  useFactory: async (notificationService) => {
+    return notificationService.register();
+  },
+  inject: [NotificationService],
+};
+
 @Global()
 @Module({
   providers: [NotificationService],
@@ -31,7 +39,7 @@ export class NotificationModule {
         channelFactory,
         NotificationService,
       ],
-      exports: [NotificationService, channelFactory],
+      exports: [NotificationService, channelFactory, optionFactory],
     };
   }
 

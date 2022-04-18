@@ -11,7 +11,7 @@ import {
 } from 'typeorm';
 import { Product } from '../../../components/product/entities/product.entity';
 import { Category } from './category.entity';
-import { Post } from 'src/components/post/entities/post.entity';
+import { Post } from '../../post/entities/post.entity';
 
 export enum CategoryAbleType {
   PRODUCT = 'products',

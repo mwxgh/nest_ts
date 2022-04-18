@@ -9,6 +9,13 @@ export class CreateRolePermissionTable1650204271157
         name: 'rolePermission',
         columns: [
           {
+            name: 'id',
+            type: 'int',
+            isPrimary: true,
+            isGenerated: true,
+            generationStrategy: 'increment',
+          },
+          {
             name: 'roleId',
             type: 'int',
           },

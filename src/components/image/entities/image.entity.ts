@@ -10,7 +10,7 @@ import {
 } from 'typeorm';
 import { Notifiable } from '../../../shared/services/notification/decorators/notifiable.decorator';
 import { Product } from '../../product/entities/product.entity';
-import { Post } from 'src/components/post/entities/post.entity';
+import { Post } from '../../post/entities/post.entity';
 
 export enum ImageAbleType {
   PRODUCT = 'products',

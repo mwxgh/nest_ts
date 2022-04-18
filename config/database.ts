@@ -13,11 +13,11 @@ import { Order } from '../src/components/order/entities/order.entity';
 import { OrderProduct } from '../src/components/order/entities/orderProduct.entity';
 import { TagName } from '../src/components/tag/entities/tag.entity';
 import { TagAble } from '../src/components/tag/entities/tagAble.entity';
-import { Comment } from 'src/components/comment/entities/comment.entity';
-import { Image } from 'src/components/image/entities/image.entity';
-import { Contact } from 'src/components/contact/entities/contact.entity';
-import { Option } from 'src/components/option/entities/option.entity';
-import { Post } from 'src/components/post/entities/post.entity';
+import { Comment } from '../src/components/comment/entities/comment.entity';
+import { Image } from '../src/components/image/entities/image.entity';
+import { Contact } from '../src/components/contact/entities/contact.entity';
+import { Option } from '../src/components/option/entities/option.entity';
+import { Post } from '../src/components/post/entities/post.entity';
 
 export default (): any => ({
   type: process.env.DB_CONNECTION || 'mysql',

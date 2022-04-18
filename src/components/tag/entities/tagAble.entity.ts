@@ -11,7 +11,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { TagName } from './tag.entity';
-import { Post } from 'src/components/post/entities/post.entity';
+import { Post } from '../../post/entities/post.entity';
 
 @Notifiable()
 @Entity({ name: 'tagAbles' })

@@ -23,7 +23,7 @@ import {
   name: 'Content-Type',
   description: 'application/json',
 })
-@Controller('api/v1/auth/forgot-password')
+@Controller('api/v1/auth/forgotPassword')
 export class ForgotPasswordController {
   constructor(
     private userService: UserService,
