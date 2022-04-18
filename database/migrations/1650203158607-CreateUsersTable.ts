@@ -43,6 +43,11 @@ export class CreateUsersTable1650203158607 implements MigrationInterface {
             type: 'int',
           },
           {
+            name: 'socketId',
+            type: 'varchar',
+            isNullable: true,
+          },
+          {
             name: 'verifyToken',
             default: "''",
             type: 'varchar',

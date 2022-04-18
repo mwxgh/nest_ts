@@ -5,7 +5,10 @@ import {
   UpdateDateColumn,
   DeleteDateColumn,
   PrimaryGeneratedColumn,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
+import { Role } from './role.entity';
 
 @Entity({ name: 'permissions' })
 export class Permission {
@@ -34,4 +37,18 @@ export class Permission {
 
   @Column({ type: 'varchar' })
   slug: string;
+
+  @ManyToMany(() => Role, (role) => role.permissions, { cascade: ['insert'] })
+  @JoinTable({
+    name: 'rolePermission',
+    joinColumn: {
+      name: 'permissionId',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'roleId',
+      referencedColumnName: 'id',
+    },
+  })
+  roles: Role[];
 }

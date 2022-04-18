@@ -52,6 +52,9 @@ export class User {
   @Column({ type: 'int', default: 1 })
   status: number;
 
+  @Column({ type: 'varchar' })
+  socketId: string;
+
   @Column({ type: 'varchar', default: '' })
   verifyToken: string;
 

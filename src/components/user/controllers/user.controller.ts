@@ -54,6 +54,8 @@ export class UserController {
     @Query() request: FindManyQueryParams,
   ): Promise<any> {
     let relations = [];
+    console.log('hihihihih');
+
     const params: IPaginationOptions = {
       limit: query.perPage ? query.perPage : 10,
       page: query.page ? query.page : 1,

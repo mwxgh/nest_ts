@@ -6,8 +6,10 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   DeleteDateColumn,
+  JoinTable,
 } from 'typeorm';
 import { User } from '../../user/entities/user.entity';
+import { Permission } from './permission.entity';
 
 @Entity({ name: 'roles' })
 export class Role {
@@ -39,4 +41,20 @@ export class Role {
 
   @ManyToMany(() => User)
   users: Role[];
+
+  @ManyToMany(() => Permission, (permission) => permission.roles, {
+    cascade: ['insert'],
+  })
+  @JoinTable({
+    name: 'rolePermission',
+    joinColumn: {
+      name: 'roleId',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'permissionId',
+      referencedColumnName: 'id',
+    },
+  })
+  permissions: Permission[];
 }
