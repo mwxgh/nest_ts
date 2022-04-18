@@ -1,16 +1,8 @@
-import {
-  Entity,
-  Column,
-  ManyToOne,
-  JoinColumn,
-  PrimaryGeneratedColumn,
-  CreateDateColumn,
-  UpdateDateColumn,
-  DeleteDateColumn,
-} from 'typeorm';
+import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { Notifiable } from '../../../shared/services/notification/decorators/notifiable.decorator';
 import { Product } from '../../product/entities/product.entity';
 import { Post } from '../../post/entities/post.entity';
+import { TimeStampEntity } from '../../base.entity';
 
 export enum ImageAbleType {
   PRODUCT = 'products',
@@ -19,27 +11,7 @@ export enum ImageAbleType {
 
 @Notifiable()
 @Entity({ name: 'images' })
-export class Image {
-  @PrimaryGeneratedColumn()
-  id: number;
-
-  @CreateDateColumn({
-    type: 'timestamp',
-    precision: null,
-    default: () => 'NOW()',
-  })
-  public createdAt: Date;
-
-  @UpdateDateColumn({
-    type: 'timestamp',
-    precision: null,
-    default: () => 'NOW()',
-  })
-  public updatedAt: Date;
-
-  @DeleteDateColumn({ type: 'timestamp' })
-  public deletedAt: Date;
-
+export class Image extends TimeStampEntity {
   @Column({ type: 'varchar', default: "''" })
   url: string;
 

@@ -1,37 +1,9 @@
-import {
-  Entity,
-  Column,
-  CreateDateColumn,
-  UpdateDateColumn,
-  DeleteDateColumn,
-  PrimaryGeneratedColumn,
-  ManyToMany,
-  JoinTable,
-} from 'typeorm';
+import { TimeStampEntity } from '../../base.entity';
+import { Entity, Column, ManyToMany, JoinTable } from 'typeorm';
 import { Role } from './role.entity';
 
 @Entity({ name: 'permissions' })
-export class Permission {
-  @PrimaryGeneratedColumn()
-  id: number;
-
-  @CreateDateColumn({
-    type: 'timestamp',
-    precision: null,
-    default: () => 'NOW()',
-  })
-  public createdAt: Date;
-
-  @UpdateDateColumn({
-    type: 'timestamp',
-    precision: null,
-    default: () => 'NOW()',
-  })
-  public updatedAt: Date;
-
-  @DeleteDateColumn({ type: 'timestamp' })
-  public deletedAt: Date;
-
+export class Permission extends TimeStampEntity {
   @Column({ type: 'varchar' })
   name: string;
 

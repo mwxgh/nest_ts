@@ -1,10 +1,8 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { IdEntity } from '../../base.entity';
+import { Entity, Column } from 'typeorm';
 
 @Entity({ name: 'rolePermission' })
-export class RolePermission {
-  @PrimaryGeneratedColumn()
-  id: number;
-
+export class RolePermission extends IdEntity {
   @Column()
   roleId: number;
 

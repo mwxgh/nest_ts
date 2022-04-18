@@ -1,16 +1,8 @@
 import { Post } from '../../post/entities/post.entity';
-import {
-  JoinColumn,
-  ManyToOne,
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
-  CreateDateColumn,
-  UpdateDateColumn,
-  DeleteDateColumn,
-} from 'typeorm';
+import { JoinColumn, ManyToOne, Entity, Column } from 'typeorm';
 import { Notifiable } from '../../../shared/services/notification/decorators/notifiable.decorator';
 import { Product } from '../../product/entities/product.entity';
+import { TimeStampEntity } from '../../base.entity';
 
 export enum CommentAbleType {
   PRODUCT = 'products',
@@ -24,27 +16,7 @@ export enum JoinCommentAble {
 
 @Notifiable()
 @Entity({ name: 'comments' })
-export class Comment {
-  @PrimaryGeneratedColumn()
-  id: number;
-
-  @CreateDateColumn({
-    type: 'timestamp',
-    precision: null,
-    default: () => 'NOW()',
-  })
-  public createdAt: Date;
-
-  @UpdateDateColumn({
-    type: 'timestamp',
-    precision: null,
-    default: () => 'NOW()',
-  })
-  public updatedAt: Date;
-
-  @DeleteDateColumn({ type: 'timestamp' })
-  public deletedAt: Date;
-
+export class Comment extends TimeStampEntity {
   @Column({ type: 'varchar' })
   email: string;
 

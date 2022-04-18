@@ -1,30 +1,8 @@
-import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
-  CreateDateColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { BaseTimeStampEntity } from '../../base.entity';
+import { Entity, Column } from 'typeorm';
 
 @Entity({ name: 'passwordResets' })
-export class PasswordReset {
-  @PrimaryGeneratedColumn()
-  id: number;
-
-  @CreateDateColumn({
-    type: 'timestamp',
-    precision: null,
-    default: () => 'NOW()',
-  })
-  public createdAt: Date;
-
-  @UpdateDateColumn({
-    type: 'timestamp',
-    precision: null,
-    default: () => 'NOW()',
-  })
-  public updatedAt: Date;
-
+export class PasswordReset extends BaseTimeStampEntity {
   @Column({ type: 'varchar' })
   email: string;
 

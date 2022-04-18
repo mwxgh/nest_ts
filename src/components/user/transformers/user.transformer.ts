@@ -11,6 +11,7 @@ export class UserTransformer extends Transformer {
       firstName: model.firstName,
       lastName: model.lastName,
       status: model.status,
+      socketId: model.socketId,
       verified: model.verified,
       verifiedAt: model.verifiedAt,
       deletedAt: model.deletedAt,

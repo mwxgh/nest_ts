@@ -10,30 +10,11 @@ import {
 } from 'typeorm';
 import { Role } from '../../auth/entities/role.entity';
 import { Notifiable } from '../../../shared/services/notification/decorators/notifiable.decorator';
+import { TimeStampEntity } from '../../base.entity';
 
 @Notifiable()
 @Entity({ name: 'users' })
-export class User {
-  @PrimaryGeneratedColumn()
-  id: number;
-
-  @CreateDateColumn({
-    type: 'timestamp',
-    precision: null,
-    default: () => 'NOW()',
-  })
-  public createdAt: Date;
-
-  @UpdateDateColumn({
-    type: 'timestamp',
-    precision: null,
-    default: () => 'NOW()',
-  })
-  public updatedAt: Date;
-
-  @DeleteDateColumn({ type: 'timestamp' })
-  public deletedAt: Date;
-
+export class User extends TimeStampEntity {
   @Column({ type: 'varchar', unique: true })
   email: string;
 

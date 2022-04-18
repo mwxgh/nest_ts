@@ -1,12 +1,4 @@
-import {
-  Entity,
-  Column,
-  DeleteDateColumn,
-  OneToMany,
-  PrimaryGeneratedColumn,
-  CreateDateColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { Entity, Column, OneToMany } from 'typeorm';
 import { Notifiable } from '../../../shared/services/notification/decorators/notifiable.decorator';
 import { Image } from '../../image/entities/image.entity';
 import { CartItem } from '../../../components/cart/entities/cartItem.entity';
@@ -14,30 +6,11 @@ import { Comment } from '../../../components/comment/entities/comment.entity';
 import { CategoryAble } from '../../category/entities/categoryAble.entity';
 import { TagAble } from '../../tag/entities/tagAble.entity';
 import { OrderProduct } from '../../order/entities/orderProduct.entity';
+import { TimeStampEntity } from '../../base.entity';
 
 @Notifiable()
 @Entity({ name: 'products' })
-export class Product {
-  @PrimaryGeneratedColumn()
-  id: number;
-
-  @CreateDateColumn({
-    type: 'timestamp',
-    precision: null,
-    default: () => 'NOW()',
-  })
-  public createdAt: Date;
-
-  @UpdateDateColumn({
-    type: 'timestamp',
-    precision: null,
-    default: () => 'NOW()',
-  })
-  public updatedAt: Date;
-
-  @DeleteDateColumn({ type: 'timestamp' })
-  public deletedAt: Date;
-
+export class Product extends TimeStampEntity {
   @Column({ type: 'varchar' })
   name: string;
 

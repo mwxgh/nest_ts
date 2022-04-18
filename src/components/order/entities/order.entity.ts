@@ -1,34 +1,11 @@
-import {
-  Entity,
-  OneToMany,
-  Column,
-  UpdateDateColumn,
-  CreateDateColumn,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { BaseTimeStampEntity } from '../../base.entity';
+import { Entity, OneToMany, Column } from 'typeorm';
 import { Notifiable } from '../../../shared/services/notification/decorators/notifiable.decorator';
 import { OrderProduct } from './orderProduct.entity';
 
 @Notifiable()
 @Entity({ name: 'orders' })
-export class Order {
-  @PrimaryGeneratedColumn()
-  id: number;
-
-  @CreateDateColumn({
-    type: 'timestamp',
-    precision: null,
-    default: () => 'NOW()',
-  })
-  public createdAt: Date;
-
-  @UpdateDateColumn({
-    type: 'timestamp',
-    precision: null,
-    default: () => 'NOW()',
-  })
-  public updatedAt: Date;
-
+export class Order extends BaseTimeStampEntity {
   @Column({ type: 'varchar', name: 'fullName' })
   fullName: string;
 
