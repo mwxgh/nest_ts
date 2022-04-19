@@ -3,7 +3,6 @@ import {
   Get,
   UseGuards,
   Req,
-  Post,
   Body,
   Put,
   BadRequestException,

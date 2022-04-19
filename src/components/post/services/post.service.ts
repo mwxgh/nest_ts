@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Comment } from '../../../components/comment/entities/comment.entity';
 import { CommentRepository } from 'src/components/comment/repositories/comment.repository';
 import { BaseService } from 'src/shared/services/base.service';
-import { Repository, Connection, UpdateResult, getRepository } from 'typeorm';
+import { Repository, Connection, UpdateResult } from 'typeorm';
 import { JoinPostAbleType, PostAble } from '../entities/post.entity';
 import { PostRepository } from '../repositories/post.repository';
 

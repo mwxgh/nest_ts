@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ImageAbleType } from 'src/components/image/entities/image.entity';
 import { BaseService } from 'src/shared/services/base.service';
-import { Connection, getCustomRepository, Repository } from 'typeorm';
+import { Connection, Repository } from 'typeorm';
 import { Order } from '../entities/order.entity';
 import { OrderRepository } from '../repositories/order.repository';
 
