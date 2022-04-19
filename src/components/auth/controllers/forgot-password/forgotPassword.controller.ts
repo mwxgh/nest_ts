@@ -1,8 +1,8 @@
 import { Controller, Post, Body, BadRequestException } from '@nestjs/common';
 import {
-  SendResetLinkParams,
-  ResetPasswordParams,
-} from '../../validators/forgot-password.validator';
+  SendResetLinkDto,
+  ResetPasswordDto,
+} from '../../dto/forgotPassword.dto';
 import { UserService } from '../../../user/services/user.service';
 import { NotificationService } from '../../../../shared/services/notification/notification.service';
 import { SendResetLinkNotification } from '../../notifications/sendResetLink.notification';
@@ -37,7 +37,7 @@ export class ForgotPasswordController {
   @ApiOkResponse({ description: 'Email sent' })
   @ApiNotFoundResponse()
   @ApiBadRequestResponse()
-  async sendResetLinkEmail(@Body() data: SendResetLinkParams): Promise<any> {
+  async sendResetLinkEmail(@Body() data: SendResetLinkDto): Promise<any> {
     const { email } = data;
     const user = await this.userService.firstOrFail({
       where: { email: this.userService.sanitizeEmail(email) },
@@ -57,7 +57,7 @@ export class ForgotPasswordController {
   @Post('reset')
   @ApiOkResponse({ description: 'Email sent' })
   @ApiBadRequestResponse({ description: 'Token is expired' })
-  async reset(@Body() data: ResetPasswordParams): Promise<any> {
+  async reset(@Body() data: ResetPasswordDto): Promise<any> {
     const { token, password } = data;
     const password_reset = await this.passwordResetService.firstOrFail({
       where: { token },

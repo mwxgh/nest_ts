@@ -18,8 +18,7 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { LoginParams, RegisterParams } from '../auth.dto';
-import { LoginGoogleParams } from '../validators/auth.validator';
+import { UserLoginDto, UserRegisterDto, LoginGoogleDto } from '../dto/auth.dto';
 import { OAuth2Client } from 'google-auth-library';
 import { ConfigService } from '@nestjs/config';
 
@@ -39,7 +38,7 @@ export class AuthController {
   ) {}
 
   @Post('loginGoogle')
-  async googleAuthCallback(@Body() body: LoginGoogleParams): Promise<any> {
+  async googleAuthCallback(@Body() body: LoginGoogleDto): Promise<any> {
     const client = new OAuth2Client(this.config.get('GOOGLE_CONSUMER_KEY'));
     let ticket;
     try {
@@ -76,7 +75,7 @@ export class AuthController {
   @ApiUnauthorizedResponse()
   @ApiConflictResponse({ description: 'Email already exist' })
   async register(
-    @Body() data: RegisterParams,
+    @Body() data: UserRegisterDto,
   ): Promise<{ [key: string]: any }> {
     const { email, password } = data;
     if (await this.userService.isExisting(email)) {
@@ -98,7 +97,7 @@ export class AuthController {
   @ApiResponse({ status: 201, description: 'Authenticated' })
   @ApiBadRequestResponse()
   @ApiUnauthorizedResponse()
-  async login(@Body() data: LoginParams): Promise<{ [key: string]: any }> {
+  async login(@Body() data: UserLoginDto): Promise<{ [key: string]: any }> {
     const { email, password } = data;
     const user = await this.userService.first({
       where: {

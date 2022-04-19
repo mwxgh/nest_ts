@@ -31,9 +31,9 @@ import { AuthenticatedUser } from '../../auth/decorators/authenticated-user.deco
 import { User } from '../entities/user.entity';
 import { map, isEmpty } from 'lodash';
 import { ApiTags } from '@nestjs/swagger';
-import { AdminCreateUserBodyParam } from '../dto/createUser.dto';
-import { AdminUpdateUserBodyParam } from '../dto/updateUser.dto';
-import { UserSendMailReportParams } from '../dto/userSendMailReport.dto';
+import { AdminCreateUserDto } from '../dto/createUser.dto';
+import { AdminUpdateUserDto } from '../dto/updateUser.dto';
+import { UserSendMailReportDto } from '../dto/userSendMailReport.dto';
 
 @ApiTags('Users')
 @Controller('api/users')
@@ -91,7 +91,7 @@ export class UserController {
 
   @Post()
   @Auth('admin')
-  async store(@Body() data: AdminCreateUserBodyParam): Promise<any> {
+  async store(@Body() data: AdminCreateUserDto): Promise<any> {
     const item = await this.userService.create(
       pick(data, ['email', 'password', 'firstName', 'lastName']),
     );
@@ -102,7 +102,7 @@ export class UserController {
   @Auth('admin')
   async changePassword(
     @Param('id', ParseIntPipe) id: number,
-    @Body() data: AdminUpdateUserBodyParam,
+    @Body() data: AdminUpdateUserDto,
   ): Promise<any> {
     const user = await this.userService.findOrFail(id);
     await this.userService.update(user.id, {
@@ -182,13 +182,14 @@ export class UserController {
   @Post(':id/sendMail')
   @Auth('admin')
   async sendMail(
-    @Body() params: UserSendMailReportParams,
+    @Body() params: UserSendMailReportDto,
     @Req() request: Request,
     @Param('id', ParseIntPipe) id: number,
   ): Promise<any> {
     const user = await this.userService.findOrFail(id);
 
     const data = (request as any).body;
+
     this.notificationService.send(
       user,
       new UserSendMailReportNotification(data.toEmail, data.linkReport),

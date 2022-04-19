@@ -13,10 +13,7 @@ import { UserService } from '../../user/services/user.service';
 import { UserTransformer } from '../../user/transformers/user.transformer';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { HashService } from '../../../shared/services/hash/hash.service';
-import {
-  UpdateProfileParams,
-  UpdatePasswordParams,
-} from '../dto/updateProfile.dto';
+import { UpdateProfileDto, UpdatePasswordDto } from '../dto/updateProfile.dto';
 import { Request } from 'express';
 import { ApiTags } from '@nestjs/swagger';
 
@@ -40,7 +37,7 @@ export class ProfileController {
   @Put()
   async updateProfile(
     @Req() request: Request,
-    @Body() body: UpdateProfileParams,
+    @Body() body: UpdateProfileDto,
   ): Promise<any> {
     const id = (request as any).user.id;
     const data: any = {};
@@ -60,15 +57,20 @@ export class ProfileController {
   @Put('password')
   async changePassword(
     @Req() request: Request,
-    @Body() body: UpdatePasswordParams,
+    @Body() body: UpdatePasswordDto,
   ): Promise<any> {
     const user = (request as any).user;
+
     const { password, oldPassword } = body;
+
     if (!this.hashService.check(oldPassword, user.password)) {
       throw new BadRequestException('Old password is not correct');
     }
+
     const hashed = this.hashService.hash(password);
+
     const result = await this.userService.update(user.id, { password: hashed });
+
     return this.response.item(result, new UserTransformer());
   }
 }

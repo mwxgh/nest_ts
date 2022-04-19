@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import {
   IsString,
   IsNotEmpty,
@@ -6,25 +7,27 @@ import {
   MaxLength,
 } from 'class-validator';
 
-export class AdminCreateUserBodyParam {
+export class AdminCreateUserDto {
+  @ApiProperty()
   @IsString()
   @IsNotEmpty()
   email: string;
 
+  @ApiProperty()
   @IsString()
   @IsNotEmpty()
   @MinLength(6)
   password: string;
 
+  @ApiProperty()
   @IsString()
   @IsOptional()
   @MaxLength(30)
   firstName: string;
 
+  @ApiProperty()
   @IsString()
   @IsOptional()
   @MaxLength(30)
   lastName: string;
 }
-
-export class CreateUserDto {}

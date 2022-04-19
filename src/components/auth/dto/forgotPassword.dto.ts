@@ -7,18 +7,19 @@ import {
   IsEmail,
 } from 'class-validator';
 
-export class SendResetLinkParams {
+export class SendResetLinkDto {
   @ApiProperty()
   @IsEmail()
   @IsNotEmpty()
   email: string;
 }
 
-export class ResetPasswordParams {
+export class ResetPasswordDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
   token: string;
+
   @ApiProperty()
   @IsString()
   @MaxLength(60)
