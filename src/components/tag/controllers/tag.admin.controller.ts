@@ -12,7 +12,7 @@ import {
 import { ApiHeader, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { ApiResponseService } from 'src/shared/services/api-response/api-response.service';
 import { IPaginationOptions } from 'src/shared/services/pagination';
-import { CreateTagBody, UpdateTagBody } from '../dto/tag.dto';
+import { CreateTagDto, UpdateTagDto } from '../dto/tag.dto';
 import { TagService } from '../services/tag.service';
 import { TagAbleService } from '../services/tagAble.service';
 import { TagTransformer } from '../transformers/tag.transformer';
@@ -63,7 +63,7 @@ export class AdminTagController {
   }
 
   @Post()
-  async store(@Body() data: CreateTagBody): Promise<any> {
+  async store(@Body() data: CreateTagDto): Promise<any> {
     const newTag = await this.tag.create(data);
 
     return this.response.item(newTag, new TagTransformer());
@@ -72,11 +72,9 @@ export class AdminTagController {
   @Put(':id')
   async update(
     @Param('id') id: string,
-    @Body() data: UpdateTagBody,
+    @Body() data: UpdateTagDto,
   ): Promise<any> {
-    const existTag = await this.tag.find(id);
-
-    if (!existTag) throw new NotFoundException();
+    await this.tag.findOrFail(id);
 
     await this.tag.update(id, { ...data, updatedAt: new Date() });
 
@@ -85,9 +83,7 @@ export class AdminTagController {
 
   @Delete(':id')
   async destroy(@Param('id') id: string): Promise<any> {
-    const existTag = await this.tag.find(id);
-
-    if (!existTag) throw new NotFoundException();
+    await this.tag.findOrFail(id);
 
     await this.tag.destroy(id);
 

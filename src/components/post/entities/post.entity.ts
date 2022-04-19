@@ -15,7 +15,7 @@ export enum JoinPostAbleType {
 
 @Notifiable()
 @Entity({ name: 'posts' })
-export class Post extends TimeStampEntity {
+export class PostAble extends TimeStampEntity {
   @Column()
   title: string;
 

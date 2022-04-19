@@ -1,13 +1,22 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import {
+  ApiProperty,
+  ApiPropertyOptional,
+  OmitType,
+  PartialType,
+} from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsNumber, IsOptional } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 import { Index } from 'typeorm';
 
 export class CategoryProperties {
   @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
   name: string;
 
   @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
   categoryType: string;
 
   @ApiPropertyOptional({ name: 'parentId', type: Number, default: 0 })
@@ -24,5 +33,9 @@ export class CategoryProperties {
   status: number;
 }
 
-export type CreateCategoryParams = CategoryProperties;
-export type UpdateCategoryParams = CategoryProperties;
+export class CreateCategoryDto extends OmitType(
+  CategoryProperties,
+  [] as const,
+) {}
+
+export class UpdateCategoryDto extends PartialType(CategoryProperties) {}

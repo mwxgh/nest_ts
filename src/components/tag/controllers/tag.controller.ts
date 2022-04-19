@@ -46,11 +46,7 @@ export class UserTagController {
 
   @Get(':id')
   async show(@Param('id') id: string): Promise<any> {
-    const queryTag = await this.tag.queryTag();
-
-    const oneTag = await queryTag
-      .where('tags.id = :id', { id: Number(id) })
-      .getOne();
+    const oneTag = await this.tag.findOrFail(id);
 
     return this.response.item(oneTag, new TagTransformer());
   }

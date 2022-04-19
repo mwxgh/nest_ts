@@ -1,7 +1,7 @@
 import { Transformer } from '../../../shared/transformers/transformer';
 import { CategoryAble } from '../entities/categoryAble.entity';
 
-export class CategoriableTransformer extends Transformer {
+export class CategoryAbleTransformer extends Transformer {
   data = (data) => {
     return {
       id: data.id,

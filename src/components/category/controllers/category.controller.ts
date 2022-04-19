@@ -3,7 +3,6 @@ import {
   Controller,
   Delete,
   Get,
-  NotFoundException,
   Param,
   ParseIntPipe,
   Post,
@@ -12,10 +11,7 @@ import {
 } from '@nestjs/common';
 import { ApiHeader, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiResponseService } from 'src/shared/services/api-response/api-response.service';
-import {
-  CreateCategoryParams,
-  UpdateCategoryParams,
-} from '../dto/category.dto';
+import { CreateCategoryDto, UpdateCategoryDto } from '../dto/category.dto';
 import { CategoryService } from '../services/category.service';
 import { CategoryTransformer } from '../transformers/category.transformer';
 
@@ -54,43 +50,34 @@ export class CategoryController {
 
   @Get(':id')
   async show(@Param('id', ParseIntPipe) id: number): Promise<any> {
-    const category = await this.categoryService.find(id);
-
-    if (!category) {
-      throw new NotFoundException();
-    }
+    const category = await this.categoryService.findOrFail(id);
     return this.response.item(category, new CategoryTransformer());
   }
 
   @Post()
   @ApiResponse({ status: 201, description: 'Category created' })
-  async create(@Body() data: CreateCategoryParams): Promise<any> {
+  async create(@Body() data: CreateCategoryDto): Promise<any> {
     const category = await this.categoryService.create(data);
     return this.response.item(category, new CategoryTransformer());
   }
 
   @Put(':id')
   @ApiParam({ name: 'id' })
-  async update(
-    @Param() params,
-    @Body() data: UpdateCategoryParams,
-  ): Promise<any> {
-    const category = await this.categoryService.find(params.id);
-    if (!category) {
-      throw new NotFoundException();
-    }
+  async update(@Param() params, @Body() data: UpdateCategoryDto): Promise<any> {
+    await this.categoryService.findOrFail(params.id);
+
     await this.categoryService.update(params.id, data);
+
     return this.response.success();
   }
 
   @Delete(':id')
   @ApiParam({ name: 'id' })
   async remove(@Param() params): Promise<any> {
-    const category = await this.categoryService.find(params.id);
-    if (!category) {
-      throw new NotFoundException();
-    }
+    await this.categoryService.findOrFail(params.id);
+
     await this.categoryService.destroy(params.id);
+
     return this.response.success();
   }
 }

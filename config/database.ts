@@ -17,7 +17,7 @@ import { Comment } from '../src/components/comment/entities/comment.entity';
 import { Image } from '../src/components/image/entities/image.entity';
 import { Contact } from '../src/components/contact/entities/contact.entity';
 import { Option } from '../src/components/option/entities/option.entity';
-import { Post } from '../src/components/post/entities/post.entity';
+import { PostAble } from '../src/components/post/entities/post.entity';
 
 export default (): any => ({
   type: process.env.DB_CONNECTION || 'mysql',
@@ -43,7 +43,7 @@ export default (): any => ({
     TagAble,
     Comment,
     Image,
-    Post,
+    PostAble,
     TagName,
     Contact,
     Option,

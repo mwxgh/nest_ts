@@ -2,7 +2,7 @@ import { Notifiable } from '../../../shared/services/notification/decorators/not
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { Product } from '../../../components/product/entities/product.entity';
 import { Category } from './category.entity';
-import { Post } from '../../post/entities/post.entity';
+import { PostAble } from '../../post/entities/post.entity';
 import { TimeStampEntity } from '../../base.entity';
 
 export enum CategoryAbleType {
@@ -37,9 +37,9 @@ export class CategoryAble extends TimeStampEntity {
   })
   category: Category;
 
-  @ManyToOne(() => Post, (post) => post.categories)
+  @ManyToOne(() => PostAble, (post) => post.categories)
   @JoinColumn({
     name: 'categoryAbleId',
   })
-  post: Post;
+  post: PostAble;
 }
