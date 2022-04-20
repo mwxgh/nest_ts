@@ -12,9 +12,7 @@ import {
 import { ApiHeader, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiResponseService } from 'src/shared/services/apiResponse/apiResponse.service';
 import { IPaginationOptions } from 'src/shared/services/pagination';
-import { getCustomRepository } from 'typeorm';
 import { CreateContactDto, UpdateContactDto } from '../dto/contact.dto';
-import { ContactRepository } from '../repositories/contact.repository';
 import { ContactService } from '../services/contact.service';
 import { ContactTransformer } from '../transformers/contact.transformer';
 
