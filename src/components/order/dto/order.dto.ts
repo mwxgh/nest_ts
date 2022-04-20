@@ -79,15 +79,6 @@ export class OrderProductProperties {
   products: [ProductItems];
 }
 
-export class CreateOrderProductDto extends OmitType(
-  OrderProductProperties,
-  [] as const,
-) {}
-
-export class UpdateOrderProductDto extends PartialType(
-  OrderProductProperties,
-) {}
-
 export class ProductItems {
   @ApiProperty({ type: Number })
   @IsInt()
@@ -97,3 +88,12 @@ export class ProductItems {
   @IsInt()
   quantity: number;
 }
+
+export class CreateOrderProductDto extends OmitType(
+  OrderProductProperties,
+  [] as const,
+) {}
+
+export class UpdateOrderProductDto extends PartialType(
+  OrderProductProperties,
+) {}

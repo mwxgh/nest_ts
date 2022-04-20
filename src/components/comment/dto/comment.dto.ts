@@ -1,4 +1,4 @@
-import { ApiProperty, OmitType, PickType } from '@nestjs/swagger';
+import { ApiProperty, OmitType, PartialType } from '@nestjs/swagger';
 import {
   IsEmail,
   IsInt,
@@ -43,9 +43,4 @@ export class CreateCommentDto extends OmitType(
   [] as const,
 ) {}
 
-export class UpdateCommentDto extends PickType(CommentProperties, [
-  'contacts',
-  'fullName',
-  'contacts',
-  'status',
-] as const) {}
+export class UpdateCommentDto extends PartialType(CommentProperties) {}

@@ -11,6 +11,7 @@ import { CartModule } from './cart/cart.module';
 import { OptionModule } from './option/option.module';
 import { ContactModule } from './contact/contact.module';
 import { AuthModule } from './auth/auth.module';
+import { ProfileModule } from './profile/profile.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { AuthModule } from './auth/auth.module';
     OrderModule,
     PostModule,
     ProductModule,
+    ProfileModule,
     TagModule,
     UserModule,
   ],

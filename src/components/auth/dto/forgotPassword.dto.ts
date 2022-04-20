@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, PickType } from '@nestjs/swagger';
 import {
   IsString,
   IsNotEmpty,
@@ -7,14 +7,12 @@ import {
   IsEmail,
 } from 'class-validator';
 
-export class SendResetLinkDto {
+export class ForgotPasswordProperties {
   @ApiProperty()
   @IsEmail()
   @IsNotEmpty()
   email: string;
-}
 
-export class ResetPasswordDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
@@ -27,3 +25,12 @@ export class ResetPasswordDto {
   @IsNotEmpty()
   password: string;
 }
+
+export class SendResetLinkDto extends PickType(ForgotPasswordProperties, [
+  'email',
+] as const) {}
+
+export class ResetPasswordDto extends PickType(ForgotPasswordProperties, [
+  'password',
+  'token',
+] as const) {}

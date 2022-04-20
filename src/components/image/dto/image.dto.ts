@@ -29,4 +29,5 @@ export class ImageProperties {
 }
 
 export class CreateImageDto extends OmitType(ImageProperties, [] as const) {}
+
 export class UpdateImageDto extends PartialType(ImageProperties) {}

@@ -59,4 +59,5 @@ export class CreateProductDto extends OmitType(
   ProductProperties,
   [] as const,
 ) {}
+
 export class UpdateProductDto extends PartialType(ProductProperties) {}

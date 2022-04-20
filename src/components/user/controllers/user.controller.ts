@@ -31,9 +31,9 @@ import { AuthenticatedUser } from '../../auth/decorators/authenticated-user.deco
 import { User } from '../entities/user.entity';
 import { map, isEmpty } from 'lodash';
 import { ApiTags } from '@nestjs/swagger';
-import { AdminCreateUserDto } from '../dto/createUser.dto';
-import { AdminUpdateUserDto } from '../dto/updateUser.dto';
-import { UserSendMailReportDto } from '../dto/userSendMailReport.dto';
+
+import { UserSendMailReportDto } from '../dto/user.dto';
+import { AdminCreateUserDto, AdminUpdateUserDto } from '../dto/user.dto';
 
 @ApiTags('Users')
 @Controller('api/users')
