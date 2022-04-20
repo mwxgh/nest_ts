@@ -11,7 +11,7 @@ import { PostAble } from '../../post/entities/post.entity';
 import { PostTransformer } from '../../post/transformers/post.transformer';
 import { Product } from '../../product/entities/product.entity';
 import { ProductTransformer } from '../../product/transformers/product.transformer';
-import { ApiResponseService } from '../../../shared/services/api-response/api-response.service';
+import { ApiResponseService } from '../../../shared/services/apiResponse/apiResponse.service';
 import { getRepository } from 'typeorm';
 import { CommentService } from '../services/comment.service';
 import { CreateCommentDto } from '../dto/comment.dto';

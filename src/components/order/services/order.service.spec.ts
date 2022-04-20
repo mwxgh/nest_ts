@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ApiResponseService } from 'src/shared/services/api-response/api-response.service';
+import { ApiResponseService } from 'src/shared/services/apiResponse/apiResponse.service';
 import { Repository } from 'typeorm';
 import { OrderController } from '../controllers/order.controller';
 import { OrderService } from './order.service';

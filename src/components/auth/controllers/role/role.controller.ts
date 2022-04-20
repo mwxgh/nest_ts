@@ -3,20 +3,24 @@ import {
   Get,
   Query,
   Post,
-  Req,
   Param,
   ParseIntPipe,
   Put,
   Delete,
+  Body,
 } from '@nestjs/common';
-import { ApiResponseService } from 'src/shared/services/api-response/api-response.service';
+import { ApiResponseService } from 'src/shared/services/apiResponse/apiResponse.service';
 import { RoleService } from '../../services/role.service';
 import { IPaginationOptions } from '../../../../shared/services/pagination';
 import { Auth } from '../../decorators/auth.decorator';
 import { RoleTransformer } from '../../transformers/role.transformer';
-import { Request } from 'express';
 import { assign } from 'lodash';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import {
+  CreateCategoryDto,
+  UpdateCategoryDto,
+} from 'src/components/category/dto/category.dto';
+import { QueryPaginateDto } from 'src/shared/dto/findManyParams.dto';
 
 @ApiTags('Roles')
 @ApiBearerAuth()
@@ -26,31 +30,39 @@ export class RoleController {
     private response: ApiResponseService,
     private roleService: RoleService,
   ) {}
+
+  private entity = 'roles';
+
+  private fields = ['name', 'level'];
+
   @Get()
   @Auth('admin')
-  async index(
-    @Query() query: { perPage: number; page: number; search: string },
-  ): Promise<any> {
+  async index(@Query() query: QueryPaginateDto): Promise<any> {
     const params: IPaginationOptions = {
-      limit: query.perPage,
-      page: query.page,
+      limit: Number(query.perPage) || 10,
+      page: Number(query.page) || 1,
     };
-    let query_builder = this.roleService.repository.createQueryBuilder('role');
-    if (query.search && query.search !== '') {
-      query_builder = query_builder.where('role.name LIKE :keyword', {
-        keyword: `%${query.search}%`,
-      });
-    }
-    const data = await this.roleService.paginate(query_builder, params);
+
+    const keyword = query.search;
+
+    const baseQuery = this.roleService.queryBuilder(
+      this.entity,
+      this.fields,
+      keyword,
+    );
+
+    const data = await this.roleService.paginate(await baseQuery, params);
+
     return this.response.paginate(data, new RoleTransformer([]));
   }
 
   @Post('')
   @Auth('admin')
-  async saveObjective(@Req() request: Request): Promise<any> {
-    const data = (request as any).body;
+  async saveObjective(@Body() data: CreateCategoryDto): Promise<any> {
     const slug = await this.roleService.generateSlug(data.name);
+
     const role = await this.roleService.create(assign(data, { slug: slug }));
+
     return this.response.item(role, new RoleTransformer());
   }
 
@@ -60,6 +72,7 @@ export class RoleController {
     const role = await this.roleService.find(id, {
       relations: ['permissions'],
     });
+
     return this.response.item(role, new RoleTransformer(['permissions']));
   }
 
@@ -67,14 +80,15 @@ export class RoleController {
   @Auth('admin')
   async update(
     @Param('id', ParseIntPipe) id: number,
-    @Req() request: Request,
+    @Body() data: UpdateCategoryDto,
   ): Promise<any> {
-    const data = (request as any).body;
     const slug = await this.roleService.generateSlug(data.name);
+
     const role = await this.roleService.update(
       id,
       assign(data, { slug: slug }),
     );
+
     return this.response.item(role, new RoleTransformer());
   }
 
@@ -82,6 +96,7 @@ export class RoleController {
   @Auth('admin')
   async delete(@Param('id', ParseIntPipe) id: string): Promise<any> {
     await this.roleService.destroy(id);
-    return { data: 'success' };
+
+    return this.response.success();
   }
 }

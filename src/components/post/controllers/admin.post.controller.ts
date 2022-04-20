@@ -15,7 +15,7 @@ import { PostAble } from '../entities/post.entity';
 import { PostService } from '../services/post.service';
 import { CreatPostDto, UpdatePostDto } from '../dto/post.dto';
 import { IPaginationOptions } from 'src/shared/services/pagination';
-import { ApiResponseService } from 'src/shared/services/api-response/api-response.service';
+import { ApiResponseService } from 'src/shared/services/apiResponse/apiResponse.service';
 import { PostTransformer } from '../transformers/post.transformer';
 import { ImageService } from 'src/components/image/services/image.service';
 import slugify from 'slugify';

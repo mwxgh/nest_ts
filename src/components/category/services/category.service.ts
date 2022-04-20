@@ -15,27 +15,27 @@ export class CategoryService extends BaseService {
     this.repository = this.dataSource.getCustomRepository(CategoryRepository);
   }
 
-  async queryInclude(query: any) {
+  async queryCategory(entity: string, includes: any) {
     const include = [];
 
-    if (query.include) {
-      const arr = query.include.split(',');
+    if (includes) {
+      const arr = includes.split(',');
       arr.map((i: any) => include.push(i));
     }
 
-    let query_builder = this.repository.createQueryBuilder('categories');
+    let baseQuery = await this.queryBuilder(entity);
 
     if (include.includes('products')) {
-      query_builder = query_builder.where('categories.categoryType = :type', {
+      baseQuery = baseQuery.where(`${entity}.categoryType = :type`, {
         type: CategoryAbleType.PRODUCT,
       });
     }
 
     if (include.includes('posts')) {
-      query_builder = query_builder.where('categories.categoryType = :type', {
+      baseQuery = baseQuery.where(`${entity}.categoryType = :type`, {
         type: CategoryAbleType.POST,
       });
     }
-    return query_builder;
+    return baseQuery;
   }
 }

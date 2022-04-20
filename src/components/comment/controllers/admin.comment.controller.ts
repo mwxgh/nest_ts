@@ -10,7 +10,8 @@ import {
   Query,
 } from '@nestjs/common';
 import { ApiHeader, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
-import { ApiResponseService } from 'src/shared/services/api-response/api-response.service';
+import { ApiResponseService } from 'src/shared/services/apiResponse/apiResponse.service';
+
 import { IPaginationOptions } from 'src/shared/services/pagination';
 
 import { CreateCommentDto, UpdateCommentDto } from '../dto/comment.dto';

@@ -1,4 +1,4 @@
-import { ApiResponseService } from './api-response/api-response.service';
+import { ApiResponseService } from './apiResponse/apiResponse.service';
 import { Module, Global } from '@nestjs/common';
 import { HashService } from './hash/hash.service';
 import { NotificationModule } from './notification/notification.module';

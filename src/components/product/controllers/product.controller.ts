@@ -1,6 +1,6 @@
 import { Controller, Get, Param, ParseIntPipe, Query } from '@nestjs/common';
 import { ApiParam, ApiTags } from '@nestjs/swagger';
-import { ApiResponseService } from '../../../shared/services/api-response/api-response.service';
+import { ApiResponseService } from '../../../shared/services/apiResponse/apiResponse.service';
 import { ProductService } from '../services/product.service';
 import { ProductTransformer } from '../transformers/product.transformer';
 

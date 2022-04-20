@@ -11,11 +11,11 @@ export class PasswordResetService extends BaseService {
   public entity: any = PasswordReset;
 
   constructor(
-    private connection: Connection,
+    private dataSource: Connection,
     private hashService: HashService,
   ) {
     super();
-    this.repository = connection.getCustomRepository(PasswordResetRepository);
+    this.repository = dataSource.getCustomRepository(PasswordResetRepository);
   }
 
   /**
@@ -25,7 +25,7 @@ export class PasswordResetService extends BaseService {
    */
   async expire(token: string): Promise<any> {
     await this.repository
-      .createQueryBuilder('password_reset')
+      .createQueryBuilder('passwordResets')
       .update(this.entity)
       .set({ expire: () => 'NOW()' })
       .where('token = :token', { token })
@@ -39,7 +39,7 @@ export class PasswordResetService extends BaseService {
    */
   async expireAllToken(email: string): Promise<any> {
     await this.repository
-      .createQueryBuilder('password_reset')
+      .createQueryBuilder('passwordResets')
       .update(this.entity)
       .set({ expire: () => 'NOW()' })
       .where('email = :email', { email })
@@ -60,7 +60,7 @@ export class PasswordResetService extends BaseService {
   }
 
   /**
-   * Dertemine
+   * Determine
    *
    * @param entity
    */

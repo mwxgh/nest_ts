@@ -102,6 +102,20 @@ export class BaseService {
   }
 
   /**
+   * Get all items record or throw error if not any
+   * @returns entity | error
+   */
+  async findAllOrFail() {
+    const items = await this.repository.find();
+
+    if (items) {
+      return items;
+    } else {
+      throw new BadRequestException('Resource not found');
+    }
+  }
+
+  /**
    * Get the item record matching the attributes or throw error
    *
    * @param id
@@ -149,6 +163,20 @@ export class BaseService {
       item = items[0];
     }
     return item;
+  }
+
+  /**
+   * Execute the query and get the first result
+   *
+   * @param options FindOneOptions
+   */
+  async first(options: FindOneOptions): Promise<any> {
+    const items = await this.repository.find({ ...options, ...{ take: 1 } });
+    if (Array.isArray(items) && items.length > 0) {
+      return items[0];
+    } else {
+      return null;
+    }
   }
 
   /**
@@ -221,25 +249,6 @@ export class BaseService {
   }
 
   /**
-   * Execute the query and get the first result
-   *
-   * @param options FindOneOptions
-   */
-  async first(options: FindOneOptions): Promise<any> {
-    const items = await this.repository.find({
-      ...options,
-      ...{
-        take: 1,
-      },
-    });
-    if (Array.isArray(items) && items.length > 0) {
-      return items[0];
-    } else {
-      return null;
-    }
-  }
-
-  /**
    * Return number of record that match criteria
    *
    * @param options
@@ -255,6 +264,29 @@ export class BaseService {
    */
   async destroy(id: number | string): Promise<void> {
     await this.repository.delete(id);
+  }
+
+  /**
+   * Create query builder with search field in entity
+   *
+   * @param entity string
+   * @param keyword string | null
+   * @param fields string[] | null
+   */
+  async queryBuilder(
+    entity: string,
+    fields?: string[],
+    keyword?: string,
+  ): Promise<any> {
+    let baseQuery = this.repository.createQueryBuilder(`${entity}`);
+    if (keyword && keyword !== '' && fields) {
+      for (const field of fields) {
+        baseQuery = baseQuery.where(`${entity}.${field}  LIKE :keyword`, {
+          keyword: `%${keyword}%`,
+        });
+      }
+    }
+    return baseQuery;
   }
 
   /**

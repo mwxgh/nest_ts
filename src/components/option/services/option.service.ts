@@ -9,8 +9,8 @@ export class OptionService extends BaseService {
   public repository: Repository<any>;
   public entity: any = Option;
 
-  constructor(private connection: Connection) {
+  constructor(private dataSource: Connection) {
     super();
-    this.repository = this.connection.getCustomRepository(OptionRepository);
+    this.repository = this.dataSource.getCustomRepository(OptionRepository);
   }
 }

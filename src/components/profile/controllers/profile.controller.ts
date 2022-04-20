@@ -7,7 +7,7 @@ import {
   Put,
   BadRequestException,
 } from '@nestjs/common';
-import { ApiResponseService } from '../../../shared/services/api-response/api-response.service';
+import { ApiResponseService } from '../../../shared/services/apiResponse/apiResponse.service';
 import { UserService } from '../../user/services/user.service';
 import { UserTransformer } from '../../user/transformers/user.transformer';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
@@ -29,7 +29,9 @@ export class ProfileController {
   @Get()
   async profile(@Req() request: Request): Promise<any> {
     const userId = (request as any).user.id;
+
     const user = await this.userService.find(userId, { relations: ['roles'] });
+
     return this.response.item(user, new UserTransformer(['roles']));
   }
 
@@ -39,17 +41,23 @@ export class ProfileController {
     @Body() body: UpdateProfileDto,
   ): Promise<any> {
     const id = (request as any).user.id;
+
     const data: any = {};
+
     if (body.username) {
       data.username = body.username;
     }
+
     if (body.firstName) {
       data.firstName = body.firstName;
     }
+
     if (body.lastName) {
       data.lastName = body.lastName;
     }
+
     const user = await this.userService.update(id, data);
+
     return this.response.item(user, new UserTransformer());
   }
 

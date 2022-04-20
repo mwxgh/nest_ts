@@ -10,10 +10,16 @@ import {
   Query,
 } from '@nestjs/common';
 import { ApiHeader, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { ApiResponseService } from 'src/shared/services/api-response/api-response.service';
+
+import { IPaginationOptions } from 'src/shared/services/pagination';
+import {
+  QueryListDto,
+  QueryPaginateDto,
+} from 'src/shared/dto/findManyParams.dto';
 import { CreateCategoryDto, UpdateCategoryDto } from '../dto/category.dto';
 import { CategoryService } from '../services/category.service';
 import { CategoryTransformer } from '../transformers/category.transformer';
+import { ApiResponseService } from 'src/shared/services/apiResponse/apiResponse.service';
 
 @ApiTags('Categories')
 @ApiHeader({
@@ -27,20 +33,31 @@ export class CategoryController {
     private response: ApiResponseService,
   ) {}
 
+  private entity = 'categories';
+
   @Get('listPaginate')
-  async index(@Query() query: any): Promise<any> {
-    query = query ? query : { page: 1, limit: 10 };
+  async index(@Query() query: QueryPaginateDto): Promise<any> {
+    const params: IPaginationOptions = {
+      limit: query.perPage ? query.perPage : 10,
+      page: query.page ? query.page : 1,
+    };
 
-    const queryInclude = await this.categoryService.queryInclude(query);
+    const queryInclude = await this.categoryService.queryCategory(
+      this.entity,
+      query,
+    );
 
-    const data = await this.categoryService.paginate(queryInclude, query);
+    const data = await this.categoryService.paginate(queryInclude, params);
 
     return this.response.paginate(data, new CategoryTransformer());
   }
 
   @Get('list')
-  async list(@Query() query: any): Promise<any> {
-    const queryInclude = await this.categoryService.queryInclude(query);
+  async list(@Query() query: QueryListDto): Promise<any> {
+    const queryInclude = await this.categoryService.queryCategory(
+      this.entity,
+      query.includes,
+    );
 
     return this.response.collection(
       await queryInclude.getMany(),
@@ -51,6 +68,7 @@ export class CategoryController {
   @Get(':id')
   async show(@Param('id', ParseIntPipe) id: number): Promise<any> {
     const category = await this.categoryService.findOrFail(id);
+
     return this.response.item(category, new CategoryTransformer());
   }
 
@@ -58,25 +76,29 @@ export class CategoryController {
   @ApiResponse({ status: 201, description: 'Category created' })
   async create(@Body() data: CreateCategoryDto): Promise<any> {
     const category = await this.categoryService.create(data);
+
     return this.response.item(category, new CategoryTransformer());
   }
 
   @Put(':id')
   @ApiParam({ name: 'id' })
-  async update(@Param() params, @Body() data: UpdateCategoryDto): Promise<any> {
-    await this.categoryService.findOrFail(params.id);
+  async update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() data: UpdateCategoryDto,
+  ): Promise<any> {
+    await this.categoryService.findOrFail(id);
 
-    await this.categoryService.update(params.id, data);
+    await this.categoryService.update(id, data);
 
     return this.response.success();
   }
 
   @Delete(':id')
   @ApiParam({ name: 'id' })
-  async remove(@Param() params): Promise<any> {
-    await this.categoryService.findOrFail(params.id);
+  async remove(@Param('id', ParseIntPipe) id: number): Promise<any> {
+    await this.categoryService.findOrFail(id);
 
-    await this.categoryService.destroy(params.id);
+    await this.categoryService.destroy(id);
 
     return this.response.success();
   }

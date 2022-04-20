@@ -11,10 +11,8 @@ import {
   Req,
   BadRequestException,
 } from '@nestjs/common';
-import { ApiResponseService } from '../../../shared/services/api-response/api-response.service';
+import { ApiResponseService } from '../../../shared/services/apiResponse/apiResponse.service';
 import { UserTransformer } from '../transformers/user.transformer';
-import { UserRepository } from '../repositories/user.repository';
-import { getCustomRepository } from 'typeorm';
 import { isNil, includes, pick, isBoolean } from 'lodash';
 import { IPaginationOptions } from '../../../shared/services/pagination';
 import { Auth } from '../../auth/decorators/auth.decorator';
@@ -24,10 +22,10 @@ import { VerifyUserNotification } from '../notifications/verifyUser.notification
 import { UserPasswordChangedNotification } from '../notifications/userPasswordChanged.notification';
 import { InviteUserService } from '../services/inviteUser.service';
 import { SendInviteUserLinkNotification } from '../../auth/notifications/sendInviteUserLink.notification';
-import { FindManyQueryParams } from '../../../shared/validators/find-many-query-params.validator';
+import { QueryPaginateDto } from '../../../shared/dto/findManyParams.dto';
 import { Request } from 'express';
 import { UserSendMailReportNotification } from '../notifications/userSendEmailReport.notification';
-import { AuthenticatedUser } from '../../auth/decorators/authenticated-user.decorator';
+import { AuthenticatedUser } from '../../auth/decorators/authenticatedUser.decorator';
 import { User } from '../entities/user.entity';
 import { map, isEmpty } from 'lodash';
 import { ApiTags } from '@nestjs/swagger';
@@ -46,39 +44,47 @@ export class UserController {
     private inviteUserService: InviteUserService,
   ) {}
 
-  @Get()
+  private entity = 'users';
+
+  private fields = ['email', 'username', 'firstName', 'lastName'];
+
+  @Get('listPaginate')
   @Auth('admin', 'user')
   async index(
     @AuthenticatedUser() user: User,
     @Query() query: { perPage: number; page: number; includes?: string },
-    @Query() request: FindManyQueryParams,
+    @Query() request: QueryPaginateDto,
   ): Promise<any> {
     let relations = [];
+
     const params: IPaginationOptions = {
       limit: query.perPage ? query.perPage : 10,
       page: query.page ? query.page : 1,
     };
-    let query_builder =
-      getCustomRepository(UserRepository).createQueryBuilder('user');
+
+    const keyword = request.search;
+
+    let baseQuery = await this.userService.queryBuilder(
+      this.entity,
+      this.fields,
+      keyword,
+    );
+
     const userRoles = map(user.roles, (r) => r.slug);
+
     if (includes(userRoles, 'user') || isEmpty(userRoles)) {
-      query_builder = getCustomRepository(UserRepository)
-        .createQueryBuilder('user')
-        .where('user.id = :id', { id: user.id });
+      baseQuery = baseQuery.where('user.id = :id', { id: user.id });
     }
-    if (request.search && request.search !== '') {
-      query_builder = query_builder.andWhere('email LIKE :keyword', {
-        keyword: `%${request.search}%`,
-      });
-    }
+
     if (!isNil(query.includes) && query.includes !== '') {
       relations = query.includes.split(',');
       if (includes(relations, 'roles')) {
-        query_builder = query_builder.leftJoinAndSelect('user.roles', 'role');
+        baseQuery = baseQuery.leftJoinAndSelect('user.roles', 'role');
       }
     }
 
-    const data = await this.userService.paginate(query_builder, params);
+    const data = await this.userService.paginate(baseQuery, params);
+
     return this.response.paginate(data, new UserTransformer(relations));
   }
 
@@ -86,6 +92,7 @@ export class UserController {
   @Auth('admin', 'user')
   async show(@Param('id', ParseIntPipe) id: number): Promise<any> {
     const item = await this.userService.find(id, { relations: ['roles'] });
+
     return this.response.item(item, new UserTransformer(['roles']));
   }
 
@@ -93,8 +100,9 @@ export class UserController {
   @Auth('admin')
   async store(@Body() data: AdminCreateUserDto): Promise<any> {
     const item = await this.userService.create(
-      pick(data, ['email', 'password', 'firstName', 'lastName']),
+      pick(data, ['email', 'username', 'password', 'firstName', 'lastName']),
     );
+
     return this.response.item(item, new UserTransformer());
   }
 
@@ -105,15 +113,18 @@ export class UserController {
     @Body() data: AdminUpdateUserDto,
   ): Promise<any> {
     const user = await this.userService.findOrFail(id);
+
     await this.userService.update(user.id, {
       password: this.userService.hashPassword(data.password),
     });
+
     if (isBoolean(data.notifyUser) && data.notifyUser === true) {
       this.notificationService.send(
         user,
         new UserPasswordChangedNotification(data.password),
       );
     }
+
     return this.response.success();
   }
 
@@ -121,13 +132,16 @@ export class UserController {
   @Auth('admin')
   async sendVerifyLink(@Param('id', ParseIntPipe) id: number): Promise<any> {
     const user = await this.userService.findOrFail(id);
+
     await this.userService.generateVerifyToken(user.id);
+
     this.notificationService.send(
       user,
       new VerifyUserNotification(
         user.generateVerifyEmailLink(this.configService.get('FRONTEND_URL')),
       ),
     );
+
     return this.response.success();
   }
 
@@ -136,7 +150,9 @@ export class UserController {
     const user = await this.userService.firstOrFail({
       where: { verifyToken: token, verified: false, verifiedAt: null },
     });
+
     const result = await this.userService.verify(user.id);
+
     return this.response.item(result, new UserTransformer());
   }
 
@@ -144,13 +160,19 @@ export class UserController {
   @Auth('admin')
   async inviteUser(@Req() request: Request): Promise<any> {
     const data = (request as any).body;
-    const check = await this.userService.isExisting(data.email);
+
+    const check = await this.userService.emailExist(data.email);
+
     if (check) {
       throw new BadRequestException('User is exist in system');
     }
+
     const item = await this.userService.create(pick(data, ['email']));
+
     await this.inviteUserService.expireAllToken(item.email);
+
     const password_reset = await this.inviteUserService.generate(item.email);
+
     await this.notificationService.send(
       item,
       new SendInviteUserLinkNotification(
@@ -158,6 +180,7 @@ export class UserController {
         this.configService.get('FRONTEND_URL'),
       ),
     );
+
     return this.response.success();
   }
 
@@ -165,8 +188,11 @@ export class UserController {
   @Auth('admin')
   async attachRole(@Req() request: Request): Promise<any> {
     const userId = (request as any).params.id;
+
     const roleId = (request as any).body.roleId;
+
     await this.userService.attachRole(userId, roleId);
+
     return this.response.success();
   }
 
@@ -174,26 +200,27 @@ export class UserController {
   @Auth('admin')
   async detachRole(@Req() request: Request): Promise<any> {
     const userId = (request as any).params.id;
+
     const roleId = (request as any).body.roleId;
+
     await this.userService.detachRole(userId, roleId);
+
     return this.response.success();
   }
 
   @Post(':id/sendMail')
   @Auth('admin')
   async sendMail(
-    @Body() params: UserSendMailReportDto,
-    @Req() request: Request,
+    @Body() data: UserSendMailReportDto,
     @Param('id', ParseIntPipe) id: number,
   ): Promise<any> {
     const user = await this.userService.findOrFail(id);
-
-    const data = (request as any).body;
 
     this.notificationService.send(
       user,
       new UserSendMailReportNotification(data.toEmail, data.linkReport),
     );
+
     return this.response.success();
   }
 }

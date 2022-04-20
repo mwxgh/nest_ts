@@ -9,7 +9,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { ApiHeader, ApiParam, ApiTags } from '@nestjs/swagger';
-import { ApiResponseService } from 'src/shared/services/api-response/api-response.service';
+import { ApiResponseService } from 'src/shared/services/apiResponse/apiResponse.service';
 import { CreateOrderDto, UpdateOrderDto } from '../dto/order.dto';
 import { OrderService } from '../services/order.service';
 import { OrderProductService } from '../services/orderProduct.service';

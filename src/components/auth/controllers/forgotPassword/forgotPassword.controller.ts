@@ -6,8 +6,8 @@ import {
 import { UserService } from '../../../user/services/user.service';
 import { NotificationService } from '../../../../shared/services/notification/notification.service';
 import { SendResetLinkNotification } from '../../notifications/sendResetLink.notification';
-import { ApiResponseService } from '../../../../shared/services/api-response/api-response.service';
-import { PasswordResetService } from '../../services/password-reset.service';
+import { ApiResponseService } from '../../../../shared/services/apiResponse/apiResponse.service';
+import { PasswordResetService } from '../../services/passwordReset.service';
 import { UserTransformer } from '../../../user/transformers/user.transformer';
 import { ConfigService } from '@nestjs/config';
 import {
@@ -23,7 +23,7 @@ import {
   name: 'Content-Type',
   description: 'application/json',
 })
-@Controller('api/v1/auth/forgotPassword')
+@Controller('api/auth/forgotPassword')
 export class ForgotPasswordController {
   constructor(
     private userService: UserService,
@@ -39,11 +39,15 @@ export class ForgotPasswordController {
   @ApiBadRequestResponse()
   async sendResetLinkEmail(@Body() data: SendResetLinkDto): Promise<any> {
     const { email } = data;
+
     const user = await this.userService.firstOrFail({
       where: { email: this.userService.sanitizeEmail(email) },
     });
+
     await this.passwordResetService.expireAllToken(user.email);
+
     const password_reset = await this.passwordResetService.generate(user.email);
+
     await this.notificationService.send(
       user,
       new SendResetLinkNotification(
@@ -51,6 +55,7 @@ export class ForgotPasswordController {
         this.configService.get('FRONTEND_URL'),
       ),
     );
+
     return this.response.success();
   }
 
@@ -59,17 +64,23 @@ export class ForgotPasswordController {
   @ApiBadRequestResponse({ description: 'Token is expired' })
   async reset(@Body() data: ResetPasswordDto): Promise<any> {
     const { token, password } = data;
-    const password_reset = await this.passwordResetService.firstOrFail({
+
+    const passwordReset = await this.passwordResetService.firstOrFail({
       where: { token },
     });
-    if (this.passwordResetService.isExpired(password_reset)) {
+
+    if (this.passwordResetService.isExpired(passwordReset)) {
       throw new BadRequestException('Token is expired');
     }
+
     await this.passwordResetService.expire(token);
+
     const user = await this.userService.first({
-      where: { email: password_reset.email },
+      where: { email: passwordReset.email },
     });
+
     await this.userService.changePassword(user.id, password);
+
     return this.response.item(user, new UserTransformer());
   }
 }

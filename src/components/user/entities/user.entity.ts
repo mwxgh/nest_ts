@@ -54,9 +54,9 @@ export class User extends TimeStampEntity {
     return this.email;
   }
 
-  generateVerifyEmailLink(base_url: string): string {
+  generateVerifyEmailLink(baseUrl: string): string {
     const path = `/auth/verify?token=${this.verifyToken}`;
-    const url = new URL(path, base_url);
+    const url = new URL(path, baseUrl);
     return url.href;
   }
 }

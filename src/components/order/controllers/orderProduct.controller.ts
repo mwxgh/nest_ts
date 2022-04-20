@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Param, Post, Put } from '@nestjs/common';
 import { ApiHeader, ApiParam, ApiTags } from '@nestjs/swagger';
 import { ProductService } from 'src/components/product/services/product.service';
-import { ApiResponseService } from 'src/shared/services/api-response/api-response.service';
+import { ApiResponseService } from 'src/shared/services/apiResponse/apiResponse.service';
 import { getCustomRepository } from 'typeorm';
 import { CreateOrderProductDto, UpdateOrderProductDto } from '../dto/order.dto';
 import { OrderProductRepository } from '../repositories/orderProduct.repository';

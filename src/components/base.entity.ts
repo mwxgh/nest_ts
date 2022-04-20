@@ -9,6 +9,7 @@ export class IdEntity {
   @PrimaryGeneratedColumn()
   id: number;
 }
+
 export class BaseTimeStampEntity extends IdEntity {
   @CreateDateColumn({
     type: 'timestamp',

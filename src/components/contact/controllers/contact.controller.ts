@@ -1,6 +1,6 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { ApiHeader, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { ApiResponseService } from 'src/shared/services/api-response/api-response.service';
+import { ApiResponseService } from 'src/shared/services/apiResponse/apiResponse.service';
 import { CreateContactDto } from '../dto/contact.dto';
 import { ContactService } from '../services/contact.service';
 import { ContactTransformer } from '../transformers/contact.transformer';
@@ -21,6 +21,7 @@ export class UserContactController {
   @ApiResponse({ status: 201, description: 'Contact created' })
   async create(@Body() data: CreateContactDto): Promise<any> {
     const contact = await this.contactService.create(data);
+
     return this.response.item(contact, new ContactTransformer());
   }
 }

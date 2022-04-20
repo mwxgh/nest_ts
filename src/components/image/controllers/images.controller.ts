@@ -8,7 +8,7 @@ import {
   Put,
 } from '@nestjs/common';
 import { ApiHeader, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { ApiResponseService } from 'src/shared/services/api-response/api-response.service';
+import { ApiResponseService } from 'src/shared/services/apiResponse/apiResponse.service';
 import { CreateImageDto, UpdateImageDto } from '../dto/image.dto';
 import { ImageService } from '../services/image.service';
 import { ImageTransformer } from '../transformers/image.transformer';

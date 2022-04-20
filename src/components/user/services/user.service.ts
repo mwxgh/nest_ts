@@ -20,9 +20,12 @@ export class UserService extends BaseService {
     this.repository = connection.getCustomRepository(UserRepository);
   }
 
-  async isExisting(email: string): Promise<boolean> {
-    const is_existing = (await this.repository.count({ where: { email } })) > 0;
-    return is_existing;
+  async emailExist(email: string): Promise<boolean> {
+    return (await this.repository.count({ where: { email } })) > 0;
+  }
+
+  async usernameExist(username: string): Promise<boolean> {
+    return (await this.repository.count({ where: { username } })) > 0;
   }
 
   async generateVerifyToken(id: number): Promise<boolean> {

@@ -1,6 +1,6 @@
 import { Controller, Get, NotFoundException, Param } from '@nestjs/common';
 import { ApiHeader, ApiParam, ApiTags } from '@nestjs/swagger';
-import { ApiResponseService } from 'src/shared/services/api-response/api-response.service';
+import { ApiResponseService } from 'src/shared/services/apiResponse/apiResponse.service';
 import { getCustomRepository } from 'typeorm';
 import { OptionRepository } from '../repositories/option.repository';
 import { OptionService } from '../services/option.service';
@@ -20,7 +20,8 @@ export class UserOptionController {
 
   @Get('list')
   async index(): Promise<any> {
-    const option = await this.optionService.get();
+    const option = await this.optionService.findAllOrFail();
+
     return this.response.collection(option, new OptionTransformer());
   }
 
@@ -31,6 +32,7 @@ export class UserOptionController {
       .createQueryBuilder('options')
       .where('options.key = :key', { key: params.key })
       .getOne();
+
     if (!option) {
       throw new NotFoundException();
     }

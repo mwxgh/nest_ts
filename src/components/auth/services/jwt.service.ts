@@ -11,6 +11,7 @@ export class JwtService {
     private configService: ConfigService,
     private userService: UserService,
   ) {}
+
   async verify(token: string, isWs = false): Promise<User | null> {
     try {
       const payload = <any>jwt.verify(token, this.configService.get('APP_KEY'));

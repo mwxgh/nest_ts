@@ -9,7 +9,7 @@ import {
   Put,
 } from '@nestjs/common';
 import { ApiHeader, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { ApiResponseService } from 'src/shared/services/api-response/api-response.service';
+import { ApiResponseService } from 'src/shared/services/apiResponse/apiResponse.service';
 import { getConnection, getCustomRepository } from 'typeorm';
 
 import { OptionRepository } from '../repositories/option.repository';
@@ -33,7 +33,8 @@ export class AdminOptionController {
 
   @Get('list')
   async index(): Promise<any> {
-    const option = await this.optionService.get();
+    const option = await this.optionService.findAllOrFail();
+
     return this.response.collection(option, new OptionTransformer());
   }
 
@@ -44,17 +45,21 @@ export class AdminOptionController {
       .createQueryBuilder('options')
       .where('options.key = :key', { key: params.key })
       .getOne();
+
     if (!option) {
       throw new NotFoundException();
     }
+
     return this.response.item(option, new OptionTransformer());
   }
 
   @Post()
-  @ApiResponse({ status: 201, description: 'Options created' })
+  @ApiResponse({ status: 201, description: 'Option created' })
   async create(@Body() data: CreateOptionDto): Promise<any> {
     data['key'] = slugify(data['key'].toLowerCase());
+
     const option = await this.optionService.create(data);
+
     return this.response.item(option, new OptionTransformer());
   }
 
@@ -65,12 +70,14 @@ export class AdminOptionController {
     @Body() data: UpdateOptionDto,
   ): Promise<any> {
     data['key'] = slugify(data['key'].toLowerCase());
+
     await getConnection()
       .createQueryBuilder()
       .update(Option)
       .set(data)
       .where('key = :key', { key: params.key })
       .execute();
+
     return this.response.success();
   }
 
