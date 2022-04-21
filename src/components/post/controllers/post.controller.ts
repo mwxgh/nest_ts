@@ -14,6 +14,7 @@ import { IPaginationOptions } from 'src/shared/services/pagination';
 import { PostTransformer } from '../transformers/post.transformer';
 import { ImageService } from 'src/components/image/services/image.service';
 import { ApiResponseService } from 'src/shared/services/apiResponse/apiResponse.service';
+import { QueryPaginateDto } from 'src/shared/dto/findManyParams.dto';
 
 @ApiTags('Posts')
 @ApiHeader({
@@ -29,43 +30,40 @@ export class UserPostControllers {
     private response: ApiResponseService,
   ) {}
   @Get()
-  @ApiQuery({ name: 'page', required: false })
-  @ApiQuery({ name: 'limit', required: false })
-  @ApiQuery({ name: 'include', required: false })
-  async index(@Query() query: any): Promise<any> {
+  async index(@Query() query: QueryPaginateDto): Promise<any> {
     try {
       const params: IPaginationOptions = {
-        limit: Number(query.limit) || 10,
+        limit: Number(query.perPage) || 10,
         page: Number(query.page) || 1,
       };
-      let query_buidler =
+      let query_builder =
         getCustomRepository(PostRepository).createQueryBuilder('posts');
       const keys = Object.keys(JoinPostAbleType);
       const values = Object.values(JoinPostAbleType);
       const key = [];
       const value = [];
       let include = [];
-      if (query.include) {
-        const arr = query.include.split(',');
+      if (query.includes) {
+        const arr = query.includes.split(',');
         include = [...arr];
         arr.forEach((el) => {
           if (keys.includes(el)) value.push(values[`${keys.indexOf(el)}`]);
           if (keys.includes(el)) key.push(el);
         });
         for (let i = 0; i < key.length; i++) {
-          query_buidler = query_buidler.leftJoinAndSelect(
+          query_builder = query_builder.leftJoinAndSelect(
             `${value[`${i}`]}`,
             `${key[`${i}`]}`,
           );
         }
         if (include.includes('categories'))
-          query_buidler = query_buidler.leftJoinAndSelect(
+          query_builder = query_builder.leftJoinAndSelect(
             `categories.category`,
             `category`,
           );
       }
-      query_buidler.getMany();
-      const data = await this.postService.paginate(query_buidler, params);
+      query_builder.getMany();
+      const data = await this.postService.paginate(query_builder, params);
       return this.response.paginate(data, new PostTransformer());
     } catch (error) {
       return error;

@@ -20,6 +20,10 @@ import {
   CreatePermissionDto,
   UpdatePermissionDto,
 } from '../../dto/permission.dto';
+import {
+  QueryListDto,
+  QueryPaginateDto,
+} from 'src/shared/dto/findManyParams.dto';
 
 @ApiTags('Permissions')
 @ApiBearerAuth()
@@ -33,11 +37,9 @@ export class PermissionController {
   private entity = 'permissions';
   private fields = ['name'];
 
-  @Get()
+  @Get('listPaginate')
   @Auth('admin')
-  async index(
-    @Query() query: { perPage: number; page: number; search: string },
-  ): Promise<any> {
+  async listPaginate(@Query() query: QueryPaginateDto): Promise<any> {
     const params: IPaginationOptions = {
       limit: Number(query.perPage) || 10,
       page: Number(query.page) || 1,
@@ -56,6 +58,29 @@ export class PermissionController {
     return this.response.paginate(data, new PermissionTransformer());
   }
 
+  @Get('listQuery')
+  @Auth('admin')
+  async listQuery(@Query() query: QueryListDto): Promise<any> {
+    const keyword = query.search;
+
+    const baseQuery = await this.permissionService.queryBuilder(
+      this.entity,
+      this.fields,
+      keyword,
+    );
+    return this.response.collection(
+      await baseQuery,
+      new PermissionTransformer(),
+    );
+  }
+
+  @Get('list')
+  @Auth('admin')
+  async list(): Promise<any> {
+    const contact = await this.permissionService.findAllOrFail();
+    return this.response.collection(contact, new PermissionTransformer());
+  }
+
   @Post('')
   @Auth('admin')
   async saveObjective(@Body() data: CreatePermissionDto): Promise<any> {
@@ -71,7 +96,7 @@ export class PermissionController {
   @Get(':id')
   @Auth('admin')
   async show(@Param('id', ParseIntPipe) id: number): Promise<any> {
-    const role = await this.permissionService.find(id);
+    const role = await this.permissionService.findOrFail(id);
 
     return this.response.item(role, new PermissionTransformer());
   }
@@ -82,6 +107,8 @@ export class PermissionController {
     @Param('id', ParseIntPipe) id: number,
     @Body() data: UpdatePermissionDto,
   ): Promise<any> {
+    await this.permissionService.findOrFail(id);
+
     const slug = await this.permissionService.generateSlug(data.name);
 
     const role = await this.permissionService.update(
@@ -95,6 +122,8 @@ export class PermissionController {
   @Delete(':id')
   @Auth('admin')
   async delete(@Param('id', ParseIntPipe) id: string): Promise<any> {
+    await this.permissionService.findOrFail(id);
+
     await this.permissionService.destroy(id);
 
     return this.response.success();

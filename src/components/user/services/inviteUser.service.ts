@@ -65,7 +65,7 @@ export class InviteUserService extends BaseService {
    * @param entity
    */
   isExpired(entity: PasswordReset): boolean {
-    const current_time = new Date();
-    return current_time > new Date(entity.expire);
+    const currentTime = new Date();
+    return currentTime > new Date(entity.expire);
   }
 }

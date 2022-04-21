@@ -4,8 +4,8 @@ import { BaseService } from '../../../shared/services/base.service';
 import { UserRepository } from '../repositories/user.repository';
 import { Repository, Connection } from 'typeorm';
 import { HashService } from '../../../shared/services/hash/hash.service';
-import { Role } from '../../auth/entities/role.entity';
-import { UserRole } from '../../auth/entities/userRole.entity';
+import { RoleService } from 'src/components/auth/services/role.service';
+import { UserRoleService } from 'src/components/auth/services/userRole.service';
 
 @Injectable()
 export class UserService extends BaseService {
@@ -13,11 +13,13 @@ export class UserService extends BaseService {
   public entity: any = User;
 
   constructor(
-    private connection: Connection,
+    private dataSource: Connection,
     private hashService: HashService,
+    private roleService: RoleService,
+    private userRoleService: UserRoleService,
   ) {
     super();
-    this.repository = connection.getCustomRepository(UserRepository);
+    this.repository = dataSource.getCustomRepository(UserRepository);
   }
 
   async emailExist(email: string): Promise<boolean> {
@@ -72,56 +74,41 @@ export class UserService extends BaseService {
     userId: number | string,
     roleId: number | string,
   ): Promise<any> {
-    const role = await this.connection.getRepository(Role).findOne(roleId);
-    const user = await this.connection.getRepository(User).findOne(userId);
+    const role = await this.roleService.findOrFail(roleId);
+
+    const user = await this.repository.findOneOrFail(userId);
 
     if (role && user) {
-      const check = await this.connection
-        .getRepository(UserRole)
-        .createQueryBuilder('userRole')
-        .where('userRole.userId = :userId', { userId: user.id })
-        .andWhere('userRole.roleId = :roleId', { roleId: role.id })
-        .getOne();
-      if (!check) {
-        await this.connection
-          .getRepository(UserRole)
-          .createQueryBuilder()
-          .insert()
-          .into(UserRole)
-          .values({
+      await this.userRoleService.firstOrCreate(
+        {
+          where: {
             userId: user.id,
             roleId: role.id,
-          })
-          .execute();
-      }
+          },
+        },
+        { userId: user.id, roleId: role.id },
+      );
     }
-    return null;
   }
 
   async detachRole(
     userId: number | string,
     roleId: number | string,
   ): Promise<any> {
-    const role = await this.connection.getRepository(Role).findOne(roleId);
-    const user = await this.connection.getRepository(User).findOne(userId);
+    const role = await this.roleService.findOrFail(roleId);
+
+    const user = await this.repository.findOneOrFail(userId);
 
     if (role && user) {
-      const check = await this.connection
-        .getRepository(UserRole)
-        .createQueryBuilder('userRole')
-        .where('userRole.userId = :userId', { userId: user.id })
-        .andWhere('userRole.roleId = :roleId', { roleId: role.id })
-        .getOne();
-      if (check) {
-        await this.connection
-          .getRepository(UserRole)
-          .createQueryBuilder('userRole')
-          .delete()
-          .where('userRole.userId = :userId', { userId: user.id })
-          .andWhere('userRole.roleId = :roleId', { roleId: role.id })
-          .execute();
+      const userRole = await this.userRoleService.firstOrFail({
+        where: {
+          userId: user.id,
+          roleId: role.id,
+        },
+      });
+      if (userRole) {
+        await this.userRoleService.destroy(userRole.id);
       }
     }
-    return null;
   }
 }

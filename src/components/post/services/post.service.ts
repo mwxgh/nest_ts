@@ -8,45 +8,33 @@ import { PostRepository } from '../repositories/post.repository';
 
 @Injectable()
 export class PostService extends BaseService {
-  public postRepository: Repository<any>;
-  public postEntity: any = PostAble;
-  public commentRepository: Repository<any>;
-  public commentEntity: any = Comment;
+  public repository: Repository<any>;
+  public entity: any = PostAble;
 
-  constructor(
-    private postDataSource: Connection,
-    private commentDataSource: Connection,
-  ) {
+  constructor(private postDataSource: Connection) {
     super();
-    this.postRepository =
-      this.postDataSource.getCustomRepository(PostRepository);
-    this.commentRepository =
-      this.commentDataSource.getCustomRepository(CommentRepository);
+    this.repository = this.postDataSource.getCustomRepository(PostRepository);
   }
 
-  async destroyPost(id) {
-    return this.postRepository.delete(id);
+  async destroyPost(id: any) {
+    return this.repository.delete(id);
   }
 
   async store(data: any): Promise<PostAble> {
-    return await this.postRepository.save(data);
+    return await this.repository.save(data);
   }
-  async list(): Promise<PostAble[]> {
-    return await this.postRepository.find();
-  }
-  async show(id: any): Promise<PostAble> {
-    return await this.postRepository.findOne(id);
-  }
+
   async update(id: number, data: any): Promise<UpdateResult> {
     delete data.url;
     delete data.is_thumbnail;
-    return await this.postRepository.update(Number(id), {
+    return await this.repository.update(Number(id), {
       ...data,
       updated_at: new Date(),
     });
   }
+
   async posts(): Promise<any> {
-    return await this.postRepository;
+    return await this.repository;
   }
 
   async JoinTable(data?: any): Promise<any> {
@@ -55,7 +43,7 @@ export class PostService extends BaseService {
     // const key = [];
     const value = [];
     let include = [];
-    let join = this.postRepository.createQueryBuilder('posts');
+    let join = this.repository.createQueryBuilder('posts');
     if (data.include) {
       const arr = data.include.split(',');
       include = [...arr];

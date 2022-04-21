@@ -20,7 +20,10 @@ import {
   CreateCategoryDto,
   UpdateCategoryDto,
 } from 'src/components/category/dto/category.dto';
-import { QueryPaginateDto } from 'src/shared/dto/findManyParams.dto';
+import {
+  QueryListDto,
+  QueryPaginateDto,
+} from 'src/shared/dto/findManyParams.dto';
 
 @ApiTags('Roles')
 @ApiBearerAuth()
@@ -35,9 +38,9 @@ export class RoleController {
 
   private fields = ['name', 'level'];
 
-  @Get()
+  @Get('listPaginate')
   @Auth('admin')
-  async index(@Query() query: QueryPaginateDto): Promise<any> {
+  async listPaginate(@Query() query: QueryPaginateDto): Promise<any> {
     const params: IPaginationOptions = {
       limit: Number(query.perPage) || 10,
       page: Number(query.page) || 1,
@@ -54,6 +57,26 @@ export class RoleController {
     const data = await this.roleService.paginate(await baseQuery, params);
 
     return this.response.paginate(data, new RoleTransformer([]));
+  }
+
+  @Get('listQuery')
+  @Auth('admin')
+  async listQuery(@Query() query: QueryListDto): Promise<any> {
+    const keyword = query.search;
+
+    const baseQuery = await this.roleService.queryBuilder(
+      this.entity,
+      this.fields,
+      keyword,
+    );
+    return this.response.collection(await baseQuery, new RoleTransformer([]));
+  }
+
+  @Get('list')
+  @Auth('admin')
+  async list(): Promise<any> {
+    const contact = await this.roleService.findAllOrFail();
+    return this.response.collection(contact, new RoleTransformer([]));
   }
 
   @Post('')

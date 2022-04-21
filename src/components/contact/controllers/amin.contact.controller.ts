@@ -10,6 +10,10 @@ import {
   Query,
 } from '@nestjs/common';
 import { ApiHeader, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  QueryListDto,
+  QueryPaginateDto,
+} from 'src/shared/dto/findManyParams.dto';
 import { ApiResponseService } from 'src/shared/services/apiResponse/apiResponse.service';
 import { IPaginationOptions } from 'src/shared/services/pagination';
 import { CreateContactDto, UpdateContactDto } from '../dto/contact.dto';
@@ -28,29 +32,40 @@ export class AdminContactController {
     private response: ApiResponseService,
   ) {}
 
-  @Get('listPaginate')
-  async index(
-    @Query() query: { perPage: number; page: number; search: string },
-  ): Promise<any> {
-    const params: IPaginationOptions = {
-      limit: 10,
-      page: 1,
-    };
-    const entity = 'contacts';
+  private entity = 'contacts';
 
-    const fields = ['email', 'phone', 'address'];
+  private fields = ['email', 'phone', 'address'];
+
+  @Get('listPaginate')
+  async listPaginate(@Query() query: QueryPaginateDto): Promise<any> {
+    const params: IPaginationOptions = {
+      limit: Number(query.perPage) || 10,
+      page: Number(query.page) || 1,
+    };
 
     const keyword = query.search;
 
     const baseQuery = await this.contactService.queryBuilder(
-      entity,
-      fields,
+      this.entity,
+      this.fields,
       keyword,
     );
 
     const contact = await this.contactService.paginate(baseQuery, params);
 
     return this.response.paginate(contact, new ContactTransformer());
+  }
+
+  @Get('listQuery')
+  async listQuery(@Query() query: QueryListDto): Promise<any> {
+    const keyword = query.search;
+
+    const baseQuery = await this.contactService.queryBuilder(
+      this.entity,
+      this.fields,
+      keyword,
+    );
+    return this.response.collection(await baseQuery, new ContactTransformer());
   }
 
   @Get('list')

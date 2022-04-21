@@ -240,7 +240,7 @@ export class BaseService {
    */
   async findWhere(
     condition: FindManyOptions,
-    columns: string[] | null = null,
+    columns?: string[],
   ): Promise<any> {
     return this.repository.find({
       where: condition,

@@ -30,7 +30,11 @@ import { User } from '../entities/user.entity';
 import { map, isEmpty } from 'lodash';
 import { ApiTags } from '@nestjs/swagger';
 
-import { UserSendMailReportDto } from '../dto/user.dto';
+import {
+  UserAttachRoleDto,
+  UserDetachRoleDto,
+  UserSendMailReportDto,
+} from '../dto/user.dto';
 import { AdminCreateUserDto, AdminUpdateUserDto } from '../dto/user.dto';
 
 @ApiTags('Users')
@@ -171,12 +175,12 @@ export class UserController {
 
     await this.inviteUserService.expireAllToken(item.email);
 
-    const password_reset = await this.inviteUserService.generate(item.email);
+    const passwordReset = await this.inviteUserService.generate(item.email);
 
     await this.notificationService.send(
       item,
       new SendInviteUserLinkNotification(
-        password_reset,
+        passwordReset,
         this.configService.get('FRONTEND_URL'),
       ),
     );
@@ -186,24 +190,22 @@ export class UserController {
 
   @Post(':id/attachRole')
   @Auth('admin')
-  async attachRole(@Req() request: Request): Promise<any> {
-    const userId = (request as any).params.id;
-
-    const roleId = (request as any).body.roleId;
-
-    await this.userService.attachRole(userId, roleId);
+  async attachRole(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() data: UserAttachRoleDto,
+  ): Promise<any> {
+    await this.userService.attachRole(id, data.roleId);
 
     return this.response.success();
   }
 
   @Post(':id/detachRole')
   @Auth('admin')
-  async detachRole(@Req() request: Request): Promise<any> {
-    const userId = (request as any).params.id;
-
-    const roleId = (request as any).body.roleId;
-
-    await this.userService.detachRole(userId, roleId);
+  async detachRole(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() data: UserDetachRoleDto,
+  ): Promise<any> {
+    await this.userService.detachRole(id, data.roleId);
 
     return this.response.success();
   }

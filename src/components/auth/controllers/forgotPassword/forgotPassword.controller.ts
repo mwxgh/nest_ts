@@ -13,8 +13,8 @@ import { ConfigService } from '@nestjs/config';
 import {
   ApiBadRequestResponse,
   ApiHeader,
-  ApiNotFoundResponse,
   ApiOkResponse,
+  ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
 
@@ -23,7 +23,7 @@ import {
   name: 'Content-Type',
   description: 'application/json',
 })
-@Controller('api/auth/forgotPassword')
+@Controller('api/auth')
 export class ForgotPasswordController {
   constructor(
     private userService: UserService,
@@ -33,10 +33,9 @@ export class ForgotPasswordController {
     private response: ApiResponseService,
   ) {}
 
-  @Post()
-  @ApiOkResponse({ description: 'Email sent' })
-  @ApiNotFoundResponse()
-  @ApiBadRequestResponse()
+  @Post('forgotPassword')
+  @ApiOperation({ summary: 'Send reset password link to email' })
+  @ApiOkResponse({ description: 'Reset password link sent success' })
   async sendResetLinkEmail(@Body() data: SendResetLinkDto): Promise<any> {
     const { email } = data;
 
@@ -59,8 +58,9 @@ export class ForgotPasswordController {
     return this.response.success();
   }
 
-  @Post('reset')
-  @ApiOkResponse({ description: 'Email sent' })
+  @Post('resetPassword')
+  @ApiOperation({ summary: 'Reset password' })
+  @ApiOkResponse({ description: 'Reset password successfully' })
   @ApiBadRequestResponse({ description: 'Token is expired' })
   async reset(@Body() data: ResetPasswordDto): Promise<any> {
     const { token, password } = data;

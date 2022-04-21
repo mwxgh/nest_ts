@@ -11,11 +11,11 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import {
-  ApiBadRequestResponse,
   ApiHeader,
+  ApiOkResponse,
+  ApiOperation,
   ApiResponse,
   ApiTags,
-  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { UserLoginDto, UserRegisterDto, LoginGoogleDto } from '../dto/auth.dto';
 import { OAuth2Client } from 'google-auth-library';
@@ -37,6 +37,8 @@ export class AuthController {
   ) {}
 
   @Post('loginGoogle')
+  @ApiOperation({ summary: 'Login with google token' })
+  @ApiOkResponse({ description: 'Token for access system' })
   async googleAuthCallback(@Body() body: LoginGoogleDto): Promise<any> {
     const client = new OAuth2Client(this.config.get('GOOGLE_CONSUMER_KEY'));
 
@@ -78,9 +80,8 @@ export class AuthController {
   }
 
   @Post('/register')
-  @ApiResponse({ status: 201, description: 'User created' })
-  @ApiBadRequestResponse()
-  @ApiUnauthorizedResponse()
+  @ApiOperation({ summary: 'Register user with email' })
+  @ApiOkResponse({ description: 'Token for access system' })
   async userRegister(
     @Body() data: UserRegisterDto,
   ): Promise<{ [key: string]: any }> {
@@ -108,9 +109,8 @@ export class AuthController {
   }
 
   @Post('/login')
-  @ApiResponse({ status: 201, description: 'Authenticated' })
-  @ApiBadRequestResponse()
-  @ApiUnauthorizedResponse()
+  @ApiOperation({ summary: 'Login with email & password' })
+  @ApiOkResponse({ description: 'Token for access system' })
   async userLogin(@Body() data: UserLoginDto): Promise<{ [key: string]: any }> {
     const { email, password } = data;
 

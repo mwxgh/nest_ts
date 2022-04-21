@@ -8,6 +8,7 @@ import {
   Put,
   Query,
   NotFoundException,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { ApiHeader, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { Connection, getRepository, getManager } from 'typeorm';
@@ -26,6 +27,7 @@ import { CategoryAbleService } from 'src/components/category/services/categoryAb
 import { TagAble } from '../../tag/entities/tagAble.entity';
 import { CategoryAble } from '../../category/entities/categoryAble.entity';
 import * as _ from 'lodash';
+import { QueryPaginateDto } from 'src/shared/dto/findManyParams.dto';
 @ApiTags('Posts')
 @ApiHeader({
   name: 'Content-Type',
@@ -42,13 +44,10 @@ export class AdminPostController {
     private categoryAble: CategoryAbleService,
   ) {}
 
-  @Get()
-  @ApiQuery({ name: 'page', required: false })
-  @ApiQuery({ name: 'limit', required: false })
-  @ApiQuery({ name: 'include', required: false })
-  async index(@Query() query: any): Promise<any> {
+  @Get('listPaginate')
+  async listPaginate(@Query() query: QueryPaginateDto): Promise<any> {
     const params: IPaginationOptions = {
-      limit: Number(query.limit) || 10,
+      limit: Number(query.perPage) || 10,
       page: Number(query.page) || 1,
     };
     const data = await this.post.JoinTable(query);
@@ -77,15 +76,18 @@ export class AdminPostController {
   @Get('list')
   @ApiQuery({ name: 'include', required: false })
   async list(@Query() query: any): Promise<any> {
-    const data = await this.post.JoinTable(query);
-    const checkdata = await data.getMany();
-    if (!checkdata) throw new NotFoundException('Data');
-    return this.response.collection(checkdata, new PostTransformer());
+    const basQuery = await this.post.JoinTable(query);
+    const posts = await basQuery.getMany();
+    if (!posts) throw new NotFoundException('Data');
+    return this.response.collection(posts, new PostTransformer());
   }
 
   @Get(':id')
   @ApiQuery({ name: 'include', required: false })
-  async show(@Param('id') id: string, @Query() query: any): Promise<any> {
+  async show(
+    @Param('id', ParseIntPipe) id: number,
+    @Query() query: any,
+  ): Promise<any> {
     const data = await this.post.JoinTable(query);
     const checkData = await data
       .where('posts.id = :id', { id: Number(id) })
@@ -96,10 +98,10 @@ export class AdminPostController {
 
   @Put(':id')
   async update(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Body() data: UpdatePostDto,
   ): Promise<any> {
-    const data_tagable_current = await getRepository(TagAble)
+    const data_tagAble_current = await getRepository(TagAble)
       .createQueryBuilder('tagAbles')
       .where('tagAbles.tagAbleId = :tagAbleId', { tagAbleId: Number(id) })
       .andWhere('tagAbles.tagAbleType = :tagAbleType', {
@@ -107,10 +109,10 @@ export class AdminPostController {
       })
       .getMany();
 
-    if (!data_tagable_current) throw new NotFoundException('TagAble');
+    if (!data_tagAble_current) throw new NotFoundException('TagAble');
 
-    const tag_id_search = data_tagable_current.map(
-      (data_tagable_element: any) => data_tagable_element.id,
+    const tag_id_search = data_tagAble_current.map(
+      (data_tagAble_element: any) => data_tagAble_element.id,
     );
 
     if (!tag_id_search) throw new NotFoundException('Search tag');
@@ -208,7 +210,7 @@ export class AdminPostController {
   }
 
   @Delete(':id')
-  async destroy(@Param('id') id: string): Promise<any> {
+  async destroy(@Param('id', ParseIntPipe) id: number): Promise<any> {
     const check_data_tagable = await getRepository(TagAble)
       .createQueryBuilder('tagAbles')
       .where('tagAbles.tagAbleId = :tagAbleId', { tagAbleId: Number(id) })

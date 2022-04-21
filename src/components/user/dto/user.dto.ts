@@ -1,8 +1,9 @@
-import { ApiProperty, OmitType, PartialType } from '@nestjs/swagger';
+import { ApiProperty, OmitType, PartialType, PickType } from '@nestjs/swagger';
 import {
   IsBoolean,
   IsEmail,
   IsNotEmpty,
+  IsNumber,
   IsOptional,
   IsString,
   MaxLength,
@@ -52,3 +53,18 @@ export class UserSendMailReportDto {
   @IsNotEmpty()
   linkReport: string;
 }
+
+export class UserRoleProperties {
+  @ApiProperty()
+  @IsNumber()
+  @IsNotEmpty()
+  roleId: number;
+}
+
+export class UserAttachRoleDto extends PickType(UserRoleProperties, [
+  'roleId',
+] as const) {}
+
+export class UserDetachRoleDto extends PickType(UserRoleProperties, [
+  'roleId',
+] as const) {}
