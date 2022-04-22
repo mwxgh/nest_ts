@@ -13,12 +13,14 @@ export class TagService extends BaseService {
     this.repository = this.connection.getCustomRepository(TagRepository);
   }
 
-  async queryTag(entity: string) {
-    const baseQuery = await this.queryBuilder(entity);
+  async queryTag(entity: string, fields?: string[], keyword?: string | '') {
+    const baseQuery = await this.queryBuilder(entity, fields, keyword);
+
     const tagQuery = baseQuery
       .leftJoinAndSelect('tags.tagAbles', 'tagAbles')
       .leftJoinAndSelect('tagAbles.post', 'posts')
       .leftJoinAndSelect('tagAbles.product', 'products');
+
     return tagQuery;
   }
 }

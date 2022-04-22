@@ -40,8 +40,11 @@ export class CreatePostsTable1650206721948 implements MigrationInterface {
           },
           {
             name: 'status',
-            default: 1,
-            type: 'int',
+            type: 'varchar',
+          },
+          {
+            name: 'priority',
+            type: 'varchar',
           },
           {
             name: 'type',

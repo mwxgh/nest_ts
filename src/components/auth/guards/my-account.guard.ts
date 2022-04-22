@@ -1,6 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-import { JwtAuthGuard } from './jwt-auth.guard';
+import { JwtAuthGuard } from './jwtAuth.guard';
 import {
   Injectable,
   ExecutionContext,

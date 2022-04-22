@@ -6,12 +6,23 @@ import { CategoryAble } from '../../category/entities/categoryAble.entity';
 import { TagAble } from '../../tag/entities/tagAble.entity';
 import { TimeStampEntity } from '../../base.entity';
 
-export enum JoinPostAbleType {
-  images = 'posts.images',
-  comments = 'posts.comments',
-  tags = 'posts.tags',
-  categories = 'posts.categories',
-}
+export const JoinPostAbleType = {
+  images: 'posts.images',
+  comments: 'posts.comments',
+  tags: 'posts.tags',
+  categories: 'posts.categories',
+} as const;
+
+export const PostStatus = {
+  publish: 'publish',
+  pending: 'pending',
+  hide: 'hide',
+} as const;
+
+export const PostPriority = {
+  high: 'high',
+  normal: 'normal',
+} as const;
 
 @Notifiable()
 @Entity({ name: 'posts' })
@@ -31,8 +42,11 @@ export class PostAble extends TimeStampEntity {
   @Column({ type: 'varchar', default: '' })
   content: string;
 
-  @Column({ type: 'int', default: 0 })
-  status: number;
+  @Column({ type: 'varchar' })
+  status: string;
+
+  @Column({ type: 'varchar' })
+  priority: string;
 
   @Column({ type: 'varchar', default: '' })
   type: string;

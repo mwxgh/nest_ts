@@ -276,7 +276,7 @@ export class BaseService {
   async queryBuilder(
     entity: string,
     fields?: string[],
-    keyword?: string,
+    keyword?: string | '',
   ): Promise<any> {
     let baseQuery = this.repository.createQueryBuilder(`${entity}`);
     if (keyword && keyword !== '' && fields) {

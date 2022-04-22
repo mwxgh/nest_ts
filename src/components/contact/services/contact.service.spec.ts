@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiResponseService } from 'src/shared/services/apiResponse/apiResponse.service';
 import { Repository } from 'typeorm';
-import { ContactController } from '../controllers/amin.contact.controller';
+import { ContactController } from '../controllers/contact.controller';
 import { ContactService } from './contact.service';
 
 describe('ContactService', () => {

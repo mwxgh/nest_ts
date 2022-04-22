@@ -10,14 +10,26 @@ import {
 import { ApiResponseService } from '../../../shared/services/apiResponse/apiResponse.service';
 import { UserService } from '../../user/services/user.service';
 import { UserTransformer } from '../../user/transformers/user.transformer';
-import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
+import { JwtAuthGuard } from '../../auth/guards/jwtAuth.guard';
 import { HashService } from '../../../shared/services/hash/hash.service';
 import { UpdateProfileDto, UpdatePasswordDto } from '../dto/updateProfile.dto';
-import { Request } from 'express';
-import { ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiHeader,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
+import { AuthenticatedUser } from 'src/components/auth/decorators/authenticatedUser.decorator';
+import { User } from 'src/components/user/entities/user.entity';
 
 @ApiTags('Profile')
+@ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
+@ApiHeader({
+  name: 'Content-Type',
+  description: 'application/json',
+})
 @Controller('api/profile')
 export class ProfileController {
   constructor(
@@ -27,21 +39,23 @@ export class ProfileController {
   ) {}
 
   @Get()
-  async profile(@Req() request: Request): Promise<any> {
-    const userId = (request as any).user.id;
-
-    const user = await this.userService.find(userId, { relations: ['roles'] });
+  @ApiOperation({ summary: 'Get profile current user' })
+  @ApiOkResponse({ description: 'Profile current user' })
+  async profile(@AuthenticatedUser() currentUser: User): Promise<any> {
+    const user = await this.userService.find(currentUser.id, {
+      relations: ['roles'],
+    });
 
     return this.response.item(user, new UserTransformer(['roles']));
   }
 
   @Put()
+  @ApiOperation({ summary: 'Update profile current user' })
+  @ApiOkResponse({ description: 'New profile current user' })
   async updateProfile(
-    @Req() request: Request,
+    @AuthenticatedUser() currentUser: User,
     @Body() body: UpdateProfileDto,
   ): Promise<any> {
-    const id = (request as any).user.id;
-
     const data: any = {};
 
     if (body.username) {
@@ -56,27 +70,29 @@ export class ProfileController {
       data.lastName = body.lastName;
     }
 
-    const user = await this.userService.update(id, data);
+    const user = await this.userService.update(currentUser.id, data);
 
     return this.response.item(user, new UserTransformer());
   }
 
   @Put('password')
+  @ApiOperation({ summary: 'Update password current user' })
+  @ApiOkResponse({ description: 'New profile current user' })
   async changePassword(
-    @Req() request: Request,
+    @AuthenticatedUser() currentUser: User,
     @Body() body: UpdatePasswordDto,
   ): Promise<any> {
-    const user = (request as any).user;
-
     const { password, oldPassword } = body;
 
-    if (!this.hashService.check(oldPassword, user.password)) {
+    if (!this.hashService.check(oldPassword, currentUser.password)) {
       throw new BadRequestException('Old password is not correct');
     }
 
     const hashed = this.hashService.hash(password);
 
-    const result = await this.userService.update(user.id, { password: hashed });
+    const result = await this.userService.update(currentUser.id, {
+      password: hashed,
+    });
 
     return this.response.item(result, new UserTransformer());
   }

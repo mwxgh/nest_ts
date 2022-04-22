@@ -39,3 +39,5 @@ export class QueryListDto extends PickType(QueryProperties, [
   'includes',
   'filters',
 ] as const) {}
+
+// @IsEnum(OrderStatus)

@@ -8,8 +8,15 @@ import {
   Post,
   Put,
   Query,
+  UseGuards,
 } from '@nestjs/common';
-import { ApiHeader, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiHeader,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 
 import { IPaginationOptions } from 'src/shared/services/pagination';
 import {
@@ -20,13 +27,17 @@ import { CreateCategoryDto, UpdateCategoryDto } from '../dto/category.dto';
 import { CategoryService } from '../services/category.service';
 import { CategoryTransformer } from '../transformers/category.transformer';
 import { ApiResponseService } from 'src/shared/services/apiResponse/apiResponse.service';
+import { Auth } from 'src/components/auth/decorators/auth.decorator';
+import { JwtAuthGuard } from 'src/components/auth/guards/jwtAuth.guard';
 
 @ApiTags('Categories')
 @ApiHeader({
   name: 'Content-Type',
   description: 'application/json',
 })
-@Controller('/api/admin/categories')
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard)
+@Controller('/api/categories')
 export class CategoryController {
   constructor(
     private categoryService: CategoryService,
@@ -34,17 +45,28 @@ export class CategoryController {
   ) {}
 
   private entity = 'categories';
+  private fields = ['name', 'categoryType'];
 
   @Get('listPaginate')
-  async index(@Query() query: QueryPaginateDto): Promise<any> {
+  @ApiOperation({
+    summary: 'List categories with query & paginate',
+  })
+  @ApiOkResponse({
+    description: 'List categories with search & includes & filter in paginate',
+  })
+  async listPaginate(@Query() query: QueryPaginateDto): Promise<any> {
     const params: IPaginationOptions = {
       limit: query.perPage ? query.perPage : 10,
       page: query.page ? query.page : 1,
     };
 
+    const { search, includes } = query;
+
     const queryInclude = await this.categoryService.queryCategory(
       this.entity,
-      query,
+      this.fields,
+      search,
+      includes,
     );
 
     const data = await this.categoryService.paginate(queryInclude, params);
@@ -52,11 +74,19 @@ export class CategoryController {
     return this.response.paginate(data, new CategoryTransformer());
   }
 
-  @Get('list')
-  async list(@Query() query: QueryListDto): Promise<any> {
+  @Get('listQuery')
+  @ApiOperation({ summary: 'List categories with query / without paginate' })
+  @ApiOkResponse({
+    description: 'List categories with search & includes & filter',
+  })
+  async listQuery(@Query() query: QueryListDto): Promise<any> {
+    const { search, includes } = query;
+
     const queryInclude = await this.categoryService.queryCategory(
       this.entity,
-      query.includes,
+      this.fields,
+      search,
+      includes,
     );
 
     return this.response.collection(
@@ -66,6 +96,8 @@ export class CategoryController {
   }
 
   @Get(':id')
+  @ApiOperation({ summary: 'Get category by id' })
+  @ApiOkResponse({ description: 'Category entity' })
   async show(@Param('id', ParseIntPipe) id: number): Promise<any> {
     const category = await this.categoryService.findOrFail(id);
 
@@ -73,7 +105,9 @@ export class CategoryController {
   }
 
   @Post()
-  @ApiResponse({ status: 201, description: 'Category created' })
+  @Auth('admin')
+  @ApiOperation({ summary: 'Admin create new category' })
+  @ApiOkResponse({ description: 'New category entity' })
   async create(@Body() data: CreateCategoryDto): Promise<any> {
     const category = await this.categoryService.create(data);
 
@@ -81,8 +115,10 @@ export class CategoryController {
   }
 
   @Put(':id')
-  @ApiParam({ name: 'id' })
-  async update(
+  @Auth('admin')
+  @ApiOperation({ summary: 'Admin update category by id' })
+  @ApiOkResponse({ description: 'Update category entity' })
+  async updateCategory(
     @Param('id', ParseIntPipe) id: number,
     @Body() data: UpdateCategoryDto,
   ): Promise<any> {
@@ -94,8 +130,10 @@ export class CategoryController {
   }
 
   @Delete(':id')
-  @ApiParam({ name: 'id' })
-  async remove(@Param('id', ParseIntPipe) id: number): Promise<any> {
+  @Auth('admin')
+  @ApiOperation({ summary: 'Admin delete category by id' })
+  @ApiOkResponse({ description: 'Delete category successfully' })
+  async deleteCategory(@Param('id', ParseIntPipe) id: number): Promise<any> {
     await this.categoryService.findOrFail(id);
 
     await this.categoryService.destroy(id);

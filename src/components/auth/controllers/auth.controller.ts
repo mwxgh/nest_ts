@@ -14,7 +14,6 @@ import {
   ApiHeader,
   ApiOkResponse,
   ApiOperation,
-  ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 import { UserLoginDto, UserRegisterDto, LoginGoogleDto } from '../dto/auth.dto';
