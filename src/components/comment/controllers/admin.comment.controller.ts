@@ -91,7 +91,7 @@ export class AdminCommentController {
   @Put(':id')
   @ApiParam({ name: 'id' })
   async update(@Param() params, @Body() body: UpdateCommentDto): Promise<any> {
-    await this.comment.findOrFail(params.id);
+    await this.comment.findOneOrFail(params.id);
 
     await this.comment.update(params.id, body);
 
@@ -101,7 +101,7 @@ export class AdminCommentController {
   @Delete(':id')
   @ApiParam({ name: 'id' })
   async destroy(@Param() params): Promise<any> {
-    await this.comment.findOrFail(params.id);
+    await this.comment.findOneOrFail(params.id);
 
     await this.comment.destroy(params.id);
 

@@ -52,11 +52,11 @@ export class ContactController {
       page: Number(query.page) || 1,
     };
 
-    const baseQuery = await this.contactService.queryBuilder(
-      this.entity,
-      this.fields,
-      query.search,
-    );
+    const baseQuery = await this.contactService.queryBuilder({
+      entity: this.entity,
+      fields: this.fields,
+      keyword: query.search,
+    });
 
     const contact = await this.contactService.paginate(baseQuery, params);
 
@@ -65,11 +65,12 @@ export class ContactController {
 
   @Get('listQuery')
   async listQuery(@Query() query: QueryListDto): Promise<any> {
-    const baseQuery = await this.contactService.queryBuilder(
-      this.entity,
-      this.fields,
-      query.search,
-    );
+    const baseQuery = await this.contactService.queryBuilder({
+      entity: this.entity,
+      fields: this.fields,
+      keyword: query.search,
+    });
+
     return this.response.collection(await baseQuery, new ContactTransformer());
   }
 
@@ -81,7 +82,7 @@ export class ContactController {
 
   @Get(':id')
   async show(@Param('id', ParseIntPipe) id: number): Promise<any> {
-    const contact = await this.contactService.findOrFail(id);
+    const contact = await this.contactService.findOneOrFail(id);
 
     return this.response.collection(contact, new ContactTransformer());
   }
@@ -99,7 +100,7 @@ export class ContactController {
     @Param('id', ParseIntPipe) id: number,
     @Body() data: UpdateContactDto,
   ): Promise<any> {
-    await this.contactService.findOrFail(id);
+    await this.contactService.findOneOrFail(id);
 
     await this.contactService.update(id, data);
 
@@ -108,7 +109,7 @@ export class ContactController {
 
   @Delete(':id')
   async remove(@Param('id', ParseIntPipe) id: number): Promise<any> {
-    await this.contactService.findOrFail(id);
+    await this.contactService.findOneOrFail(id);
 
     await this.contactService.destroy(id);
 

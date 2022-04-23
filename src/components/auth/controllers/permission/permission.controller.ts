@@ -64,11 +64,11 @@ export class PermissionController {
       page: Number(query.page) || 1,
     };
 
-    const baseQuery = await this.permissionService.queryBuilder(
-      this.entity,
-      this.fields,
-      query.search,
-    );
+    const baseQuery = await this.permissionService.queryBuilder({
+      entity: this.entity,
+      fields: this.fields,
+      keyword: query.search,
+    });
 
     const data = await this.permissionService.paginate(baseQuery, params);
 
@@ -84,13 +84,12 @@ export class PermissionController {
     description: 'List permissions with search & includes & filter',
   })
   async listQuery(@Query() query: QueryListDto): Promise<any> {
-    const keyword = query.search;
+    const baseQuery = await this.permissionService.queryBuilder({
+      entity: this.entity,
+      fields: this.fields,
+      keyword: query.search,
+    });
 
-    const baseQuery = await this.permissionService.queryBuilder(
-      this.entity,
-      this.fields,
-      keyword,
-    );
     return this.response.collection(
       await baseQuery,
       new PermissionTransformer(),
@@ -102,7 +101,7 @@ export class PermissionController {
   @ApiOperation({ summary: 'Admin get permission by id' })
   @ApiOkResponse({ description: 'Permission entity' })
   async show(@Param('id', ParseIntPipe) id: number): Promise<any> {
-    const role = await this.permissionService.findOrFail(id);
+    const role = await this.permissionService.findOneOrFail(id);
 
     return this.response.item(role, new PermissionTransformer());
   }
@@ -129,7 +128,7 @@ export class PermissionController {
     @Param('id', ParseIntPipe) id: number,
     @Body() data: UpdatePermissionDto,
   ): Promise<any> {
-    await this.permissionService.findOrFail(id);
+    await this.permissionService.findOneOrFail(id);
 
     const slug = await this.permissionService.generateSlug(data.name);
 
@@ -146,7 +145,7 @@ export class PermissionController {
   @ApiOperation({ summary: 'Admin delete permission by id' })
   @ApiOkResponse({ description: 'Delete permission successfully' })
   async delete(@Param('id', ParseIntPipe) id: string): Promise<any> {
-    await this.permissionService.findOrFail(id);
+    await this.permissionService.findOneOrFail(id);
 
     await this.permissionService.destroy(id);
 

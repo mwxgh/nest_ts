@@ -122,7 +122,7 @@ export class TagController {
     @Param('id', ParseIntPipe) id: number,
     @Body() data: UpdateTagDto,
   ): Promise<any> {
-    await this.tagService.findOrFail(id);
+    await this.tagService.findOneOrFail(id);
 
     await this.tagService.update(id, { ...data, updatedAt: new Date() });
 
@@ -134,7 +134,7 @@ export class TagController {
   @ApiOperation({ summary: 'Admin delete tag by id' })
   @ApiOkResponse({ description: 'Delete tag successfully' })
   async deleteTag(@Param('id', ParseIntPipe) id: number): Promise<any> {
-    await this.tagService.findOrFail(id);
+    await this.tagService.findOneOrFail(id);
 
     await this.tagService.destroy(id);
 

@@ -28,7 +28,7 @@ export class CategoryService extends BaseService {
       arr.map((i: any) => include.push(i));
     }
 
-    let baseQuery = await this.queryBuilder(entity, fields, keyword);
+    let baseQuery = await this.queryBuilder({ entity, fields, keyword });
 
     if (include.includes('products')) {
       baseQuery = baseQuery.where(`${entity}.categoryType = :type`, {

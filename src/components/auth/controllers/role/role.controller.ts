@@ -65,11 +65,11 @@ export class RoleController {
       page: Number(query.page) || 1,
     };
 
-    const baseQuery = this.roleService.queryBuilder(
-      this.entity,
-      this.fields,
-      query.search,
-    );
+    const baseQuery = await this.roleService.queryBuilder({
+      entity: this.entity,
+      fields: this.fields,
+      keyword: query.search,
+    });
 
     const data = await this.roleService.paginate(await baseQuery, params);
 
@@ -85,13 +85,12 @@ export class RoleController {
     description: 'List roles with search & includes & filter',
   })
   async listQuery(@Query() query: QueryListDto): Promise<any> {
-    const keyword = query.search;
+    const baseQuery = await this.roleService.queryBuilder({
+      entity: this.entity,
+      fields: this.fields,
+      keyword: query.search,
+    });
 
-    const baseQuery = await this.roleService.queryBuilder(
-      this.entity,
-      this.fields,
-      keyword,
-    );
     return this.response.collection(await baseQuery, new RoleTransformer([]));
   }
 

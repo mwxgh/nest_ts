@@ -68,11 +68,11 @@ export class OptionController {
       page: Number(query.page) || 1,
     };
 
-    const baseQuery = await this.optionService.queryBuilder(
-      this.entity,
-      this.fields,
-      query.search,
-    );
+    const baseQuery = await this.optionService.queryBuilder({
+      entity: this.entity,
+      fields: this.fields,
+      keyword: query.search,
+    });
 
     const option = await this.optionService.paginate(baseQuery, params);
 
@@ -85,11 +85,11 @@ export class OptionController {
     description: 'List options with search & includes & filter',
   })
   async listQuery(@Query() query: QueryListDto): Promise<any> {
-    const baseQuery = await this.optionService.queryBuilder(
-      this.entity,
-      this.fields,
-      query.search,
-    );
+    const baseQuery = await this.optionService.queryBuilder({
+      entity: this.entity,
+      fields: this.fields,
+      keyword: query.search,
+    });
     return this.response.collection(await baseQuery, new OptionTransformer());
   }
 

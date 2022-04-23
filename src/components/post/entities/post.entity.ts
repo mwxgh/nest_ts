@@ -13,15 +13,31 @@ export const JoinPostAbleType = {
   categories: 'posts.categories',
 } as const;
 
-export const PostStatus = {
-  publish: 'publish',
-  pending: 'pending',
-  hide: 'hide',
+export const StatusPost = {
+  draft: 'DRAFT',
+  pending: 'PENDING',
+  publish: 'PUBLISH',
+  hide: 'HIDE',
 } as const;
 
-export const PostPriority = {
-  high: 'high',
-  normal: 'normal',
+export const PriorityPost = {
+  highest: 'HIGHEST',
+  high: 'HIGH',
+  medium: 'MEDIUM',
+  low: 'LOW',
+} as const;
+
+export const TypePost = {
+  gallery: 'GALLERY',
+  sidebar: 'SIDEBAR',
+  content: 'CONTENT',
+} as const;
+
+export const PrivacyPost = {
+  public: 'PUBLIC',
+  system: 'SYSTEM',
+  protected: 'PROTECTED',
+  private: 'PRIVATE',
 } as const;
 
 @Notifiable()
@@ -48,8 +64,14 @@ export class PostAble extends TimeStampEntity {
   @Column({ type: 'varchar' })
   priority: string;
 
-  @Column({ type: 'varchar', default: '' })
+  @Column({ type: 'varchar' })
   type: string;
+
+  @Column({ type: 'varchar' })
+  privacy: string;
+
+  @Column({ type: 'date' })
+  releaseDate: Date;
 
   @OneToMany(() => Image, (image) => image.post)
   images: Image[];

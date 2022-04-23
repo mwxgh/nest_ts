@@ -84,7 +84,7 @@ export class AdminProductController {
   @Put(':id')
   @ApiParam({ name: 'id' })
   async update(@Param() params, @Body() data: UpdateProductDto): Promise<any> {
-    await this.productService.findOrFail(params.id);
+    await this.productService.findOneOrFail(params.id);
 
     const product = await this.productService.update(params.id, data);
 
@@ -115,7 +115,7 @@ export class AdminProductController {
   @Delete(':id')
   @ApiParam({ name: 'id' })
   async remove(@Param() params): Promise<any> {
-    await this.productService.findOrFail(params.id);
+    await this.productService.findOneOrFail(params.id);
 
     await this.productService.destroy(params.id);
 

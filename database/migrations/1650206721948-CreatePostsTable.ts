@@ -48,8 +48,16 @@ export class CreatePostsTable1650206721948 implements MigrationInterface {
           },
           {
             name: 'type',
-            default: "''",
             type: 'varchar',
+          },
+          {
+            name: 'privacy',
+            type: 'varchar',
+          },
+          {
+            name: 'releaseDate',
+            isNullable: true,
+            type: 'datetime',
           },
           {
             name: 'deletedAt',

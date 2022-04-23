@@ -101,6 +101,14 @@ export class BaseService {
     return this.repository.findOne(id, options);
   }
 
+  async findIdInOrFail(ids: string[]): Promise<any> {
+    const items = await this.repository.findByIds(ids);
+    if (!items) {
+      throw new BadRequestException('Resource not found');
+    }
+    return items;
+  }
+
   /**
    * Get all items record or throw error if not any
    * @returns entity | error
@@ -108,11 +116,10 @@ export class BaseService {
   async findAllOrFail() {
     const items = await this.repository.find();
 
-    if (items) {
-      return items;
-    } else {
+    if (!items) {
       throw new BadRequestException('Resource not found');
     }
+    return items;
   }
 
   /**
@@ -122,13 +129,12 @@ export class BaseService {
    *
    * @returns entity | error
    */
-  async findOrFail(id: string | number): Promise<any> {
+  async findOneOrFail(id: string | number): Promise<any> {
     const item = await this.repository.findOne(id);
-    if (item) {
-      return item;
-    } else {
+    if (!item) {
       throw new BadRequestException('Resource not found');
     }
+    return item;
   }
 
   /**
@@ -269,16 +275,21 @@ export class BaseService {
   /**
    * Create query builder with search field in entity
    *
-   * @param entity string
-   * @param keyword string | null
-   * @param fields string[] | null
+   * @params {
+   *        entity string,
+   *        fields string[] | null,
+   *        keyword string | null
+   *        }
    */
-  async queryBuilder(
-    entity: string,
-    fields?: string[],
-    keyword?: string | '',
-  ): Promise<any> {
+  async queryBuilder(params: {
+    entity: string;
+    fields?: string[];
+    keyword?: string | '';
+  }): Promise<any> {
+    const { entity, fields, keyword } = params;
+
     let baseQuery = this.repository.createQueryBuilder(`${entity}`);
+
     if (keyword && keyword !== '' && fields) {
       for (const field of fields) {
         baseQuery = baseQuery.where(`${entity}.${field}  LIKE :keyword`, {
@@ -286,6 +297,7 @@ export class BaseService {
         });
       }
     }
+
     return baseQuery;
   }
 

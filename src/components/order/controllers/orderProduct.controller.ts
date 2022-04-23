@@ -24,7 +24,7 @@ export class OrderProductController {
 
   @Post()
   async create(@Body() data: CreateOrderProductDto): Promise<any> {
-    await this.orderService.findOrFail(data.orderId);
+    await this.orderService.findOneOrFail(data.orderId);
 
     let total = 0;
 
@@ -50,7 +50,7 @@ export class OrderProductController {
 
   @Put()
   async update(@Body() data: UpdateOrderProductDto): Promise<any> {
-    await this.orderService.findOrFail(data.orderId);
+    await this.orderService.findOneOrFail(data.orderId);
 
     const list_order = await getCustomRepository(OrderProductRepository)
       .createQueryBuilder('orderProducts')
@@ -87,7 +87,7 @@ export class OrderProductController {
   @Delete(':id')
   @ApiParam({ name: 'id' })
   async destroy(@Param() params: any): Promise<any> {
-    const record = await this.orderProductService.findOrFail(params.id);
+    const record = await this.orderProductService.findOneOrFail(params.id);
 
     const order = await this.orderService.find(record.orderId);
 

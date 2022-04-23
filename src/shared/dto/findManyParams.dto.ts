@@ -1,13 +1,19 @@
-import { IsString, IsOptional, Min, IsNumber } from 'class-validator';
+import { IsString, IsOptional, Min, IsNumber, IsEnum } from 'class-validator';
 import { Type } from 'class-transformer';
-import { ApiProperty, OmitType, PickType } from '@nestjs/swagger';
+import {
+  ApiProperty,
+  IntersectionType,
+  OmitType,
+  PickType,
+} from '@nestjs/swagger';
+import {
+  PriorityPost,
+  PrivacyPost,
+  StatusPost,
+  TypePost,
+} from 'src/components/post/entities/post.entity';
 
 export class QueryProperties {
-  @ApiProperty()
-  @IsOptional()
-  @IsString()
-  search: string;
-
   @ApiProperty()
   @IsOptional()
   @Min(0)
@@ -25,11 +31,38 @@ export class QueryProperties {
   @ApiProperty()
   @IsOptional()
   @IsString()
+  search: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsString()
   includes: string;
 
   @ApiProperty()
   @IsOptional()
   filters: { [key: string]: string };
+}
+
+export class QueryPostProperties {
+  @ApiProperty()
+  @IsOptional()
+  @IsEnum(PrivacyPost)
+  privacy: string;
+
+  @ApiProperty()
+  @IsEnum(StatusPost)
+  @IsOptional()
+  status: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsEnum(PriorityPost)
+  priority: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsEnum(TypePost)
+  type: string;
 }
 
 export class QueryPaginateDto extends OmitType(QueryProperties, [] as const) {}
@@ -40,4 +73,12 @@ export class QueryListDto extends PickType(QueryProperties, [
   'filters',
 ] as const) {}
 
-// @IsEnum(OrderStatus)
+export class QueryPostPaginateDto extends IntersectionType(
+  QueryPaginateDto,
+  QueryPostProperties,
+) {}
+
+export class QueryPostListDto extends IntersectionType(
+  QueryListDto,
+  QueryPostProperties,
+) {}

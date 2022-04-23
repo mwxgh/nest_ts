@@ -43,7 +43,7 @@ export class ImageController {
   @Put(':id')
   @ApiParam({ name: 'id' })
   async update(@Param() params, @Body() data: UpdateImageDto): Promise<any> {
-    await this.imageService.findOrFail(params.id);
+    await this.imageService.findOneOrFail(params.id);
 
     await this.imageService.update(params.id, data);
 
@@ -53,7 +53,7 @@ export class ImageController {
   @Delete(':id')
   @ApiParam({ name: 'id' })
   async remove(@Param() params): Promise<any> {
-    await this.imageService.findOrFail(params.id);
+    await this.imageService.findOneOrFail(params.id);
 
     await this.imageService.destroy(params.id);
 

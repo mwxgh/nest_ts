@@ -43,9 +43,9 @@ export class CartItemController {
       return this.response.success();
     }
 
-    await this.cartItemService.findOrFail(id);
+    await this.cartItemService.findOneOrFail(id);
 
-    const product = await this.productService.findOrFail(body.productId);
+    const product = await this.productService.findOneOrFail(body.productId);
 
     const update_data = {
       quantity: `${body.quantity}`,
@@ -59,7 +59,7 @@ export class CartItemController {
 
   @Delete(':id')
   async destroy(@Param('id') id: string): Promise<any> {
-    await this.cartItemService.findOrFail(id);
+    await this.cartItemService.findOneOrFail(id);
 
     await this.cartItemService.destroy(Number(id));
 
@@ -68,9 +68,9 @@ export class CartItemController {
 
   @Post()
   async store(@Body() body: CreateCartItemDto): Promise<any> {
-    const productExist = await this.productService.findOrFail(body.productId);
+    const productExist = await this.productService.findOneOrFail(body.productId);
 
-    const cartExist = await this.cartService.findOrFail(body.cartId);
+    const cartExist = await this.cartService.findOneOrFail(body.cartId);
 
     const data_check_cart_item = {
       productId: productExist.id,

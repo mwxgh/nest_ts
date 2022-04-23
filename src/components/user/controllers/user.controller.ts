@@ -68,11 +68,11 @@ export class UserController {
 
     const keyword = request.search;
 
-    let baseQuery = await this.userService.queryBuilder(
-      this.entity,
-      this.fields,
+    let baseQuery = await this.userService.queryBuilder({
+      entity: this.entity,
+      fields: this.fields,
       keyword,
-    );
+    });
 
     const userRoles = map(user.roles, (r) => r.slug);
 
@@ -116,7 +116,7 @@ export class UserController {
     @Param('id', ParseIntPipe) id: number,
     @Body() data: AdminUpdateUserDto,
   ): Promise<any> {
-    const user = await this.userService.findOrFail(id);
+    const user = await this.userService.findOneOrFail(id);
 
     await this.userService.update(user.id, {
       password: this.userService.hashPassword(data.password),
@@ -135,7 +135,7 @@ export class UserController {
   @Post(':id/sendVerifyLink')
   @Auth('admin')
   async sendVerifyLink(@Param('id', ParseIntPipe) id: number): Promise<any> {
-    const user = await this.userService.findOrFail(id);
+    const user = await this.userService.findOneOrFail(id);
 
     await this.userService.generateVerifyToken(user.id);
 
@@ -216,7 +216,7 @@ export class UserController {
     @Body() data: UserSendMailReportDto,
     @Param('id', ParseIntPipe) id: number,
   ): Promise<any> {
-    const user = await this.userService.findOrFail(id);
+    const user = await this.userService.findOneOrFail(id);
 
     this.notificationService.send(
       user,

@@ -14,7 +14,7 @@ export class TagService extends BaseService {
   }
 
   async queryTag(entity: string, fields?: string[], keyword?: string | '') {
-    const baseQuery = await this.queryBuilder(entity, fields, keyword);
+    const baseQuery = await this.queryBuilder({ entity, fields, keyword });
 
     const tagQuery = baseQuery
       .leftJoinAndSelect('tags.tagAbles', 'tagAbles')
