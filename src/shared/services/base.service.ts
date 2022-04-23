@@ -272,7 +272,7 @@ export class BaseService {
     entity: string;
     fields?: string[];
     keyword?: string | '';
-  }): Promise<any> {
+  }): Promise<SelectQueryBuilder<any>> {
     const { entity, fields, keyword } = params;
 
     let baseQuery = this.repository.createQueryBuilder(`${entity}`);

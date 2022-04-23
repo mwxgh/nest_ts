@@ -88,7 +88,9 @@ export class RoleController {
       keyword: query.search,
     });
 
-    return this.response.collection(await baseQuery, new RoleTransformer([]));
+    const roles = await baseQuery.getMany();
+
+    return this.response.collection(roles, new RoleTransformer([]));
   }
 
   @Get(':id')

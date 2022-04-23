@@ -55,9 +55,9 @@ export class ContactController {
       keyword: query.search,
     });
 
-    const contact = await this.contactService.paginate(baseQuery, params);
+    const contacts = await this.contactService.paginate(baseQuery, params);
 
-    return this.response.paginate(contact, new ContactTransformer());
+    return this.response.paginate(contacts, new ContactTransformer());
   }
 
   @Get('listQuery')
@@ -68,7 +68,9 @@ export class ContactController {
       keyword: query.search,
     });
 
-    return this.response.collection(await baseQuery, new ContactTransformer());
+    const contacts = await baseQuery.getMany();
+
+    return this.response.collection(contacts, new ContactTransformer());
   }
 
   @Get('list')

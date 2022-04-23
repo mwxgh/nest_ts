@@ -70,9 +70,9 @@ export class OptionController {
       keyword: query.search,
     });
 
-    const option = await this.optionService.paginate(baseQuery, params);
+    const options = await this.optionService.paginate(baseQuery, params);
 
-    return this.response.paginate(option, new OptionTransformer());
+    return this.response.paginate(options, new OptionTransformer());
   }
 
   @Get('listQuery')
@@ -86,7 +86,10 @@ export class OptionController {
       fields: this.fields,
       keyword: query.search,
     });
-    return this.response.collection(await baseQuery, new OptionTransformer());
+
+    const options = await baseQuery.getMany();
+
+    return this.response.collection(options, new OptionTransformer());
   }
 
   @Get(':key')

@@ -162,10 +162,9 @@ export class PostController {
         entity: 'tagAbles',
       });
 
-      const expireTagAbles = await queryTagAble.andWhere(
-        'tagAbles.tagId IN (:tagIds)',
-        { tagIds: detachTagIds },
-      );
+      const expireTagAbles = await queryTagAble
+        .andWhere('tagAbles.tagId IN (:tagIds)', { tagIds: detachTagIds })
+        .getMany();
 
       for (const expireTagAble of expireTagAbles) {
         await this.tagAbleService.destroy(expireTagAble.id);
@@ -206,10 +205,11 @@ export class PostController {
         entity: 'categoryAbles',
       });
 
-      const expireCategoryAbles = await queryCategoryAble.andWhere(
-        'categoryAbles.categoryAbleId IN (:categoryAbleIds)',
-        { categoryAbleIds: detachCategoryIds },
-      );
+      const expireCategoryAbles = await queryCategoryAble
+        .andWhere('categoryAbles.categoryAbleId IN (:categoryAbleIds)', {
+          categoryAbleIds: detachCategoryIds,
+        })
+        .getMany();
 
       for (const expireCategoryAble of expireCategoryAbles) {
         await this.categoryAbleService.destroy(expireCategoryAble.id);

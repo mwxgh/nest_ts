@@ -88,10 +88,9 @@ export class PermissionController {
       keyword: query.search,
     });
 
-    return this.response.collection(
-      await baseQuery,
-      new PermissionTransformer(),
-    );
+    const permissions = await baseQuery.getMany();
+
+    return this.response.collection(permissions, new PermissionTransformer());
   }
 
   @Get(':id')
