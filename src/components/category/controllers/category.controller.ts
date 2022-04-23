@@ -19,10 +19,7 @@ import {
 } from '@nestjs/swagger';
 
 import { IPaginationOptions } from 'src/shared/services/pagination';
-import {
-  QueryListDto,
-  QueryPaginateDto,
-} from 'src/shared/dto/findManyParams.dto';
+import { QueryListDto, QueryPaginateDto } from 'src/shared/dto/queryParams.dto';
 import { CreateCategoryDto, UpdateCategoryDto } from '../dto/category.dto';
 import { CategoryService } from '../services/category.service';
 import { CategoryTransformer } from '../transformers/category.transformer';
@@ -99,7 +96,7 @@ export class CategoryController {
   @ApiOperation({ summary: 'Get category by id' })
   @ApiOkResponse({ description: 'Category entity' })
   async show(@Param('id', ParseIntPipe) id: number): Promise<any> {
-    const category = await this.categoryService.findOneOrFail(id);
+    const category = await this.categoryService.findOrFail(id);
 
     return this.response.item(category, new CategoryTransformer());
   }
@@ -122,7 +119,7 @@ export class CategoryController {
     @Param('id', ParseIntPipe) id: number,
     @Body() data: UpdateCategoryDto,
   ): Promise<any> {
-    await this.categoryService.findOneOrFail(id);
+    await this.categoryService.findOrFail(id);
 
     await this.categoryService.update(id, data);
 
@@ -134,7 +131,7 @@ export class CategoryController {
   @ApiOperation({ summary: 'Admin delete category by id' })
   @ApiOkResponse({ description: 'Delete category successfully' })
   async deleteCategory(@Param('id', ParseIntPipe) id: number): Promise<any> {
-    await this.categoryService.findOneOrFail(id);
+    await this.categoryService.findOrFail(id);
 
     await this.categoryService.destroy(id);
 

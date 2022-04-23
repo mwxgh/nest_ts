@@ -32,13 +32,13 @@ export class CategoryService extends BaseService {
 
     if (include.includes('products')) {
       baseQuery = baseQuery.where(`${entity}.categoryType = :type`, {
-        type: CategoryAbleType.PRODUCT,
+        type: CategoryAbleType.product,
       });
     }
 
     if (include.includes('posts')) {
       baseQuery = baseQuery.where(`${entity}.categoryType = :type`, {
-        type: CategoryAbleType.POST,
+        type: CategoryAbleType.post,
       });
     }
     return baseQuery;

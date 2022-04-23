@@ -1,4 +1,4 @@
-import { QueryPaginateDto } from '../dto/findManyParams.dto';
+import { QueryPaginateDto } from '../dto/queryParams.dto';
 import { IPaginationOptions } from '../services/pagination';
 
 export const defaultPaginationOption = (

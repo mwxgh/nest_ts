@@ -2,7 +2,6 @@ import {
   Controller,
   Get,
   UseGuards,
-  Req,
   Body,
   Put,
   BadRequestException,
@@ -42,7 +41,7 @@ export class ProfileController {
   @ApiOperation({ summary: 'Get profile current user' })
   @ApiOkResponse({ description: 'Profile current user' })
   async profile(@AuthenticatedUser() currentUser: User): Promise<any> {
-    const user = await this.userService.find(currentUser.id, {
+    const user = await this.userService.findOrFail(currentUser.id, {
       relations: ['roles'],
     });
 

@@ -27,10 +27,7 @@ import {
   CreateCategoryDto,
   UpdateCategoryDto,
 } from 'src/components/category/dto/category.dto';
-import {
-  QueryListDto,
-  QueryPaginateDto,
-} from 'src/shared/dto/findManyParams.dto';
+import { QueryListDto, QueryPaginateDto } from 'src/shared/dto/queryParams.dto';
 import { JwtAuthGuard } from '../../guards/jwtAuth.guard';
 
 @ApiTags('Roles')
@@ -99,7 +96,7 @@ export class RoleController {
   @ApiOperation({ summary: 'Admin get role by id' })
   @ApiOkResponse({ description: 'Role entity' })
   async show(@Param('id', ParseIntPipe) id: number): Promise<any> {
-    const role = await this.roleService.find(id, {
+    const role = await this.roleService.findOrFail(id, {
       relations: ['permissions'],
     });
 

@@ -25,8 +25,4 @@ export class TagAbleService extends BaseService {
       updatedAt: new Date(),
     });
   }
-
-  async destroyTagAble(data: any) {
-    return await this.tagAbleRepository.delete(data);
-  }
 }

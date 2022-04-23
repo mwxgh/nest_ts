@@ -54,9 +54,6 @@ export class PostProperties {
   @IsNotEmpty()
   @IsArray()
   url: [];
-
-  @ApiProperty({ default: new Date() })
-  createdAt: Date;
 }
 
 export class CreatPostDto extends OmitType(PostProperties, [] as const) {}

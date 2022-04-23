@@ -5,10 +5,10 @@ import { Category } from './category.entity';
 import { PostAble } from '../../post/entities/post.entity';
 import { TimeStampEntity } from '../../base.entity';
 
-export enum CategoryAbleType {
-  PRODUCT = 'products',
-  POST = 'posts',
-}
+export const CategoryAbleType = {
+  product: 'PRODUCT',
+  post: 'POST',
+} as const;
 
 @Notifiable()
 @Entity({ name: 'categoryAble' })

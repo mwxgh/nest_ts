@@ -24,15 +24,20 @@ import { TagAbleService } from 'src/components/tag/services/tagAble.service';
 import { TagName } from 'src/components/tag/entities/tag.entity';
 import { Category } from 'src/components/category/entities/category.entity';
 import { CategoryAbleService } from 'src/components/category/services/categoryAble.service';
-import { TagAble } from '../../tag/entities/tagAble.entity';
-import { CategoryAble } from '../../category/entities/categoryAble.entity';
+import { TagAble, TagAbleType } from '../../tag/entities/tagAble.entity';
+import {
+  CategoryAble,
+  CategoryAbleType,
+} from '../../category/entities/categoryAble.entity';
 import * as _ from 'lodash';
 import {
+  QueryOneDto,
   QueryPostListDto,
   QueryPostPaginateDto,
-} from 'src/shared/dto/findManyParams.dto';
+} from 'src/shared/dto/queryParams.dto';
 import { TagService } from 'src/components/tag/services/tag.service';
 import { CategoryService } from 'src/components/category/services/category.service';
+import { Auth } from 'src/components/auth/decorators/auth.decorator';
 @ApiTags('Posts')
 @ApiHeader({
   name: 'Content-Type',
@@ -42,7 +47,7 @@ import { CategoryService } from 'src/components/category/services/category.servi
 export class PostController {
   constructor(
     private connection: Connection,
-    private post: PostService,
+    private postService: PostService,
     private tagAbleService: TagAbleService,
     private tagService: TagService,
     private response: ApiResponseService,
@@ -63,7 +68,7 @@ export class PostController {
 
     const { search, includes, privacy, status, priority, type } = query;
 
-    const baseQuery = await this.post.queryPost({
+    const baseQuery = await this.postService.queryPost({
       entity: this.entity,
       fields: this.fields,
       keyword: search,
@@ -76,7 +81,7 @@ export class PostController {
 
     const posts = await baseQuery.getMany();
 
-    const paginate = await this.post.paginate(posts, params);
+    const paginate = await this.postService.paginate(posts, params);
 
     return this.response.paginate(paginate, new PostTransformer());
   }
@@ -85,7 +90,7 @@ export class PostController {
   async list(@Query() query: QueryPostListDto): Promise<any> {
     const { search, includes, privacy, status, priority, type } = query;
 
-    const baseQuery = await this.post.queryPost({
+    const baseQuery = await this.postService.queryPost({
       entity: this.entity,
       fields: this.fields,
       keyword: search,
@@ -103,11 +108,11 @@ export class PostController {
   @Get(':id')
   async show(
     @Param('id', ParseIntPipe) id: number,
-    @Query() query: any,
+    @Query() query: QueryOneDto,
   ): Promise<any> {
     const { includes } = query;
 
-    const baseQuery = await this.post.queryPost({
+    const baseQuery = await this.postService.queryPost({
       entity: this.entity,
       includes,
     });
@@ -122,225 +127,199 @@ export class PostController {
   }
 
   @Put(':id')
-  async update(
+  @Auth('admin')
+  async updatePost(
     @Param('id', ParseIntPipe) id: number,
     @Body() data: UpdatePostDto,
   ): Promise<any> {
-    const data_tagAble_current = await getRepository(TagAble)
+    const currentPost = await this.postService.findOrFail(id);
+
+    const currentTagsAble = await getRepository(TagAble)
       .createQueryBuilder('tagAbles')
       .where('tagAbles.tagAbleId = :tagAbleId', { tagAbleId: Number(id) })
       .andWhere('tagAbles.tagAbleType = :tagAbleType', {
-        tagAbleType: 'posts',
+        tagAbleType: TagAbleType.post,
       })
       .getMany();
 
-    if (!data_tagAble_current) throw new NotFoundException('TagAble');
+    if (currentTagsAble.length > 0) {
+      const currentTagAbleIds = currentTagsAble.map(
+        (currentTagAble: any) => currentTagAble.id,
+      );
 
-    const tag_id_search = data_tagAble_current.map(
-      (data_tagAble_element: any) => data_tagAble_element.id,
-    );
+      await this.tagAbleService.destroy(currentTagAbleIds);
+    }
 
-    if (!tag_id_search) throw new NotFoundException('Search tag');
+    const updateTags = await this.tagService.findIdInOrFail(data.tagIds);
+    if (updateTags.length > 0) {
+      const tags = updateTags.map((updateTag: any) => ({
+        name: updateTag.name,
+        tagId: updateTag.id,
+        tagAbleId: Number(id),
+        tagAbleType: TagAbleType.post,
+        status: updateTag.status,
+      }));
 
-    await this.tagAbleService.destroyTagAble(tag_id_search);
-    const data_tag_put = await getManager()
-      .createQueryBuilder(TagName, 'tags')
-      .whereInIds(data.tagIds)
-      .getMany();
+      await this.tagAbleService.store(tags);
+    }
 
-    const data_tags = data_tag_put.map((data_tag_element: any) => ({
-      name: data_tag_element.name,
-      tag_id: data_tag_element.id,
-      tagable_id: Number(id),
-      tagable_type: 'posts',
-      status: data_tag_element.status,
-    }));
-
-    if (!data_tags) throw new NotFoundException('Update data tag');
-
-    await this.tagAbleService.store(data_tags);
-    const data_categoriable_current = await getRepository(CategoryAble)
+    const currentCategoriesAble = await getRepository(CategoryAble)
       .createQueryBuilder('categoryAble')
       .where('categoryAble.categoryAbleId = :categoryAbleId', {
         categoryAbleId: Number(id),
       })
       .andWhere('categoryAble.categoryAbleType = :categoryAbleType', {
-        categoryAbleType: 'posts',
+        categoryAbleType: CategoryAbleType.post,
       })
       .getMany();
 
-    if (!data_categoriable_current) throw new NotFoundException('CategoryAble');
+    if (currentCategoriesAble.length > 0) {
+      const currentCategoryAbleIds = currentCategoriesAble.map(
+        (currentCategoryAble: any) => currentCategoryAble.id,
+      );
 
-    const categories_id_search = data_categoriable_current.map(
-      (data_category_element: any) => data_category_element.id,
+      await this.categoryAbleService.destroy(currentCategoryAbleIds);
+    }
+
+    const updateCategories = await this.categoryService.findIdInOrFail(
+      data.categoryIds,
     );
 
-    if (!categories_id_search) throw new NotFoundException('Search categories');
-
-    await this.categoryAbleService.destroyCategories(categories_id_search);
-
-    const data_categories_put = await getManager()
-      .createQueryBuilder(Category, 'categories')
-      .whereInIds(data.categoryIds)
-      .getMany();
-
-    const data_categories = data_categories_put.map(
-      (data_category_element: any) => ({
-        categoryId: data_category_element.id,
+    if (updateCategories.length > 0) {
+      const categories = updateCategories.map((updateCategory: any) => ({
+        categoryId: updateCategory.id,
         categoryAbleId: Number(id),
-        categoryAbleType: 'posts',
-      }),
-    );
-    if (!data_categories) throw new NotFoundException('Update data categories');
+        categoryAbleType: CategoryAbleType.post,
+      }));
 
-    await this.categoryAbleService.store(data_categories);
+      await this.categoryAbleService.store(categories);
+    }
 
-    const data_post_update = await getRepository(PostAble)
-      .createQueryBuilder('posts')
-      .where('posts.id = :id', { id: Number(id) })
-      .getOne();
-
-    if (!data_post_update) throw new NotFoundException('Update data post');
-
-    const dataChange = _.assign(data, { slug: slugify(data.title) });
-    const count_data = {
-      title: data.title,
-      type: data.type,
-      slug: dataChange.slug,
-    };
+    const dataSlugify = _.assign(data, { slug: slugify(data.title) });
 
     const count = await getManager()
       .createQueryBuilder(PostAble, 'posts')
       .where(
         'posts.title = :title AND posts.type = :type AND posts.slug = :slug ',
-        count_data,
+        {
+          title: data.title,
+          type: data.type,
+          slug: dataSlugify.slug,
+        },
       )
       .getCount();
 
-    if (
-      data_post_update.title === data.title &&
-      data_post_update.type === data.type
-    ) {
-      delete dataChange.slug;
+    if (currentPost.title === data.title && currentPost.type === data.type) {
+      delete dataSlugify.slug;
     } else if (count) {
-      dataChange.slug = `${dataChange.slug}-${count}`;
+      dataSlugify.slug = `${dataSlugify.slug}-${count}`;
     }
-    delete dataChange.categoryIds;
-    delete dataChange.tagIds;
-    delete dataChange.url;
-    delete dataChange.createdAt;
-    await this.post.update(Number(id), dataChange);
+
+    delete dataSlugify.url;
+
+    await this.postService.update(Number(id), dataSlugify);
 
     return this.response.success();
   }
 
   @Delete(':id')
   async destroy(@Param('id', ParseIntPipe) id: number): Promise<any> {
-    const check_data_tagable = await getRepository(TagAble)
+    const currentPost = await this.postService.findOrFail(id);
+
+    await this.postService.destroy(currentPost.id);
+
+    const currentTagAbles = await getRepository(TagAble)
       .createQueryBuilder('tagAbles')
       .where('tagAbles.tagAbleId = :tagAbleId', { tagAbleId: Number(id) })
       .andWhere('tagAbles.tagAbleType = :tagAbleType', {
-        tagAbleType: 'posts',
+        tagAbleType: TagAbleType.post,
       })
       .getMany();
 
-    if (!check_data_tagable) throw new NotFoundException('TagAble');
+    if (currentTagAbles.length > 0) {
+      const currentTagAbleIds = currentTagAbles.map(
+        (currentTagAble) => currentTagAble.id,
+      );
 
-    const check_tagable_id_array = check_data_tagable.map(
-      (check_data_tagable_element: any) => check_data_tagable_element.id,
-    );
+      await this.tagAbleService.destroy(currentTagAbleIds);
+    }
 
-    if (!check_tagable_id_array) throw new NotFoundException('Array tagable');
-
-    await this.tagAbleService.destroyTagAble(check_tagable_id_array);
-
-    const check_data_categoriesable = await getRepository(CategoryAble)
+    const currentCategoryAbles = await getRepository(CategoryAble)
       .createQueryBuilder('categoryAble')
-      .where('categoryAble.categoryAbleId= :categoryAbleId', {
+      .where('categoryAble.categoryAbleId = :categoryAbleId', {
         categoryAbleId: Number(id),
       })
-      .andWhere('categoryAble.categoryAbleType= :categoryAbleType', {
-        categoryAbleType: 'posts',
+      .andWhere('categoryAble.categoryAbleType = :categoryAbleType', {
+        categoryAbleType: CategoryAbleType.post,
       })
       .getMany();
 
-    if (!check_data_categoriesable) throw new NotFoundException('Categoriable');
+    if (currentCategoryAbles.length > 0) {
+      const currentCategoryAbleIds = currentCategoryAbles.map(
+        (currentCategoryAble) => currentCategoryAble.id,
+      );
 
-    const check_categoriable_id_array = check_data_categoriesable.map(
-      (check_data_categoriesable_element: any) =>
-        check_data_categoriesable_element.id,
-    );
+      await this.categoryAbleService.destroy(currentCategoryAbleIds);
+    }
 
-    if (!check_categoriable_id_array)
-      throw new NotFoundException('Array categories');
-
-    await this.categoryAbleService.destroyCategories(
-      check_categoriable_id_array,
-    );
-
-    const check_data_post = await getRepository(PostAble)
-      .createQueryBuilder('posts')
-      .where('posts.id = :id', { id: Number(id) })
-      .getOne();
-
-    if (!check_data_post) throw new NotFoundException('Data update post');
-    await this.post.destroyPost(check_data_post.id);
     return this.response.success();
   }
 
   @Post()
   async createPost(@Body() data: CreatPostDto): Promise<any> {
-    const check_tag = await this.tagService.findIdInOrFail(data.tagIds);
+    const tagsAvailable = await this.tagService.findIdInOrFail(data.tagIds);
 
-    const check_category = await this.categoryService.findIdInOrFail(
+    const categoriesAvailable = await this.categoryService.findIdInOrFail(
       data.categoryIds,
     );
 
-    const count_data = {
-      title: data.title,
-      type: data.type,
-    };
-
-    const count = await getManager()
+    const similarPosts = await getManager()
       .createQueryBuilder(PostAble, 'posts')
-      .where('posts.title = :title AND posts.type = :type ', count_data)
+      .where('posts.title = :title AND posts.type = :type ', {
+        title: data.title,
+        type: data.type,
+      })
       .getCount();
 
-    const dataChange = _.assign(data, { slug: slugify(data.title) });
+    const dataSlugify = _.assign(data, { slug: slugify(data.title) });
 
-    if (count) dataChange.slug = `${dataChange.slug}-${count}`;
+    if (similarPosts) dataSlugify.slug = `${dataSlugify.slug}-${similarPosts}`;
 
-    const data2 = { ...dataChange };
+    const newPost = await this.postService.store(dataSlugify);
 
-    delete data.url;
-
-    const create_data = await this.post.store(dataChange);
-
-    const data_tags = check_tag.map((tag: any) => ({
+    const tagAbleData = tagsAvailable.map((tag: any) => ({
       name: tag.name,
       tagId: tag.id,
-      tagAbleId: create_data.id,
-      tagableType: 'posts',
+      tagAbleId: newPost.id,
+      tagAbleType: TagAbleType.post,
       status: tag.status,
     }));
-    const data_categories = check_category.map((category: any) => ({
+
+    const categoryAbleDate = categoriesAvailable.map((category: any) => ({
       categoryId: category.id,
-      categoryAbleId: create_data.id,
-      categoryAbleType: 'posts',
+      categoryAbleId: newPost.id,
+      categoryAbleType: CategoryAbleType.post,
     }));
 
-    await this.tagAbleService.store(data_tags);
-    await this.categoryAbleService.store(data_categories);
+    await this.tagAbleService.store(tagAbleData);
+
+    await this.categoryAbleService.store(categoryAbleDate);
+
+    const data2 = { ...dataSlugify };
+
+    delete data.url;
 
     data2.url.map(async (i) => {
       const data1 = {
         imageAbleType: 'posts',
         url: i['url'],
         isThumbnail: false,
-        imageAbleId: create_data.id,
+        imageAbleId: newPost.id,
       };
+
       return await this.image.create(data1);
     });
-    return this.response.item(create_data, new PostTransformer());
+
+    return this.response.item(newPost, new PostTransformer());
   }
 }

@@ -94,11 +94,11 @@ export class BaseService {
    * @param id string | number
    * @param options relations
    */
-  async find(
+  async findOrFail(
     id: string | number,
     options?: { relations: string[] },
   ): Promise<any> {
-    return this.repository.findOne(id, options);
+    return this.repository.findOneOrFail(id, options);
   }
 
   async findIdInOrFail(ids: string[]): Promise<any> {
@@ -120,21 +120,6 @@ export class BaseService {
       throw new BadRequestException('Resource not found');
     }
     return items;
-  }
-
-  /**
-   * Get the item record matching the attributes or throw error
-   *
-   * @param id
-   *
-   * @returns entity | error
-   */
-  async findOneOrFail(id: string | number): Promise<any> {
-    const item = await this.repository.findOne(id);
-    if (!item) {
-      throw new BadRequestException('Resource not found');
-    }
-    return item;
   }
 
   /**
@@ -266,10 +251,12 @@ export class BaseService {
   /**
    * Destroy the models for the given ID
    *
-   * @param id Number | String
+   * @param criteria string | string[] | number | number[]
    */
-  async destroy(id: number | string): Promise<void> {
-    await this.repository.delete(id);
+  async destroy(
+    criteria: string | string[] | number | number[],
+  ): Promise<void> {
+    await this.repository.delete(criteria);
   }
 
   /**

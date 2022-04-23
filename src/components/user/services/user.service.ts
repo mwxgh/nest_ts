@@ -74,7 +74,7 @@ export class UserService extends BaseService {
     userId: number | string,
     roleId: number | string,
   ): Promise<any> {
-    const role = await this.roleService.findOneOrFail(roleId);
+    const role = await this.roleService.findOrFail(roleId);
 
     const user = await this.repository.findOneOrFail(userId);
 
@@ -95,7 +95,7 @@ export class UserService extends BaseService {
     userId: number | string,
     roleId: number | string,
   ): Promise<any> {
-    const role = await this.roleService.findOneOrFail(roleId);
+    const role = await this.roleService.findOrFail(roleId);
 
     const user = await this.repository.findOneOrFail(userId);
 

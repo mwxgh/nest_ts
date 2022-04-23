@@ -15,7 +15,8 @@ export class JwtService {
   async verify(token: string, isWs = false): Promise<User | null> {
     try {
       const payload = <any>jwt.verify(token, this.configService.get('APP_KEY'));
-      const user = await this.userService.find(payload.id);
+
+      const user = await this.userService.findOrFail(payload.id);
 
       if (!user) {
         if (isWs) {

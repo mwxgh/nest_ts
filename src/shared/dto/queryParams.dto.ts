@@ -73,6 +73,10 @@ export class QueryListDto extends PickType(QueryProperties, [
   'filters',
 ] as const) {}
 
+export class QueryOneDto extends PickType(QueryProperties, [
+  'includes',
+] as const) {}
+
 export class QueryPostPaginateDto extends IntersectionType(
   QueryPaginateDto,
   QueryPostProperties,

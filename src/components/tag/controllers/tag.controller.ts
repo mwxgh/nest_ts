@@ -19,10 +19,7 @@ import {
 } from '@nestjs/swagger';
 import { Auth } from 'src/components/auth/decorators/auth.decorator';
 import { JwtAuthGuard } from 'src/components/auth/guards/jwtAuth.guard';
-import {
-  QueryListDto,
-  QueryPaginateDto,
-} from 'src/shared/dto/findManyParams.dto';
+import { QueryListDto, QueryPaginateDto } from 'src/shared/dto/queryParams.dto';
 import { ApiResponseService } from 'src/shared/services/apiResponse/apiResponse.service';
 import { IPaginationOptions } from 'src/shared/services/pagination';
 import { CreateTagDto, UpdateTagDto } from '../dto/tag.dto';
@@ -122,7 +119,7 @@ export class TagController {
     @Param('id', ParseIntPipe) id: number,
     @Body() data: UpdateTagDto,
   ): Promise<any> {
-    await this.tagService.findOneOrFail(id);
+    await this.tagService.findOrFail(id);
 
     await this.tagService.update(id, { ...data, updatedAt: new Date() });
 
@@ -134,7 +131,7 @@ export class TagController {
   @ApiOperation({ summary: 'Admin delete tag by id' })
   @ApiOkResponse({ description: 'Delete tag successfully' })
   async deleteTag(@Param('id', ParseIntPipe) id: number): Promise<any> {
-    await this.tagService.findOneOrFail(id);
+    await this.tagService.findOrFail(id);
 
     await this.tagService.destroy(id);
 

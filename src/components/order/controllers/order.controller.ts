@@ -32,7 +32,7 @@ export class OrderController {
   @Put(':id')
   @ApiParam({ name: 'id' })
   async update(@Param() params, @Body() data: UpdateOrderDto): Promise<any> {
-    await this.orderService.findOneOrFail(params.id);
+    await this.orderService.findOrFail(params.id);
 
     await this.orderService.update(params.id, data);
 

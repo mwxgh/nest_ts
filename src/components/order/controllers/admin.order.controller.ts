@@ -66,7 +66,7 @@ export class AdminOrderController {
   @Put(':id')
   @ApiParam({ name: 'id' })
   async update(@Param() params, @Body() data: UpdateOrderDto): Promise<any> {
-    await this.orderService.findOneOrFail(params.id);
+    await this.orderService.findOrFail(params.id);
 
     await this.orderService.update(params.id, data);
 
@@ -76,7 +76,7 @@ export class AdminOrderController {
   @Delete(':id')
   @ApiParam({ name: 'id' })
   async remove(@Param() params): Promise<any> {
-    await this.orderService.findOneOrFail(params.id);
+    await this.orderService.findOrFail(params.id);
 
     await this.orderService.destroy(params.id);
 

@@ -42,7 +42,7 @@ export class ProductService extends BaseService {
           'products.categories',
           'categories',
           'categories.categoryAbleType = :categoryAbleType',
-          { categoryAbleType: CategoryAbleType.PRODUCT },
+          { categoryAbleType: CategoryAbleType.product },
         );
         query_builder.leftJoinAndSelect('categories.category', 'category');
       }
@@ -82,7 +82,7 @@ export class ProductService extends BaseService {
       const cate = {
         categoryId: data.categoryId,
         categoryAbleId: product.id,
-        categoryAbleType: CategoryAbleType.PRODUCT,
+        categoryAbleType: CategoryAbleType.product,
       };
       await this.repository.save(cate);
     }

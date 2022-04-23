@@ -22,7 +22,7 @@ import { VerifyUserNotification } from '../notifications/verifyUser.notification
 import { UserPasswordChangedNotification } from '../notifications/userPasswordChanged.notification';
 import { InviteUserService } from '../services/inviteUser.service';
 import { SendInviteUserLinkNotification } from '../../auth/notifications/sendInviteUserLink.notification';
-import { QueryPaginateDto } from '../../../shared/dto/findManyParams.dto';
+import { QueryPaginateDto } from '../../../shared/dto/queryParams.dto';
 import { Request } from 'express';
 import { UserSendMailReportNotification } from '../notifications/userSendEmailReport.notification';
 import { AuthenticatedUser } from '../../auth/decorators/authenticatedUser.decorator';
@@ -95,7 +95,9 @@ export class UserController {
   @Get(':id')
   @Auth('admin', 'user')
   async show(@Param('id', ParseIntPipe) id: number): Promise<any> {
-    const item = await this.userService.find(id, { relations: ['roles'] });
+    const item = await this.userService.findOrFail(id, {
+      relations: ['roles'],
+    });
 
     return this.response.item(item, new UserTransformer(['roles']));
   }
@@ -116,7 +118,7 @@ export class UserController {
     @Param('id', ParseIntPipe) id: number,
     @Body() data: AdminUpdateUserDto,
   ): Promise<any> {
-    const user = await this.userService.findOneOrFail(id);
+    const user = await this.userService.findOrFail(id);
 
     await this.userService.update(user.id, {
       password: this.userService.hashPassword(data.password),
@@ -135,7 +137,7 @@ export class UserController {
   @Post(':id/sendVerifyLink')
   @Auth('admin')
   async sendVerifyLink(@Param('id', ParseIntPipe) id: number): Promise<any> {
-    const user = await this.userService.findOneOrFail(id);
+    const user = await this.userService.findOrFail(id);
 
     await this.userService.generateVerifyToken(user.id);
 
@@ -216,7 +218,7 @@ export class UserController {
     @Body() data: UserSendMailReportDto,
     @Param('id', ParseIntPipe) id: number,
   ): Promise<any> {
-    const user = await this.userService.findOneOrFail(id);
+    const user = await this.userService.findOrFail(id);
 
     this.notificationService.send(
       user,

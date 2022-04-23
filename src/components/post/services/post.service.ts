@@ -14,10 +14,6 @@ export class PostService extends BaseService {
     this.repository = this.dataSource.getCustomRepository(PostRepository);
   }
 
-  async destroyPost(id: any) {
-    return this.repository.delete(id);
-  }
-
   async store(data: any): Promise<PostAble> {
     return await this.repository.save(data);
   }

@@ -18,7 +18,4 @@ export class CategoryAbleService extends BaseService {
   async store(data: any): Promise<CategoryAble> {
     return this.categoryAbleRepository.save(data);
   }
-  async destroyCategories(data: any) {
-    return await this.categoryAbleRepository.delete(data);
-  }
 }

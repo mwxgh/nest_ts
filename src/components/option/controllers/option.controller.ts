@@ -16,7 +16,6 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiParam,
-  ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 import { ApiResponseService } from 'src/shared/services/apiResponse/apiResponse.service';
@@ -30,10 +29,7 @@ import { Option } from '../entities/option.entity';
 import { CreateOptionDto, UpdateOptionDto } from '../dto/option.dto';
 import { JwtAuthGuard } from 'src/components/auth/guards/jwtAuth.guard';
 import { Auth } from 'src/components/auth/decorators/auth.decorator';
-import {
-  QueryListDto,
-  QueryPaginateDto,
-} from 'src/shared/dto/findManyParams.dto';
+import { QueryListDto, QueryPaginateDto } from 'src/shared/dto/queryParams.dto';
 import { IPaginationOptions } from 'src/shared/services/pagination';
 
 @ApiTags('Options')
