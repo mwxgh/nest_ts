@@ -9,7 +9,7 @@ import {
 import { Logger, UseGuards } from '@nestjs/common';
 import { Socket, Server } from 'socket.io';
 import { JwtService } from '../components/auth/services/jwt.service';
-import { WsAuthGuard } from './guards/ws-auth.guard';
+import { WsAuthGuard } from './guards/wsAuth.guard';
 import { User } from '../components/user/entities/user.entity';
 import { GatewayRoomNamingStrategy } from './gateway-room-naming.strategy';
 

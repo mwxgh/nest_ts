@@ -11,7 +11,7 @@ import {
   ParseIntPipe,
 } from '@nestjs/common';
 import { ApiHeader, ApiTags } from '@nestjs/swagger';
-import { Connection, getRepository, getManager, In } from 'typeorm';
+import { Connection, getRepository, getManager } from 'typeorm';
 import { PostAble } from '../entities/post.entity';
 import { PostService } from '../services/post.service';
 import { CreatPostDto, UpdatePostDto } from '../dto/post.dto';
@@ -42,7 +42,7 @@ import { ImageAbleType } from 'src/components/image/entities/image.entity';
   name: 'Content-Type',
   description: 'application/json',
 })
-@Controller('api/admin/posts')
+@Controller('api/posts')
 export class PostController {
   constructor(
     private connection: Connection,

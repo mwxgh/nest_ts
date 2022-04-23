@@ -1,4 +1,11 @@
-import { IsString, IsOptional, Min, IsNumber, IsEnum } from 'class-validator';
+import {
+  IsString,
+  IsOptional,
+  Min,
+  IsNumber,
+  IsEnum,
+  ArrayMinSize,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 import {
   ApiProperty,
@@ -12,6 +19,7 @@ import {
   StatusPost,
   TypePost,
 } from 'src/components/post/entities/post.entity';
+import { SortType } from '../constant/constant';
 
 export class QueryProperties {
   @ApiProperty()
@@ -37,6 +45,16 @@ export class QueryProperties {
   @IsOptional()
   @IsString()
   includes: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsEnum(SortType)
+  sortType: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @ArrayMinSize(1)
+  sortBy: string[];
 
   @ApiProperty()
   @IsOptional()
