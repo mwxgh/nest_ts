@@ -79,7 +79,7 @@ export class ContactController {
 
   @Get(':id')
   async show(@Param('id', ParseIntPipe) id: number): Promise<any> {
-    const contact = await this.contactService.findOrFail(id);
+    const contact = await this.contactService.findOneOrFail(id);
 
     return this.response.collection(contact, new ContactTransformer());
   }
@@ -97,7 +97,7 @@ export class ContactController {
     @Param('id', ParseIntPipe) id: number,
     @Body() data: UpdateContactDto,
   ): Promise<any> {
-    await this.contactService.findOrFail(id);
+    await this.contactService.findOneOrFail(id);
 
     await this.contactService.update(id, data);
 
@@ -106,7 +106,7 @@ export class ContactController {
 
   @Delete(':id')
   async remove(@Param('id', ParseIntPipe) id: number): Promise<any> {
-    await this.contactService.findOrFail(id);
+    await this.contactService.findOneOrFail(id);
 
     await this.contactService.destroy(id);
 

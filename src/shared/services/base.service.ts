@@ -94,7 +94,7 @@ export class BaseService {
    * @param id string | number
    * @param options relations
    */
-  async findOrFail(
+  async findOneOrFail(
     id: string | number,
     options?: { relations: string[] },
   ): Promise<any> {

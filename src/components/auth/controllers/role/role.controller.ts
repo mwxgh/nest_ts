@@ -96,7 +96,7 @@ export class RoleController {
   @ApiOperation({ summary: 'Admin get role by id' })
   @ApiOkResponse({ description: 'Role entity' })
   async show(@Param('id', ParseIntPipe) id: number): Promise<any> {
-    const role = await this.roleService.findOrFail(id, {
+    const role = await this.roleService.findOneOrFail(id, {
       relations: ['permissions'],
     });
 

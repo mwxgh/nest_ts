@@ -41,7 +41,7 @@ export class ProfileController {
   @ApiOperation({ summary: 'Get profile current user' })
   @ApiOkResponse({ description: 'Profile current user' })
   async profile(@AuthenticatedUser() currentUser: User): Promise<any> {
-    const user = await this.userService.findOrFail(currentUser.id, {
+    const user = await this.userService.findOneOrFail(currentUser.id, {
       relations: ['roles'],
     });
 

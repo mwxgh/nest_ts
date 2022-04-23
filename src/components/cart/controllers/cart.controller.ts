@@ -46,7 +46,7 @@ export class CartController {
         'products.images',
         'images',
         'images.imageAbleType = :imageAbleType',
-        { imageAbleType: ImageAbleType.PRODUCT },
+        { imageAbleType: ImageAbleType.product },
       )
       .where('carts.id = :id', { id: Number(id) })
       .getOne();
@@ -58,7 +58,7 @@ export class CartController {
 
   @Delete()
   async destroy(@Param('id') id: string): Promise<any> {
-    await this.cartService.findOrFail(id);
+    await this.cartService.findOneOrFail(id);
 
     await this.cartService.destroy(Number(id));
 

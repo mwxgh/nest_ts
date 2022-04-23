@@ -34,7 +34,7 @@ export class ProductService extends BaseService {
           'products.images',
           'images',
           'images.imageAbleType = :imageAbleType',
-          { imageAbleType: ImageAbleType.PRODUCT },
+          { imageAbleType: ImageAbleType.product },
         );
       }
       if (include.includes('categories')) {
@@ -71,7 +71,7 @@ export class ProductService extends BaseService {
           const img = {
             url: item.url,
             imageAbleId: product.id,
-            imageAbleType: ImageAbleType.PRODUCT,
+            imageAbleType: ImageAbleType.product,
           };
           await this.repository.create(img);
         }

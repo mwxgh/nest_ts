@@ -95,7 +95,7 @@ export class UserController {
   @Get(':id')
   @Auth('admin', 'user')
   async show(@Param('id', ParseIntPipe) id: number): Promise<any> {
-    const item = await this.userService.findOrFail(id, {
+    const item = await this.userService.findOneOrFail(id, {
       relations: ['roles'],
     });
 
@@ -118,7 +118,7 @@ export class UserController {
     @Param('id', ParseIntPipe) id: number,
     @Body() data: AdminUpdateUserDto,
   ): Promise<any> {
-    const user = await this.userService.findOrFail(id);
+    const user = await this.userService.findOneOrFail(id);
 
     await this.userService.update(user.id, {
       password: this.userService.hashPassword(data.password),
@@ -137,7 +137,7 @@ export class UserController {
   @Post(':id/sendVerifyLink')
   @Auth('admin')
   async sendVerifyLink(@Param('id', ParseIntPipe) id: number): Promise<any> {
-    const user = await this.userService.findOrFail(id);
+    const user = await this.userService.findOneOrFail(id);
 
     await this.userService.generateVerifyToken(user.id);
 
@@ -218,7 +218,7 @@ export class UserController {
     @Body() data: UserSendMailReportDto,
     @Param('id', ParseIntPipe) id: number,
   ): Promise<any> {
-    const user = await this.userService.findOrFail(id);
+    const user = await this.userService.findOneOrFail(id);
 
     this.notificationService.send(
       user,

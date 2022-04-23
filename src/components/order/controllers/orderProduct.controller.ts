@@ -24,12 +24,12 @@ export class OrderProductController {
 
   @Post()
   async create(@Body() data: CreateOrderProductDto): Promise<any> {
-    await this.orderService.findOrFail(data.orderId);
+    await this.orderService.findOneOrFail(data.orderId);
 
     let total = 0;
 
     data.products.forEach(async (item) => {
-      const result = await this.productService.findOrFail(item.productId);
+      const result = await this.productService.findOneOrFail(item.productId);
       if (result && item.quantity > 0) {
         const amount = Number(item.quantity) * Number(result.price);
         total += amount;
@@ -50,7 +50,7 @@ export class OrderProductController {
 
   @Put()
   async update(@Body() data: UpdateOrderProductDto): Promise<any> {
-    await this.orderService.findOrFail(data.orderId);
+    await this.orderService.findOneOrFail(data.orderId);
 
     const list_order = await getCustomRepository(OrderProductRepository)
       .createQueryBuilder('orderProducts')
@@ -64,7 +64,7 @@ export class OrderProductController {
     let total = 0;
 
     data.products.forEach(async (item) => {
-      const result = await this.productService.findOrFail(item.productId);
+      const result = await this.productService.findOneOrFail(item.productId);
 
       if (result && item.quantity > 0) {
         const amount = Number(item.quantity) * Number(result.price);
@@ -87,9 +87,9 @@ export class OrderProductController {
   @Delete(':id')
   @ApiParam({ name: 'id' })
   async destroy(@Param() params: any): Promise<any> {
-    const record = await this.orderProductService.findOrFail(params.id);
+    const record = await this.orderProductService.findOneOrFail(params.id);
 
-    const order = await this.orderService.findOrFail(record.orderId);
+    const order = await this.orderService.findOneOrFail(record.orderId);
 
     await this.orderService.update(order.id, {
       amount: order.amount - record.amount,

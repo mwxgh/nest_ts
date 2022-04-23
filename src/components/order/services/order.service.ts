@@ -30,7 +30,7 @@ export class OrderService extends BaseService {
           'products.images',
           'images',
           'imageAbleType = :imageAbleType',
-          { imageAbleType: ImageAbleType.PRODUCT },
+          { imageAbleType: ImageAbleType.product },
         );
     }
 

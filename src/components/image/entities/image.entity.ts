@@ -4,10 +4,10 @@ import { Product } from '../../product/entities/product.entity';
 import { PostAble } from '../../post/entities/post.entity';
 import { TimeStampEntity } from '../../base.entity';
 
-export enum ImageAbleType {
-  PRODUCT = 'products',
-  POST = 'posts',
-}
+export const ImageAbleType = {
+  product: 'PRODUCT',
+  post: 'POST',
+} as const;
 
 @Notifiable()
 @Entity({ name: 'images' })
