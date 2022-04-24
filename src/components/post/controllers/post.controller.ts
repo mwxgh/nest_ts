@@ -18,7 +18,7 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import { Connection, getRepository, getManager } from 'typeorm';
+import { Connection, getManager } from 'typeorm';
 import { PostAble } from '../entities/post.entity';
 import { PostService } from '../services/post.service';
 import { CreatPostDto, UpdatePostDto } from '../dto/post.dto';
@@ -29,11 +29,8 @@ import { ImageService } from 'src/components/image/services/image.service';
 import slugify from 'slugify';
 import { TagAbleService } from 'src/components/tag/services/tagAble.service';
 import { CategoryAbleService } from 'src/components/category/services/categoryAble.service';
-import { TagAble, TagAbleType } from '../../tag/entities/tagAble.entity';
-import {
-  CategoryAble,
-  CategoryAbleType,
-} from '../../category/entities/categoryAble.entity';
+import { TagAbleType } from '../../tag/entities/tagAble.entity';
+import { CategoryAbleType } from '../../category/entities/categoryAble.entity';
 import * as _ from 'lodash';
 import {
   QueryOneDto,

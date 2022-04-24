@@ -15,6 +15,9 @@ export class MyAccountGuard extends JwtAuthGuard {
     if (err || !user) {
       throw err || new UnauthorizedException();
     }
+
+    console.log(info);
+
     return user;
   }
 }
