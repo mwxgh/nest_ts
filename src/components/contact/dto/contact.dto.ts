@@ -10,27 +10,31 @@ import {
 
 export class ContactProperties {
   @ApiPropertyOptional({
+    type: Number,
+  })
+  @IsNotEmpty()
+  @Type(() => Number)
+  userId: number;
+
+  @ApiPropertyOptional({
     type: String,
   })
   @IsOptional()
-  @IsNotEmpty()
   @IsEmail()
   @Type(() => String)
   email: string;
 
   @ApiPropertyOptional({
-    type: String,
+    type: Number,
   })
-  @IsOptional()
   @IsNotEmpty()
   @IsPhoneNumber()
-  @Type(() => String)
-  phone: string;
+  @Type(() => Number)
+  phone: number;
 
   @ApiPropertyOptional({
     type: String,
   })
-  @IsOptional()
   @IsNotEmpty()
   @Type(() => String)
   address: string;

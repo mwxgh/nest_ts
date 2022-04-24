@@ -14,6 +14,10 @@ export class CreateContactsTable1650209210350 implements MigrationInterface {
             generationStrategy: 'increment',
           },
           {
+            name: 'userId',
+            type: 'int',
+          },
+          {
             name: 'email',
             type: 'varchar',
           },

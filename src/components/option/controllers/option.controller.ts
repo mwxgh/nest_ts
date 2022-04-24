@@ -76,7 +76,7 @@ export class OptionController {
   }
 
   @Get('listQuery')
-  @ApiOperation({ summary: 'List options with query / without paginate' })
+  @ApiOperation({ summary: 'Admin list options with query / without paginate' })
   @ApiOkResponse({
     description: 'List options with search & includes & filter',
   })
@@ -93,7 +93,7 @@ export class OptionController {
   }
 
   @Get(':key')
-  @ApiOperation({ summary: 'Get option by key' })
+  @ApiOperation({ summary: 'Admin get option by key' })
   @ApiOkResponse({ description: 'Option entity' })
   @ApiParam({ name: 'key' })
   async show(@Param() params: any): Promise<any> {

@@ -1,7 +1,8 @@
-import { Entity, Column, ManyToMany, JoinTable } from 'typeorm';
+import { Entity, Column, ManyToMany, JoinTable, OneToMany } from 'typeorm';
 import { Role } from '../../auth/entities/role.entity';
 import { Notifiable } from '../../../shared/services/notification/decorators/notifiable.decorator';
 import { TimeStampEntity } from '../../base.entity';
+import { Contact } from '../../contact/entities/contact.entity';
 
 @Notifiable()
 @Entity({ name: 'users' })
@@ -49,6 +50,9 @@ export class User extends TimeStampEntity {
     },
   })
   roles: Role[];
+
+  @OneToMany(() => Contact, (contact) => contact.user)
+  contacts: Contact[];
 
   getEmail(): string {
     return this.email;

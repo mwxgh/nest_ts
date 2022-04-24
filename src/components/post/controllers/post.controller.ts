@@ -9,8 +9,15 @@ import {
   Query,
   NotFoundException,
   ParseIntPipe,
+  UseGuards,
 } from '@nestjs/common';
-import { ApiHeader, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiHeader,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 import { Connection, getRepository, getManager } from 'typeorm';
 import { PostAble } from '../entities/post.entity';
 import { PostService } from '../services/post.service';
@@ -37,11 +44,14 @@ import { TagService } from 'src/components/tag/services/tag.service';
 import { CategoryService } from 'src/components/category/services/category.service';
 import { Auth } from 'src/components/auth/decorators/auth.decorator';
 import { ImageAbleType } from 'src/components/image/entities/image.entity';
+import { JwtAuthGuard } from 'src/components/auth/guards/jwtAuth.guard';
 @ApiTags('Posts')
 @ApiHeader({
   name: 'Content-Type',
   description: 'application/json',
 })
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard)
 @Controller('api/posts')
 export class PostController {
   constructor(
@@ -59,6 +69,12 @@ export class PostController {
   private fields = ['title', 'summary', 'releaseDate'];
 
   @Get('listPaginate')
+  @ApiOperation({
+    summary: 'List posts with query & paginate',
+  })
+  @ApiOkResponse({
+    description: 'List posts with search & includes & filter in paginate',
+  })
   async listPaginate(@Query() query: QueryPostPaginateDto): Promise<any> {
     const params: IPaginationOptions = {
       limit: Number(query.perPage) || 10,
@@ -85,8 +101,14 @@ export class PostController {
     return this.response.paginate(paginate, new PostTransformer());
   }
 
-  @Get('list')
-  async list(@Query() query: QueryPostListDto): Promise<any> {
+  @Get('listQuery')
+  @ApiOperation({
+    summary: 'List posts with query / without paginate',
+  })
+  @ApiOkResponse({
+    description: 'List posts with search & includes & filter',
+  })
+  async listQuery(@Query() query: QueryPostListDto): Promise<any> {
     const { search, includes, privacy, status, priority, type } = query;
 
     const baseQuery = await this.postService.queryPost({
@@ -105,6 +127,8 @@ export class PostController {
   }
 
   @Get(':id')
+  @ApiOperation({ summary: 'Get post by id' })
+  @ApiOkResponse({ description: 'Post entity' })
   async show(
     @Param('id', ParseIntPipe) id: number,
     @Query() query: QueryOneDto,
@@ -125,8 +149,71 @@ export class PostController {
     return this.response.item(post, new PostTransformer());
   }
 
+  @Post()
+  @Auth('admin')
+  @ApiOperation({ summary: 'Admin create new post' })
+  @ApiOkResponse({ description: 'New post entity' })
+  async createPost(@Body() data: CreatPostDto): Promise<any> {
+    const tagsAvailable = await this.tagService.findIdInOrFail(data.tagIds);
+
+    const categoriesAvailable = await this.categoryService.findIdInOrFail(
+      data.categoryIds,
+    );
+
+    const similarPosts = await getManager()
+      .createQueryBuilder(PostAble, 'posts')
+      .where('posts.title = :title AND posts.type = :type ', {
+        title: data.title,
+        type: data.type,
+      })
+      .getCount();
+
+    const dataSlugify = _.assign(data, { slug: slugify(data.title) });
+
+    if (similarPosts) dataSlugify.slug = `${dataSlugify.slug}-${similarPosts}`;
+
+    const newPost = await this.postService.store(dataSlugify);
+
+    const tagAbleData = tagsAvailable.map((tag: any) => ({
+      name: tag.name,
+      tagId: tag.id,
+      tagAbleId: newPost.id,
+      tagAbleType: TagAbleType.post,
+      status: tag.status,
+    }));
+
+    const categoryAbleDate = categoriesAvailable.map((category: any) => ({
+      categoryId: category.id,
+      categoryAbleId: newPost.id,
+      categoryAbleType: CategoryAbleType.post,
+    }));
+
+    await this.tagAbleService.store(tagAbleData);
+
+    await this.categoryAbleService.store(categoryAbleDate);
+
+    const data2 = { ...dataSlugify };
+
+    delete data.url;
+
+    data2.url.map(async (i) => {
+      const data1 = {
+        imageAbleType: ImageAbleType.post,
+        url: i['url'],
+        isThumbnail: false,
+        imageAbleId: newPost.id,
+      };
+
+      return await this.image.create(data1);
+    });
+
+    return this.response.item(newPost, new PostTransformer());
+  }
+
   @Put(':id')
   @Auth('admin')
+  @ApiOperation({ summary: 'Admin update post by id' })
+  @ApiOkResponse({ description: 'Update post entity' })
   async updatePost(
     @Param('id', ParseIntPipe) id: number,
     @Body() data: UpdatePostDto,
@@ -275,18 +362,20 @@ export class PostController {
   }
 
   @Delete(':id')
-  async destroy(@Param('id', ParseIntPipe) id: number): Promise<any> {
+  @Auth('admin')
+  @ApiOperation({ summary: 'Admin delete post by id' })
+  @ApiOkResponse({ description: 'Delete post successfully' })
+  async deletePost(@Param('id', ParseIntPipe) id: number): Promise<any> {
     const currentPost = await this.postService.findOneOrFail(id);
 
     await this.postService.destroy(currentPost.id);
 
-    const currentTagAbles = await getRepository(TagAble)
-      .createQueryBuilder('tagAbles')
-      .where('tagAbles.tagAbleId = :tagAbleId', { tagAbleId: Number(id) })
-      .andWhere('tagAbles.tagAbleType = :tagAbleType', {
+    const currentTagAbles = await this.tagAbleService.findWhere({
+      where: {
+        tagAbleId: currentPost.id,
         tagAbleType: TagAbleType.post,
-      })
-      .getMany();
+      },
+    });
 
     if (currentTagAbles.length > 0) {
       const currentTagAbleIds = currentTagAbles.map(
@@ -296,15 +385,12 @@ export class PostController {
       await this.tagAbleService.destroy(currentTagAbleIds);
     }
 
-    const currentCategoryAbles = await getRepository(CategoryAble)
-      .createQueryBuilder('categoryAble')
-      .where('categoryAble.categoryAbleId = :categoryAbleId', {
-        categoryAbleId: Number(id),
-      })
-      .andWhere('categoryAble.categoryAbleType = :categoryAbleType', {
+    const currentCategoryAbles = await this.categoryAbleService.findWhere({
+      where: {
+        categoryAbleId: currentPost.id,
         categoryAbleType: CategoryAbleType.post,
-      })
-      .getMany();
+      },
+    });
 
     if (currentCategoryAbles.length > 0) {
       const currentCategoryAbleIds = currentCategoryAbles.map(
@@ -315,63 +401,5 @@ export class PostController {
     }
 
     return this.response.success();
-  }
-
-  @Post()
-  async createPost(@Body() data: CreatPostDto): Promise<any> {
-    const tagsAvailable = await this.tagService.findIdInOrFail(data.tagIds);
-
-    const categoriesAvailable = await this.categoryService.findIdInOrFail(
-      data.categoryIds,
-    );
-
-    const similarPosts = await getManager()
-      .createQueryBuilder(PostAble, 'posts')
-      .where('posts.title = :title AND posts.type = :type ', {
-        title: data.title,
-        type: data.type,
-      })
-      .getCount();
-
-    const dataSlugify = _.assign(data, { slug: slugify(data.title) });
-
-    if (similarPosts) dataSlugify.slug = `${dataSlugify.slug}-${similarPosts}`;
-
-    const newPost = await this.postService.store(dataSlugify);
-
-    const tagAbleData = tagsAvailable.map((tag: any) => ({
-      name: tag.name,
-      tagId: tag.id,
-      tagAbleId: newPost.id,
-      tagAbleType: TagAbleType.post,
-      status: tag.status,
-    }));
-
-    const categoryAbleDate = categoriesAvailable.map((category: any) => ({
-      categoryId: category.id,
-      categoryAbleId: newPost.id,
-      categoryAbleType: CategoryAbleType.post,
-    }));
-
-    await this.tagAbleService.store(tagAbleData);
-
-    await this.categoryAbleService.store(categoryAbleDate);
-
-    const data2 = { ...dataSlugify };
-
-    delete data.url;
-
-    data2.url.map(async (i) => {
-      const data1 = {
-        imageAbleType: ImageAbleType.post,
-        url: i['url'],
-        isThumbnail: false,
-        imageAbleId: newPost.id,
-      };
-
-      return await this.image.create(data1);
-    });
-
-    return this.response.item(newPost, new PostTransformer());
   }
 }
