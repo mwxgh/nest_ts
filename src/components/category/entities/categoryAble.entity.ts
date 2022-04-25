@@ -25,21 +25,24 @@ export class CategoryAble extends TimeStampEntity {
   @Column({ type: 'timestamp' })
   public verifiedAt: Date;
 
+  @ManyToOne(() => Category, (category) => category.categoryAbles)
+  @JoinColumn({
+    name: 'categoryId',
+    referencedColumnName: 'id',
+  })
+  category: Category;
+
   @ManyToOne(() => Product, (product) => product.categories)
   @JoinColumn({
     name: 'categoryAbleId',
+    referencedColumnName: 'id',
   })
   product: Product;
-
-  @ManyToOne(() => Category, (category) => category.products)
-  @JoinColumn({
-    name: 'categoryId',
-  })
-  category: Category;
 
   @ManyToOne(() => PostAble, (post) => post.categories)
   @JoinColumn({
     name: 'categoryAbleId',
+    referencedColumnName: 'id',
   })
   post: PostAble;
 }

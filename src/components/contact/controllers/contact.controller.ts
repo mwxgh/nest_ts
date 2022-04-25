@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Delete,
+  ForbiddenException,
   Get,
   NotFoundException,
   Param,
@@ -143,8 +144,12 @@ export class ContactController {
     @AuthenticatedUser() currentUser: User,
     @Body() data: CreateContactDto,
   ): Promise<any> {
-    if (_.includes(currentUser.roles, 'user')) {
-      data.userId = currentUser.id;
+    const userRoles = _.map(currentUser.roles, (r) => r.slug);
+
+    if (_.includes(userRoles, 'user') && userRoles.length == 1) {
+      if (currentUser.id !== data.userId) {
+        throw new ForbiddenException("Can' create contact for another");
+      }
     }
 
     const contact = await this.contactService.create(data);
@@ -162,13 +167,11 @@ export class ContactController {
     @Param('id', ParseIntPipe) id: number,
     @Body() data: UpdateContactDto,
   ): Promise<any> {
-    if (_.includes(currentUser.roles, 'user')) {
-      const existContact = await this.contactService.findWhere({
-        where: { id: id, userId: currentUser.id },
-      });
+    const userRoles = _.map(currentUser.roles, (r) => r.slug);
 
-      if (!existContact) {
-        throw new NotFoundException('Contact not belong to user');
+    if (_.includes(userRoles, 'user') && userRoles.length == 1) {
+      if (currentUser.id !== data.userId) {
+        throw new ForbiddenException("Can' update contact for another");
       }
     }
 
@@ -186,13 +189,11 @@ export class ContactController {
     @AuthenticatedUser() currentUser: User,
     @Param('id', ParseIntPipe) id: number,
   ): Promise<any> {
-    if (_.includes(currentUser.roles, 'user')) {
-      const existContact = await this.contactService.findWhere({
-        where: { id: id, userId: currentUser.id },
-      });
+    const userRoles = _.map(currentUser.roles, (r) => r.slug);
 
-      if (existContact) {
-        throw new NotFoundException('Contact not belong to user');
+    if (_.includes(userRoles, 'user') && userRoles.length == 1) {
+      if (currentUser.id !== id) {
+        throw new ForbiddenException("Can' delete another's contact");
       }
     }
 

@@ -18,6 +18,10 @@ export class CreateContactsTable1650209210350 implements MigrationInterface {
             type: 'int',
           },
           {
+            name: 'name',
+            type: 'varchar',
+          },
+          {
             name: 'email',
             type: 'varchar',
           },

@@ -40,8 +40,9 @@ import {
 import { TagService } from 'src/components/tag/services/tag.service';
 import { CategoryService } from 'src/components/category/services/category.service';
 import { Auth } from 'src/components/auth/decorators/auth.decorator';
-import { ImageAbleType } from 'src/components/image/entities/image.entity';
+
 import { JwtAuthGuard } from 'src/components/auth/guards/jwtAuth.guard';
+import { ImageAbleType } from '../../image/entities/imageAble.entity';
 @ApiTags('Posts')
 @ApiHeader({
   name: 'Content-Type',

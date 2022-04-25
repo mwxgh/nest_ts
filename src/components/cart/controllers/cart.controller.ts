@@ -13,8 +13,9 @@ import { getManager } from 'typeorm';
 import { Cart } from '../entities/cart.entity';
 import { CartService } from '../services/cart.service';
 import { CartTransformer } from '../transformers/cart.transformer';
-import { ImageAbleType } from '../../../components/image/entities/image.entity';
+
 import { CreateCartItemDto } from '../dto/cart.dto';
+import { ImageAbleType } from '../../image/entities/imageAble.entity';
 
 @ApiTags('Carts')
 @ApiHeader({

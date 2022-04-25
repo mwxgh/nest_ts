@@ -1,10 +1,10 @@
 import { Comment } from '../../comment/entities/comment.entity';
-import { Image } from '../../image/entities/image.entity';
 import { OneToMany, Entity, Column } from 'typeorm';
 import { Notifiable } from '../../../shared/services/notification/decorators/notifiable.decorator';
 import { CategoryAble } from '../../category/entities/categoryAble.entity';
 import { TagAble } from '../../tag/entities/tagAble.entity';
 import { TimeStampEntity } from '../../base.entity';
+import { ImageAble } from '../../image/entities/imageAble.entity';
 
 export const JoinPostAbleType = {
   images: 'posts.images',
@@ -73,15 +73,15 @@ export class PostAble extends TimeStampEntity {
   @Column({ type: 'date' })
   releaseDate: Date;
 
-  @OneToMany(() => Image, (image) => image.post)
-  images: Image[];
-
-  @OneToMany(() => Comment, (comment) => comment.post)
-  comments: Comment[];
-
   @OneToMany(() => TagAble, (tag) => tag.post)
   tags: TagAble[];
 
   @OneToMany(() => CategoryAble, (category) => category.post)
   categories: CategoryAble[];
+
+  @OneToMany(() => ImageAble, (imageAble) => imageAble.post)
+  images: ImageAble[];
+
+  @OneToMany(() => Comment, (comment) => comment.post)
+  comments: Comment[];
 }

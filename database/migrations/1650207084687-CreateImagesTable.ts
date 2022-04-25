@@ -1,4 +1,4 @@
-import { MigrationInterface, QueryRunner, Table, TableIndex } from 'typeorm';
+import { MigrationInterface, QueryRunner, Table } from 'typeorm';
 
 export class CreateImagesTable1650207084687 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
@@ -14,26 +14,22 @@ export class CreateImagesTable1650207084687 implements MigrationInterface {
             generationStrategy: 'increment',
           },
           {
+            name: 'name',
+            type: 'varchar',
+          },
+          {
             name: 'url',
             type: 'varchar',
-          },
-          {
-            name: 'imageAbleId',
-            type: 'int',
-          },
-          {
-            name: 'imageAbleType',
-            type: 'varchar',
-          },
-          {
-            name: 'isThumbnail',
-            default: 0,
-            type: 'int',
           },
           {
             name: 'status',
             default: 1,
             type: 'int',
+          },
+          {
+            name: 'verifiedAt',
+            isNullable: true,
+            type: 'datetime',
           },
           {
             name: 'deletedAt',
@@ -53,13 +49,6 @@ export class CreateImagesTable1650207084687 implements MigrationInterface {
         ],
       }),
       true,
-    );
-    await queryRunner.createIndex(
-      'images',
-      new TableIndex({
-        name: 'FK_IMAGE_ID',
-        columnNames: ['imageAbleId'],
-      }),
     );
   }
 

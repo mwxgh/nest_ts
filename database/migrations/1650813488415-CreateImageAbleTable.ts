@@ -1,10 +1,10 @@
 import { MigrationInterface, QueryRunner, Table, TableIndex } from 'typeorm';
 
-export class CreateTagAblesTable1650206036149 implements MigrationInterface {
+export class CreateImageAbleTable1650813488415 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.createTable(
       new Table({
-        name: 'tagAbles',
+        name: 'imageAbles',
         columns: [
           {
             name: 'id',
@@ -14,16 +14,21 @@ export class CreateTagAblesTable1650206036149 implements MigrationInterface {
             generationStrategy: 'increment',
           },
           {
-            name: 'tagId',
+            name: 'imageId',
             type: 'int',
           },
           {
-            name: 'tagAbleId',
+            name: 'imageAbleId',
             type: 'int',
           },
           {
-            name: 'tagAbleType',
+            name: 'imageAbleType',
             type: 'varchar',
+          },
+          {
+            name: 'isThumbnail',
+            default: false,
+            type: 'boolean',
           },
           {
             name: 'verifiedAt',
@@ -50,15 +55,15 @@ export class CreateTagAblesTable1650206036149 implements MigrationInterface {
       true,
     );
     await queryRunner.createIndex(
-      'tagAbles',
+      'imageAbles',
       new TableIndex({
-        name: 'IDX_TAG_ID',
-        columnNames: ['tagId'],
+        name: 'FK_IMAGE_ABLE_ID',
+        columnNames: ['imageAbleId'],
       }),
     );
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.dropTable('tagAbles');
+    await queryRunner.dropTable('imageAbles');
   }
 }

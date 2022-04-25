@@ -28,17 +28,6 @@ export class Category extends TimeStampEntity {
   })
   children: Category[];
 
-  @OneToMany(() => CategoryAble, (categoryAble) => categoryAble.category)
-  @JoinColumn({
-    name: 'categoryId',
-    referencedColumnName: 'id',
-  })
-  products: CategoryAble[];
-
-  @OneToMany(() => CategoryAble, (categoryAble) => categoryAble.post)
-  @JoinColumn({
-    name: 'categoryId',
-    referencedColumnName: 'id',
-  })
-  posts: CategoryAble[];
+  @OneToMany(() => CategoryAble, (categoryAbles) => categoryAbles.category)
+  categoryAbles: CategoryAble[];
 }

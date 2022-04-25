@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { ImageAbleType } from '../../../components/image/entities/image.entity';
 import { BaseService } from 'src/shared/services/base.service';
 import { Connection, Repository } from 'typeorm';
 import { Product } from '../entities/product.entity';
 import { ProductRepository } from '../repositories/product.repository';
 import slugify from 'slugify';
 import { CategoryAbleType } from 'src/components/category/entities/categoryAble.entity';
+import { ImageAbleType } from '../../image/entities/imageAble.entity';
 
 @Injectable()
 export class ProductService extends BaseService {

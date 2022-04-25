@@ -9,17 +9,12 @@ export const TagAbleType = {
   post: 'POST',
   product: 'PRODUCT',
 } as const;
+
 @Notifiable()
 @Entity({ name: 'tagAbles' })
 export class TagAble extends TimeStampEntity {
-  @Column({ type: 'varchar' })
-  name: string;
-
   @Column({ name: 'tagId', type: 'int' })
   tagId: number;
-
-  @Column({ type: 'int' })
-  status: number;
 
   @Column({ name: 'tagAbleId', type: 'int' })
   tagAbleId: number;

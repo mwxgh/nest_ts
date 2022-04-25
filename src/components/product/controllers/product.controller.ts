@@ -21,13 +21,13 @@ import { CreateProductDto, UpdateProductDto } from '../dto/product.dto';
 import { ProductService } from '../services/product.service';
 import { ProductTransformer } from '../transformers/product.transformer';
 import { ImageService } from '../../image/services/image.service';
-import { ImageAbleType } from '../../image/entities/image.entity';
 import { CategoryAbleService } from '../../category/services/categoryAble.service';
 import { CategoryAbleType } from 'src/components/category/entities/categoryAble.entity';
 import { ApiResponseService } from 'src/shared/services/apiResponse/apiResponse.service';
 import { JwtAuthGuard } from 'src/components/auth/guards/jwtAuth.guard';
 import { QueryPaginateDto } from 'src/shared/dto/queryParams.dto';
 import { IPaginationOptions } from 'src/shared/services/pagination';
+import { ImageAbleType } from '../../image/entities/imageAble.entity';
 
 @ApiTags('Products')
 @ApiHeader({
