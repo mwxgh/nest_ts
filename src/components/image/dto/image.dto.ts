@@ -1,31 +1,19 @@
-import {
-  ApiProperty,
-  ApiPropertyOptional,
-  OmitType,
-  PartialType,
-} from '@nestjs/swagger';
-import { Type } from 'class-transformer';
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { ApiProperty, OmitType, PartialType } from '@nestjs/swagger';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 export class ImageProperties {
+  @ApiProperty()
+  @IsNotEmpty()
+  title: string;
+
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
   url: string;
 
-  @ApiPropertyOptional({
-    type: Number,
-    default: 1,
-  })
-  @IsOptional()
-  @IsNumber()
-  @Type(() => Number)
-  imageAbleId: number;
-
-  @ApiPropertyOptional({})
-  @IsString()
+  @ApiProperty()
   @IsNotEmpty()
-  imageAbleType: string;
+  status: number;
 }
 
 export class CreateImageDto extends OmitType(ImageProperties, [] as const) {}

@@ -7,7 +7,7 @@ import { ImageAble } from './imageAble.entity';
 @Entity({ name: 'images' })
 export class Image extends TimeStampEntity {
   @Column({ type: 'varchar', default: "''" })
-  name: string;
+  title: string;
 
   @Column({ type: 'varchar', default: "''" })
   url: string;

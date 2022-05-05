@@ -9,13 +9,8 @@ export class ImageService extends BaseService {
   public repository: Repository<any>;
   public entity: any = Image;
 
-  constructor(private connection: Connection) {
+  constructor(private dataSource: Connection) {
     super();
-    this.repository = this.connection.getCustomRepository(ImageRepository);
-  }
-
-  // api product admin: GET, POST, PUT, DELETE
-  async image(): Promise<any> {
-    return await this.repository;
+    this.repository = this.dataSource.getCustomRepository(ImageRepository);
   }
 }

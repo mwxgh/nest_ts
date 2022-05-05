@@ -14,7 +14,7 @@ export class CreateImagesTable1650207084687 implements MigrationInterface {
             generationStrategy: 'increment',
           },
           {
-            name: 'name',
+            name: 'title',
             type: 'varchar',
           },
           {

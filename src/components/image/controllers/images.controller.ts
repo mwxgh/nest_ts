@@ -4,14 +4,27 @@ import {
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Post,
   Put,
+  Req,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
-import { ApiHeader, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiConsumes, ApiHeader, ApiParam, ApiTags } from '@nestjs/swagger';
+import { diskStorage } from 'multer';
+import { extname } from 'path';
+import { Auth } from 'src/components/auth/decorators/auth.decorator';
 import { ApiResponseService } from 'src/shared/services/apiResponse/apiResponse.service';
+import { getCustomRepository } from 'typeorm';
 import { CreateImageDto, UpdateImageDto } from '../dto/image.dto';
+import { ImageRepository } from '../repositories/image.reponsitory';
 import { ImageService } from '../services/image.service';
 import { ImageTransformer } from '../transformers/image.transformer';
+import { FileFastifyInterceptor } from 'fastify-file-interceptor';
+import { environment } from '../../../../environment';
+import slugify from 'slugify';
+import * as _ from 'lodash';
 
 @ApiTags('Images')
 @ApiHeader({
@@ -25,19 +38,58 @@ export class ImageController {
     private imageService: ImageService,
   ) {}
 
-  @Get()
-  async index(): Promise<any> {
-    const data = await this.imageService.get();
-
-    return this.response.collection(data, new ImageTransformer());
-  }
-
+  @ApiConsumes('multipart/form-data')
   @Post()
-  @ApiResponse({ status: 201, description: 'Images created' })
-  async create(@Body() data: CreateImageDto): Promise<any> {
-    const image = await this.imageService.create(data);
+  @Auth('admin')
+  @UseInterceptors(
+    FileFastifyInterceptor('file', {
+      storage: diskStorage({
+        destination:
+          environment.appUrl === 'local'
+            ? 'public/uploads'
+            : 'dist/public/uploads',
+        filename: (req, file: Express.Multer.File, cb) => {
+          const randomName = Array(32)
+            .fill(null)
+            .map(() => Math.round(Math.random() * 16).toString(16))
+            .join('');
+          cb(null, `${randomName}${extname(file.originalname)}`);
+        },
+      }),
+      fileFilter: (req, file: Express.Multer.File, cb) => {
+        if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
+          return new Error('Only image files are allowed!');
+        }
+        cb(null, true);
+      },
+    }),
+  )
+  async uploadImage(
+    @UploadedFile() file: Express.Multer.File,
+    @Req() req,
+    @Body() data: CreateImageDto,
+  ) {
+    const count = await getCustomRepository(ImageRepository).findAndCount({
+      where: { title: data.title },
+    });
 
-    return this.response.item(image, new ImageTransformer());
+    const assignSlug = _.assign(data, {
+      slug: slugify(data.title),
+    });
+    if (count) assignSlug.slug = `${assignSlug.slug}-${count}`;
+
+    const new_file = _.assign({}, file, {
+      key: file.filename,
+      location: environment.appUrl + '/public/uploads/' + file.filename,
+    });
+
+    const assignFile = _.assign(assignSlug, {
+      value: new_file.location,
+    });
+    const dataFile = { ...assignFile };
+    await getCustomRepository(ImageRepository).save(dataFile);
+
+    return this.response.success();
   }
 
   @Put(':id')
@@ -52,10 +104,10 @@ export class ImageController {
 
   @Delete(':id')
   @ApiParam({ name: 'id' })
-  async remove(@Param() params): Promise<any> {
-    await this.imageService.findOneOrFail(params.id);
+  async remove(@Param('id', ParseIntPipe) id: number): Promise<any> {
+    await this.imageService.findOneOrFail(id);
 
-    await this.imageService.destroy(params.id);
+    await this.imageService.destroy(id);
 
     return this.response.success();
   }
