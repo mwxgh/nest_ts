@@ -4,12 +4,8 @@ import { IsNotEmpty, IsString } from 'class-validator';
 export class ImageProperties {
   @ApiProperty()
   @IsNotEmpty()
-  title: string;
-
-  @ApiProperty()
   @IsString()
-  @IsNotEmpty()
-  url: string;
+  title: string;
 
   @ApiProperty()
   @IsNotEmpty()

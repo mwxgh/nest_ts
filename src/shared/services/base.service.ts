@@ -9,6 +9,7 @@ import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { isArray, omit, filter, keys, isUndefined } from 'lodash';
 import { IPaginationOptions, Pagination } from './pagination';
 import { default as slugify } from 'slugify';
+import { DEFAULT_SORT_BY, DEFAULT_SORT_TYPE } from '../constant/constant';
 
 const defaultPaginationOption: IPaginationOptions = {
   limit: 10,
@@ -283,8 +284,15 @@ export class BaseService {
     entity: string;
     fields?: string[];
     keyword?: string | '';
+    sortBy?: string;
+    sortType?: 'ASC' | 'DESC';
+    filter?: { [key: string]: string };
   }): Promise<SelectQueryBuilder<any>> {
     const { entity, fields, keyword } = params;
+
+    const orderBy = params.sortBy ? params.sortBy : DEFAULT_SORT_BY;
+
+    const orderType = params.sortType ? params.sortType : DEFAULT_SORT_TYPE;
 
     let baseQuery = this.repository.createQueryBuilder(`${entity}`);
 
@@ -294,6 +302,10 @@ export class BaseService {
           keyword: `%${keyword}%`,
         });
       }
+    }
+
+    if (orderBy) {
+      baseQuery = baseQuery.orderBy(`${entity}.${orderBy}`, orderType);
     }
 
     return baseQuery;

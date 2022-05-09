@@ -29,7 +29,11 @@ import { Option } from '../entities/option.entity';
 import { CreateOptionDto, UpdateOptionDto } from '../dto/option.dto';
 import { JwtAuthGuard } from 'src/components/auth/guards/jwtAuth.guard';
 import { Auth } from 'src/components/auth/decorators/auth.decorator';
-import { QueryListDto, QueryPaginateDto } from 'src/shared/dto/queryParams.dto';
+import {
+  QueryListDto,
+  QueryManyDto,
+  QueryPaginateDto,
+} from 'src/shared/dto/queryParams.dto';
 import { IPaginationOptions } from 'src/shared/services/pagination';
 
 @ApiTags('Options')
@@ -51,45 +55,42 @@ export class OptionController {
 
   private fields = ['key'];
 
-  @Get('listPaginate')
+  @Get()
   @ApiOperation({
-    summary: 'Admin list options with query & paginate',
+    summary: 'Admin list options',
   })
   @ApiOkResponse({
-    description: 'List options with search & includes & filter in paginate',
+    description: 'List options with param query',
   })
-  async listPaginate(@Query() query: QueryPaginateDto): Promise<any> {
-    const params: IPaginationOptions = {
-      limit: Number(query.perPage) || 10,
-      page: Number(query.page) || 1,
-    };
+  async readOptions(@Query() query: QueryManyDto): Promise<any> {
+    const { search, sortBy, sortType } = query;
 
-    const baseQuery = await this.optionService.queryBuilder({
+    const queryBuilder = await this.optionService.queryBuilder({
       entity: this.entity,
       fields: this.fields,
-      keyword: query.search,
+      keyword: search,
+      sortBy,
+      sortType,
     });
 
-    const options = await this.optionService.paginate(baseQuery, params);
+    if (query.perPage || query.page) {
+      const paginateOption: IPaginationOptions = {
+        limit: query.perPage ? query.perPage : 10,
+        page: query.page ? query.page : 1,
+      };
 
-    return this.response.paginate(options, new OptionTransformer());
-  }
+      const options = await this.optionService.paginate(
+        queryBuilder,
+        paginateOption,
+      );
 
-  @Get('listQuery')
-  @ApiOperation({ summary: 'Admin list options with query / without paginate' })
-  @ApiOkResponse({
-    description: 'List options with search & includes & filter',
-  })
-  async listQuery(@Query() query: QueryListDto): Promise<any> {
-    const baseQuery = await this.optionService.queryBuilder({
-      entity: this.entity,
-      fields: this.fields,
-      keyword: query.search,
-    });
+      return this.response.paginate(options, new OptionTransformer());
+    }
 
-    const options = await baseQuery.getMany();
-
-    return this.response.collection(options, new OptionTransformer());
+    return this.response.collection(
+      await queryBuilder.getMany(),
+      new OptionTransformer(),
+    );
   }
 
   @Get(':key')

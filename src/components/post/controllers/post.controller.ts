@@ -32,17 +32,14 @@ import { CategoryAbleService } from 'src/components/category/services/categoryAb
 import { TagAbleType } from '../../tag/entities/tagAble.entity';
 import { CategoryAbleType } from '../../category/entities/categoryAble.entity';
 import * as _ from 'lodash';
-import {
-  QueryOneDto,
-  QueryPostListDto,
-  QueryPostPaginateDto,
-} from 'src/shared/dto/queryParams.dto';
+import { QueryManyPostDto, QueryOneDto } from 'src/shared/dto/queryParams.dto';
 import { TagService } from 'src/components/tag/services/tag.service';
 import { CategoryService } from 'src/components/category/services/category.service';
 import { Auth } from 'src/components/auth/decorators/auth.decorator';
 
 import { JwtAuthGuard } from 'src/components/auth/guards/jwtAuth.guard';
 import { ImageAbleType } from '../../image/entities/imageAble.entity';
+import { ImageAbleService } from 'src/components/image/services/imageAble.service';
 @ApiTags('Posts')
 @ApiHeader({
   name: 'Content-Type',
@@ -58,7 +55,8 @@ export class PostController {
     private tagAbleService: TagAbleService,
     private tagService: TagService,
     private response: ApiResponseService,
-    private image: ImageService,
+    private imageService: ImageService,
+    private imageAbleService: ImageAbleService,
     private categoryService: CategoryService,
     private categoryAbleService: CategoryAbleService,
   ) {}
@@ -66,85 +64,73 @@ export class PostController {
   private entity = 'posts';
   private fields = ['title', 'summary', 'releaseDate'];
 
-  @Get('listPaginate')
+  @Get()
   @ApiOperation({
-    summary: 'List posts with query & paginate',
+    summary: 'Get list posts',
   })
   @ApiOkResponse({
-    description: 'List posts with search & includes & filter in paginate',
+    description: 'List posts with query param',
   })
-  async listPaginate(@Query() query: QueryPostPaginateDto): Promise<any> {
-    const params: IPaginationOptions = {
-      limit: Number(query.perPage) || 10,
-      page: Number(query.page) || 1,
-    };
-
-    const { search, includes, privacy, status, priority, type } = query;
+  async readPosts(@Query() query: QueryManyPostDto): Promise<any> {
+    const {
+      search,
+      sortBy,
+      sortType,
+      includes,
+      privacy,
+      status,
+      priority,
+      type,
+    } = query;
 
     const baseQuery = await this.postService.queryPost({
       entity: this.entity,
       fields: this.fields,
       keyword: search,
       includes,
+      sortBy,
+      sortType,
       privacy,
       status,
       priority,
       type,
     });
+    if (query.perPage || query.page) {
+      const paginateOption: IPaginationOptions = {
+        limit: query.perPage ? query.perPage : 10,
+        page: query.page ? query.page : 1,
+      };
 
-    const posts = await baseQuery.getMany();
+      const queryBuilder = await baseQuery.getMany();
 
-    const paginate = await this.postService.paginate(posts, params);
+      const posts = await this.postService.paginate(
+        queryBuilder,
+        paginateOption,
+      );
 
-    return this.response.paginate(paginate, new PostTransformer());
-  }
+      return this.response.paginate(posts, new PostTransformer());
+    }
 
-  @Get('listQuery')
-  @ApiOperation({
-    summary: 'List posts with query / without paginate',
-  })
-  @ApiOkResponse({
-    description: 'List posts with search & includes & filter',
-  })
-  async listQuery(@Query() query: QueryPostListDto): Promise<any> {
-    const { search, includes, privacy, status, priority, type } = query;
-
-    const baseQuery = await this.postService.queryPost({
-      entity: this.entity,
-      fields: this.fields,
-      keyword: search,
-      includes,
-      privacy,
-      status,
-      priority,
-      type,
-    });
-    const posts = await baseQuery.getMany();
-
-    return this.response.collection(posts, new PostTransformer());
+    return this.response.collection(
+      await baseQuery.getMany(),
+      new PostTransformer(),
+    );
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Get post by id' })
   @ApiOkResponse({ description: 'Post entity' })
-  async show(
+  async readPost(
     @Param('id', ParseIntPipe) id: number,
     @Query() query: QueryOneDto,
   ): Promise<any> {
     const { includes } = query;
 
-    const baseQuery = await this.postService.queryPost({
-      entity: this.entity,
-      includes,
+    const post = await this.postService.findOneOrFail(id, {
+      relations: includes,
     });
 
-    const post = await baseQuery
-      .andWhere('posts.id = :id', { id: Number(id) })
-      .getOne();
-
-    if (post) throw new NotFoundException('Data');
-
-    return this.response.item(post, new PostTransformer());
+    return this.response.item(post, new PostTransformer(includes));
   }
 
   @Post()
@@ -158,19 +144,19 @@ export class PostController {
       data.categoryIds,
     );
 
-    const similarPosts = await getManager()
-      .createQueryBuilder(PostAble, 'posts')
-      .where('posts.title = :title AND posts.type = :type ', {
-        title: data.title,
-        type: data.type,
-      })
-      .getCount();
+    const imagesAvailable = await this.imageService.findIdInOrFail(
+      data.imageIds,
+    );
+
+    const countPosts = await this.postService.count({
+      where: { title: data.title, type: data.type },
+    });
 
     const dataSlugify = _.assign(data, { slug: slugify(data.title) });
 
-    if (similarPosts) dataSlugify.slug = `${dataSlugify.slug}-${similarPosts}`;
+    if (countPosts) dataSlugify.slug = `${dataSlugify.slug}-${countPosts}`;
 
-    const newPost = await this.postService.store(dataSlugify);
+    const newPost = await this.postService.save(dataSlugify);
 
     const tagAbleData = tagsAvailable.map((tag: any) => ({
       name: tag.name,
@@ -180,30 +166,23 @@ export class PostController {
       status: tag.status,
     }));
 
-    const categoryAbleDate = categoriesAvailable.map((category: any) => ({
+    const categoryAbleData = categoriesAvailable.map((category: any) => ({
       categoryId: category.id,
       categoryAbleId: newPost.id,
       categoryAbleType: CategoryAbleType.post,
     }));
 
+    const imageAbleData = imagesAvailable.map((image: any) => ({
+      imageId: image.id,
+      imageAbleId: newPost.id,
+      imageAbleType: ImageAbleType.post,
+    }));
+
     await this.tagAbleService.save(tagAbleData);
 
-    await this.categoryAbleService.save(categoryAbleDate);
+    await this.categoryAbleService.save(categoryAbleData);
 
-    const data2 = { ...dataSlugify };
-
-    delete data.url;
-
-    data2.url.map(async (i) => {
-      const data1 = {
-        imageAbleType: ImageAbleType.post,
-        url: i['url'],
-        isThumbnail: false,
-        imageAbleId: newPost.id,
-      };
-
-      return await this.image.create(data1);
-    });
+    await this.imageAbleService.save(imageAbleData);
 
     return this.response.item(newPost, new PostTransformer());
   }

@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { BaseService } from 'src/shared/services/base.service';
 import { Connection, Repository } from 'typeorm';
 import { Image } from '../entities/image.entity';
-import { ImageRepository } from '../repositories/image.reponsitory';
+import { ImageRepository } from '../repositories/image.repository';
 
 @Injectable()
 export class ImageService extends BaseService {

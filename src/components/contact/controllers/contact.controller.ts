@@ -23,7 +23,7 @@ import { Auth } from 'src/components/auth/decorators/auth.decorator';
 import { AuthenticatedUser } from 'src/components/auth/decorators/authenticatedUser.decorator';
 import { JwtAuthGuard } from 'src/components/auth/guards/jwtAuth.guard';
 import { User } from 'src/components/user/entities/user.entity';
-import { QueryListDto, QueryPaginateDto } from 'src/shared/dto/queryParams.dto';
+import { QueryManyDto } from 'src/shared/dto/queryParams.dto';
 import { ApiResponseService } from 'src/shared/services/apiResponse/apiResponse.service';
 import { IPaginationOptions } from 'src/shared/services/pagination';
 import { CreateContactDto, UpdateContactDto } from '../dto/contact.dto';
@@ -49,56 +49,70 @@ export class ContactController {
 
   private fields = ['email', 'phone', 'address'];
 
-  @Get('listPaginate')
-  @Auth('admin')
-  @ApiOperation({
-    summary: 'Admin list contacts with query & paginate',
-  })
-  @ApiOkResponse({
-    description: 'List contacts with search & includes & filter in paginate',
-  })
-  async listPaginate(@Query() query: QueryPaginateDto): Promise<any> {
-    const params: IPaginationOptions = {
-      limit: Number(query.perPage) || 10,
-      page: Number(query.page) || 1,
-    };
+  @Post()
+  @ApiOperation({ summary: 'Admin/user create new contact with userId param' })
+  @ApiOkResponse({ description: 'New contact entity' })
+  async createContact(
+    @AuthenticatedUser() currentUser: User,
+    @Body() data: CreateContactDto,
+  ): Promise<any> {
+    const userRoles = _.map(currentUser.roles, (r) => r.slug);
 
-    const baseQuery = await this.contactService.queryBuilder({
-      entity: this.entity,
-      fields: this.fields,
-      keyword: query.search,
-    });
+    if (_.includes(userRoles, 'user') && userRoles.length == 1) {
+      if (currentUser.id !== data.userId) {
+        throw new ForbiddenException("Can' create contact for another");
+      }
+    }
 
-    const contacts = await this.contactService.paginate(baseQuery, params);
+    const contact = await this.contactService.create(data);
 
-    return this.response.paginate(contacts, new ContactTransformer());
+    return this.response.item(contact, new ContactTransformer());
   }
 
-  @Get('listQuery')
+  @Get()
   @Auth('admin')
   @ApiOperation({
-    summary: 'Admin list contacts with query / without paginate',
+    summary: 'Admin get list contacts',
   })
   @ApiOkResponse({
-    description: 'List contacts with search & includes & filter',
+    description: 'List contacts with param query',
   })
-  async listQuery(@Query() query: QueryListDto): Promise<any> {
-    const baseQuery = await this.contactService.queryBuilder({
+  async readContacts(@Query() query: QueryManyDto): Promise<any> {
+    const { search, sortBy, sortType } = query;
+
+    const queryBuilder = await this.contactService.queryBuilder({
       entity: this.entity,
       fields: this.fields,
-      keyword: query.search,
+      keyword: search,
+      sortBy,
+      sortType,
     });
 
-    const contacts = await baseQuery.getMany();
+    if (query.perPage || query.page) {
+      const paginateOption: IPaginationOptions = {
+        limit: query.perPage ? query.perPage : 10,
+        page: query.page ? query.page : 1,
+      };
 
-    return this.response.collection(contacts, new ContactTransformer());
+      const contacts = await this.contactService.paginate(
+        queryBuilder,
+        paginateOption,
+      );
+
+      return this.response.paginate(contacts, new ContactTransformer());
+    }
+
+    return this.response.collection(
+      await queryBuilder.getMany(),
+      new ContactTransformer(),
+    );
   }
 
   @Get(':id')
   @Auth('admin')
   @ApiOperation({ summary: 'Admin get contact by id' })
   @ApiOkResponse({ description: 'Contact entity' })
-  async show(@Param('id', ParseIntPipe) id: number): Promise<any> {
+  async readContact(@Param('id', ParseIntPipe) id: number): Promise<any> {
     const contact = await this.contactService.findOneOrFail(id);
 
     return this.response.item(contact, new ContactTransformer());
@@ -109,7 +123,7 @@ export class ContactController {
     summary: 'Current user get contacts list with authenticate user',
   })
   @ApiOkResponse({ description: 'Contacts entity' })
-  async selfContacts(@AuthenticatedUser() currentUser: User) {
+  async readSelfContacts(@AuthenticatedUser() currentUser: User) {
     const contacts = await this.contactService.findWhere({
       where: { userId: currentUser.id },
     });
@@ -133,26 +147,6 @@ export class ContactController {
     const contact = await this.contactService.findWhere({
       where: { id: id, userId: currentUser.id },
     });
-
-    return this.response.item(contact, new ContactTransformer());
-  }
-
-  @Post()
-  @ApiOperation({ summary: 'Admin/user create new contact with userId param' })
-  @ApiOkResponse({ description: 'New contact entity' })
-  async createContact(
-    @AuthenticatedUser() currentUser: User,
-    @Body() data: CreateContactDto,
-  ): Promise<any> {
-    const userRoles = _.map(currentUser.roles, (r) => r.slug);
-
-    if (_.includes(userRoles, 'user') && userRoles.length == 1) {
-      if (currentUser.id !== data.userId) {
-        throw new ForbiddenException("Can' create contact for another");
-      }
-    }
-
-    const contact = await this.contactService.create(data);
 
     return this.response.item(contact, new ContactTransformer());
   }

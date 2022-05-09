@@ -7,24 +7,30 @@ import {
   ParseIntPipe,
   Post,
   Put,
-  Req,
+  Query,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiConsumes, ApiHeader, ApiParam, ApiTags } from '@nestjs/swagger';
+import {
+  ApiConsumes,
+  ApiHeader,
+  ApiOkResponse,
+  ApiOperation,
+  ApiParam,
+  ApiTags,
+} from '@nestjs/swagger';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { Auth } from 'src/components/auth/decorators/auth.decorator';
 import { ApiResponseService } from 'src/shared/services/apiResponse/apiResponse.service';
-import { getCustomRepository } from 'typeorm';
 import { CreateImageDto, UpdateImageDto } from '../dto/image.dto';
-import { ImageRepository } from '../repositories/image.reponsitory';
 import { ImageService } from '../services/image.service';
 import { ImageTransformer } from '../transformers/image.transformer';
 import { FileFastifyInterceptor } from 'fastify-file-interceptor';
-import { environment } from '../../../../environment';
 import slugify from 'slugify';
 import * as _ from 'lodash';
+import { QueryManyDto } from 'src/shared/dto/queryParams.dto';
+import { IPaginationOptions } from 'src/shared/services/pagination';
 
 @ApiTags('Images')
 @ApiHeader({
@@ -38,14 +44,20 @@ export class ImageController {
     private imageService: ImageService,
   ) {}
 
+  private entity = 'images';
+
+  private fields = ['title'];
+
   @ApiConsumes('multipart/form-data')
   @Post()
   @Auth('admin')
+  @ApiOperation({ summary: 'Admin upload new image' })
+  @ApiOkResponse({ description: 'Save image and return image entity' })
   @UseInterceptors(
     FileFastifyInterceptor('file', {
       storage: diskStorage({
         destination:
-          environment.appUrl === 'local'
+          process.env.APP_ENV === 'local'
             ? 'public/uploads'
             : 'dist/public/uploads',
         filename: (req, file: Express.Multer.File, cb) => {
@@ -64,11 +76,11 @@ export class ImageController {
       },
     }),
   )
-  async uploadImage(
+  async createImage(
     @UploadedFile() file: Express.Multer.File,
     @Body() data: CreateImageDto,
   ) {
-    const countImage = await this.imageService.count({
+    const countImages = await this.imageService.count({
       where: { title: data.title },
     });
 
@@ -76,35 +88,101 @@ export class ImageController {
       slug: slugify(data.title),
     });
 
-    if (countImage) assignSlug.slug = `${assignSlug.slug}-${countImage}`;
+    if (countImages) assignSlug.slug = `${assignSlug.slug}-${countImages}`;
 
     const newFile = _.assign({}, file, {
       key: file.filename,
-      location: environment.appUrl + '/public/uploads/' + file.filename,
+      location: process.env.APP_URL + '/public/uploads/' + file.filename,
     });
 
-    const assignFile = _.assign(assignSlug, {
-      value: newFile.location,
+    const assignUrlFile = _.assign(assignSlug, {
+      url: newFile.location,
     });
 
-    await this.imageService.save(assignFile);
+    const image = { ...assignUrlFile };
+
+    await this.imageService.save(image);
 
     return this.response.success();
   }
 
+  @Get()
+  @Auth('admin')
+  @ApiOperation({ summary: 'Admin get list image' })
+  @ApiOkResponse({ description: 'List images with param query' })
+  async readImages(@Query() query: QueryManyDto): Promise<any> {
+    const { search, sortBy, sortType } = query;
+
+    const queryBuilder = await this.imageService.queryBuilder({
+      entity: this.entity,
+      fields: this.fields,
+      keyword: search,
+      sortBy,
+      sortType,
+    });
+
+    if (query.perPage || query.page) {
+      const paginateOption: IPaginationOptions = {
+        limit: query.perPage ? query.perPage : 10,
+        page: query.page ? query.page : 1,
+      };
+
+      const images = await this.imageService.paginate(
+        queryBuilder,
+        paginateOption,
+      );
+
+      return this.response.paginate(images, new ImageTransformer());
+    }
+
+    return this.response.collection(
+      await queryBuilder.getMany(),
+      new ImageTransformer(),
+    );
+  }
+
+  @Get(':id')
+  @Auth('admin')
+  @ApiOperation({ summary: 'Admin get image by id' })
+  @ApiOkResponse({ description: 'Image entity' })
+  async readImage(@Param('id', ParseIntPipe) id: number): Promise<any> {
+    const image = await this.imageService.findOneOrFail(id);
+
+    return this.response.item(image, new ImageTransformer());
+  }
+
   @Put(':id')
-  @ApiParam({ name: 'id' })
-  async update(@Param() params, @Body() data: UpdateImageDto): Promise<any> {
-    await this.imageService.findOneOrFail(params.id);
+  @ApiOperation({ summary: 'Admin update image by id' })
+  @ApiOkResponse({ description: 'Update image entity' })
+  async updateImage(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() data: UpdateImageDto,
+  ): Promise<any> {
+    const currentImage = await this.imageService.findOneOrFail(id);
 
-    await this.imageService.update(params.id, data);
+    const countImages = await this.imageService.count({
+      where: { title: data.title },
+    });
 
+    if (data.title !== currentImage.title) {
+      const assignSlug = _.assign(data, { slug: slugify(data.title) });
+
+      if (countImages) assignSlug.slug = `${assignSlug.slug}-${countImages}`;
+
+      const imageUpdate = { ...assignSlug };
+
+      await this.imageService.update(id, imageUpdate);
+    } else {
+      await this.imageService.update(id, data);
+    }
     return this.response.success();
   }
 
   @Delete(':id')
-  @ApiParam({ name: 'id' })
-  async remove(@Param('id', ParseIntPipe) id: number): Promise<any> {
+  @Auth('admin')
+  @ApiOperation({ summary: 'Admin delete image by id' })
+  @ApiOkResponse({ description: 'Delete image successfully' })
+  async deleteImage(@Param('id', ParseIntPipe) id: number): Promise<any> {
     await this.imageService.findOneOrFail(id);
 
     await this.imageService.destroy(id);

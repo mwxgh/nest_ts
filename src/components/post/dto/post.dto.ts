@@ -45,15 +45,11 @@ export class PostProperties {
   @ApiProperty({
     type: 'array',
     items: {
-      type: 'object',
-      default: {
-        url: 'https://',
-      },
+      type: 'int',
     },
   })
-  @IsNotEmpty()
   @IsArray()
-  url: [];
+  imageIds: [];
 }
 
 export class CreatPostDto extends OmitType(PostProperties, [] as const) {}

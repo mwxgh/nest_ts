@@ -3,11 +3,11 @@ export const SortType = {
   ASC: 'ASC',
 } as const;
 
-export const SortBy = {
+export const SortByProperties = {
   UPDATED_AT: 'updatedAt',
   CREATED_AT: 'createdAt',
 } as const;
 
-export const DEFAULT_SORT_BY = SortBy.UPDATED_AT;
+export const DEFAULT_SORT_BY = SortByProperties.UPDATED_AT;
 
 export const DEFAULT_SORT_TYPE = SortType.DESC;

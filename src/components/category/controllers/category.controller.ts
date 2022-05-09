@@ -19,7 +19,7 @@ import {
 } from '@nestjs/swagger';
 
 import { IPaginationOptions } from 'src/shared/services/pagination';
-import { QueryListDto, QueryPaginateDto } from 'src/shared/dto/queryParams.dto';
+import { QueryListDto, QueryManyDto } from 'src/shared/dto/queryParams.dto';
 import { CreateCategoryDto, UpdateCategoryDto } from '../dto/category.dto';
 import { CategoryService } from '../services/category.service';
 import { CategoryTransformer } from '../transformers/category.transformer';
@@ -44,50 +44,51 @@ export class CategoryController {
   private entity = 'categories';
   private fields = ['name', 'categoryType'];
 
-  @Get('listPaginate')
-  @ApiOperation({
-    summary: 'List categories with query & paginate',
-  })
-  @ApiOkResponse({
-    description: 'List categories with search & includes & filter in paginate',
-  })
-  async listPaginate(@Query() query: QueryPaginateDto): Promise<any> {
-    const params: IPaginationOptions = {
-      limit: query.perPage ? query.perPage : 10,
-      page: query.page ? query.page : 1,
-    };
+  @Post()
+  @Auth('admin')
+  @ApiOperation({ summary: 'Admin create new category' })
+  @ApiOkResponse({ description: 'New category entity' })
+  async createCategory(@Body() data: CreateCategoryDto): Promise<any> {
+    const category = await this.categoryService.create(data);
 
-    const { search, includes } = query;
-
-    const queryInclude = await this.categoryService.queryCategory(
-      this.entity,
-      this.fields,
-      search,
-      includes,
-    );
-
-    const data = await this.categoryService.paginate(queryInclude, params);
-
-    return this.response.paginate(data, new CategoryTransformer());
+    return this.response.item(category, new CategoryTransformer());
   }
 
-  @Get('listQuery')
-  @ApiOperation({ summary: 'List categories with query / without paginate' })
-  @ApiOkResponse({
-    description: 'List categories with search & includes & filter',
+  @Get()
+  @ApiOperation({
+    summary: 'Get list categories',
   })
-  async listQuery(@Query() query: QueryListDto): Promise<any> {
-    const { search, includes } = query;
+  @ApiOkResponse({
+    description: 'List categories with param query',
+  })
+  async readCategories(@Query() query: QueryManyDto): Promise<any> {
+    const { search, includes, sortBy, sortType } = query;
 
-    const queryInclude = await this.categoryService.queryCategory(
-      this.entity,
-      this.fields,
-      search,
+    const queryBuilder = await this.categoryService.queryCategory({
+      entity: this.entity,
+      fields: this.fields,
+      keyword: search,
       includes,
-    );
+      sortBy,
+      sortType,
+    });
+
+    if (query.perPage || query.page) {
+      const paginateOption: IPaginationOptions = {
+        limit: query.perPage ? query.perPage : 10,
+        page: query.page ? query.page : 1,
+      };
+
+      const data = await this.categoryService.paginate(
+        queryBuilder,
+        paginateOption,
+      );
+
+      return this.response.paginate(data, new CategoryTransformer());
+    }
 
     return this.response.collection(
-      await queryInclude.getMany(),
+      await queryBuilder.getMany(),
       new CategoryTransformer(),
     );
   }
@@ -95,18 +96,8 @@ export class CategoryController {
   @Get(':id')
   @ApiOperation({ summary: 'Get category by id' })
   @ApiOkResponse({ description: 'Category entity' })
-  async show(@Param('id', ParseIntPipe) id: number): Promise<any> {
+  async readCategory(@Param('id', ParseIntPipe) id: number): Promise<any> {
     const category = await this.categoryService.findOneOrFail(id);
-
-    return this.response.item(category, new CategoryTransformer());
-  }
-
-  @Post()
-  @Auth('admin')
-  @ApiOperation({ summary: 'Admin create new category' })
-  @ApiOkResponse({ description: 'New category entity' })
-  async create(@Body() data: CreateCategoryDto): Promise<any> {
-    const category = await this.categoryService.create(data);
 
     return this.response.item(category, new CategoryTransformer());
   }

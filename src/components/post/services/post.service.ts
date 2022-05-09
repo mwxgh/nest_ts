@@ -14,28 +14,13 @@ export class PostService extends BaseService {
     this.repository = this.dataSource.getCustomRepository(PostRepository);
   }
 
-  async store(data: any): Promise<PostAble> {
-    return await this.repository.save(data);
-  }
-
-  async update(id: number, data: any): Promise<UpdateResult> {
-    delete data.url;
-    delete data.is_thumbnail;
-    return await this.repository.update(Number(id), {
-      ...data,
-      updated_at: new Date(),
-    });
-  }
-
-  async posts(): Promise<any> {
-    return await this.repository;
-  }
-
   async queryPost(params: {
     entity: string;
     fields?: string[];
     keyword?: string | '';
     includes?: any;
+    sortBy?: string;
+    sortType?: 'ASC' | 'DESC';
     privacy?: string;
     status?: string;
     priority?: string;
@@ -46,13 +31,21 @@ export class PostService extends BaseService {
       fields,
       keyword,
       includes,
+      sortBy,
+      sortType,
       privacy,
       status,
       priority,
       type,
     } = params;
 
-    let baseQuery = await this.queryBuilder({ entity, fields, keyword });
+    let baseQuery = await this.queryBuilder({
+      entity,
+      fields,
+      keyword,
+      sortBy,
+      sortType,
+    });
 
     if (privacy && privacy !== '') {
       baseQuery = baseQuery.andWhere('posts.privacy = :privacy', {
@@ -106,6 +99,7 @@ export class PostService extends BaseService {
           `categories.category`,
           `category`,
         );
+
       // query tag detail
       if (include.includes('tags'))
         baseQuery = baseQuery.leftJoinAndSelect(`tags.tag`, `tag`);

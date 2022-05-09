@@ -5,6 +5,7 @@ import {
   IsNumber,
   IsEnum,
   ArrayMinSize,
+  IsArray,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import {
@@ -43,18 +44,24 @@ export class QueryProperties {
 
   @ApiProperty()
   @IsOptional()
+  @ApiProperty({
+    type: 'array',
+    items: {
+      type: 'string',
+    },
+  })
+  @IsArray()
+  includes: string[];
+
+  @ApiProperty()
+  @IsOptional()
   @IsString()
-  includes: string;
+  sortBy: string;
 
   @ApiProperty()
   @IsOptional()
   @IsEnum(SortType)
-  sortType: string;
-
-  @ApiProperty()
-  @IsOptional()
-  @ArrayMinSize(1)
-  sortBy: string[];
+  sortType: 'ASC' | 'DESC';
 
   @ApiProperty()
   @IsOptional()
@@ -85,6 +92,8 @@ export class QueryPostProperties {
 
 export class QueryPaginateDto extends OmitType(QueryProperties, [] as const) {}
 
+export class QueryManyDto extends OmitType(QueryProperties, [] as const) {}
+
 export class QueryListDto extends PickType(QueryProperties, [
   'search',
   'includes',
@@ -95,12 +104,7 @@ export class QueryOneDto extends PickType(QueryProperties, [
   'includes',
 ] as const) {}
 
-export class QueryPostPaginateDto extends IntersectionType(
-  QueryPaginateDto,
-  QueryPostProperties,
-) {}
-
-export class QueryPostListDto extends IntersectionType(
-  QueryListDto,
+export class QueryManyPostDto extends IntersectionType(
+  QueryManyDto,
   QueryPostProperties,
 ) {}
