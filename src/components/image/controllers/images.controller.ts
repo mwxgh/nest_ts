@@ -66,28 +66,28 @@ export class ImageController {
   )
   async uploadImage(
     @UploadedFile() file: Express.Multer.File,
-    @Req() req,
     @Body() data: CreateImageDto,
   ) {
-    const count = await getCustomRepository(ImageRepository).findAndCount({
+    const countImage = await this.imageService.count({
       where: { title: data.title },
     });
 
     const assignSlug = _.assign(data, {
       slug: slugify(data.title),
     });
-    if (count) assignSlug.slug = `${assignSlug.slug}-${count}`;
 
-    const new_file = _.assign({}, file, {
+    if (countImage) assignSlug.slug = `${assignSlug.slug}-${countImage}`;
+
+    const newFile = _.assign({}, file, {
       key: file.filename,
       location: environment.appUrl + '/public/uploads/' + file.filename,
     });
 
     const assignFile = _.assign(assignSlug, {
-      value: new_file.location,
+      value: newFile.location,
     });
-    const dataFile = { ...assignFile };
-    await getCustomRepository(ImageRepository).save(dataFile);
+
+    await this.imageService.save(assignFile);
 
     return this.response.success();
   }

@@ -186,9 +186,9 @@ export class PostController {
       categoryAbleType: CategoryAbleType.post,
     }));
 
-    await this.tagAbleService.store(tagAbleData);
+    await this.tagAbleService.save(tagAbleData);
 
-    await this.categoryAbleService.store(categoryAbleDate);
+    await this.categoryAbleService.save(categoryAbleDate);
 
     const data2 = { ...dataSlugify };
 
@@ -276,7 +276,7 @@ export class PostController {
       }));
 
       for (const tagAble of tagAbles) {
-        await this.tagAbleService.store(tagAble);
+        await this.tagAbleService.save(tagAble);
       }
     }
 
@@ -328,23 +328,31 @@ export class PostController {
       );
 
       for (const categoryAble of categoryAbles) {
-        await this.categoryAbleService.store(categoryAble);
+        await this.categoryAbleService.save(categoryAble);
       }
     }
 
     const dataSlugify = _.assign(data, { slug: slugify(data.title) });
 
-    const count = await getManager()
-      .createQueryBuilder(PostAble, 'posts')
-      .where(
-        'posts.title = :title AND posts.type = :type AND posts.slug = :slug ',
-        {
-          title: data.title,
-          type: data.type,
-          slug: dataSlugify.slug,
-        },
-      )
-      .getCount();
+    const count = await this.postService.count({
+      where: {
+        title: data.title,
+        type: data.type,
+        slug: dataSlugify.slug,
+      },
+    });
+
+    // const count = await getManager()
+    //   .createQueryBuilder(PostAble, 'posts')
+    //   .where(
+    //     'posts.title = :title AND posts.type = :type AND posts.slug = :slug ',
+    //     {
+    //       title: data.title,
+    //       type: data.type,
+    //       slug: dataSlugify.slug,
+    //     },
+    //   )
+    //   .getCount();
 
     if (currentPost.title === data.title && currentPost.type === data.type) {
       delete dataSlugify.slug;

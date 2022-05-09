@@ -137,6 +137,17 @@ export class BaseService {
   }
 
   /**
+   * Saves a given entity in the database.
+   *
+   * @param data
+   *
+   * @returns save data
+   */
+  async save(data: { [key: string]: any }): Promise<any> {
+    await this.repository.save(data);
+  }
+
+  /**
    * Get the first record matching the attributes or create it
    *
    * @param options FindOneOptions

@@ -14,8 +14,4 @@ export class CategoryAbleService extends BaseService {
       CategoryAbleRepository,
     );
   }
-
-  async store(data: any): Promise<CategoryAble> {
-    return this.categoryAbleRepository.save(data);
-  }
 }

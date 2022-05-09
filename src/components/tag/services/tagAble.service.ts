@@ -14,10 +14,6 @@ export class TagAbleService extends BaseService {
       this.dataSource.getCustomRepository(TagAbleRepository);
   }
 
-  async store(data: any): Promise<TagAble> {
-    return this.tagAbleRepository.save(data);
-  }
-
   //update tagAble from update post
   async update(id: number, data: any): Promise<UpdateResult> {
     return await this.tagAbleRepository.update(Number(id), {
