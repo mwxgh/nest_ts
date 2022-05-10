@@ -19,7 +19,7 @@ import {
 } from '@nestjs/swagger';
 
 import { IPaginationOptions } from 'src/shared/services/pagination';
-import { QueryListDto, QueryManyDto } from 'src/shared/dto/queryParams.dto';
+import { QueryManyDto } from 'src/shared/dto/queryParams.dto';
 import { CreateCategoryDto, UpdateCategoryDto } from '../dto/category.dto';
 import { CategoryService } from '../services/category.service';
 import { CategoryTransformer } from '../transformers/category.transformer';

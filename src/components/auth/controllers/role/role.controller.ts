@@ -27,7 +27,7 @@ import {
   CreateCategoryDto,
   UpdateCategoryDto,
 } from 'src/components/category/dto/category.dto';
-import { QueryListDto, QueryPaginateDto } from 'src/shared/dto/queryParams.dto';
+import { QueryManyDto } from 'src/shared/dto/queryParams.dto';
 import { JwtAuthGuard } from '../../guards/jwtAuth.guard';
 
 @ApiTags('Roles')
@@ -45,65 +45,7 @@ export class RoleController {
   ) {}
 
   private entity = 'roles';
-
   private fields = ['name', 'level'];
-
-  @Get('listPaginate')
-  @Auth('admin')
-  @ApiOperation({
-    summary: 'Admin list roles with query & paginate',
-  })
-  @ApiOkResponse({
-    description: 'List roles with search & includes & filter in paginate',
-  })
-  async listPaginate(@Query() query: QueryPaginateDto): Promise<any> {
-    const params: IPaginationOptions = {
-      limit: Number(query.perPage) || 10,
-      page: Number(query.page) || 1,
-    };
-
-    const baseQuery = await this.roleService.queryBuilder({
-      entity: this.entity,
-      fields: this.fields,
-      keyword: query.search,
-    });
-
-    const data = await this.roleService.paginate(await baseQuery, params);
-
-    return this.response.paginate(data, new RoleTransformer([]));
-  }
-
-  @Get('listQuery')
-  @Auth('admin')
-  @ApiOperation({
-    summary: 'Admin list roles with query / without paginate',
-  })
-  @ApiOkResponse({
-    description: 'List roles with search & includes & filter',
-  })
-  async listQuery(@Query() query: QueryListDto): Promise<any> {
-    const baseQuery = await this.roleService.queryBuilder({
-      entity: this.entity,
-      fields: this.fields,
-      keyword: query.search,
-    });
-
-    const roles = await baseQuery.getMany();
-
-    return this.response.collection(roles, new RoleTransformer([]));
-  }
-
-  @Get(':id')
-  @Auth('admin')
-  @ApiOperation({ summary: 'Admin get role by id' })
-  @ApiOkResponse({ description: 'Role entity' })
-  async show(@Param('id', ParseIntPipe) id: number): Promise<any> {
-    const role = await this.roleService.findOneOrFail(id, {
-      relations: ['permissions'],
-    });
-
-    return this.response.item(role, new RoleTransformer(['permissions']));
-  }
 
   @Post('')
   @Auth('admin')
@@ -115,6 +57,64 @@ export class RoleController {
     const role = await this.roleService.create(assign(data, { slug: slug }));
 
     return this.response.item(role, new RoleTransformer());
+  }
+
+  @Get()
+  @Auth('admin')
+  @ApiOperation({
+    summary: 'Admin list roles',
+  })
+  @ApiOkResponse({
+    description: 'List roles with query param',
+  })
+  async readRoles(@Query() query: QueryManyDto): Promise<any> {
+    const { search, includes, sortBy, sortType } = query;
+
+    let queryBuilder = await this.roleService.queryBuilder({
+      entity: this.entity,
+      fields: this.fields,
+      keyword: search,
+      sortBy,
+      sortType,
+    });
+
+    if (includes.includes('permissions')) {
+      queryBuilder = queryBuilder.leftJoinAndSelect(
+        `${this.entity}.permissions`,
+        'permissions',
+      );
+    }
+
+    if (query.perPage || query.page) {
+      const paginateOption: IPaginationOptions = {
+        limit: query.perPage ? query.perPage : 10,
+        page: query.page ? query.page : 1,
+      };
+
+      const roles = await this.roleService.paginate(
+        queryBuilder,
+        paginateOption,
+      );
+
+      return this.response.paginate(roles, new RoleTransformer(includes));
+    }
+
+    return this.response.collection(
+      await queryBuilder.getMany(),
+      new RoleTransformer(includes),
+    );
+  }
+
+  @Get(':id')
+  @Auth('admin')
+  @ApiOperation({ summary: 'Admin get role by id' })
+  @ApiOkResponse({ description: 'Role entity' })
+  async readRole(@Param('id', ParseIntPipe) id: number): Promise<any> {
+    const role = await this.roleService.findOneOrFail(id, {
+      relations: ['permissions'],
+    });
+
+    return this.response.item(role, new RoleTransformer(['permissions']));
   }
 
   @Put(':id')

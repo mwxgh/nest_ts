@@ -22,20 +22,18 @@ import { VerifyUserNotification } from '../notifications/verifyUser.notification
 import { UserPasswordChangedNotification } from '../notifications/userPasswordChanged.notification';
 import { InviteUserService } from '../services/inviteUser.service';
 import { SendInviteUserLinkNotification } from '../../auth/notifications/sendInviteUserLink.notification';
-import { QueryPaginateDto } from '../../../shared/dto/queryParams.dto';
+import { QueryManyDto } from '../../../shared/dto/queryParams.dto';
 import { Request } from 'express';
 import { UserSendMailReportNotification } from '../notifications/userSendEmailReport.notification';
 import { AuthenticatedUser } from '../../auth/decorators/authenticatedUser.decorator';
 import { User } from '../entities/user.entity';
-import { map, isEmpty } from 'lodash';
 import { ApiTags } from '@nestjs/swagger';
-
 import {
   UserAttachRoleDto,
   UserDetachRoleDto,
   UserSendMailReportDto,
 } from '../dto/user.dto';
-import { AdminCreateUserDto, AdminUpdateUserDto } from '../dto/user.dto';
+import { CreateUserDto, UpdateUserDto } from '../dto/user.dto';
 
 @ApiTags('Users')
 @Controller('api/users')
@@ -49,52 +47,75 @@ export class UserController {
   ) {}
 
   private entity = 'users';
-
   private fields = ['email', 'username', 'firstName', 'lastName'];
 
-  @Get('listPaginate')
-  @Auth('admin', 'user')
-  async index(
-    @AuthenticatedUser() user: User,
-    @Query() query: { perPage: number; page: number; includes?: string },
-    @Query() request: QueryPaginateDto,
-  ): Promise<any> {
-    let relations = [];
+  @Post()
+  @Auth('admin')
+  async createUser(@Body() data: CreateUserDto): Promise<any> {
+    const user = await this.userService.create(
+      pick(data, ['email', 'username', 'password', 'firstName', 'lastName']),
+    );
 
-    const params: IPaginationOptions = {
-      limit: query.perPage ? query.perPage : 10,
-      page: query.page ? query.page : 1,
-    };
-
-    const keyword = request.search;
-
-    let baseQuery = await this.userService.queryBuilder({
-      entity: this.entity,
-      fields: this.fields,
-      keyword,
-    });
-
-    const userRoles = map(user.roles, (r) => r.slug);
-
-    if (includes(userRoles, 'user') || isEmpty(userRoles)) {
-      baseQuery = baseQuery.where('user.id = :id', { id: user.id });
-    }
-
-    if (!isNil(query.includes) && query.includes !== '') {
-      relations = query.includes.split(',');
-      if (includes(relations, 'roles')) {
-        baseQuery = baseQuery.leftJoinAndSelect('user.roles', 'role');
+    if (data.roleIds.length > 0) {
+      for (const roleId of data.roleIds) {
+        await this.userService.attachRole(user.id, roleId);
       }
     }
 
-    const data = await this.userService.paginate(baseQuery, params);
+    return this.response.success();
+  }
 
-    return this.response.paginate(data, new UserTransformer(relations));
+  @Get()
+  @Auth('admin', 'user')
+  async readUsers(
+    @AuthenticatedUser() user: User,
+    @Query() query: QueryManyDto,
+  ): Promise<any> {
+    const { search, includes, sortBy, sortType } = query;
+
+    let queryBuilder = await this.userService.queryBuilder({
+      entity: this.entity,
+      fields: this.fields,
+      keyword: search,
+      sortBy,
+      sortType,
+    });
+
+    // const userRoles = map(user.roles, (r) => r.slug);
+
+    // if (userRoles.includes('user') || isEmpty(userRoles)) {
+    //   queryBuilder = queryBuilder.where('user.id = :id', { id: user.id });
+    // }
+
+    if (!isNil(query.includes)) {
+      if (includes.includes('roles')) {
+        queryBuilder = queryBuilder.leftJoinAndSelect('user.roles', 'roles');
+      }
+    }
+
+    if (query.perPage || query.page) {
+      const paginateOption: IPaginationOptions = {
+        limit: query.perPage ? query.perPage : 10,
+        page: query.page ? query.page : 1,
+      };
+
+      const data = await this.userService.paginate(
+        queryBuilder,
+        paginateOption,
+      );
+
+      return this.response.paginate(data, new UserTransformer(includes));
+    }
+
+    return this.response.collection(
+      await queryBuilder.getMany(),
+      new UserTransformer(includes),
+    );
   }
 
   @Get(':id')
   @Auth('admin', 'user')
-  async show(@Param('id', ParseIntPipe) id: number): Promise<any> {
+  async readUser(@Param('id', ParseIntPipe) id: number): Promise<any> {
     const item = await this.userService.findOneOrFail(id, {
       relations: ['roles'],
     });
@@ -102,21 +123,11 @@ export class UserController {
     return this.response.item(item, new UserTransformer(['roles']));
   }
 
-  @Post()
-  @Auth('admin')
-  async store(@Body() data: AdminCreateUserDto): Promise<any> {
-    const item = await this.userService.create(
-      pick(data, ['email', 'username', 'password', 'firstName', 'lastName']),
-    );
-
-    return this.response.item(item, new UserTransformer());
-  }
-
   @Put(':id/password')
   @Auth('admin')
   async changePassword(
     @Param('id', ParseIntPipe) id: number,
-    @Body() data: AdminUpdateUserDto,
+    @Body() data: UpdateUserDto,
   ): Promise<any> {
     const user = await this.userService.findOneOrFail(id);
 

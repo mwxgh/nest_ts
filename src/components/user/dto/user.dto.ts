@@ -1,5 +1,6 @@
 import { ApiProperty, OmitType, PartialType, PickType } from '@nestjs/swagger';
 import {
+  IsArray,
   IsBoolean,
   IsEmail,
   IsNotEmpty,
@@ -33,10 +34,20 @@ export class UserProperties {
   @IsOptional()
   @MaxLength(30)
   lastName: string;
+
+  @ApiProperty({
+    type: 'array',
+    items: {
+      type: 'int',
+    },
+  })
+  @IsArray()
+  @IsOptional()
+  roleIds: number[];
 }
 
-export class AdminCreateUserDto extends OmitType(UserProperties, [] as const) {}
-export class AdminUpdateUserDto extends PartialType(UserProperties) {
+export class CreateUserDto extends OmitType(UserProperties, [] as const) {}
+export class UpdateUserDto extends PartialType(UserProperties) {
   @ApiProperty()
   @IsBoolean()
   @IsOptional()

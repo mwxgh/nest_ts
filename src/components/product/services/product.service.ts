@@ -22,7 +22,7 @@ export class ProductService extends BaseService {
 
     const include = includes.split(',').filter((item) => key.includes(item));
 
-    let query_builder = id
+    let queryBuilder = id
       ? this.repository
           .createQueryBuilder('products')
           .where('products.id = :id', { id: id })
@@ -30,7 +30,7 @@ export class ProductService extends BaseService {
 
     if (include.length > 0) {
       if (include.includes('images')) {
-        query_builder = query_builder.leftJoinAndSelect(
+        queryBuilder = queryBuilder.leftJoinAndSelect(
           'products.images',
           'images',
           'images.imageAbleType = :imageAbleType',
@@ -38,17 +38,17 @@ export class ProductService extends BaseService {
         );
       }
       if (include.includes('categories')) {
-        query_builder = query_builder.leftJoinAndSelect(
+        queryBuilder = queryBuilder.leftJoinAndSelect(
           'products.categories',
           'categories',
           'categories.categoryAbleType = :categoryAbleType',
           { categoryAbleType: CategoryAbleType.product },
         );
-        query_builder.leftJoinAndSelect('categories.category', 'category');
+        queryBuilder.leftJoinAndSelect('categories.category', 'category');
       }
     }
 
-    return { include, query_builder };
+    return { include, queryBuilder };
   }
 
   async createProduct(data: any): Promise<any> {

@@ -29,7 +29,7 @@ import {
 } from '../../dto/permission.dto';
 
 import { JwtAuthGuard } from '../../guards/jwtAuth.guard';
-import { QueryListDto, QueryPaginateDto } from 'src/shared/dto/queryParams.dto';
+import { QueryManyDto } from 'src/shared/dto/queryParams.dto';
 
 @ApiTags('Permissions')
 @ApiHeader({
@@ -48,61 +48,6 @@ export class PermissionController {
   private entity = 'permissions';
   private fields = ['name'];
 
-  @Get('listPaginate')
-  @Auth('admin')
-  @ApiOperation({
-    summary: 'Admin list permissions with query & paginate',
-  })
-  @ApiOkResponse({
-    description: 'List permissions with search & includes & filter in paginate',
-  })
-  async listPaginate(@Query() query: QueryPaginateDto): Promise<any> {
-    const params: IPaginationOptions = {
-      limit: Number(query.perPage) || 10,
-      page: Number(query.page) || 1,
-    };
-
-    const baseQuery = await this.permissionService.queryBuilder({
-      entity: this.entity,
-      fields: this.fields,
-      keyword: query.search,
-    });
-
-    const data = await this.permissionService.paginate(baseQuery, params);
-
-    return this.response.paginate(data, new PermissionTransformer());
-  }
-
-  @Get('listQuery')
-  @Auth('admin')
-  @ApiOperation({
-    summary: 'Admin list permissions with query / without paginate',
-  })
-  @ApiOkResponse({
-    description: 'List permissions with search & includes & filter',
-  })
-  async listQuery(@Query() query: QueryListDto): Promise<any> {
-    const baseQuery = await this.permissionService.queryBuilder({
-      entity: this.entity,
-      fields: this.fields,
-      keyword: query.search,
-    });
-
-    const permissions = await baseQuery.getMany();
-
-    return this.response.collection(permissions, new PermissionTransformer());
-  }
-
-  @Get(':id')
-  @Auth('admin')
-  @ApiOperation({ summary: 'Admin get permission by id' })
-  @ApiOkResponse({ description: 'Permission entity' })
-  async show(@Param('id', ParseIntPipe) id: number): Promise<any> {
-    const role = await this.permissionService.findOneOrFail(id);
-
-    return this.response.item(role, new PermissionTransformer());
-  }
-
   @Post('')
   @Auth('admin')
   @ApiOperation({ summary: 'Admin create new permission' })
@@ -110,11 +55,59 @@ export class PermissionController {
   async createPermission(@Body() data: CreatePermissionDto): Promise<any> {
     const slug = await this.permissionService.generateSlug(data.name);
 
-    const role = await this.permissionService.create(
+    const permission = await this.permissionService.create(
       assign(data, { slug: slug }),
     );
 
-    return this.response.item(role, new PermissionTransformer());
+    return this.response.item(permission, new PermissionTransformer());
+  }
+
+  @Get()
+  @Auth('admin')
+  @ApiOperation({
+    summary: 'Admin get list permissions',
+  })
+  @ApiOkResponse({
+    description: 'List permissions with query param',
+  })
+  async readPermissions(@Query() query: QueryManyDto): Promise<any> {
+    const { search, sortBy, sortType } = query;
+
+    const queryBuilder = await this.permissionService.queryBuilder({
+      entity: this.entity,
+      fields: this.fields,
+      keyword: search,
+      sortBy,
+      sortType,
+    });
+
+    if (query.perPage || query.page) {
+      const paginateOption: IPaginationOptions = {
+        limit: query.perPage ? query.perPage : 10,
+        page: query.page ? query.page : 1,
+      };
+      const permissions = await this.permissionService.paginate(
+        queryBuilder,
+        paginateOption,
+      );
+
+      return this.response.paginate(permissions, new PermissionTransformer());
+    }
+
+    return this.response.collection(
+      await queryBuilder.getMany(),
+      new PermissionTransformer(),
+    );
+  }
+
+  @Get(':id')
+  @Auth('admin')
+  @ApiOperation({ summary: 'Admin get permission by id' })
+  @ApiOkResponse({ description: 'Permission entity' })
+  async readPermission(@Param('id', ParseIntPipe) id: number): Promise<any> {
+    const permission = await this.permissionService.findOneOrFail(id);
+
+    return this.response.item(permission, new PermissionTransformer());
   }
 
   @Put(':id')

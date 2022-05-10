@@ -8,7 +8,6 @@ import { ProductModule } from './product/product.module';
 import { ImageModule } from './image/image.module';
 import { OrderModule } from './order/order.module';
 import { CartModule } from './cart/cart.module';
-import { OptionModule } from './option/option.module';
 import { ContactModule } from './contact/contact.module';
 import { AuthModule } from './auth/auth.module';
 import { ProfileModule } from './profile/profile.module';
@@ -21,7 +20,6 @@ import { ProfileModule } from './profile/profile.module';
     CommentModule,
     ContactModule,
     ImageModule,
-    OptionModule,
     OrderModule,
     PostModule,
     ProductModule,

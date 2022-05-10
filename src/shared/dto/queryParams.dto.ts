@@ -68,7 +68,7 @@ export class QueryProperties {
   filters: { [key: string]: string };
 }
 
-export class QueryPostProperties {
+export class PostProperties {
   @ApiProperty()
   @IsOptional()
   @IsEnum(PrivacyPost)
@@ -106,5 +106,5 @@ export class QueryOneDto extends PickType(QueryProperties, [
 
 export class QueryManyPostDto extends IntersectionType(
   QueryManyDto,
-  QueryPostProperties,
+  PostProperties,
 ) {}
