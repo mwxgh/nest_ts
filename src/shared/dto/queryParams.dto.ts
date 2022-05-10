@@ -1,12 +1,4 @@
-import {
-  IsString,
-  IsOptional,
-  Min,
-  IsNumber,
-  IsEnum,
-  ArrayMinSize,
-  IsArray,
-} from 'class-validator';
+import { IsString, IsOptional, Min, IsNumber, IsEnum } from 'class-validator';
 import { Type } from 'class-transformer';
 import {
   ApiProperty,

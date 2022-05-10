@@ -19,8 +19,7 @@ export class CreateTagsTable1650205809178 implements MigrationInterface {
           },
           {
             name: 'status',
-            default: 1,
-            type: 'int',
+            type: 'varchar',
           },
           {
             name: 'verifiedAt',

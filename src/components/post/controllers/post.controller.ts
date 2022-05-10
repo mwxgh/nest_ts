@@ -7,7 +7,6 @@ import {
   Param,
   Put,
   Query,
-  NotFoundException,
   ParseIntPipe,
   UseGuards,
 } from '@nestjs/common';
@@ -18,8 +17,7 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import { Connection, getManager } from 'typeorm';
-import { PostAble } from '../entities/post.entity';
+import { Connection } from 'typeorm';
 import { PostService } from '../services/post.service';
 import { CreatPostDto, UpdatePostDto } from '../dto/post.dto';
 import { IPaginationOptions } from 'src/shared/services/pagination';
@@ -156,7 +154,7 @@ export class PostController {
 
     if (countPosts) dataSlugify.slug = `${dataSlugify.slug}-${countPosts}`;
 
-    const newPost = await this.postService.save(dataSlugify);
+    const newPost = await this.postService.create(dataSlugify);
 
     const tagAbleData = tagsAvailable.map((tag: any) => ({
       name: tag.name,
@@ -353,8 +351,6 @@ export class PostController {
   async deletePost(@Param('id', ParseIntPipe) id: number): Promise<any> {
     const currentPost = await this.postService.findOneOrFail(id);
 
-    await this.postService.destroy(currentPost.id);
-
     const currentTagAbles = await this.tagAbleService.findWhere({
       where: {
         tagAbleId: currentPost.id,
@@ -384,6 +380,8 @@ export class PostController {
 
       await this.categoryAbleService.destroy(currentCategoryAbleIds);
     }
+
+    await this.postService.destroy(currentPost.id);
 
     return this.response.success();
   }

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { BaseService } from 'src/shared/services/base.service';
-import { Repository, Connection, UpdateResult } from 'typeorm';
+import { Repository, Connection } from 'typeorm';
 import { JoinPostAbleType, PostAble } from '../entities/post.entity';
 import { PostRepository } from '../repositories/post.repository';
 

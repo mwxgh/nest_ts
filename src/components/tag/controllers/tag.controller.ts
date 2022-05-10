@@ -33,7 +33,7 @@ import { TagTransformer } from '../transformers/tag.transformer';
 })
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
-@Controller('api/tag')
+@Controller('api/tags')
 export class TagController {
   constructor(
     private tagService: TagService,

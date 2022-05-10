@@ -3,14 +3,18 @@ import { Column, Entity, OneToMany } from 'typeorm';
 import { TagAble } from './tagAble.entity';
 import { TimeStampEntity } from '../../base.entity';
 
+export const StatusTag = {
+  publish: 'PUBLISH',
+  hide: 'HIDE',
+} as const;
 @Notifiable()
 @Entity({ name: 'tags' })
 export class TagName extends TimeStampEntity {
   @Column({ type: 'varchar' })
   name: string;
 
-  @Column({ type: 'int', default: 1 })
-  status: number;
+  @Column({ type: 'varchar' })
+  status: string;
 
   @Column({ type: 'timestamp' })
   public verifiedAt: Date;
