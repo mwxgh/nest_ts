@@ -9,14 +9,15 @@ import {
   Put,
   Query,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import {
+  ApiBearerAuth,
   ApiConsumes,
   ApiHeader,
   ApiOkResponse,
   ApiOperation,
-  ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
 import { diskStorage } from 'multer';
@@ -31,12 +32,15 @@ import slugify from 'slugify';
 import * as _ from 'lodash';
 import { QueryManyDto } from 'src/shared/dto/queryParams.dto';
 import { IPaginationOptions } from 'src/shared/services/pagination';
+import { JwtAuthGuard } from 'src/components/auth/guards/jwtAuth.guard';
 
 @ApiTags('Images')
 @ApiHeader({
   name: 'Content-Type',
   description: 'application/json',
 })
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard)
 @Controller('/api/images')
 export class ImageController {
   constructor(

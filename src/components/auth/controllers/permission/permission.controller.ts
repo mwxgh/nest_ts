@@ -122,12 +122,12 @@ export class PermissionController {
 
     const slug = await this.permissionService.generateSlug(data.name);
 
-    const role = await this.permissionService.update(
+    const permission = await this.permissionService.update(
       id,
       assign(data, { slug: slug }),
     );
 
-    return this.response.item(role, new PermissionTransformer());
+    return this.response.item(permission, new PermissionTransformer());
   }
 
   @Delete(':id')

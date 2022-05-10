@@ -42,15 +42,18 @@ export class QueryProperties {
   @IsString()
   search: string;
 
-  @ApiProperty()
-  @IsOptional()
   @ApiProperty({
-    type: 'array',
-    items: {
-      type: 'string',
-    },
+    oneOf: [
+      { type: 'string' },
+      {
+        type: 'array',
+        items: {
+          type: 'string',
+        },
+      },
+    ],
   })
-  @IsArray()
+  @IsOptional()
   includes: string[];
 
   @ApiProperty()

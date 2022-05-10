@@ -23,12 +23,10 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import {
-  CreateCategoryDto,
-  UpdateCategoryDto,
-} from 'src/components/category/dto/category.dto';
 import { QueryManyDto } from 'src/shared/dto/queryParams.dto';
 import { JwtAuthGuard } from '../../guards/jwtAuth.guard';
+import { CreateRoleDto, UpdateRoleDto } from '../../dto/role.dto';
+import { RolePermissionService } from '../../services/rolePermission.service';
 
 @ApiTags('Roles')
 @ApiHeader({
@@ -42,6 +40,7 @@ export class RoleController {
   constructor(
     private response: ApiResponseService,
     private roleService: RoleService,
+    private rolePermissionService: RolePermissionService,
   ) {}
 
   private entity = 'roles';
@@ -51,7 +50,7 @@ export class RoleController {
   @Auth('admin')
   @ApiOperation({ summary: 'Admin create new role' })
   @ApiOkResponse({ description: 'New role entity' })
-  async createRole(@Body() data: CreateCategoryDto): Promise<any> {
+  async createRole(@Body() data: CreateRoleDto): Promise<any> {
     const slug = await this.roleService.generateSlug(data.name);
 
     const role = await this.roleService.create(assign(data, { slug: slug }));
@@ -78,7 +77,11 @@ export class RoleController {
       sortType,
     });
 
-    if (includes.includes('permissions')) {
+    const relation = Array.isArray(includes) ? includes : [includes];
+
+    console.log(relation);
+
+    if (includes && relation.includes('permissions')) {
       queryBuilder = queryBuilder.leftJoinAndSelect(
         `${this.entity}.permissions`,
         'permissions',
@@ -96,12 +99,12 @@ export class RoleController {
         paginateOption,
       );
 
-      return this.response.paginate(roles, new RoleTransformer(includes));
+      return this.response.paginate(roles, new RoleTransformer(relation));
     }
 
     return this.response.collection(
       await queryBuilder.getMany(),
-      new RoleTransformer(includes),
+      new RoleTransformer(relation),
     );
   }
 
@@ -123,7 +126,7 @@ export class RoleController {
   @ApiOkResponse({ description: 'Update role entity' })
   async updateRole(
     @Param('id', ParseIntPipe) id: number,
-    @Body() data: UpdateCategoryDto,
+    @Body() data: UpdateRoleDto,
   ): Promise<any> {
     const slug = await this.roleService.generateSlug(data.name);
 
@@ -140,7 +143,19 @@ export class RoleController {
   @ApiOperation({ summary: 'Admin delete role by id' })
   @ApiOkResponse({ description: 'Delete role successfully' })
   async deleteRole(@Param('id', ParseIntPipe) id: string): Promise<any> {
+    await this.roleService.findOneOrFail(id);
+
     await this.roleService.destroy(id);
+
+    const rolePermissions = await this.rolePermissionService.findWhere({
+      where: { roleId: id },
+    });
+
+    const rolePermissionIds = rolePermissions.map(
+      (rolePermission) => rolePermission.id,
+    );
+
+    await this.rolePermissionService.destroy(rolePermissionIds);
 
     return this.response.success();
   }

@@ -55,12 +55,8 @@ export class CategoryController {
   }
 
   @Get()
-  @ApiOperation({
-    summary: 'Get list categories',
-  })
-  @ApiOkResponse({
-    description: 'List categories with param query',
-  })
+  @ApiOperation({ summary: 'Get list categories' })
+  @ApiOkResponse({ description: 'List categories with param query' })
   async readCategories(@Query() query: QueryManyDto): Promise<any> {
     const { search, includes, sortBy, sortType } = query;
 

@@ -19,7 +19,7 @@ import {
 } from '@nestjs/swagger';
 import { Auth } from 'src/components/auth/decorators/auth.decorator';
 import { JwtAuthGuard } from 'src/components/auth/guards/jwtAuth.guard';
-import { QueryListDto, QueryPaginateDto } from 'src/shared/dto/queryParams.dto';
+import { QueryManyDto } from 'src/shared/dto/queryParams.dto';
 import { ApiResponseService } from 'src/shared/services/apiResponse/apiResponse.service';
 import { IPaginationOptions } from 'src/shared/services/pagination';
 import { CreateTagDto, UpdateTagDto } from '../dto/tag.dto';
@@ -44,63 +44,6 @@ export class TagController {
   private entity = 'tags';
   private fields = ['name'];
 
-  @Get('listPaginate')
-  @ApiOperation({
-    summary: 'List tags with query & paginate',
-  })
-  @ApiOkResponse({
-    description: 'List tag with search & includes & filter in paginate',
-  })
-  async listPaginate(@Query() query: QueryPaginateDto): Promise<any> {
-    const params: IPaginationOptions = {
-      limit: Number(query.perPage) || 10,
-      page: Number(query.page) || 1,
-    };
-
-    const keyword = query.search;
-
-    const queryTag = await this.tagService.queryTag(
-      this.entity,
-      this.fields,
-      keyword,
-    );
-
-    const data = await this.tagService.paginate(queryTag, params);
-
-    return this.response.paginate(data, new TagTransformer());
-  }
-
-  @Get('listQuery')
-  @ApiOperation({ summary: 'List tags with query / without paginate' })
-  @ApiOkResponse({
-    description: 'List tags with search & includes & filter',
-  })
-  async listQuery(@Query() query: QueryListDto): Promise<any> {
-    const keyword = query.search;
-
-    const queryTag = await this.tagService.queryTag(
-      this.entity,
-      this.fields,
-      keyword,
-    );
-
-    return this.response.collection(
-      await queryTag.getMany(),
-      new TagTransformer(),
-    );
-  }
-
-  @Get(':id')
-  @ApiOperation({ summary: 'Get tag by id' })
-  @ApiOkResponse({ description: 'Tag entity' })
-  async show(@Param('id', ParseIntPipe) id: number): Promise<any> {
-    const oneTag = (await this.tagService.queryTag(this.entity))
-      .andWhere('tags.id = :id', { id: Number(id) })
-      .getOne();
-
-    return this.response.item(oneTag, new TagTransformer());
-  }
-
   @Post()
   @Auth('admin')
   @ApiOperation({ summary: 'Admin create new tag' })
@@ -109,6 +52,46 @@ export class TagController {
     const newTag = await this.tagService.create(data);
 
     return this.response.item(newTag, new TagTransformer());
+  }
+
+  @Get()
+  @ApiOperation({ summary: 'List tags' })
+  @ApiOkResponse({ description: 'List tag with query param' })
+  async readTags(@Query() query: QueryManyDto): Promise<any> {
+    const { search, sortBy, sortType } = query;
+
+    const queryBuilder = await this.tagService.queryTag({
+      entity: this.entity,
+      fields: this.fields,
+      keyword: search,
+      sortBy,
+      sortType,
+    });
+
+    if (query.perPage || query.page) {
+      const paginateOption: IPaginationOptions = {
+        limit: query.perPage ? query.perPage : 10,
+        page: query.page ? query.page : 1,
+      };
+
+      const tags = await this.tagService.paginate(queryBuilder, paginateOption);
+
+      return this.response.paginate(tags, new TagTransformer());
+    }
+
+    return this.response.collection(
+      await queryBuilder.getMany(),
+      new TagTransformer(),
+    );
+  }
+
+  @Get(':id')
+  @ApiOperation({ summary: 'Get tag by id' })
+  @ApiOkResponse({ description: 'Tag entity' })
+  async readTag(@Param('id', ParseIntPipe) id: number): Promise<any> {
+    const tag = await this.tagService.findOneOrFail(id);
+
+    return this.response.item(tag, new TagTransformer());
   }
 
   @Put(':id')

@@ -10,6 +10,7 @@ import { PermissionController } from './controllers/permission/permission.contro
 import { PermissionService } from './services/permission.service';
 import { RoleController } from './controllers/role/role.controller';
 import { RoleService } from './services/role.service';
+import { RolePermissionService } from './services/rolePermission.service';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { RoleService } from './services/role.service';
     PasswordResetService,
     PermissionService,
     RoleService,
+    RolePermissionService,
   ],
   controllers: [
     AuthController,

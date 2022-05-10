@@ -10,10 +10,11 @@ import {
   Put,
   Req,
   BadRequestException,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiResponseService } from '../../../shared/services/apiResponse/apiResponse.service';
 import { UserTransformer } from '../transformers/user.transformer';
-import { isNil, includes, pick, isBoolean } from 'lodash';
+import { isNil, pick, isBoolean } from 'lodash';
 import { IPaginationOptions } from '../../../shared/services/pagination';
 import { Auth } from '../../auth/decorators/auth.decorator';
 import { NotificationService } from '../../../shared/services/notification/notification.service';
@@ -25,17 +26,29 @@ import { SendInviteUserLinkNotification } from '../../auth/notifications/sendInv
 import { QueryManyDto } from '../../../shared/dto/queryParams.dto';
 import { Request } from 'express';
 import { UserSendMailReportNotification } from '../notifications/userSendEmailReport.notification';
-import { AuthenticatedUser } from '../../auth/decorators/authenticatedUser.decorator';
-import { User } from '../entities/user.entity';
-import { ApiTags } from '@nestjs/swagger';
 import {
+  ApiBearerAuth,
+  ApiHeader,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
+import {
+  UpdateUserPasswordDto,
   UserAttachRoleDto,
   UserDetachRoleDto,
   UserSendMailReportDto,
 } from '../dto/user.dto';
 import { CreateUserDto, UpdateUserDto } from '../dto/user.dto';
+import { JwtAuthGuard } from 'src/components/auth/guards/jwtAuth.guard';
 
 @ApiTags('Users')
+@ApiHeader({
+  name: 'Content-Type',
+  description: 'application/json',
+})
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard)
 @Controller('api/users')
 export class UserController {
   constructor(
@@ -51,6 +64,8 @@ export class UserController {
 
   @Post()
   @Auth('admin')
+  @ApiOperation({ summary: 'Admin create user' })
+  @ApiOkResponse({ description: 'New user entity' })
   async createUser(@Body() data: CreateUserDto): Promise<any> {
     const user = await this.userService.create(
       pick(data, ['email', 'username', 'password', 'firstName', 'lastName']),
@@ -66,11 +81,10 @@ export class UserController {
   }
 
   @Get()
-  @Auth('admin', 'user')
-  async readUsers(
-    @AuthenticatedUser() user: User,
-    @Query() query: QueryManyDto,
-  ): Promise<any> {
+  @Auth('admin')
+  @ApiOperation({ summary: 'Admin get list users' })
+  @ApiOkResponse({ description: 'List users with query params' })
+  async readUsers(@Query() query: QueryManyDto): Promise<any> {
     const { search, includes, sortBy, sortType } = query;
 
     let queryBuilder = await this.userService.queryBuilder({
@@ -114,20 +128,51 @@ export class UserController {
   }
 
   @Get(':id')
-  @Auth('admin', 'user')
+  @Auth('admin')
+  @ApiOperation({ summary: 'Admin get user by id' })
+  @ApiOkResponse({ description: 'User entity' })
   async readUser(@Param('id', ParseIntPipe) id: number): Promise<any> {
-    const item = await this.userService.findOneOrFail(id, {
+    const user = await this.userService.findOneOrFail(id, {
       relations: ['roles'],
     });
 
-    return this.response.item(item, new UserTransformer(['roles']));
+    return this.response.item(user, new UserTransformer(['roles']));
+  }
+
+  @Put(':id')
+  @Auth('admin')
+  @ApiOperation({ summary: 'Admin update user by id' })
+  @ApiOkResponse({ description: 'Update user entity' })
+  async updateUser(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() data: UpdateUserDto,
+  ): Promise<any> {
+    const user = await this.userService.findOneOrFail(id);
+
+    delete data.roleIds;
+
+    await this.userService.update(
+      user.id,
+      pick(data, ['email', 'username', 'firstName', 'lastName']),
+    );
+
+    if (isBoolean(data.notifyUser) && data.notifyUser === true) {
+      this.notificationService.send(
+        user,
+        new UserPasswordChangedNotification(data.password),
+      );
+    }
+
+    return this.response.success();
   }
 
   @Put(':id/password')
   @Auth('admin')
+  @ApiOperation({ summary: 'Admin change password for user by id' })
+  @ApiOkResponse({ description: 'Update password user entity' })
   async changePassword(
     @Param('id', ParseIntPipe) id: number,
-    @Body() data: UpdateUserDto,
+    @Body() data: UpdateUserPasswordDto,
   ): Promise<any> {
     const user = await this.userService.findOneOrFail(id);
 
@@ -147,6 +192,8 @@ export class UserController {
 
   @Post(':id/sendVerifyLink')
   @Auth('admin')
+  @ApiOperation({ summary: 'Admin send verify link for user by id' })
+  @ApiOkResponse({ description: 'Send mail successfully' })
   async sendVerifyLink(@Param('id', ParseIntPipe) id: number): Promise<any> {
     const user = await this.userService.findOneOrFail(id);
 
@@ -163,6 +210,8 @@ export class UserController {
   }
 
   @Post(':id/verify')
+  @ApiOperation({ summary: 'Verify token' })
+  @ApiOkResponse({ description: 'User verified successfully' })
   async verify(@Query('token') token: string): Promise<any> {
     const user = await this.userService.firstOrFail({
       where: { verifyToken: token, verified: false, verifiedAt: null },
@@ -175,6 +224,8 @@ export class UserController {
 
   @Post('invite')
   @Auth('admin')
+  @ApiOperation({ summary: 'Invite new user using system' })
+  @ApiOkResponse({ description: 'Mail notification user' })
   async inviteUser(@Req() request: Request): Promise<any> {
     const data = (request as any).body;
 
@@ -203,6 +254,8 @@ export class UserController {
 
   @Post(':id/attachRole')
   @Auth('admin')
+  @ApiOperation({ summary: 'Attach user and role' })
+  @ApiOkResponse({ description: 'Attach role successfully' })
   async attachRole(
     @Param('id', ParseIntPipe) id: number,
     @Body() data: UserAttachRoleDto,
@@ -214,6 +267,8 @@ export class UserController {
 
   @Post(':id/detachRole')
   @Auth('admin')
+  @ApiOperation({ summary: 'Detach user and role' })
+  @ApiOkResponse({ description: 'Detach role successfully' })
   async detachRole(
     @Param('id', ParseIntPipe) id: number,
     @Body() data: UserDetachRoleDto,
@@ -225,6 +280,8 @@ export class UserController {
 
   @Post(':id/sendMail')
   @Auth('admin')
+  @ApiOperation({ summary: 'Send mail report user' })
+  @ApiOkResponse({ description: 'Send mail successfully' })
   async sendMail(
     @Body() data: UserSendMailReportDto,
     @Param('id', ParseIntPipe) id: number,

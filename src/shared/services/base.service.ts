@@ -99,13 +99,17 @@ export class BaseService {
     id: string | number,
     options?: { relations: string[] },
   ): Promise<any> {
-    return this.repository.findOneOrFail(id, options);
+    const item = await this.repository.findOne(id, options);
+    if (!item) {
+      throw new BadRequestException(`Resource not found`);
+    }
+    return item;
   }
 
   async findIdInOrFail(ids: string[]): Promise<any> {
     const items = await this.repository.findByIds(ids);
     if (!items) {
-      throw new BadRequestException('Resource not found');
+      throw new BadRequestException('Resources not found');
     }
     return items;
   }

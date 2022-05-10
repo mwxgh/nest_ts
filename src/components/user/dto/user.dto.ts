@@ -54,6 +54,15 @@ export class UpdateUserDto extends PartialType(UserProperties) {
   notifyUser: boolean;
 }
 
+export class UpdateUserPasswordDto extends PickType(UserProperties, [
+  'password',
+]) {
+  @ApiProperty()
+  @IsBoolean()
+  @IsOptional()
+  notifyUser: boolean;
+}
+
 export class UserSendMailReportDto {
   @ApiProperty()
   @IsEmail()
