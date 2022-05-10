@@ -106,7 +106,12 @@ export class BaseService {
     return item;
   }
 
-  async findIdInOrFail(ids: string[]): Promise<any> {
+  /**
+   * Get the items record in array ids
+   *
+   * @param ids string[] | number[]
+   */
+  async findIdInOrFail(ids: string[] | number[]): Promise<any> {
     const items = await this.repository.findByIds(ids);
     if (!items) {
       throw new BadRequestException('Resources not found');
