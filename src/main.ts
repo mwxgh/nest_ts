@@ -1,12 +1,3 @@
-// import { NestFactory } from '@nestjs/core';
-// import { AppModule } from './app.module';
-
-// async function bootstrap() {
-//   const app = await NestFactory.create(AppModule);
-//   await app.listen(3000);
-// }
-// bootstrap();
-
 declare const module: any;
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
@@ -22,7 +13,7 @@ async function bootstrap() {
       .setVersion('1.0')
       .build();
     const document = SwaggerModule.createDocument(app, config);
-    SwaggerModule.setup('docs', app, document);
+    SwaggerModule.setup('swaggerUI', app, document);
   }
 
   app.enableCors();

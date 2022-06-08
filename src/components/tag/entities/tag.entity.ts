@@ -7,6 +7,7 @@ export const StatusTag = {
   publish: 'PUBLISH',
   hide: 'HIDE',
 } as const;
+
 @Notifiable()
 @Entity({ name: 'tags' })
 export class TagName extends TimeStampEntity {
