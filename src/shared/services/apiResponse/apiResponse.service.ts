@@ -14,6 +14,9 @@ interface LengthAwareMeta {
     totalPages: number;
   };
 }
+export interface SuccessFullyMessage {
+  data: { success: boolean };
+}
 
 @Injectable()
 export class ApiResponseService {

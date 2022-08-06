@@ -19,7 +19,7 @@ import {
 } from '@nestjs/swagger';
 import { Connection } from 'typeorm';
 import { PostService } from '../services/post.service';
-import { CreatPostDto, UpdatePostDto } from '../dto/post.dto';
+import { CreatePostDto, UpdatePostDto } from '../dto/post.dto';
 import { IPaginationOptions } from 'src/shared/services/pagination';
 import { ApiResponseService } from 'src/shared/services/apiResponse/apiResponse.service';
 import { PostTransformer } from '../transformers/post.transformer';
@@ -135,7 +135,7 @@ export class PostController {
   @Auth('admin')
   @ApiOperation({ summary: 'Admin create new post' })
   @ApiOkResponse({ description: 'New post entity' })
-  async createPost(@Body() data: CreatPostDto): Promise<any> {
+  async createPost(@Body() data: CreatePostDto): Promise<any> {
     const tagsAvailable = await this.tagService.findIdInOrFail(data.tagIds);
 
     const categoriesAvailable = await this.categoryService.findIdInOrFail(
@@ -336,8 +336,6 @@ export class PostController {
     } else if (count) {
       dataSlugify.slug = `${dataSlugify.slug}-${count}`;
     }
-
-    delete dataSlugify.url;
 
     await this.postService.update(Number(id), dataSlugify);
 

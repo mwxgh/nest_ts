@@ -24,12 +24,15 @@ import { AuthenticatedUser } from 'src/components/auth/decorators/authenticatedU
 import { JwtAuthGuard } from 'src/components/auth/guards/jwtAuth.guard';
 import { User } from 'src/components/user/entities/user.entity';
 import { QueryManyDto } from 'src/shared/dto/queryParams.dto';
-import { ApiResponseService } from 'src/shared/services/apiResponse/apiResponse.service';
+import {
+  ApiResponseService,
+  SuccessFullyMessage,
+} from 'src/shared/services/apiResponse/apiResponse.service';
 import { IPaginationOptions } from 'src/shared/services/pagination';
 import { CreateContactDto, UpdateContactDto } from '../dto/contact.dto';
 import { ContactService } from '../services/contact.service';
 import { ContactTransformer } from '../transformers/contact.transformer';
-import * as _ from 'lodash';
+import { includes } from 'lodash';
 
 @ApiTags('Contacts')
 @ApiHeader({
@@ -56,9 +59,10 @@ export class ContactController {
     @AuthenticatedUser() currentUser: User,
     @Body() data: CreateContactDto,
   ): Promise<any> {
-    const userRoles = _.map(currentUser.roles, (r) => r.slug);
+    const userRoles = currentUser.roles.map((role) => role.slug);
 
-    if (_.includes(userRoles, 'user') && userRoles.length == 1) {
+    // _.map(currentUser.roles, (r) => r.slug); // map with lodash
+    if (includes(userRoles, 'user') && userRoles.length == 1) {
       if (currentUser.id !== data.userId) {
         throw new ForbiddenException("Can' create contact for another");
       }
@@ -161,9 +165,9 @@ export class ContactController {
     @Param('id', ParseIntPipe) id: number,
     @Body() data: UpdateContactDto,
   ): Promise<any> {
-    const userRoles = _.map(currentUser.roles, (r) => r.slug);
+    const userRoles = currentUser.roles.map((role) => role.slug);
 
-    if (_.includes(userRoles, 'user') && userRoles.length == 1) {
+    if (includes(userRoles, 'user') && userRoles.length == 1) {
       if (currentUser.id !== data.userId) {
         throw new ForbiddenException("Can' update contact for another");
       }
@@ -182,10 +186,10 @@ export class ContactController {
   async deleteContact(
     @AuthenticatedUser() currentUser: User,
     @Param('id', ParseIntPipe) id: number,
-  ): Promise<any> {
-    const userRoles = _.map(currentUser.roles, (r) => r.slug);
+  ): Promise<SuccessFullyMessage> {
+    const userRoles = currentUser.roles.map((role) => role.slug);
 
-    if (_.includes(userRoles, 'user') && userRoles.length == 1) {
+    if (includes(userRoles, 'user') && userRoles.length == 1) {
       if (currentUser.id !== id) {
         throw new ForbiddenException("Can' delete another's contact");
       }

@@ -52,7 +52,7 @@ export class PostProperties {
   imageIds: [];
 }
 
-export class CreatPostDto extends OmitType(PostProperties, [] as const) {}
+export class CreatePostDto extends OmitType(PostProperties, [] as const) {}
 
 export class UpdatePostDto extends PartialType(PostProperties) {}
 
