@@ -27,8 +27,7 @@ export class CreateCommentsTable1650207390501 implements MigrationInterface {
           },
           {
             name: 'status',
-            default: 1,
-            type: 'int',
+            type: 'varchar',
           },
           {
             name: 'commentAbleId',

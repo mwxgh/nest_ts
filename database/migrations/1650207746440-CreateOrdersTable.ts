@@ -24,8 +24,8 @@ export class CreateOrdersTable1650207746440 implements MigrationInterface {
             default: "''",
           },
           {
-            name: 'phoneNumber',
-            type: 'int',
+            name: 'phone',
+            type: 'varchar',
           },
           {
             name: 'address',

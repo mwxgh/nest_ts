@@ -4,6 +4,11 @@ import { Notifiable } from '../../../shared/services/notification/decorators/not
 import { TimeStampEntity } from '../../base.entity';
 import { Contact } from '../../contact/entities/contact.entity';
 
+export const UserStatus = {
+  active: 'ACTIVE',
+  inactive: 'INACTIVE',
+} as const;
+
 @Notifiable()
 @Entity({ name: 'users' })
 export class User extends TimeStampEntity {
@@ -22,8 +27,8 @@ export class User extends TimeStampEntity {
   @Column({ type: 'varchar', default: '' })
   lastName: string;
 
-  @Column({ type: 'int', default: 1 })
-  status: number;
+  @Column({ type: 'varchar', enum: UserStatus })
+  status: string;
 
   @Column({ type: 'varchar' })
   socketId: string;

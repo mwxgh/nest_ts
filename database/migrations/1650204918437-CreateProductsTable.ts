@@ -28,8 +28,7 @@ export class CreateProductsTable1650204918437 implements MigrationInterface {
           },
           {
             name: 'status',
-            default: 1,
-            type: 'int',
+            type: 'varchar',
           },
           {
             name: 'originalPrice',

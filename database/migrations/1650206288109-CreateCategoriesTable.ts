@@ -27,8 +27,7 @@ export class CreateCategoriesTable1650206288109 implements MigrationInterface {
           },
           {
             name: 'status',
-            default: 1,
-            type: 'int',
+            type: 'varchar',
           },
           {
             name: 'verifiedAt',

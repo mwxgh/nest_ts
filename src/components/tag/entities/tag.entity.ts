@@ -14,7 +14,7 @@ export class TagName extends TimeStampEntity {
   @Column({ type: 'varchar' })
   name: string;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', enum: StatusTag })
   status: string;
 
   @Column({ type: 'timestamp' })

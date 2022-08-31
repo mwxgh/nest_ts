@@ -28,8 +28,7 @@ export class CreateImagesTable1650207084687 implements MigrationInterface {
           },
           {
             name: 'status',
-            default: 1,
-            type: 'int',
+            type: 'varchar',
           },
           {
             name: 'verifiedAt',
