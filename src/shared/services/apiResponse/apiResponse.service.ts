@@ -1,18 +1,13 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { Pagination } from '../pagination';
 import { TransformerInterface } from '../../transformers/transformer';
+import {
+  LengthAwareMeta,
+  SuccessfullyOperation,
+} from './apiResponse.interface';
 
 interface Entity {
   [key: string]: any;
-}
-
-interface LengthAwareMeta {
-  pagination: {
-    total: number;
-    perPage: number;
-    currentPage: number;
-    totalPages: number;
-  };
 }
 
 @Injectable()
@@ -80,8 +75,9 @@ export class ApiResponseService {
    *
    * @return message
    */
-  success(): { data: { success: boolean } } {
-    return { data: { success: true } };
+  success(params?: { message: string }): SuccessfullyOperation {
+    const { message } = params;
+    return { data: { success: true, message: message } };
   }
 
   /**

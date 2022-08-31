@@ -5,7 +5,7 @@ import {
   IsNotEmpty,
   IsNumber,
   IsOptional,
-  IsPhoneNumber,
+  // IsPhoneNumber,
 } from 'class-validator';
 
 export class ContactProperties {
@@ -19,6 +19,13 @@ export class ContactProperties {
   @ApiPropertyOptional({
     type: String,
   })
+  @IsNotEmpty()
+  @Type(() => String)
+  name: string;
+
+  @ApiPropertyOptional({
+    type: String,
+  })
   @IsOptional()
   @IsEmail()
   @Type(() => String)
@@ -28,7 +35,7 @@ export class ContactProperties {
     type: Number,
   })
   @IsNotEmpty()
-  @IsPhoneNumber()
+  // @IsPhoneNumber()
   @Type(() => Number)
   phone: number;
 

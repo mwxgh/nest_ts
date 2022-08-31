@@ -24,15 +24,14 @@ import { AuthenticatedUser } from 'src/components/auth/decorators/authenticatedU
 import { JwtAuthGuard } from 'src/components/auth/guards/jwtAuth.guard';
 import { User } from 'src/components/user/entities/user.entity';
 import { QueryManyDto } from 'src/shared/dto/queryParams.dto';
-import {
-  ApiResponseService,
-  SuccessFullyMessage,
-} from 'src/shared/services/apiResponse/apiResponse.service';
+import { ApiResponseService } from 'src/shared/services/apiResponse/apiResponse.service';
 import { IPaginationOptions } from 'src/shared/services/pagination';
 import { CreateContactDto, UpdateContactDto } from '../dto/contact.dto';
 import { ContactService } from '../services/contact.service';
 import { ContactTransformer } from '../transformers/contact.transformer';
-import { includes } from 'lodash';
+import { includes, map } from 'lodash';
+import { SuccessfullyOperation } from 'src/shared/services/apiResponse/apiResponse.interface';
+import { CommonService } from 'src/shared/services/common.service';
 
 @ApiTags('Contacts')
 @ApiHeader({
@@ -46,6 +45,7 @@ export class ContactController {
   constructor(
     private contactService: ContactService,
     private response: ApiResponseService,
+    private commonService: CommonService,
   ) {}
 
   private entity = 'contacts';
@@ -59,14 +59,10 @@ export class ContactController {
     @AuthenticatedUser() currentUser: User,
     @Body() data: CreateContactDto,
   ): Promise<any> {
-    const userRoles = currentUser.roles.map((role) => role.slug);
-
-    // _.map(currentUser.roles, (r) => r.slug); // map with lodash
-    if (includes(userRoles, 'user') && userRoles.length == 1) {
-      if (currentUser.id !== data.userId) {
-        throw new ForbiddenException("Can' create contact for another");
-      }
-    }
+    this.commonService.checkUserPermissionOperation({
+      currentUser,
+      userId: data.userId,
+    });
 
     const contact = await this.contactService.create(data);
 
@@ -186,8 +182,8 @@ export class ContactController {
   async deleteContact(
     @AuthenticatedUser() currentUser: User,
     @Param('id', ParseIntPipe) id: number,
-  ): Promise<SuccessFullyMessage> {
-    const userRoles = currentUser.roles.map((role) => role.slug);
+  ): Promise<SuccessfullyOperation> {
+    const userRoles = map(currentUser.roles, (r) => r.slug);
 
     if (includes(userRoles, 'user') && userRoles.length == 1) {
       if (currentUser.id !== id) {
@@ -197,6 +193,6 @@ export class ContactController {
 
     await this.contactService.destroy(id);
 
-    return this.response.success();
+    return this.response.success({ message: 'Delete contact successfully' });
   }
 }
