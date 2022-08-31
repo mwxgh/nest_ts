@@ -2,7 +2,6 @@ import {
   Body,
   Controller,
   Delete,
-  ForbiddenException,
   Get,
   NotFoundException,
   Param,
@@ -29,7 +28,6 @@ import { IPaginationOptions } from 'src/shared/services/pagination';
 import { CreateContactDto, UpdateContactDto } from '../dto/contact.dto';
 import { ContactService } from '../services/contact.service';
 import { ContactTransformer } from '../transformers/contact.transformer';
-import { includes, map } from 'lodash';
 import { SuccessfullyOperation } from 'src/shared/services/apiResponse/apiResponse.interface';
 import { CommonService } from 'src/shared/services/common.service';
 
@@ -145,7 +143,7 @@ export class ContactController {
     @Param('id', ParseIntPipe) id: number,
   ) {
     const contact = await this.contactService.findWhere({
-      where: { id: id, userId: currentUser.id },
+      where: { id, userId: currentUser.id },
     });
 
     return this.response.item(contact, new ContactTransformer());
@@ -161,15 +159,14 @@ export class ContactController {
     @Param('id', ParseIntPipe) id: number,
     @Body() data: UpdateContactDto,
   ): Promise<any> {
-    const userRoles = currentUser.roles.map((role) => role.slug);
+    const contact = await this.contactService.findOneOrFail(id);
 
-    if (includes(userRoles, 'user') && userRoles.length == 1) {
-      if (currentUser.id !== data.userId) {
-        throw new ForbiddenException("Can' update contact for another");
-      }
-    }
+    this.commonService.checkUserPermissionOperation({
+      currentUser,
+      userId: contact.userId,
+    });
 
-    await this.contactService.update(id, data);
+    await this.contactService.update(contact.id, data);
 
     return this.response.success();
   }
@@ -183,13 +180,12 @@ export class ContactController {
     @AuthenticatedUser() currentUser: User,
     @Param('id', ParseIntPipe) id: number,
   ): Promise<SuccessfullyOperation> {
-    const userRoles = map(currentUser.roles, (r) => r.slug);
+    const contact = await this.contactService.findOneOrFail(id);
 
-    if (includes(userRoles, 'user') && userRoles.length == 1) {
-      if (currentUser.id !== id) {
-        throw new ForbiddenException("Can' delete another's contact");
-      }
-    }
+    this.commonService.checkUserPermissionOperation({
+      currentUser,
+      userId: contact.userId,
+    });
 
     await this.contactService.destroy(id);
 
