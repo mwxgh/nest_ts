@@ -6,7 +6,6 @@ import {
   Controller,
   Post,
   Body,
-  ConflictException,
   UnauthorizedException,
   BadRequestException,
 } from '@nestjs/common';

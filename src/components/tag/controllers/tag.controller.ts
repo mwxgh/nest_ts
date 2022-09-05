@@ -1,5 +1,6 @@
 import {
   Body,
+  ConflictException,
   Controller,
   Delete,
   Get,
@@ -20,7 +21,10 @@ import {
 import { Auth } from 'src/components/auth/decorators/auth.decorator';
 import { JwtAuthGuard } from 'src/components/auth/guards/jwtAuth.guard';
 import { QueryManyDto } from 'src/shared/dto/queryParams.dto';
+import Messages from 'src/shared/message/message';
+import { SuccessfullyOperation } from 'src/shared/services/apiResponse/apiResponse.interface';
 import { ApiResponseService } from 'src/shared/services/apiResponse/apiResponse.service';
+import { CommonService } from 'src/shared/services/common.service';
 import { IPaginationOptions } from 'src/shared/services/pagination';
 import { CreateTagDto, UpdateTagDto } from '../dto/tag.dto';
 import { TagService } from '../services/tag.service';
@@ -39,6 +43,7 @@ export class TagController {
     private tagService: TagService,
     private tagAbleService: TagAbleService,
     private response: ApiResponseService,
+    private commonService: CommonService,
   ) {}
 
   private entity = 'tags';
@@ -48,10 +53,27 @@ export class TagController {
   @Auth('admin')
   @ApiOperation({ summary: 'Admin create new tag' })
   @ApiOkResponse({ description: 'New tag entity' })
-  async createTag(@Body() data: CreateTagDto): Promise<any> {
-    const newTag = await this.tagService.create(data);
+  async createTag(@Body() data: CreateTagDto): Promise<SuccessfullyOperation> {
+    const existingTag = await this.tagService.first({
+      where: {
+        name: data.name,
+      },
+    });
+    if (existingTag) {
+      throw new ConflictException(
+        this.commonService.getMessage({
+          message: Messages.errorsOperation.conflict,
+          keywords: ['Tag'],
+        }),
+      );
+    }
 
-    return this.response.item(newTag, new TagTransformer());
+    return this.response.success({
+      message: this.commonService.getMessage({
+        message: Messages.successfullyOperation.create,
+        keywords: ['tag'],
+      }),
+    });
   }
 
   @Get()
@@ -101,23 +123,35 @@ export class TagController {
   async updateTag(
     @Param('id', ParseIntPipe) id: number,
     @Body() data: UpdateTagDto,
-  ): Promise<any> {
+  ): Promise<SuccessfullyOperation> {
     await this.tagService.findOneOrFail(id);
 
     await this.tagService.update(id, { ...data, updatedAt: new Date() });
 
-    return this.response.success();
+    return this.response.success({
+      message: this.commonService.getMessage({
+        message: Messages.successfullyOperation.update,
+        keywords: ['tag'],
+      }),
+    });
   }
 
   @Delete(':id')
   @Auth('admin')
   @ApiOperation({ summary: 'Admin delete tag by id' })
   @ApiOkResponse({ description: 'Delete tag successfully' })
-  async deleteTag(@Param('id', ParseIntPipe) id: number): Promise<any> {
+  async deleteTag(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<SuccessfullyOperation> {
     await this.tagService.findOneOrFail(id);
 
     await this.tagService.destroy(id);
 
-    return this.response.success();
+    return this.response.success({
+      message: this.commonService.getMessage({
+        message: Messages.successfullyOperation.delete,
+        keywords: ['tag'],
+      }),
+    });
   }
 }

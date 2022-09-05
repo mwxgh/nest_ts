@@ -3,7 +3,7 @@ import { Column, Entity, OneToMany } from 'typeorm';
 import { TagAble } from './tagAble.entity';
 import { TimeStampEntity } from '../../base.entity';
 
-export const StatusTag = {
+export const TagStatus = {
   publish: 'PUBLISH',
   hide: 'HIDE',
 } as const;
@@ -14,7 +14,7 @@ export class TagName extends TimeStampEntity {
   @Column({ type: 'varchar' })
   name: string;
 
-  @Column({ type: 'varchar', enum: StatusTag })
+  @Column({ type: 'varchar', enum: TagStatus })
   status: string;
 
   @Column({ type: 'timestamp' })

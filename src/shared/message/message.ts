@@ -6,6 +6,9 @@ const Messages = {
     update: 'Update ${keyword} successfully',
     updatePassword: 'Update ${keyword} ${keyword} successfully',
   },
+  errorsOperation: {
+    conflict: '${keyword} already exists',
+  },
 };
 
 export default Messages;
