@@ -21,7 +21,7 @@ export class BaseService {
   public entity: any;
   public alias = 'alias';
 
-  async get(): Promise<any[]> {
+  async get<T>(): Promise<T[]> {
     return this.repository.find();
   }
 
@@ -69,23 +69,24 @@ export class BaseService {
    * @param queryBuilder Repository | SelectQueryBuilder | null
    * @param options IPaginationOptions
    */
-  async paginate(
-    queryBuilder: Repository<any> | SelectQueryBuilder<any> | null,
+  async paginate<T>(
+    queryBuilder: Repository<T> | SelectQueryBuilder<T> | null,
     options: IPaginationOptions,
-  ): Promise<Pagination<any>> {
-    let query: any;
-    if (!queryBuilder) {
-      query = this.repository.createQueryBuilder(this.alias);
-    } else {
-      query = queryBuilder;
-    }
+  ): Promise<Pagination<T>> {
+    const query =
+      queryBuilder instanceof SelectQueryBuilder
+        ? queryBuilder
+        : this.repository.createQueryBuilder(this.alias);
+
     options = omit(
       options,
       filter(keys(options), function (key) {
         return isUndefined(options[key]);
       }),
     );
+
     options = { ...defaultPaginationOption, ...options };
+
     return this.paginateQueryBuilder(query, options);
   }
 

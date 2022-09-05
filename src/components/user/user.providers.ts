@@ -4,6 +4,7 @@ import { NotificationService } from 'src/shared/services/notification/notificati
 import { ApiResponseService } from 'src/shared/services/apiResponse/apiResponse.service';
 import { RoleService } from '../auth/services/role.service';
 import { UserRoleService } from '../auth/services/userRole.service';
+import { CommonService } from 'src/shared/services/common.service';
 
 export const userProviders = [
   UserService,
@@ -12,4 +13,5 @@ export const userProviders = [
   NotificationService,
   RoleService,
   UserRoleService,
+  CommonService,
 ];

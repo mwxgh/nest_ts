@@ -84,22 +84,8 @@ export class AuthController {
   async userRegister(
     @Body() data: UserRegisterDto,
   ): Promise<{ [key: string]: any }> {
-    const { email, password, username } = data;
-
-    if (await this.userService.emailExist(email)) {
-      throw new ConflictException('Email already exist');
-    }
-
-    if (await this.userService.usernameExist(username)) {
-      throw new ConflictException('Username already exist');
-    }
-
-    const user = await this.userService.create({
-      ...pick(data, ['email', 'username', 'password', 'firstName', 'lastName']),
-      ...{
-        password: this.userService.hashPassword(password),
-        email: this.userService.sanitizeEmail(email),
-      },
+    const user = await this.userService.saveUser({
+      user: data,
     });
 
     return this.response.primitive({

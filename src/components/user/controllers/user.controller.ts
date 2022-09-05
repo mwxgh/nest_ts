@@ -41,6 +41,9 @@ import {
 } from '../dto/user.dto';
 import { CreateUserDto, UpdateUserDto } from '../dto/user.dto';
 import { JwtAuthGuard } from 'src/components/auth/guards/jwtAuth.guard';
+import { SuccessfullyOperation } from 'src/shared/services/apiResponse/apiResponse.interface';
+import Messages from 'src/shared/message/message';
+import { CommonService } from 'src/shared/services/common.service';
 
 @ApiTags('Users')
 @ApiHeader({
@@ -57,19 +60,22 @@ export class UserController {
     private notificationService: NotificationService,
     private configService: ConfigService,
     private inviteUserService: InviteUserService,
+    private commonService: CommonService,
   ) {}
 
-  private entity = 'users';
+  private entity = 'user';
   private fields = ['email', 'username', 'firstName', 'lastName'];
 
   @Post()
   @Auth('admin')
   @ApiOperation({ summary: 'Admin create user' })
   @ApiOkResponse({ description: 'New user entity' })
-  async createUser(@Body() data: CreateUserDto): Promise<any> {
-    const user = await this.userService.create(
-      pick(data, ['email', 'username', 'password', 'firstName', 'lastName']),
-    );
+  async createUser(
+    @Body() data: CreateUserDto,
+  ): Promise<SuccessfullyOperation> {
+    const user = await this.userService.saveUser({
+      user: data,
+    });
 
     if (data.roleIds.length > 0) {
       for (const roleId of data.roleIds) {
@@ -77,7 +83,12 @@ export class UserController {
       }
     }
 
-    return this.response.success();
+    return this.response.success({
+      message: this.commonService.getMessage({
+        message: Messages.successfullyOperation.create,
+        keywords: ['user'],
+      }),
+    });
   }
 
   @Get()
@@ -95,13 +106,7 @@ export class UserController {
       sortType,
     });
 
-    // const userRoles = map(user.roles, (r) => r.slug);
-
-    // if (userRoles.includes('user') || isEmpty(userRoles)) {
-    //   queryBuilder = queryBuilder.where('user.id = :id', { id: user.id });
-    // }
-
-    if (!isNil(query.includes)) {
+    if (!isNil(includes)) {
       if (includes.includes('roles')) {
         queryBuilder = queryBuilder.leftJoinAndSelect('user.roles', 'roles');
       }
@@ -146,7 +151,7 @@ export class UserController {
   async updateUser(
     @Param('id', ParseIntPipe) id: number,
     @Body() data: UpdateUserDto,
-  ): Promise<any> {
+  ): Promise<SuccessfullyOperation> {
     const user = await this.userService.findOneOrFail(id);
 
     delete data.roleIds;
@@ -163,7 +168,12 @@ export class UserController {
       );
     }
 
-    return this.response.success();
+    return this.response.success({
+      message: this.commonService.getMessage({
+        message: Messages.successfullyOperation.update,
+        keywords: ['user'],
+      }),
+    });
   }
 
   @Put(':id/password')
@@ -173,7 +183,7 @@ export class UserController {
   async changePassword(
     @Param('id', ParseIntPipe) id: number,
     @Body() data: UpdateUserPasswordDto,
-  ): Promise<any> {
+  ): Promise<SuccessfullyOperation> {
     const user = await this.userService.findOneOrFail(id);
 
     await this.userService.update(user.id, {
@@ -187,14 +197,21 @@ export class UserController {
       );
     }
 
-    return this.response.success();
+    return this.response.success({
+      message: this.commonService.getMessage({
+        message: Messages.successfullyOperation.updatePassword,
+        keywords: ['password', 'user'],
+      }),
+    });
   }
 
   @Post(':id/sendVerifyLink')
   @Auth('admin')
   @ApiOperation({ summary: 'Admin send verify link for user by id' })
   @ApiOkResponse({ description: 'Send mail successfully' })
-  async sendVerifyLink(@Param('id', ParseIntPipe) id: number): Promise<any> {
+  async sendVerifyLink(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<SuccessfullyOperation> {
     const user = await this.userService.findOneOrFail(id);
 
     await this.userService.generateVerifyToken(user.id);
@@ -226,7 +243,7 @@ export class UserController {
   @Auth('admin')
   @ApiOperation({ summary: 'Invite new user using system' })
   @ApiOkResponse({ description: 'Mail notification user' })
-  async inviteUser(@Req() request: Request): Promise<any> {
+  async inviteUser(@Req() request: Request): Promise<SuccessfullyOperation> {
     const data = (request as any).body;
 
     const check = await this.userService.emailExist(data.email);
@@ -259,7 +276,7 @@ export class UserController {
   async attachRole(
     @Param('id', ParseIntPipe) id: number,
     @Body() data: UserAttachRoleDto,
-  ): Promise<any> {
+  ): Promise<SuccessfullyOperation> {
     await this.userService.attachRole(id, data.roleId);
 
     return this.response.success();
@@ -272,7 +289,7 @@ export class UserController {
   async detachRole(
     @Param('id', ParseIntPipe) id: number,
     @Body() data: UserDetachRoleDto,
-  ): Promise<any> {
+  ): Promise<SuccessfullyOperation> {
     await this.userService.detachRole(id, data.roleId);
 
     return this.response.success();
@@ -285,7 +302,7 @@ export class UserController {
   async sendMail(
     @Body() data: UserSendMailReportDto,
     @Param('id', ParseIntPipe) id: number,
-  ): Promise<any> {
+  ): Promise<SuccessfullyOperation> {
     const user = await this.userService.findOneOrFail(id);
 
     this.notificationService.send(

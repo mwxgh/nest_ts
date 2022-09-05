@@ -3,6 +3,7 @@ import {
   IsArray,
   IsBoolean,
   IsEmail,
+  IsEnum,
   IsNotEmpty,
   IsNumber,
   IsOptional,
@@ -10,31 +11,45 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
+import { UserStatus } from '../entities/user.entity';
 
-export class UserProperties {
+export class BaseUserProperties {
   @ApiProperty()
-  @IsString()
+  @IsEmail()
   @IsNotEmpty()
   email: string;
 
   @ApiProperty()
-  @IsString()
   @IsNotEmpty()
+  @IsString()
   @MinLength(6)
+  @MaxLength(60)
   password: string;
 
   @ApiProperty()
+  @IsNotEmpty()
   @IsString()
+  @MinLength(3)
+  @MaxLength(20)
+  username: string;
+
+  @ApiProperty()
+  @MaxLength(20)
   @IsOptional()
-  @MaxLength(30)
   firstName: string;
 
   @ApiProperty()
-  @IsString()
+  @MaxLength(20)
   @IsOptional()
-  @MaxLength(30)
   lastName: string;
 
+  @ApiProperty()
+  @IsEnum(UserStatus)
+  @IsOptional()
+  status: string;
+}
+
+export class UserProperties extends OmitType(BaseUserProperties, [] as const) {
   @ApiProperty({
     type: 'array',
     items: {

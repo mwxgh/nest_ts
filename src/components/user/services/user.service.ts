@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { User } from '../entities/user.entity';
 import { BaseService } from '../../../shared/services/base.service';
 import { UserRepository } from '../repositories/user.repository';
@@ -6,6 +6,9 @@ import { Repository, Connection } from 'typeorm';
 import { HashService } from '../../../shared/services/hash/hash.service';
 import { RoleService } from 'src/components/auth/services/role.service';
 import { UserRoleService } from 'src/components/auth/services/userRole.service';
+import { pick } from 'lodash';
+import { BaseUserProperties } from '../dto/user.dto';
+import { defaultUserStatus } from 'src/shared/defaultValue/defaultValue';
 
 @Injectable()
 export class UserService extends BaseService {
@@ -63,17 +66,14 @@ export class UserService extends BaseService {
   /**
    * Change password of given user_id
    *
-   * @param id  number | string
+   * @param id  number
    * @param password string
    */
-  async changePassword(id: number | string, password: string): Promise<User> {
+  async changePassword(id: number, password: string): Promise<User> {
     return await this.update(id, { password: this.hashService.hash(password) });
   }
 
-  async attachRole(
-    userId: number | string,
-    roleId: number | string,
-  ): Promise<any> {
+  async attachRole(userId: number, roleId: number): Promise<any> {
     const role = await this.roleService.findOneOrFail(roleId);
 
     const user = await this.repository.findOneOrFail(userId);
@@ -91,10 +91,7 @@ export class UserService extends BaseService {
     }
   }
 
-  async detachRole(
-    userId: number | string,
-    roleId: number | string,
-  ): Promise<any> {
+  async detachRole(userId: number, roleId: number): Promise<any> {
     const role = await this.roleService.findOneOrFail(roleId);
 
     const user = await this.repository.findOneOrFail(userId);
@@ -110,5 +107,43 @@ export class UserService extends BaseService {
         await this.userRoleService.destroy(userRole.id);
       }
     }
+  }
+
+  /**
+   * Save user and return user entity
+   *
+   * @param params.user  user properties
+   * @return User
+   */
+  async saveUser(params: { user: BaseUserProperties }): Promise<User> {
+    const { user } = params;
+    const { email, username, password } = user;
+    const userStatus = user.status ?? defaultUserStatus;
+    user.status = userStatus;
+
+    if (await this.emailExist(email)) {
+      throw new ConflictException('Email already exist');
+    }
+
+    if (await this.usernameExist(username)) {
+      throw new ConflictException('Username already exist');
+    }
+
+    await this.usernameExist(username);
+    const saveUser = await this.create({
+      ...pick(user, [
+        'email',
+        'username',
+        'password',
+        'firstName',
+        'lastName',
+        'status',
+      ]),
+      ...{
+        password: this.hashPassword(password),
+        email: this.sanitizeEmail(email),
+      },
+    });
+    return saveUser;
   }
 }

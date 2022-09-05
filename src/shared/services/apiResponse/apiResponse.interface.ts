@@ -13,3 +13,14 @@ export interface SuccessfullyOperation {
     message?: string;
   };
 }
+
+/** Response for list apis */
+export type GetListResponse<T> = {
+  data: T[];
+};
+
+/** Response for list pagination apis */
+export type GetListPaginationResponse<T> = {
+  data: T[];
+  pagination: LengthAwareMeta;
+};

@@ -5,6 +5,7 @@ import {
   LengthAwareMeta,
   SuccessfullyOperation,
 } from './apiResponse.interface';
+import Messages from 'src/shared/message/message';
 
 interface Entity {
   [key: string]: any;
@@ -71,12 +72,13 @@ export class ApiResponseService {
   /**
    * Response success api
    *
-   * @param data
+   * @param params.message message specific successful operation
    *
-   * @return message
+   * @return message specific successful operation pr default message
    */
   success(params?: { message: string }): SuccessfullyOperation {
-    const { message } = params;
+    const message = params?.message ?? Messages.successfullyOperation.general;
+
     return { data: { success: true, message: message } };
   }
 
@@ -97,9 +99,11 @@ export class ApiResponseService {
         `ApiResponse.paginate expect a Pagination instead a ${typeof paginator}`,
       );
     }
+
     const items = paginator.items.map((i) => {
       return transformer.get(i);
     });
+
     return {
       data: items,
       meta: {
