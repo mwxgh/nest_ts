@@ -45,7 +45,7 @@ export class CommonService {
   // }
 
   /**
-   * Get message to notice operation
+   * Get message to notice status operation
    *
    * @param message message form
    * @param keywords keyword for each properties

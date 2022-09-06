@@ -6,7 +6,7 @@ import {
   FindOneOptions,
 } from 'typeorm';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
-import { isArray, omit, filter, keys, isUndefined, map } from 'lodash';
+import { isArray, omit, filter, keys, isUndefined } from 'lodash';
 import { IPaginationOptions, Pagination } from './pagination';
 import { default as slugify } from 'slugify';
 import { DEFAULT_SORT_BY, DEFAULT_SORT_TYPE } from '../constant/constant';
