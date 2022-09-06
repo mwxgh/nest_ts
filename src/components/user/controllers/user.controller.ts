@@ -109,11 +109,25 @@ export class UserController {
         sortType,
       });
 
-    console.log('includes', includes);
+    let joinAndSelects = [];
 
     if (!isNil(includes)) {
-      if (includes.includes('roles')) {
-        queryBuilder = queryBuilder.leftJoinAndSelect('users.roles', 'roles');
+      const includesParams = Array.isArray(includes) ? includes : [includes];
+
+      const joinTables = ['roles'];
+
+      joinAndSelects = this.commonService.includesParamToJoinAndSelects({
+        includesParams,
+        joinTables,
+      });
+
+      if (joinAndSelects.length > 0) {
+        joinAndSelects.forEach((joinAndSelect) => {
+          queryBuilder = queryBuilder.leftJoinAndSelect(
+            `${this.entity}.${joinAndSelect}`,
+            `${joinAndSelect}`,
+          );
+        });
       }
     }
 
@@ -128,12 +142,22 @@ export class UserController {
         paginateOption,
       );
 
-      return this.response.paginate(data, new UserTransformer([includes]));
+      return this.response.paginate(
+        data,
+        new UserTransformer(
+          joinAndSelects.length > 0 ? joinAndSelects : undefined,
+        ),
+      );
     }
 
     const users = await queryBuilder.getMany();
 
-    return this.response.collection(users, new UserTransformer([includes]));
+    return this.response.collection(
+      users,
+      new UserTransformer(
+        joinAndSelects.length > 0 ? joinAndSelects : undefined,
+      ),
+    );
   }
 
   @Get(':id')
