@@ -30,6 +30,9 @@ import { ContactService } from '../services/contact.service';
 import { ContactTransformer } from '../transformers/contact.transformer';
 import { SuccessfullyOperation } from 'src/shared/services/apiResponse/apiResponse.interface';
 import { CommonService } from 'src/shared/services/common.service';
+import Messages from 'src/shared/message/message';
+import { Contact } from '../entities/contact.entity';
+import { SelectQueryBuilder } from 'typeorm';
 
 @ApiTags('Contacts')
 @ApiHeader({
@@ -56,15 +59,20 @@ export class ContactController {
   async createContact(
     @AuthenticatedUser() currentUser: User,
     @Body() data: CreateContactDto,
-  ): Promise<any> {
+  ): Promise<SuccessfullyOperation> {
     this.commonService.checkUserPermissionOperation({
       currentUser,
       userId: data.userId,
     });
 
-    const contact = await this.contactService.create(data);
+    await this.contactService.create(data);
 
-    return this.response.item(contact, new ContactTransformer());
+    return this.response.success({
+      message: this.commonService.getMessage({
+        message: Messages.successfullyOperation.create,
+        keywords: ['contact'],
+      }),
+    });
   }
 
   @Get()
@@ -78,13 +86,14 @@ export class ContactController {
   async readContacts(@Query() query: QueryManyDto): Promise<any> {
     const { search, sortBy, sortType } = query;
 
-    const queryBuilder = await this.contactService.queryBuilder({
-      entity: this.entity,
-      fields: this.fields,
-      keyword: search,
-      sortBy,
-      sortType,
-    });
+    const queryBuilder: SelectQueryBuilder<Contact> =
+      await this.contactService.queryBuilder({
+        entity: this.entity,
+        fields: this.fields,
+        keyword: search,
+        sortBy,
+        sortType,
+      });
 
     if (query.perPage || query.page) {
       const paginateOption: IPaginationOptions = {
@@ -122,7 +131,7 @@ export class ContactController {
   })
   @ApiOkResponse({ description: 'Contacts entity' })
   async readSelfContacts(@AuthenticatedUser() currentUser: User) {
-    const contacts = await this.contactService.findWhere({
+    const contacts: Contact[] = await this.contactService.findWhere({
       where: { userId: currentUser.id },
     });
 
@@ -158,7 +167,7 @@ export class ContactController {
     @AuthenticatedUser() currentUser: User,
     @Param('id', ParseIntPipe) id: number,
     @Body() data: UpdateContactDto,
-  ): Promise<any> {
+  ): Promise<SuccessfullyOperation> {
     const contact = await this.contactService.findOneOrFail(id);
 
     this.commonService.checkUserPermissionOperation({
@@ -168,7 +177,12 @@ export class ContactController {
 
     await this.contactService.update(contact.id, data);
 
-    return this.response.success();
+    return this.response.success({
+      message: this.commonService.getMessage({
+        message: Messages.successfullyOperation.update,
+        keywords: ['contact'],
+      }),
+    });
   }
 
   @Delete(':id')
@@ -189,6 +203,11 @@ export class ContactController {
 
     await this.contactService.destroy(id);
 
-    return this.response.success({ message: 'Delete contact successfully' });
+    return this.response.success({
+      message: this.commonService.getMessage({
+        message: Messages.successfullyOperation.delete,
+        keywords: ['contact'],
+      }),
+    });
   }
 }

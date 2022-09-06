@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { BaseService } from 'src/shared/services/base.service';
-import { Connection, Repository } from 'typeorm';
+import { Connection, Repository, SelectQueryBuilder } from 'typeorm';
 import { Comment, JoinCommentAble } from '../entities/comment.entity';
 import { CommentRepository } from '../repositories/comment.repository';
 
@@ -13,11 +13,7 @@ export class CommentService extends BaseService {
     this.repository = this.dataSource.getCustomRepository(CommentRepository);
   }
 
-  async comment(): Promise<any> {
-    return await this.repository;
-  }
-
-  async joinComment() {
+  async joinComment(): Promise<SelectQueryBuilder<Comment>> {
     const values = Object.values(JoinCommentAble);
     const keys = Object.keys(JoinCommentAble);
     let data = this.repository.createQueryBuilder('comments');

@@ -44,6 +44,8 @@ import { JwtAuthGuard } from 'src/components/auth/guards/jwtAuth.guard';
 import { SuccessfullyOperation } from 'src/shared/services/apiResponse/apiResponse.interface';
 import Messages from 'src/shared/message/message';
 import { CommonService } from 'src/shared/services/common.service';
+import { User } from '../entities/user.entity';
+import { SelectQueryBuilder } from 'typeorm';
 
 @ApiTags('Users')
 @ApiHeader({
@@ -63,7 +65,7 @@ export class UserController {
     private commonService: CommonService,
   ) {}
 
-  private entity = 'user';
+  private entity = 'users';
   private fields = ['email', 'username', 'firstName', 'lastName'];
 
   @Post()
@@ -98,17 +100,18 @@ export class UserController {
   async readUsers(@Query() query: QueryManyDto): Promise<any> {
     const { search, includes, sortBy, sortType } = query;
 
-    let queryBuilder = await this.userService.queryBuilder({
-      entity: this.entity,
-      fields: this.fields,
-      keyword: search,
-      sortBy,
-      sortType,
-    });
+    let queryBuilder: SelectQueryBuilder<User> =
+      await this.userService.queryBuilder({
+        entity: this.entity,
+        fields: this.fields,
+        keyword: search,
+        sortBy,
+        sortType,
+      });
 
     if (!isNil(includes)) {
       if (includes.includes('roles')) {
-        queryBuilder = queryBuilder.leftJoinAndSelect('user.roles', 'roles');
+        queryBuilder = queryBuilder.leftJoinAndSelect('users.roles', 'roles');
       }
     }
 

@@ -26,6 +26,9 @@ import { CategoryTransformer } from '../transformers/category.transformer';
 import { ApiResponseService } from 'src/shared/services/apiResponse/apiResponse.service';
 import { Auth } from 'src/components/auth/decorators/auth.decorator';
 import { JwtAuthGuard } from 'src/components/auth/guards/jwtAuth.guard';
+import { SuccessfullyOperation } from 'src/shared/services/apiResponse/apiResponse.interface';
+import Messages from 'src/shared/message/message';
+import { CommonService } from 'src/shared/services/common.service';
 
 @ApiTags('Categories')
 @ApiHeader({
@@ -39,6 +42,7 @@ export class CategoryController {
   constructor(
     private categoryService: CategoryService,
     private response: ApiResponseService,
+    private commonService: CommonService,
   ) {}
 
   private entity = 'categories';
@@ -48,10 +52,17 @@ export class CategoryController {
   @Auth('admin')
   @ApiOperation({ summary: 'Admin create new category' })
   @ApiOkResponse({ description: 'New category entity' })
-  async createCategory(@Body() data: CreateCategoryDto): Promise<any> {
-    const category = await this.categoryService.create(data);
+  async createCategory(
+    @Body() data: CreateCategoryDto,
+  ): Promise<SuccessfullyOperation> {
+    await this.categoryService.create(data);
 
-    return this.response.item(category, new CategoryTransformer());
+    return this.response.success({
+      message: this.commonService.getMessage({
+        message: Messages.successfullyOperation.create,
+        keywords: ['category'],
+      }),
+    });
   }
 
   @Get()
@@ -105,23 +116,35 @@ export class CategoryController {
   async updateCategory(
     @Param('id', ParseIntPipe) id: number,
     @Body() data: UpdateCategoryDto,
-  ): Promise<any> {
+  ): Promise<SuccessfullyOperation> {
     await this.categoryService.findOneOrFail(id);
 
     await this.categoryService.update(id, data);
 
-    return this.response.success();
+    return this.response.success({
+      message: this.commonService.getMessage({
+        message: Messages.successfullyOperation.update,
+        keywords: ['category'],
+      }),
+    });
   }
 
   @Delete(':id')
   @Auth('admin')
   @ApiOperation({ summary: 'Admin delete category by id' })
   @ApiOkResponse({ description: 'Delete category successfully' })
-  async deleteCategory(@Param('id', ParseIntPipe) id: number): Promise<any> {
+  async deleteCategory(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<SuccessfullyOperation> {
     await this.categoryService.findOneOrFail(id);
 
     await this.categoryService.destroy(id);
 
-    return this.response.success();
+    return this.response.success({
+      message: this.commonService.getMessage({
+        message: Messages.successfullyOperation.delete,
+        keywords: ['category'],
+      }),
+    });
   }
 }

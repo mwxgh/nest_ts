@@ -5,12 +5,23 @@ import {
   Get,
   NotFoundException,
   Param,
+  ParseIntPipe,
   Post,
   Put,
   Query,
 } from '@nestjs/common';
-import { ApiHeader, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
+import {
+  ApiHeader,
+  ApiOkResponse,
+  ApiOperation,
+  ApiParam,
+  ApiTags,
+} from '@nestjs/swagger';
+import { QueryManyDto } from 'src/shared/dto/queryParams.dto';
+import Messages from 'src/shared/message/message';
+import { SuccessfullyOperation } from 'src/shared/services/apiResponse/apiResponse.interface';
 import { ApiResponseService } from 'src/shared/services/apiResponse/apiResponse.service';
+import { CommonService } from 'src/shared/services/common.service';
 
 import { IPaginationOptions } from 'src/shared/services/pagination';
 
@@ -27,12 +38,17 @@ import { CommentTransformer } from '../transformers/comment.transformer';
 @Controller('api/admin/comments')
 export class AdminCommentController {
   constructor(
-    private comment: CommentService,
+    private commentService: CommentService,
     private response: ApiResponseService,
+    private commonService: CommonService,
   ) {}
 
   @Post()
-  async store(@Body() body: CreateCommentDto): Promise<any> {
+  @ApiOperation({ summary: 'Admin/user create new comment with userId param' })
+  @ApiOkResponse({ description: 'New comment entity' })
+  async createComment(
+    @Body() body: CreateCommentDto,
+  ): Promise<SuccessfullyOperation> {
     const value = Object.values(CommentAbleType);
 
     const arr = [];
@@ -41,45 +57,47 @@ export class AdminCommentController {
 
     if (!arr.includes(body.commentAbleType)) throw new NotFoundException();
 
-    const data = await this.comment.create(body);
+    await this.commentService.create(body);
 
-    return this.response.item(data, new CommentTransformer());
+    return this.response.success({
+      message: this.commonService.getMessage({
+        message: Messages.successfullyOperation.create,
+        keywords: ['comment'],
+      }),
+    });
   }
 
-  @Get('listPaginate')
-  @ApiQuery({ name: 'page', required: false })
-  @ApiQuery({ name: 'limit', required: false })
-  async index(@Query() query: any): Promise<any> {
-    const params: IPaginationOptions = {
-      limit: Number(query.limit) || 10,
-      page: Number(query.page) || 1,
-    };
-    const data = await this.comment.joinComment();
+  @Get()
+  async readComments(@Query() query: QueryManyDto): Promise<any> {
+    const queryBuilder = await this.commentService.joinComment();
 
-    await data.getMany();
+    if (query.perPage || query.page) {
+      const paginateOption: IPaginationOptions = {
+        limit: query.perPage ? query.perPage : 10,
+        page: query.page ? query.page : 1,
+      };
 
-    const paginate = await this.comment.paginate(data, params);
+      const contacts = await this.commentService.paginate(
+        queryBuilder,
+        paginateOption,
+      );
 
-    return this.response.paginate(paginate, new CommentTransformer());
-  }
-
-  @Get('list')
-  async list(): Promise<any> {
-    const data = await this.comment.joinComment();
+      return this.response.paginate(contacts, new CommentTransformer());
+    }
 
     return this.response.collection(
-      await data.getMany(),
+      await queryBuilder.getMany(),
       new CommentTransformer(),
     );
   }
 
   @Get(':id')
-  async show(@Param('id') id: string): Promise<any> {
-    if (!Number(id)) throw new NotFoundException();
+  @ApiOperation({ summary: 'Admin get comment by id' })
+  @ApiOkResponse({ description: 'Comment entity' })
+  async readComment(@Param('id', ParseIntPipe) id: number): Promise<any> {
+    const queryBuilder = await this.commentService.joinComment();
 
-    const data = await this.comment.joinComment();
-
-    const comment = await data
+    const comment = await queryBuilder
       .where('comments.id = :id', { id: Number(id) })
       .getMany();
 
@@ -90,21 +108,36 @@ export class AdminCommentController {
 
   @Put(':id')
   @ApiParam({ name: 'id' })
-  async update(@Param() params, @Body() body: UpdateCommentDto): Promise<any> {
-    await this.comment.findOneOrFail(params.id);
+  async update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() body: UpdateCommentDto,
+  ): Promise<SuccessfullyOperation> {
+    await this.commentService.findOneOrFail(id);
 
-    await this.comment.update(params.id, body);
+    await this.commentService.update(id, body);
 
-    return this.response.success();
+    return this.response.success({
+      message: this.commonService.getMessage({
+        message: Messages.successfullyOperation.update,
+        keywords: ['comment'],
+      }),
+    });
   }
 
   @Delete(':id')
   @ApiParam({ name: 'id' })
-  async destroy(@Param() params): Promise<any> {
-    await this.comment.findOneOrFail(params.id);
+  async destroy(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<SuccessfullyOperation> {
+    await this.commentService.findOneOrFail(id);
 
-    await this.comment.destroy(params.id);
+    await this.commentService.destroy(id);
 
-    return this.response.success();
+    return this.response.success({
+      message: this.commonService.getMessage({
+        message: Messages.successfullyOperation.delete,
+        keywords: ['comment'],
+      }),
+    });
   }
 }

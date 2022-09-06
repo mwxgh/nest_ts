@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { BaseService } from 'src/shared/services/base.service';
-import { Connection, Repository } from 'typeorm';
+import { Connection, Repository, SelectQueryBuilder } from 'typeorm';
 import { Product } from '../entities/product.entity';
 import { ProductRepository } from '../repositories/product.repository';
 import slugify from 'slugify';
 import { CategoryAbleType } from 'src/components/category/entities/categoryAble.entity';
 import { ImageAbleType } from '../../image/entities/imageAble.entity';
+import { CreateProductDto } from '../dto/product.dto';
 
 @Injectable()
 export class ProductService extends BaseService {
@@ -17,19 +18,26 @@ export class ProductService extends BaseService {
     this.repository = this.connection.getCustomRepository(ProductRepository);
   }
 
-  async queryInclude(includes: any, id?: any): Promise<any> {
-    const key = ['images', 'categories'];
+  async queryProduct(params: {
+    entity: string;
+    fields?: string[];
+    keyword?: string | '';
+    sortBy?: string;
+    sortType?: 'ASC' | 'DESC';
+    includes?: string[];
+  }): Promise<SelectQueryBuilder<Product>> {
+    const { entity, fields, keyword, sortBy, sortType, includes } = params;
 
-    const include = includes.split(',').filter((item) => key.includes(item));
+    let queryBuilder: SelectQueryBuilder<Product> = await this.queryBuilder({
+      entity,
+      fields,
+      keyword,
+      sortBy,
+      sortType,
+    });
 
-    let queryBuilder = id
-      ? this.repository
-          .createQueryBuilder('products')
-          .where('products.id = :id', { id: id })
-      : this.repository.createQueryBuilder('products');
-
-    if (include.length > 0) {
-      if (include.includes('images')) {
+    if (includes.length > 0) {
+      if (includes.includes('images')) {
         queryBuilder = queryBuilder.leftJoinAndSelect(
           'products.images',
           'images',
@@ -37,7 +45,7 @@ export class ProductService extends BaseService {
           { imageAbleType: ImageAbleType.product },
         );
       }
-      if (include.includes('categories')) {
+      if (includes.includes('categories')) {
         queryBuilder = queryBuilder.leftJoinAndSelect(
           'products.categories',
           'categories',
@@ -48,22 +56,22 @@ export class ProductService extends BaseService {
       }
     }
 
-    return { include, queryBuilder };
+    return queryBuilder;
   }
 
-  async createProduct(data: any): Promise<any> {
+  async createProduct(data: CreateProductDto): Promise<Product> {
     data.slug = slugify(data.name.toLowerCase());
 
     const num = await this.repository
       .createQueryBuilder('products')
-      .where('products.name = :name', { name: data['name'] })
+      .where('products.name = :name', { name: data.name })
       .getCount();
 
     if (num > 0) data.slug = `${data.slug}-${num}`;
 
     data.sku = data.sku || `MH${Date.now()}`;
 
-    const product = await this.repository.save(data);
+    const product: Product = await this.repository.save(data);
 
     if (data.images) {
       data.images.forEach(async (item: any) => {

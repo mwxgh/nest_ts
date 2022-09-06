@@ -13,8 +13,9 @@ import {
 import {
   ApiBearerAuth,
   ApiHeader,
+  ApiOkResponse,
+  ApiOperation,
   ApiParam,
-  ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 import { CreateProductDto, UpdateProductDto } from '../dto/product.dto';
@@ -25,9 +26,13 @@ import { CategoryAbleService } from '../../category/services/categoryAble.servic
 import { CategoryAbleType } from 'src/components/category/entities/categoryAble.entity';
 import { ApiResponseService } from 'src/shared/services/apiResponse/apiResponse.service';
 import { JwtAuthGuard } from 'src/components/auth/guards/jwtAuth.guard';
-import { QueryPaginateDto } from 'src/shared/dto/queryParams.dto';
+import { QueryManyDto } from 'src/shared/dto/queryParams.dto';
 import { IPaginationOptions } from 'src/shared/services/pagination';
 import { ImageAbleType } from '../../image/entities/imageAble.entity';
+import { Auth } from 'src/components/auth/decorators/auth.decorator';
+import { SuccessfullyOperation } from 'src/shared/services/apiResponse/apiResponse.interface';
+import Messages from 'src/shared/message/message';
+import { CommonService } from 'src/shared/services/common.service';
 
 @ApiTags('Products')
 @ApiHeader({
@@ -43,65 +48,82 @@ export class ProductController {
     private productService: ProductService,
     private imagesService: ImageService,
     private categoryAbleService: CategoryAbleService,
+    private commonService: CommonService,
   ) {}
 
-  @Get()
-  async listPaginate(@Query() query: QueryPaginateDto): Promise<any> {
-    const params: IPaginationOptions = {
-      limit: query.perPage ? query.perPage : 10,
-      page: query.page ? query.page : 1,
-    };
+  private entity = 'products';
+  private fields = ['name'];
 
-    const { include, queryInclude } = await this.productService.queryInclude(
-      query.includes,
-    );
+  @Post()
+  @Auth('admin')
+  @ApiOperation({ summary: 'Admin create new product' })
+  @ApiOkResponse({ description: 'New product entity' })
+  async createProduct(
+    @Body() data: CreateProductDto,
+  ): Promise<{ [key: string]: any }> {
+    const product = await this.productService.createProduct(data);
 
-    const data = await this.productService.paginate(queryInclude, params);
-    return this.response.paginate(data, new ProductTransformer(include));
+    return this.response.item(product, new ProductTransformer());
   }
 
-  @Get('list')
-  async list(@Query() query: any): Promise<any> {
-    const { include, queryInclude } = await this.productService.queryInclude(
-      query.include,
-    );
+  @Get()
+  @ApiOperation({ summary: 'List products' })
+  @ApiOkResponse({ description: 'List products with query param' })
+  async readProducts(@Query() query: QueryManyDto): Promise<any> {
+    const { search, includes, sortBy, sortType } = query;
+
+    const queryBuilder = await this.productService.queryProduct({
+      entity: this.entity,
+      fields: this.fields,
+      keyword: search,
+      sortBy,
+      sortType,
+      includes,
+    });
+
+    if (query.perPage || query.page) {
+      const paginateOption: IPaginationOptions = {
+        limit: query.perPage ? query.perPage : 10,
+        page: query.page ? query.page : 1,
+      };
+
+      const products = await this.productService.paginate(
+        queryBuilder,
+        paginateOption,
+      );
+
+      return this.response.paginate(products, new ProductTransformer(includes));
+    }
 
     return this.response.collection(
-      await queryInclude.getMany(),
-      new ProductTransformer(include),
+      await queryBuilder.getMany(),
+      new ProductTransformer(includes),
     );
   }
 
   @Get(':id')
-  @ApiParam({ name: 'id' })
-  async show(
-    @Param('id', ParseIntPipe) id: number,
-    @Query() query: any,
-  ): Promise<any> {
-    const { include, queryInclude } = await this.productService.queryInclude(
-      query.include,
-      id,
-    );
+  @ApiOperation({ summary: 'Get product by id' })
+  @ApiOkResponse({ description: 'Product entity' })
+  async show(@Param('id', ParseIntPipe) id: number): Promise<any> {
+    const product = await this.productService.findOneOrFail(id, {
+      relations: ['images', 'categories'],
+    });
 
     return this.response.item(
-      await queryInclude.getOne(),
-      new ProductTransformer(include),
+      product,
+      new ProductTransformer(['images', 'categories']),
     );
-  }
-
-  @Post()
-  @ApiResponse({ status: 201, description: 'Product created' })
-  async store(@Body() data: CreateProductDto): Promise<{ [key: string]: any }> {
-    const product = await this.productService.createProduct(data);
-    return this.response.item(product, new ProductTransformer());
   }
 
   @Put(':id')
   @ApiParam({ name: 'id' })
-  async update(@Param() params, @Body() data: UpdateProductDto): Promise<any> {
-    await this.productService.findOneOrFail(params.id);
+  async update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() data: UpdateProductDto,
+  ): Promise<SuccessfullyOperation> {
+    await this.productService.findOneOrFail(id);
 
-    const product = await this.productService.update(params.id, data);
+    const product = await this.productService.update(id, data);
 
     if (data.images) {
       data.images.forEach(async (item) => {
@@ -124,7 +146,12 @@ export class ProductController {
       };
       await this.categoryAbleService.create(cate);
     }
-    return this.response.success();
+    return this.response.success({
+      message: this.commonService.getMessage({
+        message: Messages.successfullyOperation.update,
+        keywords: ['product'],
+      }),
+    });
   }
 
   @Delete(':id')

@@ -28,11 +28,12 @@ import { CreateImageDto, UpdateImageDto } from '../dto/image.dto';
 import { ImageService } from '../services/image.service';
 import { ImageTransformer } from '../transformers/image.transformer';
 import { FileFastifyInterceptor } from 'fastify-file-interceptor';
-import slugify from 'slugify';
-import * as _ from 'lodash';
 import { QueryManyDto } from 'src/shared/dto/queryParams.dto';
 import { IPaginationOptions } from 'src/shared/services/pagination';
 import { JwtAuthGuard } from 'src/components/auth/guards/jwtAuth.guard';
+import { SuccessfullyOperation } from 'src/shared/services/apiResponse/apiResponse.interface';
+import Messages from 'src/shared/message/message';
+import { CommonService } from 'src/shared/services/common.service';
 
 @ApiTags('Images')
 @ApiHeader({
@@ -46,6 +47,7 @@ export class ImageController {
   constructor(
     private response: ApiResponseService,
     private imageService: ImageService,
+    private commonService: CommonService,
   ) {}
 
   private entity = 'images';
@@ -83,31 +85,15 @@ export class ImageController {
   async createImage(
     @UploadedFile() file: Express.Multer.File,
     @Body() data: CreateImageDto,
-  ) {
-    const countImages = await this.imageService.count({
-      where: { title: data.title },
+  ): Promise<SuccessfullyOperation> {
+    await this.imageService.saveImage({ file, data });
+
+    return this.response.success({
+      message: this.commonService.getMessage({
+        message: Messages.successfullyOperation.create,
+        keywords: ['image'],
+      }),
     });
-
-    const assignSlug = _.assign(data, {
-      slug: slugify(data.title),
-    });
-
-    if (countImages) assignSlug.slug = `${assignSlug.slug}-${countImages}`;
-
-    const newFile = _.assign({}, file, {
-      key: file.filename,
-      location: process.env.APP_URL + '/public/uploads/' + file.filename,
-    });
-
-    const assignUrlFile = _.assign(assignSlug, {
-      url: newFile.location,
-    });
-
-    const image = { ...assignUrlFile };
-
-    await this.imageService.save(image);
-
-    return this.response.success();
   }
 
   @Get()
@@ -161,35 +147,25 @@ export class ImageController {
   async updateImage(
     @Param('id', ParseIntPipe) id: number,
     @Body() data: UpdateImageDto,
-  ): Promise<any> {
-    const currentImage = await this.imageService.findOneOrFail(id);
+  ): Promise<SuccessfullyOperation> {
+    await this.imageService.updateImage({ id, data });
 
-    const countImages = await this.imageService.count({
-      where: { title: data.title },
+    return this.response.success({
+      message: this.commonService.getMessage({
+        message: Messages.successfullyOperation.update,
+        keywords: ['image'],
+      }),
     });
-
-    if (data.title !== currentImage.title) {
-      const assignSlug = _.assign(data, { slug: slugify(data.title) });
-
-      if (countImages) assignSlug.slug = `${assignSlug.slug}-${countImages}`;
-
-      const imageUpdate = { ...assignSlug };
-
-      await this.imageService.update(id, imageUpdate);
-    } else {
-      await this.imageService.update(id, data);
-    }
-    return this.response.success();
   }
 
   @Delete(':id')
   @Auth('admin')
   @ApiOperation({ summary: 'Admin delete image by id' })
   @ApiOkResponse({ description: 'Delete image successfully' })
-  async deleteImage(@Param('id', ParseIntPipe) id: number): Promise<any> {
-    await this.imageService.findOneOrFail(id);
-
-    await this.imageService.destroy(id);
+  async deleteImage(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<SuccessfullyOperation> {
+    await this.imageService.deleteImage({ id });
 
     return this.response.success();
   }

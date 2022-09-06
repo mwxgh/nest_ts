@@ -6,7 +6,7 @@ import {
   FindOneOptions,
 } from 'typeorm';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
-import { isArray, omit, filter, keys, isUndefined } from 'lodash';
+import { isArray, omit, filter, keys, isUndefined, map } from 'lodash';
 import { IPaginationOptions, Pagination } from './pagination';
 import { default as slugify } from 'slugify';
 import { DEFAULT_SORT_BY, DEFAULT_SORT_TYPE } from '../constant/constant';
@@ -290,14 +290,14 @@ export class BaseService {
    *        keyword string | null
    *        }
    */
-  async queryBuilder(params: {
+  async queryBuilder<T>(params: {
     entity: string;
     fields?: string[];
     keyword?: string | '';
     sortBy?: string;
     sortType?: 'ASC' | 'DESC';
     filter?: { [key: string]: string };
-  }): Promise<SelectQueryBuilder<any>> {
+  }): Promise<SelectQueryBuilder<T>> {
     const { entity, fields, keyword } = params;
 
     const orderBy = params.sortBy ? params.sortBy : DEFAULT_SORT_BY;
@@ -314,8 +314,13 @@ export class BaseService {
       }
     }
 
-    if (orderBy) {
-      baseQuery = baseQuery.orderBy(`${entity}.${orderBy}`, orderType);
+    baseQuery = baseQuery.orderBy(`${entity}.${orderBy}`, orderType);
+
+    if (orderBy !== DEFAULT_SORT_BY) {
+      baseQuery = baseQuery.addOrderBy(
+        `${entity}.${DEFAULT_SORT_BY}`,
+        DEFAULT_SORT_TYPE,
+      );
     }
 
     return baseQuery;
