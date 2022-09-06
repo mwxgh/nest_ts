@@ -271,7 +271,7 @@ export class BaseService {
   }
 
   /**
-   * Destroy the models for the given ID
+   * Destroy the models for the given criteria
    *
    * @param criteria string | string[] | number | number[]
    */

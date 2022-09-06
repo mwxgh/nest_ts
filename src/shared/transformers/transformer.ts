@@ -1,9 +1,6 @@
 import { InternalServerErrorException } from '@nestjs/common';
 import { isNil, isArray, forEach, camelCase, isFunction, map } from 'lodash';
-
-interface Entity {
-  [key: string]: any;
-}
+import { Entity } from '../interfaces/interface';
 
 export interface TransformerInterface {
   get(entity: Entity): Entity;

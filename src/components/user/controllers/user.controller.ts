@@ -109,6 +109,8 @@ export class UserController {
         sortType,
       });
 
+    console.log('includes', includes);
+
     if (!isNil(includes)) {
       if (includes.includes('roles')) {
         queryBuilder = queryBuilder.leftJoinAndSelect('users.roles', 'roles');
@@ -126,13 +128,12 @@ export class UserController {
         paginateOption,
       );
 
-      return this.response.paginate(data, new UserTransformer(includes));
+      return this.response.paginate(data, new UserTransformer([includes]));
     }
 
-    return this.response.collection(
-      await queryBuilder.getMany(),
-      new UserTransformer(includes),
-    );
+    const users = await queryBuilder.getMany();
+
+    return this.response.collection(users, new UserTransformer([includes]));
   }
 
   @Get(':id')

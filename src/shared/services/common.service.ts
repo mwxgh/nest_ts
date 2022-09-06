@@ -1,6 +1,7 @@
 import { ForbiddenException } from '@nestjs/common';
 import { includes, map } from 'lodash';
 import { User } from 'src/components/user/entities/user.entity';
+import { Entity } from '../interfaces/interface';
 
 export class CommonService {
   /**
@@ -28,6 +29,29 @@ export class CommonService {
     }
   }
 
+  /**
+   * Check includes param to transform data
+   *
+   * @param includes include param
+   * @param entity entity
+   *
+   * @return transformer
+   */
+  // checkIncludeToTransformer(params: {
+  //   includes: string[];
+  //   entity: Entity;
+  // }): void {
+  //   const { includes, entity } = params;
+  // }
+
+  /**
+   * Get message to notice operation
+   *
+   * @param message message form
+   * @param keywords keyword for each properties
+   *
+   * @return string
+   */
   getMessage(params: { message: string; keywords: string[] }): string {
     let { message } = params;
 

@@ -5,11 +5,8 @@ import {
   LengthAwareMeta,
   SuccessfullyOperation,
 } from './apiResponse.interface';
-import Messages from 'src/shared/message/message';
-
-interface Entity {
-  [key: string]: any;
-}
+import Messages from '../../message/message';
+import { Entity } from 'src/shared/interfaces/interface';
 
 @Injectable()
 export class ApiResponseService {
