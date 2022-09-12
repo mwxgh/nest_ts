@@ -31,8 +31,8 @@ export class CommonService {
   /**
    * Check includes param and convert to join and select table
    *
-   * @param includes include param
-   * @param entity entity
+   * @param includesParams includes param
+   * @param joinTables join table
    *
    * @return join and select table
    */

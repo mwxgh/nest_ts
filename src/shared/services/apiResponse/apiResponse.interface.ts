@@ -1,12 +1,11 @@
-export interface LengthAwareMeta {
-  pagination: {
-    total: number;
-    perPage: number;
-    currentPage: number;
-    totalPages: number;
-  };
-}
+import {
+  ResponseEntity,
+  LengthAwareMeta,
+} from 'src/shared/interfaces/interface';
 
+/**
+ *  Response for success operations
+ */
 export interface SuccessfullyOperation {
   data: {
     success: boolean;
@@ -14,13 +13,24 @@ export interface SuccessfullyOperation {
   };
 }
 
-/** Response for list apis */
-export type GetListResponse<T> = {
-  data: T[];
+/**
+ * Response for item apis
+ */
+export type GetItemResponse = {
+  data: ResponseEntity;
 };
 
-/** Response for list pagination apis */
-export type GetListPaginationResponse<T> = {
-  data: T[];
-  pagination: LengthAwareMeta;
+/**
+ * Response for list apis
+ */
+export type GetListResponse = {
+  data: ResponseEntity[];
+};
+
+/**
+ * Response for list pagination apis
+ */
+export type GetListPaginationResponse = {
+  data: ResponseEntity[];
+  meta: LengthAwareMeta;
 };

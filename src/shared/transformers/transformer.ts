@@ -1,6 +1,6 @@
 import { InternalServerErrorException } from '@nestjs/common';
 import { isNil, isArray, forEach, camelCase, isFunction, map } from 'lodash';
-import { Entity } from '../interfaces/interface';
+import { Entity, ResponseEntity } from '../interfaces/interface';
 
 export interface TransformerInterface {
   get(entity: Entity): Entity;
@@ -12,7 +12,10 @@ export interface TransformerInterface {
    *
    * @return Entity
    */
-  item(entity: Entity, transformer: TransformerInterface): { data: Entity };
+  item(
+    entity: Entity,
+    transformer: TransformerInterface,
+  ): { data: ResponseEntity };
 
   /**
    * Create a new collection resource object
@@ -25,7 +28,7 @@ export interface TransformerInterface {
   collection(
     collection: Entity[],
     transformer: TransformerInterface,
-  ): { data: Entity };
+  ): { data: ResponseEntity[] };
 
   /**
    * Create a new primitive resource object
@@ -44,7 +47,10 @@ export class Transformer implements TransformerInterface {
     this.includes = includes;
   }
 
-  item(entity: Entity, transformer: TransformerInterface): { data: Entity } {
+  item(
+    entity: Entity,
+    transformer: TransformerInterface,
+  ): { data: ResponseEntity } {
     if (isNil(entity)) {
       return null;
     }
@@ -54,7 +60,7 @@ export class Transformer implements TransformerInterface {
   collection(
     collection: Entity[],
     transformer: TransformerInterface,
-  ): { data: Entity } {
+  ): { data: ResponseEntity[] } {
     if (!isArray(collection)) {
       throw new InternalServerErrorException('collection should be an array');
     }

@@ -2,11 +2,13 @@ import { Injectable, BadRequestException } from '@nestjs/common';
 import { Pagination } from '../pagination';
 import { TransformerInterface } from '../../transformers/transformer';
 import {
-  LengthAwareMeta,
+  GetItemResponse,
+  GetListPaginationResponse,
+  GetListResponse,
   SuccessfullyOperation,
 } from './apiResponse.interface';
 import Messages from '../../message/message';
-import { Entity } from 'src/shared/interfaces/interface';
+import { Entity, ResponseEntity } from 'src/shared/interfaces/interface';
 
 @Injectable()
 export class ApiResponseService {
@@ -18,10 +20,7 @@ export class ApiResponseService {
    *
    * @return Object
    */
-  item(
-    entity: Entity,
-    transformer: TransformerInterface,
-  ): { data: { [key: string]: any } } {
+  item(entity: Entity, transformer: TransformerInterface): GetItemResponse {
     return { data: transformer.get(entity) };
   }
 
@@ -47,11 +46,12 @@ export class ApiResponseService {
   collection(
     collection: Entity[],
     transformer: TransformerInterface,
-  ): { data: { [key: string]: any } } {
-    const data = collection.map((i) => {
-      return transformer.get(i);
-    });
-    return { data: data };
+  ): GetListResponse {
+    return {
+      data: collection.map((i) => {
+        return transformer.get(i);
+      }),
+    };
   }
 
   /**
@@ -62,7 +62,7 @@ export class ApiResponseService {
    *
    * @return object
    */
-  primitive(data: { [key: string]: any }): { data: { [key: string]: any } } {
+  primitive(data: Entity): { data: ResponseEntity } {
     return { data };
   }
 
@@ -88,9 +88,9 @@ export class ApiResponseService {
    * @return Object
    */
   paginate(
-    paginator: { [key: string]: any },
+    paginator: Entity,
     transformer: TransformerInterface,
-  ): { data: { [key: string]: any }; meta: LengthAwareMeta } {
+  ): GetListPaginationResponse {
     if (!(paginator instanceof Pagination)) {
       throw new BadRequestException(
         `ApiResponse.paginate expect a Pagination instead a ${typeof paginator}`,
