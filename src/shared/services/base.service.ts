@@ -327,8 +327,8 @@ export class BaseService {
     filter?: { [key: string]: string };
   }): Promise<SelectQueryBuilder<T>> {
     const { entity, fields, keyword } = params;
-    const orderBy = params.sortBy ? params.sortBy : DEFAULT_SORT_BY;
-    const orderType = params.sortType ? params.sortType : DEFAULT_SORT_TYPE;
+    const orderBy = params.sortBy ?? DEFAULT_SORT_BY;
+    const orderType = params.sortType ?? DEFAULT_SORT_TYPE;
 
     let baseQuery = this.repository.createQueryBuilder(`${entity}`);
 

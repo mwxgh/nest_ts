@@ -87,7 +87,7 @@ export class UserController {
 
     if (data.roleIds.length > 0) {
       for (const roleId of data.roleIds) {
-        await this.userService.attachRole(user.id, roleId);
+        await this.userService.attachRole({ userId: user.id, roleId });
       }
     }
 
@@ -313,7 +313,7 @@ export class UserController {
     @Param('id', ParseIntPipe) id: number,
     @Body() data: UserAttachRoleDto,
   ): Promise<SuccessfullyOperation> {
-    await this.userService.attachRole(id, data.roleId);
+    await this.userService.attachRole({ userId: id, roleId: data.roleId });
 
     return this.response.success();
   }
@@ -326,7 +326,7 @@ export class UserController {
     @Param('id', ParseIntPipe) id: number,
     @Body() data: UserDetachRoleDto,
   ): Promise<SuccessfullyOperation> {
-    await this.userService.detachRole(id, data.roleId);
+    await this.userService.detachRole({ userId: id, roleId: data.roleId });
 
     return this.response.success();
   }

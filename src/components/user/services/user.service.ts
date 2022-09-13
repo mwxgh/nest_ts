@@ -74,7 +74,8 @@ export class UserService extends BaseService {
     return await this.update(id, { password: this.hashService.hash(password) });
   }
 
-  async attachRole(userId: number, roleId: number): Promise<void> {
+  async attachRole(params: { userId: number; roleId: number }): Promise<void> {
+    const { userId, roleId } = params;
     const role = await this.roleService.findOneOrFail(roleId);
 
     const user = await this.repository.findOneOrFail(userId);
@@ -92,7 +93,8 @@ export class UserService extends BaseService {
     }
   }
 
-  async detachRole(userId: number, roleId: number): Promise<void> {
+  async detachRole(params: { userId: number; roleId: number }): Promise<void> {
+    const { userId, roleId } = params;
     const role = await this.roleService.findOneOrFail(roleId);
 
     const user = await this.repository.findOneOrFail(userId);

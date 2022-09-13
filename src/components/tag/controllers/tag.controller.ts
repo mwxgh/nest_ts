@@ -70,7 +70,7 @@ export class TagController {
     return this.response.success({
       message: this.commonService.getMessage({
         message: Messages.successfullyOperation.create,
-        keywords: ['tag'],
+        keywords: [this.entity],
       }),
     });
   }
@@ -134,7 +134,7 @@ export class TagController {
     return this.response.success({
       message: this.commonService.getMessage({
         message: Messages.successfullyOperation.update,
-        keywords: ['tag'],
+        keywords: [this.entity],
       }),
     });
   }
@@ -153,7 +153,7 @@ export class TagController {
     return this.response.success({
       message: this.commonService.getMessage({
         message: Messages.successfullyOperation.delete,
-        keywords: ['tag'],
+        keywords: [this.entity],
       }),
     });
   }
