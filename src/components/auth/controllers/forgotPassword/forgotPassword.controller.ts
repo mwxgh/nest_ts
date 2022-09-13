@@ -17,6 +17,10 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
+import {
+  GetItemResponse,
+  SuccessfullyOperation,
+} from 'src/shared/services/apiResponse/apiResponse.interface';
 
 @ApiTags('Auth')
 @ApiHeader({
@@ -36,7 +40,9 @@ export class ForgotPasswordController {
   @Post('forgotPassword')
   @ApiOperation({ summary: 'Send reset password link to email' })
   @ApiOkResponse({ description: 'Reset password link sent success' })
-  async sendResetLinkEmail(@Body() data: SendResetLinkDto): Promise<any> {
+  async sendResetLinkEmail(
+    @Body() data: SendResetLinkDto,
+  ): Promise<SuccessfullyOperation> {
     const { email } = data;
 
     const user = await this.userService.firstOrFail({
@@ -62,7 +68,9 @@ export class ForgotPasswordController {
   @ApiOperation({ summary: 'Reset password' })
   @ApiOkResponse({ description: 'Reset password successfully' })
   @ApiBadRequestResponse({ description: 'Token is expired' })
-  async reset(@Body() data: ResetPasswordDto): Promise<any> {
+  async resetPassword(
+    @Body() data: ResetPasswordDto,
+  ): Promise<GetItemResponse> {
     const { token, password } = data;
 
     const passwordReset = await this.passwordResetService.firstOrFail({

@@ -30,6 +30,14 @@ import {
 
 import { JwtAuthGuard } from '../../guards/jwtAuth.guard';
 import { QueryManyDto } from 'src/shared/dto/queryParams.dto';
+import {
+  GetItemResponse,
+  GetListPaginationResponse,
+  GetListResponse,
+  SuccessfullyOperation,
+} from 'src/shared/services/apiResponse/apiResponse.interface';
+import Messages from 'src/shared/message/message';
+import { CommonService } from 'src/shared/services/common.service';
 
 @ApiTags('Permissions')
 @ApiHeader({
@@ -43,6 +51,7 @@ export class PermissionController {
   constructor(
     private response: ApiResponseService,
     private permissionService: PermissionService,
+    private commonService: CommonService,
   ) {}
 
   private entity = 'permissions';
@@ -70,7 +79,9 @@ export class PermissionController {
   @ApiOkResponse({
     description: 'List permissions with query param',
   })
-  async readPermissions(@Query() query: QueryManyDto): Promise<any> {
+  async readPermissions(
+    @Query() query: QueryManyDto,
+  ): Promise<GetListResponse | GetListPaginationResponse> {
     const { search, sortBy, sortType } = query;
 
     const queryBuilder = await this.permissionService.queryBuilder({
@@ -104,7 +115,9 @@ export class PermissionController {
   @Auth('admin')
   @ApiOperation({ summary: 'Admin get permission by id' })
   @ApiOkResponse({ description: 'Permission entity' })
-  async readPermission(@Param('id', ParseIntPipe) id: number): Promise<any> {
+  async readPermission(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<GetItemResponse> {
     const permission = await this.permissionService.findOneOrFail(id);
 
     return this.response.item(permission, new PermissionTransformer());
@@ -134,11 +147,18 @@ export class PermissionController {
   @Auth('admin')
   @ApiOperation({ summary: 'Admin delete permission by id' })
   @ApiOkResponse({ description: 'Delete permission successfully' })
-  async delete(@Param('id', ParseIntPipe) id: string): Promise<any> {
+  async delete(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<SuccessfullyOperation> {
     await this.permissionService.findOneOrFail(id);
 
     await this.permissionService.destroy(id);
 
-    return this.response.success();
+    return this.response.success({
+      message: this.commonService.getMessage({
+        message: Messages.successfullyOperation.delete,
+        keywords: ['permission'],
+      }),
+    });
   }
 }

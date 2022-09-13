@@ -48,6 +48,7 @@ export class UserService extends BaseService {
       verified: true,
       verifiedAt: new Date(),
     });
+
     return item;
   }
 
@@ -73,7 +74,7 @@ export class UserService extends BaseService {
     return await this.update(id, { password: this.hashService.hash(password) });
   }
 
-  async attachRole(userId: number, roleId: number): Promise<any> {
+  async attachRole(userId: number, roleId: number): Promise<void> {
     const role = await this.roleService.findOneOrFail(roleId);
 
     const user = await this.repository.findOneOrFail(userId);
@@ -91,7 +92,7 @@ export class UserService extends BaseService {
     }
   }
 
-  async detachRole(userId: number, roleId: number): Promise<any> {
+  async detachRole(userId: number, roleId: number): Promise<void> {
     const role = await this.roleService.findOneOrFail(roleId);
 
     const user = await this.repository.findOneOrFail(userId);
@@ -130,6 +131,7 @@ export class UserService extends BaseService {
     }
 
     await this.usernameExist(username);
+
     const saveUser = await this.create({
       ...pick(user, [
         'email',
@@ -144,6 +146,7 @@ export class UserService extends BaseService {
         email: this.sanitizeEmail(email),
       },
     });
+
     return saveUser;
   }
 }

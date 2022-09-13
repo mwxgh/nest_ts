@@ -15,7 +15,6 @@ import {
   ApiHeader,
   ApiOkResponse,
   ApiOperation,
-  ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
 import { CreateProductDto, UpdateProductDto } from '../dto/product.dto';
@@ -23,14 +22,17 @@ import { ProductService } from '../services/product.service';
 import { ProductTransformer } from '../transformers/product.transformer';
 import { ImageService } from '../../image/services/image.service';
 import { CategoryAbleService } from '../../category/services/categoryAble.service';
-import { CategoryAbleType } from 'src/components/category/entities/categoryAble.entity';
 import { ApiResponseService } from 'src/shared/services/apiResponse/apiResponse.service';
 import { JwtAuthGuard } from 'src/components/auth/guards/jwtAuth.guard';
 import { QueryManyDto } from 'src/shared/dto/queryParams.dto';
 import { IPaginationOptions } from 'src/shared/services/pagination';
-import { ImageAbleType } from '../../image/entities/imageAble.entity';
 import { Auth } from 'src/components/auth/decorators/auth.decorator';
-import { SuccessfullyOperation } from 'src/shared/services/apiResponse/apiResponse.interface';
+import {
+  GetItemResponse,
+  GetListPaginationResponse,
+  GetListResponse,
+  SuccessfullyOperation,
+} from 'src/shared/services/apiResponse/apiResponse.interface';
 import Messages from 'src/shared/message/message';
 import { CommonService } from 'src/shared/services/common.service';
 
@@ -53,6 +55,7 @@ export class ProductController {
 
   private entity = 'products';
   private fields = ['name'];
+  private relations: ['images', 'categories'];
 
   @Post()
   @Auth('admin')
@@ -60,16 +63,23 @@ export class ProductController {
   @ApiOkResponse({ description: 'New product entity' })
   async createProduct(
     @Body() data: CreateProductDto,
-  ): Promise<{ [key: string]: any }> {
-    const product = await this.productService.createProduct(data);
+  ): Promise<SuccessfullyOperation> {
+    await this.productService.createProduct(data);
 
-    return this.response.item(product, new ProductTransformer());
+    return this.response.success({
+      message: this.commonService.getMessage({
+        message: Messages.successfullyOperation.create,
+        keywords: ['product'],
+      }),
+    });
   }
 
   @Get()
   @ApiOperation({ summary: 'List products' })
   @ApiOkResponse({ description: 'List products with query param' })
-  async readProducts(@Query() query: QueryManyDto): Promise<any> {
+  async readProducts(
+    @Query() query: QueryManyDto,
+  ): Promise<GetListResponse | GetListPaginationResponse> {
     const { search, includes, sortBy, sortType } = query;
 
     const queryBuilder = await this.productService.queryProduct({
@@ -104,48 +114,25 @@ export class ProductController {
   @Get(':id')
   @ApiOperation({ summary: 'Get product by id' })
   @ApiOkResponse({ description: 'Product entity' })
-  async show(@Param('id', ParseIntPipe) id: number): Promise<any> {
+  async readProduct(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<GetItemResponse> {
     const product = await this.productService.findOneOrFail(id, {
-      relations: ['images', 'categories'],
+      relations: this.relations,
     });
 
-    return this.response.item(
-      product,
-      new ProductTransformer(['images', 'categories']),
-    );
+    return this.response.item(product, new ProductTransformer(this.relations));
   }
 
   @Put(':id')
-  @ApiParam({ name: 'id' })
-  async update(
+  @ApiOperation({ summary: 'Admin update product by id' })
+  @ApiOkResponse({ description: 'Update product entity' })
+  async updateProduct(
     @Param('id', ParseIntPipe) id: number,
     @Body() data: UpdateProductDto,
   ): Promise<SuccessfullyOperation> {
-    await this.productService.findOneOrFail(id);
+    await this.productService.updateProduct({ id, data });
 
-    const product = await this.productService.update(id, data);
-
-    if (data.images) {
-      data.images.forEach(async (item) => {
-        if (item['url']) {
-          const img = {
-            url: item['url'],
-            imageAbleId: product.id,
-            imageAbleType: ImageAbleType.product,
-          };
-          await this.imagesService.create(img);
-        }
-      });
-    }
-
-    if (data.categoryId && data.categoryId != null) {
-      const cate = {
-        categoryId: data.categoryId,
-        categoryAbleId: product.id,
-        categoryAbleType: CategoryAbleType.product,
-      };
-      await this.categoryAbleService.create(cate);
-    }
     return this.response.success({
       message: this.commonService.getMessage({
         message: Messages.successfullyOperation.update,
@@ -155,12 +142,21 @@ export class ProductController {
   }
 
   @Delete(':id')
-  @ApiParam({ name: 'id' })
-  async remove(@Param() params): Promise<any> {
-    await this.productService.findOneOrFail(params.id);
+  @Auth('admin')
+  @ApiOperation({ summary: 'Admin delete product by id' })
+  @ApiOkResponse({ description: 'Delete product successfully' })
+  async deleteProduct(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<SuccessfullyOperation> {
+    await this.productService.findOneOrFail(id);
 
-    await this.productService.destroy(params.id);
+    await this.productService.destroy(id);
 
-    return this.response.success();
+    return this.response.success({
+      message: this.commonService.getMessage({
+        message: Messages.successfullyOperation.delete,
+        keywords: ['product'],
+      }),
+    });
   }
 }

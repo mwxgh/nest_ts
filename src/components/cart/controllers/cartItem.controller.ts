@@ -4,6 +4,7 @@ import {
   Delete,
   NotFoundException,
   Param,
+  ParseIntPipe,
   Post,
   Put,
 } from '@nestjs/common';
@@ -34,7 +35,7 @@ export class CartItemController {
 
   @Put(':id')
   async update(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Body() body: UpdateCartItemDto,
   ): Promise<any> {
     if (!Number(id)) throw new NotFoundException();
@@ -58,7 +59,7 @@ export class CartItemController {
   }
 
   @Delete(':id')
-  async destroy(@Param('id') id: string): Promise<any> {
+  async destroy(@Param('id', ParseIntPipe) id: number): Promise<any> {
     await this.cartItemService.findOneOrFail(id);
 
     await this.cartItemService.destroy(Number(id));

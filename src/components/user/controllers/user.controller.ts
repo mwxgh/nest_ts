@@ -41,7 +41,12 @@ import {
 } from '../dto/user.dto';
 import { CreateUserDto, UpdateUserDto } from '../dto/user.dto';
 import { JwtAuthGuard } from 'src/components/auth/guards/jwtAuth.guard';
-import { SuccessfullyOperation } from 'src/shared/services/apiResponse/apiResponse.interface';
+import {
+  GetItemResponse,
+  GetListPaginationResponse,
+  GetListResponse,
+  SuccessfullyOperation,
+} from 'src/shared/services/apiResponse/apiResponse.interface';
 import Messages from 'src/shared/message/message';
 import { CommonService } from 'src/shared/services/common.service';
 import { User } from '../entities/user.entity';
@@ -67,6 +72,7 @@ export class UserController {
 
   private entity = 'users';
   private fields = ['email', 'username', 'firstName', 'lastName'];
+  private relations = ['roles'];
 
   @Post()
   @Auth('admin')
@@ -97,7 +103,9 @@ export class UserController {
   @Auth('admin')
   @ApiOperation({ summary: 'Admin get list users' })
   @ApiOkResponse({ description: 'List users with query params' })
-  async readUsers(@Query() query: QueryManyDto): Promise<any> {
+  async readUsers(
+    @Query() query: QueryManyDto,
+  ): Promise<GetListResponse | GetListPaginationResponse> {
     const { search, includes, sortBy, sortType } = query;
 
     let queryBuilder: SelectQueryBuilder<User> =
@@ -114,11 +122,9 @@ export class UserController {
     if (!isNil(includes)) {
       const includesParams = Array.isArray(includes) ? includes : [includes];
 
-      const joinTables = ['roles'];
-
       joinAndSelects = this.commonService.includesParamToJoinAndSelects({
         includesParams,
-        joinTables,
+        relations: this.relations,
       });
 
       if (joinAndSelects.length > 0) {
@@ -164,12 +170,14 @@ export class UserController {
   @Auth('admin')
   @ApiOperation({ summary: 'Admin get user by id' })
   @ApiOkResponse({ description: 'User entity' })
-  async readUser(@Param('id', ParseIntPipe) id: number): Promise<any> {
+  async readUser(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<GetItemResponse> {
     const user = await this.userService.findOneOrFail(id, {
-      relations: ['roles'],
+      relations: this.relations,
     });
 
-    return this.response.item(user, new UserTransformer(['roles']));
+    return this.response.item(user, new UserTransformer(this.relations));
   }
 
   @Put(':id')

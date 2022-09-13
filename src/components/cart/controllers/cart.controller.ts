@@ -5,9 +5,16 @@ import {
   Get,
   NotFoundException,
   Param,
+  ParseIntPipe,
   Post,
 } from '@nestjs/common';
-import { ApiHeader, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiHeader,
+  ApiOkResponse,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { ApiResponseService } from '../../../shared/services/apiResponse/apiResponse.service';
 import { getManager } from 'typeorm';
 import { Cart } from '../entities/cart.entity';
@@ -16,6 +23,9 @@ import { CartTransformer } from '../transformers/cart.transformer';
 
 import { CreateCartItemDto } from '../dto/cart.dto';
 import { ImageAbleType } from '../../image/entities/imageAble.entity';
+import { SuccessfullyOperation } from 'src/shared/services/apiResponse/apiResponse.interface';
+import Messages from 'src/shared/message/message';
+import { CommonService } from 'src/shared/services/common.service';
 
 @ApiTags('Carts')
 @ApiHeader({
@@ -27,6 +37,7 @@ export class CartController {
   constructor(
     private response: ApiResponseService,
     private cartService: CartService,
+    private commonService: CommonService,
   ) {}
 
   @Post()
@@ -58,11 +69,20 @@ export class CartController {
   }
 
   @Delete()
-  async destroy(@Param('id') id: string): Promise<any> {
+  @ApiOperation({ summary: 'Delete cart by id' })
+  @ApiOkResponse({ description: 'Delete cart successfully' })
+  async deleteCart(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<SuccessfullyOperation> {
     await this.cartService.findOneOrFail(id);
 
     await this.cartService.destroy(Number(id));
 
-    return this.response.success();
+    return this.response.success({
+      message: this.commonService.getMessage({
+        message: Messages.successfullyOperation.delete,
+        keywords: ['tag'],
+      }),
+    });
   }
 }

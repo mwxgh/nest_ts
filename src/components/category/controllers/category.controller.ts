@@ -26,7 +26,12 @@ import { CategoryTransformer } from '../transformers/category.transformer';
 import { ApiResponseService } from 'src/shared/services/apiResponse/apiResponse.service';
 import { Auth } from 'src/components/auth/decorators/auth.decorator';
 import { JwtAuthGuard } from 'src/components/auth/guards/jwtAuth.guard';
-import { SuccessfullyOperation } from 'src/shared/services/apiResponse/apiResponse.interface';
+import {
+  GetItemResponse,
+  GetListPaginationResponse,
+  GetListResponse,
+  SuccessfullyOperation,
+} from 'src/shared/services/apiResponse/apiResponse.interface';
 import Messages from 'src/shared/message/message';
 import { CommonService } from 'src/shared/services/common.service';
 
@@ -68,7 +73,9 @@ export class CategoryController {
   @Get()
   @ApiOperation({ summary: 'Get list categories' })
   @ApiOkResponse({ description: 'List categories with param query' })
-  async readCategories(@Query() query: QueryManyDto): Promise<any> {
+  async readCategories(
+    @Query() query: QueryManyDto,
+  ): Promise<GetListResponse | GetListPaginationResponse> {
     const { search, includes, sortBy, sortType } = query;
 
     const queryBuilder = await this.categoryService.queryCategory({
@@ -103,7 +110,9 @@ export class CategoryController {
   @Get(':id')
   @ApiOperation({ summary: 'Get category by id' })
   @ApiOkResponse({ description: 'Category entity' })
-  async readCategory(@Param('id', ParseIntPipe) id: number): Promise<any> {
+  async readCategory(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<GetItemResponse> {
     const category = await this.categoryService.findOneOrFail(id);
 
     return this.response.item(category, new CategoryTransformer());

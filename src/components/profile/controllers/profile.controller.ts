@@ -21,6 +21,7 @@ import {
 } from '@nestjs/swagger';
 import { AuthenticatedUser } from 'src/components/auth/decorators/authenticatedUser.decorator';
 import { User } from 'src/components/user/entities/user.entity';
+import { GetItemResponse } from 'src/shared/services/apiResponse/apiResponse.interface';
 
 @ApiTags('Profile')
 @ApiBearerAuth()
@@ -40,7 +41,9 @@ export class ProfileController {
   @Get()
   @ApiOperation({ summary: 'Get profile current user' })
   @ApiOkResponse({ description: 'Profile current user' })
-  async profile(@AuthenticatedUser() currentUser: User): Promise<any> {
+  async profile(
+    @AuthenticatedUser() currentUser: User,
+  ): Promise<GetItemResponse> {
     const user = await this.userService.findOneOrFail(currentUser.id, {
       relations: ['roles'],
     });
@@ -60,11 +63,9 @@ export class ProfileController {
     if (body.username) {
       data.username = body.username;
     }
-
     if (body.firstName) {
       data.firstName = body.firstName;
     }
-
     if (body.lastName) {
       data.lastName = body.lastName;
     }

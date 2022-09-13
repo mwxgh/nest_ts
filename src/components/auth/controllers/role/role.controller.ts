@@ -15,7 +15,7 @@ import { RoleService } from '../../services/role.service';
 import { IPaginationOptions } from '../../../../shared/services/pagination';
 import { Auth } from '../../decorators/auth.decorator';
 import { RoleTransformer } from '../../transformers/role.transformer';
-import { assign } from 'lodash';
+import { assign, isNil } from 'lodash';
 import {
   ApiBearerAuth,
   ApiHeader,
@@ -27,6 +27,14 @@ import { QueryManyDto } from 'src/shared/dto/queryParams.dto';
 import { JwtAuthGuard } from '../../guards/jwtAuth.guard';
 import { CreateRoleDto, UpdateRoleDto } from '../../dto/role.dto';
 import { RolePermissionService } from '../../services/rolePermission.service';
+import {
+  GetItemResponse,
+  GetListPaginationResponse,
+  GetListResponse,
+  SuccessfullyOperation,
+} from 'src/shared/services/apiResponse/apiResponse.interface';
+import Messages from 'src/shared/message/message';
+import { CommonService } from 'src/shared/services/common.service';
 
 @ApiTags('Roles')
 @ApiHeader({
@@ -41,10 +49,12 @@ export class RoleController {
     private response: ApiResponseService,
     private roleService: RoleService,
     private rolePermissionService: RolePermissionService,
+    private commonService: CommonService,
   ) {}
 
   private entity = 'roles';
   private fields = ['name', 'level'];
+  private relations = ['permissions'];
 
   @Post('')
   @Auth('admin')
@@ -66,7 +76,9 @@ export class RoleController {
   @ApiOkResponse({
     description: 'List roles with query param',
   })
-  async readRoles(@Query() query: QueryManyDto): Promise<any> {
+  async readRoles(
+    @Query() query: QueryManyDto,
+  ): Promise<GetListResponse | GetListPaginationResponse> {
     const { search, includes, sortBy, sortType } = query;
 
     let queryBuilder = await this.roleService.queryBuilder({
@@ -77,15 +89,24 @@ export class RoleController {
       sortType,
     });
 
-    const relation = Array.isArray(includes) ? includes : [includes];
+    let joinAndSelects = [];
 
-    console.log(relation);
+    if (!isNil(includes)) {
+      const includesParams = Array.isArray(includes) ? includes : [includes];
 
-    if (includes && relation.includes('permissions')) {
-      queryBuilder = queryBuilder.leftJoinAndSelect(
-        `${this.entity}.permissions`,
-        'permissions',
-      );
+      joinAndSelects = this.commonService.includesParamToJoinAndSelects({
+        includesParams,
+        relations: this.relations,
+      });
+
+      if (joinAndSelects.length > 0) {
+        joinAndSelects.forEach((joinAndSelect) => {
+          queryBuilder = queryBuilder.leftJoinAndSelect(
+            `${this.entity}.${joinAndSelect}`,
+            `${joinAndSelect}`,
+          );
+        });
+      }
     }
 
     if (query.perPage || query.page) {
@@ -99,12 +120,19 @@ export class RoleController {
         paginateOption,
       );
 
-      return this.response.paginate(roles, new RoleTransformer(relation));
+      return this.response.paginate(
+        roles,
+        new RoleTransformer(
+          joinAndSelects.length > 0 ? joinAndSelects : undefined,
+        ),
+      );
     }
 
     return this.response.collection(
       await queryBuilder.getMany(),
-      new RoleTransformer(relation),
+      new RoleTransformer(
+        joinAndSelects.length > 0 ? joinAndSelects : undefined,
+      ),
     );
   }
 
@@ -112,12 +140,14 @@ export class RoleController {
   @Auth('admin')
   @ApiOperation({ summary: 'Admin get role by id' })
   @ApiOkResponse({ description: 'Role entity' })
-  async readRole(@Param('id', ParseIntPipe) id: number): Promise<any> {
+  async readRole(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<GetItemResponse> {
     const role = await this.roleService.findOneOrFail(id, {
-      relations: ['permissions'],
+      relations: this.relations,
     });
 
-    return this.response.item(role, new RoleTransformer(['permissions']));
+    return this.response.item(role, new RoleTransformer(this.relations));
   }
 
   @Put(':id')
@@ -142,7 +172,9 @@ export class RoleController {
   @Auth('admin')
   @ApiOperation({ summary: 'Admin delete role by id' })
   @ApiOkResponse({ description: 'Delete role successfully' })
-  async deleteRole(@Param('id', ParseIntPipe) id: string): Promise<any> {
+  async deleteRole(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<SuccessfullyOperation> {
     await this.roleService.findOneOrFail(id);
 
     await this.roleService.destroy(id);
@@ -157,6 +189,11 @@ export class RoleController {
 
     await this.rolePermissionService.destroy(rolePermissionIds);
 
-    return this.response.success();
+    return this.response.success({
+      message: this.commonService.getMessage({
+        message: Messages.successfullyOperation.delete,
+        keywords: ['role'],
+      }),
+    });
   }
 }

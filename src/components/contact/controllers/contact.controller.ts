@@ -28,7 +28,12 @@ import { IPaginationOptions } from 'src/shared/services/pagination';
 import { CreateContactDto, UpdateContactDto } from '../dto/contact.dto';
 import { ContactService } from '../services/contact.service';
 import { ContactTransformer } from '../transformers/contact.transformer';
-import { SuccessfullyOperation } from 'src/shared/services/apiResponse/apiResponse.interface';
+import {
+  GetItemResponse,
+  GetListPaginationResponse,
+  GetListResponse,
+  SuccessfullyOperation,
+} from 'src/shared/services/apiResponse/apiResponse.interface';
 import { CommonService } from 'src/shared/services/common.service';
 import Messages from 'src/shared/message/message';
 import { Contact } from '../entities/contact.entity';
@@ -83,7 +88,9 @@ export class ContactController {
   @ApiOkResponse({
     description: 'List contacts with param query',
   })
-  async readContacts(@Query() query: QueryManyDto): Promise<any> {
+  async readContacts(
+    @Query() query: QueryManyDto,
+  ): Promise<GetListResponse | GetListPaginationResponse> {
     const { search, sortBy, sortType } = query;
 
     const queryBuilder: SelectQueryBuilder<Contact> =
@@ -119,7 +126,9 @@ export class ContactController {
   @Auth('admin')
   @ApiOperation({ summary: 'Admin get contact by id' })
   @ApiOkResponse({ description: 'Contact entity' })
-  async readContact(@Param('id', ParseIntPipe) id: number): Promise<any> {
+  async readContact(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<GetItemResponse> {
     const contact = await this.contactService.findOneOrFail(id);
 
     return this.response.item(contact, new ContactTransformer());
@@ -130,7 +139,9 @@ export class ContactController {
     summary: 'Current user get contacts list with authenticate user',
   })
   @ApiOkResponse({ description: 'Contacts entity' })
-  async readSelfContacts(@AuthenticatedUser() currentUser: User) {
+  async readSelfContacts(
+    @AuthenticatedUser() currentUser: User,
+  ): Promise<GetListResponse> {
     const contacts: Contact[] = await this.contactService.findWhere({
       where: { userId: currentUser.id },
     });
@@ -150,7 +161,7 @@ export class ContactController {
   async selfContact(
     @AuthenticatedUser() currentUser: User,
     @Param('id', ParseIntPipe) id: number,
-  ) {
+  ): Promise<GetItemResponse> {
     const contact = await this.contactService.findWhere({
       where: { id, userId: currentUser.id },
     });

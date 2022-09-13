@@ -32,18 +32,18 @@ export class CommonService {
    * Check includes param and convert to join and select table
    *
    * @param includesParams includes param
-   * @param joinTables join table
+   * @param relations relations with table
    *
    * @return join and select table
    */
   includesParamToJoinAndSelects(params: {
     includesParams: string[];
-    joinTables: string[];
+    relations: string[];
   }): string[] {
-    const { includesParams, joinTables } = params;
+    const { includesParams, relations } = params;
 
     const joinAndSelects = includesParams.filter((item) =>
-      joinTables.includes(item),
+      relations.includes(item),
     );
 
     if (joinAndSelects.length === 0) {

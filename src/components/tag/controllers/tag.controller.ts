@@ -1,6 +1,5 @@
 import {
   Body,
-  ConflictException,
   Controller,
   Delete,
   Get,
@@ -22,7 +21,12 @@ import { Auth } from 'src/components/auth/decorators/auth.decorator';
 import { JwtAuthGuard } from 'src/components/auth/guards/jwtAuth.guard';
 import { QueryManyDto } from 'src/shared/dto/queryParams.dto';
 import Messages from 'src/shared/message/message';
-import { SuccessfullyOperation } from 'src/shared/services/apiResponse/apiResponse.interface';
+import {
+  GetItemResponse,
+  GetListPaginationResponse,
+  GetListResponse,
+  SuccessfullyOperation,
+} from 'src/shared/services/apiResponse/apiResponse.interface';
 import { ApiResponseService } from 'src/shared/services/apiResponse/apiResponse.service';
 import { CommonService } from 'src/shared/services/common.service';
 import { IPaginationOptions } from 'src/shared/services/pagination';
@@ -55,19 +59,13 @@ export class TagController {
   @ApiOperation({ summary: 'Admin create new tag' })
   @ApiOkResponse({ description: 'New tag entity' })
   async createTag(@Body() data: CreateTagDto): Promise<SuccessfullyOperation> {
-    const existingTag = await this.tagService.first({
+    await this.tagService.checkExisting({
       where: {
         name: data.name,
       },
     });
-    if (existingTag) {
-      throw new ConflictException(
-        this.commonService.getMessage({
-          message: Messages.errorsOperation.conflict,
-          keywords: ['Tag'],
-        }),
-      );
-    }
+
+    await this.tagService.save(data);
 
     return this.response.success({
       message: this.commonService.getMessage({
@@ -80,7 +78,9 @@ export class TagController {
   @Get()
   @ApiOperation({ summary: 'List tags' })
   @ApiOkResponse({ description: 'List tag with query param' })
-  async readTags(@Query() query: QueryManyDto): Promise<any> {
+  async readTags(
+    @Query() query: QueryManyDto,
+  ): Promise<GetListResponse | GetListPaginationResponse> {
     const { search, sortBy, sortType } = query;
 
     const queryBuilder = await this.tagService.queryTag({
@@ -111,7 +111,9 @@ export class TagController {
   @Get(':id')
   @ApiOperation({ summary: 'Get tag by id' })
   @ApiOkResponse({ description: 'Tag entity' })
-  async readTag(@Param('id', ParseIntPipe) id: number): Promise<any> {
+  async readTag(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<GetItemResponse> {
     const tag = await this.tagService.findOneOrFail(id);
 
     return this.response.item(tag, new TagTransformer());

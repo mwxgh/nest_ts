@@ -5,11 +5,16 @@ import {
   FindManyOptions,
   FindOneOptions,
 } from 'typeorm';
-import { BadRequestException, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  NotFoundException,
+} from '@nestjs/common';
 import { isArray, omit, filter, keys, isUndefined } from 'lodash';
 import { IPaginationOptions, Pagination } from './pagination';
 import { default as slugify } from 'slugify';
 import { DEFAULT_SORT_BY, DEFAULT_SORT_TYPE } from '../constant/constant';
+import { Entity, ResponseEntity } from '../interfaces/interface';
 
 const defaultPaginationOption: IPaginationOptions = {
   limit: 10,
@@ -93,30 +98,34 @@ export class BaseService {
   /**
    * Get the item record with relation matching the attributes
    *
-   * @param id string | number
+   * @param id number
    * @param options relations
    */
   async findOneOrFail(
-    id: string | number,
+    id: number,
     options?: { relations: string[] },
   ): Promise<any> {
     const item = await this.repository.findOne(id, options);
+
     if (!item) {
       throw new BadRequestException(`Resource not found`);
     }
+
     return item;
   }
 
   /**
    * Get the items record in array ids
    *
-   * @param ids string[] | number[]
+   * @param ids number[]
    */
-  async findIdInOrFail(ids: string[] | number[]): Promise<any> {
+  async findIdInOrFail(ids: number[]): Promise<ResponseEntity[]> {
     const items = await this.repository.findByIds(ids);
+
     if (!items) {
       throw new BadRequestException('Resources not found');
     }
+
     return items;
   }
 
@@ -124,12 +133,13 @@ export class BaseService {
    * Get all items record or throw error if not any
    * @returns entity | error
    */
-  async findAllOrFail() {
+  async findAllOrFail(): Promise<ResponseEntity> {
     const items = await this.repository.find();
 
     if (!items) {
       throw new BadRequestException('Resource not found');
     }
+
     return items;
   }
 
@@ -140,10 +150,11 @@ export class BaseService {
    *
    * @returns data save to entity
    */
-  async create(data: { [key: string]: any }): Promise<any> {
-    const manager = getManager();
+  async create(data: Entity): Promise<any> {
     const item = await this.repository.create(data);
-    await manager.save(this.entity, item);
+
+    await getManager().save(this.entity, item);
+
     return item;
   }
 
@@ -154,7 +165,7 @@ export class BaseService {
    *
    * @returns save data
    */
-  async save(data: { [key: string]: any }): Promise<any> {
+  async save(data: Entity): Promise<void> {
     await this.repository.save(data);
   }
 
@@ -164,17 +175,17 @@ export class BaseService {
    * @param options FindOneOptions
    * @param values
    */
-  async firstOrCreate(
-    options: FindOneOptions,
-    values: { [key: string]: any },
-  ): Promise<any> {
+  async firstOrCreate(options: FindOneOptions, values: Entity): Promise<any> {
     let item: any;
+
     const items = await this.repository.find({ ...options, ...{ take: 1 } });
+
     if (!isArray(items) || items.length === 0) {
       item = await this.create(values);
     } else {
       item = items[0];
     }
+
     return item;
   }
 
@@ -185,7 +196,8 @@ export class BaseService {
    */
   async first(options: FindOneOptions): Promise<any> {
     const items = await this.repository.find({ ...options, ...{ take: 1 } });
-    if (Array.isArray(items) && items.length > 0) {
+
+    if (Array.isArray(items) && items.length !== 0) {
       return items[0];
     } else {
       return null;
@@ -199,25 +211,38 @@ export class BaseService {
    */
   async firstOrFail(options: FindOneOptions): Promise<any> {
     const items = await this.repository.find({ ...options, ...{ take: 1 } });
+
     if (!Array.isArray(items) || items.length === 0) {
       throw new NotFoundException('Resource');
     }
+
     return items[0];
+  }
+
+  /**
+   * Execute the query and get the first result and throw a conflict exception
+   *
+   * @param options FindOneOptions
+   */
+  async checkExisting(options: FindOneOptions): Promise<void> {
+    const items = await this.repository.find({ ...options, ...{ take: 1 } });
+
+    if (Array.isArray(items) && items.length !== 0) {
+      throw new ConflictException('Data existing');
+    }
   }
 
   /**
    * Update an entity in repository by id
    *
-   * @param id number | string
+   * @param id number
    * @param data object
    */
-  async update(
-    id: number | string,
-    data: { [key: string]: any },
-  ): Promise<any> {
-    const manager = getManager();
+  async update(id: number, data: Entity): Promise<any> {
     const item = await this.repository.findOne(id);
-    const result = await manager.save(this.entity, { ...item, ...data });
+
+    const result = await getManager().save(this.entity, { ...item, ...data });
+
     return result;
   }
 
@@ -234,12 +259,15 @@ export class BaseService {
     values: { [key: string]: any },
   ): Promise<any> {
     let item: any;
+
     const items = await this.repository.find({ where: attributes, take: 1 });
+
     if (!isArray(items) || items.length === 0) {
       item = await this.create(values);
     } else {
       item = await this.update(items[0].id, values);
     }
+
     return item;
   }
 
@@ -266,7 +294,7 @@ export class BaseService {
    *
    * @param options
    */
-  async count(options: FindManyOptions): Promise<any> {
+  async count(options: FindManyOptions): Promise<number> {
     return await this.repository.count(options);
   }
 
@@ -299,9 +327,7 @@ export class BaseService {
     filter?: { [key: string]: string };
   }): Promise<SelectQueryBuilder<T>> {
     const { entity, fields, keyword } = params;
-
     const orderBy = params.sortBy ? params.sortBy : DEFAULT_SORT_BY;
-
     const orderType = params.sortType ? params.sortType : DEFAULT_SORT_TYPE;
 
     let baseQuery = this.repository.createQueryBuilder(`${entity}`);
@@ -336,15 +362,22 @@ export class BaseService {
   async generateSlug(name: string): Promise<string> {
     const makeId = (length: number): string => {
       let result = '';
-      const characters = 'abcdefghijklmnopqrstuvwxyz0123456789';
+
+      const characters = this.getCharFromASCII(
+        { from: 97, range: 26 },
+        { from: 48, range: 10 },
+      );
       const charactersLength = characters.length;
+
       for (let i = 0; i < length; i++) {
         result += characters.charAt(
           Math.floor(Math.random() * charactersLength),
         );
       }
+
       return result;
     };
+
     let i = 0;
     let slug = slugify(name, {
       replacement: '-',
@@ -352,6 +385,7 @@ export class BaseService {
       lower: true,
     });
     let s = slug;
+
     while (true) {
       i++;
       if (i == 100) break;
@@ -363,6 +397,23 @@ export class BaseService {
         s = `${slug}-${makeId(8)}`;
       }
     }
+
     return slug;
+  }
+
+  /**
+   * Get character from ASCII match criteria
+   * ASCII table : https://www.asciitable.com/
+   */
+  getCharFromASCII(...rest: { from: number; range: number }[]): string {
+    const arrayCharsFromASCII = rest.map((o) => {
+      const charFromASCII = Array.from(Array(o.range)).map(
+        (e, i) => i + o.from,
+      );
+
+      return charFromASCII.map((x) => String.fromCharCode(x)).join('');
+    });
+
+    return arrayCharsFromASCII.join('');
   }
 }

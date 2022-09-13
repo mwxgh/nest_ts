@@ -6,14 +6,20 @@ import { ProductRepository } from '../repositories/product.repository';
 import slugify from 'slugify';
 import { CategoryAbleType } from 'src/components/category/entities/categoryAble.entity';
 import { ImageAbleType } from '../../image/entities/imageAble.entity';
-import { CreateProductDto } from '../dto/product.dto';
+import { CreateProductDto, UpdateProductDto } from '../dto/product.dto';
+import { ImageService } from 'src/components/image/services/image.service';
+import { CategoryAbleService } from 'src/components/category/services/categoryAble.service';
 
 @Injectable()
 export class ProductService extends BaseService {
   public repository: Repository<any>;
   public entity: any = Product;
 
-  constructor(private connection: Connection) {
+  constructor(
+    private connection: Connection,
+    private imagesService: ImageService,
+    private categoryAbleService: CategoryAbleService,
+  ) {
     super();
     this.repository = this.connection.getCustomRepository(ProductRepository);
   }
@@ -71,7 +77,7 @@ export class ProductService extends BaseService {
 
     data.sku = data.sku || `MH${Date.now()}`;
 
-    const product: Product = await this.repository.save(data);
+    const product: Product = await this.repository.create(data);
 
     if (data.images) {
       data.images.forEach(async (item: any) => {
@@ -81,7 +87,7 @@ export class ProductService extends BaseService {
             imageAbleId: product.id,
             imageAbleType: ImageAbleType.product,
           };
-          await this.repository.create(img);
+          await this.imagesService.save(img);
         }
       });
     }
@@ -92,8 +98,40 @@ export class ProductService extends BaseService {
         categoryAbleId: product.id,
         categoryAbleType: CategoryAbleType.product,
       };
-      await this.repository.save(cate);
+      await this.categoryAbleService.save(cate);
     }
     return product;
+  }
+
+  async updateProduct(params: {
+    id: number;
+    data: UpdateProductDto;
+  }): Promise<void> {
+    const { id, data } = params;
+    await this.findOneOrFail(id);
+
+    const product = await this.update(id, data);
+
+    if (data.images) {
+      data.images.forEach(async (item) => {
+        if (item['url']) {
+          const img = {
+            url: item['url'],
+            imageAbleId: product.id,
+            imageAbleType: ImageAbleType.product,
+          };
+          await this.imagesService.create(img);
+        }
+      });
+    }
+
+    if (data.categoryId && data.categoryId != null) {
+      const cate = {
+        categoryId: data.categoryId,
+        categoryAbleId: product.id,
+        categoryAbleType: CategoryAbleType.product,
+      };
+      await this.categoryAbleService.create(cate);
+    }
   }
 }
