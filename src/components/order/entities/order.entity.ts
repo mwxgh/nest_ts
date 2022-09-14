@@ -1,7 +1,7 @@
 import { BaseTimeStampEntity } from '../../base.entity';
 import { Entity, OneToMany, Column } from 'typeorm';
 import { Notifiable } from '../../../shared/services/notification/decorators/notifiable.decorator';
-import { OrderProduct } from './orderProduct.entity';
+import { OrderProductEntity } from './orderProduct.entity';
 
 @Notifiable()
 @Entity({ name: 'orders' })
@@ -27,6 +27,6 @@ export class OrderEntity extends BaseTimeStampEntity {
   @Column({ type: 'int', default: 1 })
   status: number;
 
-  @OneToMany(() => OrderProduct, (orderItem) => orderItem.orders)
-  items: OrderProduct[];
+  @OneToMany(() => OrderProductEntity, (orderItem) => orderItem.orders)
+  items: OrderProductEntity[];
 }

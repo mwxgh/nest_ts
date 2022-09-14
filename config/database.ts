@@ -10,7 +10,7 @@ import { CartItemEntity } from '../src/components/cart/entities/cartItem.entity'
 import { CategoryEntity } from '../src/components/category/entities/category.entity';
 import { CategoryAbleEntity } from '../src/components/category/entities/categoryAble.entity';
 import { OrderEntity } from '../src/components/order/entities/order.entity';
-import { OrderProduct } from '../src/components/order/entities/orderProduct.entity';
+import { OrderProductEntity } from '../src/components/order/entities/orderProduct.entity';
 import { TagEntity } from '../src/components/tag/entities/tag.entity';
 import { TagAble } from '../src/components/tag/entities/tagAble.entity';
 import { Comment } from '../src/components/comment/entities/comment.entity';
@@ -39,7 +39,7 @@ export default (): any => ({
     CategoryEntity,
     CategoryAbleEntity,
     OrderEntity,
-    OrderProduct,
+    OrderProductEntity,
     TagAble,
     Comment,
     Image,

@@ -4,7 +4,7 @@ import { CartItemEntity } from '../../../components/cart/entities/cartItem.entit
 import { Comment } from '../../../components/comment/entities/comment.entity';
 import { CategoryAbleEntity } from '../../category/entities/categoryAble.entity';
 import { TagAble } from '../../tag/entities/tagAble.entity';
-import { OrderProduct } from '../../order/entities/orderProduct.entity';
+import { OrderProductEntity } from '../../order/entities/orderProduct.entity';
 import { TimeStampEntity } from '../../base.entity';
 import { ImageAble } from '../../image/entities/imageAble.entity';
 
@@ -53,8 +53,8 @@ export class ProductEntity extends TimeStampEntity {
   @OneToMany(() => Comment, (comment) => comment.product)
   comments: Comment[];
 
-  @OneToMany(() => OrderProduct, (orderItem) => orderItem.products)
-  orders: OrderProduct[];
+  @OneToMany(() => OrderProductEntity, (orderItem) => orderItem.products)
+  orders: OrderProductEntity[];
 
   @OneToMany(() => CartItemEntity, (cartItem) => cartItem.cart)
   products: Promise<CartItemEntity[]>;
