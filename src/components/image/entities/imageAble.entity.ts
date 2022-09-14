@@ -1,7 +1,7 @@
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { Notifiable } from '../../../shared/services/notification/decorators/notifiable.decorator';
 import { TimeStampEntity } from '../../base.entity';
-import { Image } from './image.entity';
+import { ImageEntity } from './image.entity';
 import { ProductEntity } from '../../product/entities/product.entity';
 import { PostAble } from '../../post/entities/post.entity';
 export const ImageAbleType = {
@@ -21,12 +21,12 @@ export class ImageAble extends TimeStampEntity {
   @Column({ type: 'int', default: 0 })
   public isThumbnail: number;
 
-  @ManyToOne(() => Image, (image) => image.imageAbles)
+  @ManyToOne(() => ImageEntity, (image) => image.imageAbles)
   @JoinColumn({
     name: 'imageId',
     referencedColumnName: 'id',
   })
-  image: Image;
+  image: ImageEntity;
 
   @ManyToOne(() => ProductEntity, (product) => product.images)
   @JoinColumn({

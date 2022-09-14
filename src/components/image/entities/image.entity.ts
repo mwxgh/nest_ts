@@ -5,7 +5,7 @@ import { ImageAble } from './imageAble.entity';
 
 @Notifiable()
 @Entity({ name: 'images' })
-export class Image extends TimeStampEntity {
+export class ImageEntity extends TimeStampEntity {
   @Column({ type: 'varchar', default: "''" })
   title: string;
 

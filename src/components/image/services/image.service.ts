@@ -4,13 +4,13 @@ import slugify from 'slugify';
 import { BaseService } from 'src/shared/services/base.service';
 import { Connection, Repository } from 'typeorm';
 import { CreateImageDto, UpdateImageDto } from '../dto/image.dto';
-import { Image } from '../entities/image.entity';
+import { ImageEntity } from '../entities/image.entity';
 import { ImageRepository } from '../repositories/image.repository';
 
 @Injectable()
 export class ImageService extends BaseService {
   public repository: Repository<any>;
-  public entity: any = Image;
+  public entity: any = ImageEntity;
 
   constructor(private dataSource: Connection) {
     super();
