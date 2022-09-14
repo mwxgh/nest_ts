@@ -11,7 +11,7 @@ export const ImageAbleType = {
 
 @Notifiable()
 @Entity({ name: 'imageAbles' })
-export class ImageAble extends TimeStampEntity {
+export class ImageAbleEntity extends TimeStampEntity {
   @Column({ name: 'imageAbleId', type: 'int' })
   public imageAbleId: number;
 

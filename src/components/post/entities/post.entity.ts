@@ -4,7 +4,7 @@ import { Notifiable } from '../../../shared/services/notification/decorators/not
 import { CategoryAbleEntity } from '../../category/entities/categoryAble.entity';
 import { TagAbleEntity } from '../../tag/entities/tagAble.entity';
 import { TimeStampEntity } from '../../base.entity';
-import { ImageAble } from '../../image/entities/imageAble.entity';
+import { ImageAbleEntity } from '../../image/entities/imageAble.entity';
 
 export const JoinPostAbleType = {
   images: 'posts.images',
@@ -79,8 +79,8 @@ export class PostEntity extends TimeStampEntity {
   @OneToMany(() => CategoryAbleEntity, (category) => category.post)
   categories: CategoryAbleEntity[];
 
-  @OneToMany(() => ImageAble, (imageAble) => imageAble.post)
-  images: ImageAble[];
+  @OneToMany(() => ImageAbleEntity, (imageAble) => imageAble.post)
+  images: ImageAbleEntity[];
 
   @OneToMany(() => CommentEntity, (comment) => comment.post)
   comments: CommentEntity[];

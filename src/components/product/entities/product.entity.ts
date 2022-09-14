@@ -6,7 +6,7 @@ import { CategoryAbleEntity } from '../../category/entities/categoryAble.entity'
 import { TagAbleEntity } from '../../tag/entities/tagAble.entity';
 import { OrderProductEntity } from '../../order/entities/orderProduct.entity';
 import { TimeStampEntity } from '../../base.entity';
-import { ImageAble } from '../../image/entities/imageAble.entity';
+import { ImageAbleEntity } from '../../image/entities/imageAble.entity';
 
 export const StatusProduct = {
   inventory: 'INVENTORY',
@@ -47,8 +47,8 @@ export class ProductEntity extends TimeStampEntity {
   @OneToMany(() => TagAbleEntity, (tag) => tag.product)
   tags: TagAbleEntity[];
 
-  @OneToMany(() => ImageAble, (imageAble) => imageAble.product)
-  images: ImageAble[];
+  @OneToMany(() => ImageAbleEntity, (imageAble) => imageAble.product)
+  images: ImageAbleEntity[];
 
   @OneToMany(() => CommentEntity, (comment) => comment.product)
   comments: CommentEntity[];

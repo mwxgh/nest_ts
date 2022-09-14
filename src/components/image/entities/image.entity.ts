@@ -1,7 +1,7 @@
 import { Entity, Column, OneToMany } from 'typeorm';
 import { Notifiable } from '../../../shared/services/notification/decorators/notifiable.decorator';
 import { TimeStampEntity } from '../../base.entity';
-import { ImageAble } from './imageAble.entity';
+import { ImageAbleEntity } from './imageAble.entity';
 
 @Notifiable()
 @Entity({ name: 'images' })
@@ -21,6 +21,6 @@ export class ImageEntity extends TimeStampEntity {
   @Column({ type: 'timestamp' })
   public verifiedAt: Date;
 
-  @OneToMany(() => ImageAble, (imageAbles) => imageAbles.image)
-  imageAbles: ImageAble[];
+  @OneToMany(() => ImageAbleEntity, (imageAbles) => imageAbles.image)
+  imageAbles: ImageAbleEntity[];
 }
