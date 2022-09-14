@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { BaseService } from 'src/shared/services/base.service';
 import { Connection, Repository, UpdateResult } from 'typeorm';
-import { TagAble } from '../entities/tagAble.entity';
+import { TagAbleEntity } from '../entities/tagAble.entity';
 import { TagAbleRepository } from '../repositories/tagAble.repository';
 
 @Injectable()
 export class TagAbleService extends BaseService {
   public tagAbleRepository: Repository<any>;
-  public entity: any = TagAble;
+  public entity: any = TagAbleEntity;
   constructor(private dataSource: Connection) {
     super();
     this.tagAbleRepository =

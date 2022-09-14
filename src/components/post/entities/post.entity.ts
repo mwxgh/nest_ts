@@ -2,7 +2,7 @@ import { Comment } from '../../comment/entities/comment.entity';
 import { OneToMany, Entity, Column } from 'typeorm';
 import { Notifiable } from '../../../shared/services/notification/decorators/notifiable.decorator';
 import { CategoryAbleEntity } from '../../category/entities/categoryAble.entity';
-import { TagAble } from '../../tag/entities/tagAble.entity';
+import { TagAbleEntity } from '../../tag/entities/tagAble.entity';
 import { TimeStampEntity } from '../../base.entity';
 import { ImageAble } from '../../image/entities/imageAble.entity';
 
@@ -73,8 +73,8 @@ export class PostAble extends TimeStampEntity {
   @Column({ type: 'date' })
   releaseDate: Date;
 
-  @OneToMany(() => TagAble, (tag) => tag.post)
-  tags: TagAble[];
+  @OneToMany(() => TagAbleEntity, (tag) => tag.post)
+  tags: TagAbleEntity[];
 
   @OneToMany(() => CategoryAbleEntity, (category) => category.post)
   categories: CategoryAbleEntity[];

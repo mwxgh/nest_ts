@@ -12,7 +12,7 @@ export const TagAbleType = {
 
 @Notifiable()
 @Entity({ name: 'tagAbles' })
-export class TagAble extends TimeStampEntity {
+export class TagAbleEntity extends TimeStampEntity {
   @Column({ name: 'tagId', type: 'int' })
   tagId: number;
 

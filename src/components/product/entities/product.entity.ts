@@ -3,7 +3,7 @@ import { Notifiable } from '../../../shared/services/notification/decorators/not
 import { CartItemEntity } from '../../../components/cart/entities/cartItem.entity';
 import { Comment } from '../../../components/comment/entities/comment.entity';
 import { CategoryAbleEntity } from '../../category/entities/categoryAble.entity';
-import { TagAble } from '../../tag/entities/tagAble.entity';
+import { TagAbleEntity } from '../../tag/entities/tagAble.entity';
 import { OrderProductEntity } from '../../order/entities/orderProduct.entity';
 import { TimeStampEntity } from '../../base.entity';
 import { ImageAble } from '../../image/entities/imageAble.entity';
@@ -44,8 +44,8 @@ export class ProductEntity extends TimeStampEntity {
   @OneToMany(() => CategoryAbleEntity, (categoryAble) => categoryAble.product)
   public categories!: CategoryAbleEntity[];
 
-  @OneToMany(() => TagAble, (tag) => tag.product)
-  tags: TagAble[];
+  @OneToMany(() => TagAbleEntity, (tag) => tag.product)
+  tags: TagAbleEntity[];
 
   @OneToMany(() => ImageAble, (imageAble) => imageAble.product)
   images: ImageAble[];

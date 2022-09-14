@@ -12,7 +12,7 @@ import { ImageService } from 'src/components/image/services/image.service';
 import { ImageAbleService } from 'src/components/image/services/imageAble.service';
 import { TagEntity } from 'src/components/tag/entities/tag.entity';
 import {
-  TagAble,
+  TagAbleEntity,
   TagAbleType,
 } from 'src/components/tag/entities/tagAble.entity';
 import { TagService } from 'src/components/tag/services/tag.service';
@@ -198,12 +198,13 @@ export class PostService extends BaseService {
 
     const currentPost = await this.findOneOrFail(id);
 
-    const currentTagAbles: TagAble[] = await this.tagAbleService.findWhere({
-      where: {
-        tagAbleId: currentPost.id,
-        tagAbleType: TagAbleType.post,
-      },
-    });
+    const currentTagAbles: TagAbleEntity[] =
+      await this.tagAbleService.findWhere({
+        where: {
+          tagAbleId: currentPost.id,
+          tagAbleType: TagAbleType.post,
+        },
+      });
 
     const currentCategoryAbles: CategoryAbleEntity[] =
       await this.categoryAbleService.findWhere({
@@ -224,7 +225,7 @@ export class PostService extends BaseService {
     const detachTagIds: number[] = difference(currentTagIds, data.tagIds);
 
     if (detachTagIds.length > 0) {
-      const queryTagAble: SelectQueryBuilder<TagAble> =
+      const queryTagAble: SelectQueryBuilder<TagAbleEntity> =
         await this.tagService.queryBuilder({
           entity: 'tagAbles',
         });
@@ -337,12 +338,13 @@ export class PostService extends BaseService {
 
     const currentPost = await this.findOneOrFail(id);
 
-    const currentTagAbles: TagAble[] = await this.tagAbleService.findWhere({
-      where: {
-        tagAbleId: currentPost.id,
-        tagAbleType: TagAbleType.post,
-      },
-    });
+    const currentTagAbles: TagAbleEntity[] =
+      await this.tagAbleService.findWhere({
+        where: {
+          tagAbleId: currentPost.id,
+          tagAbleType: TagAbleType.post,
+        },
+      });
 
     if (currentTagAbles.length > 0) {
       const currentTagAbleIds = currentTagAbles.map(

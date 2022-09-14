@@ -12,7 +12,7 @@ import { CategoryAbleEntity } from '../src/components/category/entities/category
 import { OrderEntity } from '../src/components/order/entities/order.entity';
 import { OrderProductEntity } from '../src/components/order/entities/orderProduct.entity';
 import { TagEntity } from '../src/components/tag/entities/tag.entity';
-import { TagAble } from '../src/components/tag/entities/tagAble.entity';
+import { TagAbleEntity } from '../src/components/tag/entities/tagAble.entity';
 import { Comment } from '../src/components/comment/entities/comment.entity';
 import { Image } from '../src/components/image/entities/image.entity';
 import { Contact } from '../src/components/contact/entities/contact.entity';
@@ -40,7 +40,7 @@ export default (): any => ({
     CategoryAbleEntity,
     OrderEntity,
     OrderProductEntity,
-    TagAble,
+    TagAbleEntity,
     Comment,
     Image,
     ImageAble,

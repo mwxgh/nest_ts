@@ -4,11 +4,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { TagController } from './controllers/tag.controller';
 
 import { TagEntity } from './entities/tag.entity';
-import { TagAble } from './entities/tagAble.entity';
+import { TagAbleEntity } from './entities/tagAble.entity';
 import { tagProviders } from './tag.providers';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([TagEntity, TagAble]), ConfigModule],
+  imports: [TypeOrmModule.forFeature([TagEntity, TagAbleEntity]), ConfigModule],
   providers: [...tagProviders],
   controllers: [TagController],
 })

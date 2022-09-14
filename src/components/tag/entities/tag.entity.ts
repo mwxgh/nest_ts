@@ -1,6 +1,6 @@
 import { Notifiable } from '../../../../src/shared/services/notification/decorators/notifiable.decorator';
 import { Column, Entity, OneToMany } from 'typeorm';
-import { TagAble } from './tagAble.entity';
+import { TagAbleEntity } from './tagAble.entity';
 import { TimeStampEntity } from '../../base.entity';
 
 export const TagStatus = {
@@ -20,6 +20,6 @@ export class TagEntity extends TimeStampEntity {
   @Column({ type: 'timestamp' })
   public verifiedAt: Date;
 
-  @OneToMany(() => TagAble, (tagAbles) => tagAbles.tag)
-  tagAbles: TagAble[];
+  @OneToMany(() => TagAbleEntity, (tagAbles) => tagAbles.tag)
+  tagAbles: TagAbleEntity[];
 }
