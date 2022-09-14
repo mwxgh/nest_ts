@@ -1,9 +1,9 @@
 import { UserEntity } from '../src/components/user/entities/user.entity';
 import { RoleEntity } from '../src/components/auth/entities/role.entity';
+import { UserRoleEntity } from '../src/components/auth/entities/userRole.entity';
 import { PermissionEntity } from '../src/components/auth/entities/permission.entity';
-import { PasswordReset } from '../src/components/auth/entities/passwordReset.entity';
 import { RolePermission } from '../src/components/auth/entities/rolePermission.entity';
-import { UserRole } from '../src/components/auth/entities/userRole.entity';
+import { PasswordReset } from '../src/components/auth/entities/passwordReset.entity';
 import { Product } from '../src/components/product/entities/product.entity';
 import { Cart } from '../src/components/cart/entities/cart.entity';
 import { CartItem } from '../src/components/cart/entities/cartItem.entity';
@@ -32,7 +32,7 @@ export default (): any => ({
     PermissionEntity,
     PasswordReset,
     RolePermission,
-    UserRole,
+    UserRoleEntity,
     Product,
     Cart,
     CartItem,
