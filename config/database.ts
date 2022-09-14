@@ -1,5 +1,5 @@
 import { UserEntity } from '../src/components/user/entities/user.entity';
-import { Role } from '../src/components/auth/entities/role.entity';
+import { RoleEntity } from '../src/components/auth/entities/role.entity';
 import { Permission } from '../src/components/auth/entities/permission.entity';
 import { PasswordReset } from '../src/components/auth/entities/passwordReset.entity';
 import { RolePermission } from '../src/components/auth/entities/rolePermission.entity';
@@ -28,7 +28,7 @@ export default (): any => ({
   port: parseInt(process.env.DB_PORT),
   entities: [
     UserEntity,
-    Role,
+    RoleEntity,
     Permission,
     PasswordReset,
     RolePermission,

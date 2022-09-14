@@ -1,7 +1,7 @@
 import { Connection } from 'typeorm';
 import { UserEntity } from '../../src/components/user/entities/user.entity';
 import { HashService } from '../../src/shared/services/hash/hash.service';
-import { Role } from '../../src/components/auth/entities/role.entity';
+import { RoleEntity } from '../../src/components/auth/entities/role.entity';
 import * as _ from 'lodash';
 
 export default class UsersTableSeeder {
@@ -10,7 +10,7 @@ export default class UsersTableSeeder {
     this.hashService = new HashService();
   }
   async up(connection: Connection): Promise<any> {
-    const roles = await connection.getRepository(Role).find();
+    const roles = await connection.getRepository(RoleEntity).find();
 
     const seed = [
       {

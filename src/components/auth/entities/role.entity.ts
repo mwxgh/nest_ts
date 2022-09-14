@@ -4,7 +4,7 @@ import { UserEntity } from '../../user/entities/user.entity';
 import { Permission } from './permission.entity';
 
 @Entity({ name: 'roles' })
-export class Role extends TimeStampEntity {
+export class RoleEntity extends TimeStampEntity {
   @Column({ type: 'varchar', unique: true })
   name: string;
 
@@ -12,7 +12,7 @@ export class Role extends TimeStampEntity {
   slug: string;
 
   @ManyToMany(() => UserEntity)
-  users: Role[];
+  users: RoleEntity[];
 
   @ManyToMany(() => Permission, (permission) => permission.roles, {
     cascade: ['insert'],

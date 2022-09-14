@@ -1,5 +1,5 @@
 import { Entity, Column, ManyToMany, JoinTable, OneToMany } from 'typeorm';
-import { Role } from '../../auth/entities/role.entity';
+import { RoleEntity } from '../../auth/entities/role.entity';
 import { Notifiable } from '../../../shared/services/notification/decorators/notifiable.decorator';
 import { TimeStampEntity } from '../../base.entity';
 import { Contact } from '../../contact/entities/contact.entity';
@@ -42,7 +42,7 @@ export class UserEntity extends TimeStampEntity {
   @Column({ type: 'timestamp' })
   public verifiedAt: Date;
 
-  @ManyToMany(() => Role, (role) => role.users, { cascade: ['insert'] })
+  @ManyToMany(() => RoleEntity, (role) => role.users, { cascade: ['insert'] })
   @JoinTable({
     name: 'userRole',
     joinColumn: {
@@ -54,7 +54,7 @@ export class UserEntity extends TimeStampEntity {
       referencedColumnName: 'id',
     },
   })
-  roles: Role[];
+  roles: RoleEntity[];
 
   @OneToMany(() => Contact, (contact) => contact.user)
   contacts: Contact[];

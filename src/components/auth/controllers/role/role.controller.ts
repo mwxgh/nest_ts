@@ -36,7 +36,7 @@ import {
 import Messages from 'src/shared/message/message';
 import { CommonService } from 'src/shared/services/common.service';
 import { RolePermission } from '../../entities/rolePermission.entity';
-import { Role } from '../../entities/role.entity';
+import { RoleEntity } from '../../entities/role.entity';
 import { SelectQueryBuilder } from 'typeorm';
 
 @ApiTags('Roles')
@@ -80,7 +80,7 @@ export class RoleController {
   ): Promise<GetListResponse | GetListPaginationResponse> {
     const { search, includes, sortBy, sortType } = query;
 
-    let queryBuilder: SelectQueryBuilder<Role> =
+    let queryBuilder: SelectQueryBuilder<RoleEntity> =
       await this.roleService.queryBuilder({
         entity: this.entity,
         fields: this.fields,
