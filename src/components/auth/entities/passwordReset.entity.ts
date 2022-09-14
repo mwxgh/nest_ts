@@ -2,7 +2,7 @@ import { BaseTimeStampEntity } from '../../base.entity';
 import { Entity, Column } from 'typeorm';
 
 @Entity({ name: 'passwordResets' })
-export class PasswordReset extends BaseTimeStampEntity {
+export class PasswordResetEntity extends BaseTimeStampEntity {
   @Column({ type: 'varchar' })
   email: string;
 

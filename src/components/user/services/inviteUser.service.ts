@@ -2,13 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { BaseService } from '../../../shared/services/base.service';
 import { Repository, Connection } from 'typeorm';
 import { HashService } from '../../../shared/services/hash/hash.service';
-import { PasswordReset } from '../../auth/entities/passwordReset.entity';
+import { PasswordResetEntity } from '../../auth/entities/passwordReset.entity';
 import { PasswordResetRepository } from '../../auth/repositories/passwordReset.repository';
 
 @Injectable()
 export class InviteUserService extends BaseService {
   public repository: Repository<any>;
-  public entity: any = PasswordReset;
+  public entity: any = PasswordResetEntity;
 
   constructor(
     private connection: Connection,
@@ -64,7 +64,7 @@ export class InviteUserService extends BaseService {
    *
    * @param entity
    */
-  isExpired(entity: PasswordReset): boolean {
+  isExpired(entity: PasswordResetEntity): boolean {
     const currentTime = new Date();
     return currentTime > new Date(entity.expire);
   }

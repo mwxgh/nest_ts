@@ -3,7 +3,7 @@ import { RoleEntity } from '../src/components/auth/entities/role.entity';
 import { UserRoleEntity } from '../src/components/auth/entities/userRole.entity';
 import { PermissionEntity } from '../src/components/auth/entities/permission.entity';
 import { RolePermissionEntity } from '../src/components/auth/entities/rolePermission.entity';
-import { PasswordReset } from '../src/components/auth/entities/passwordReset.entity';
+import { PasswordResetEntity } from '../src/components/auth/entities/passwordReset.entity';
 import { Product } from '../src/components/product/entities/product.entity';
 import { Cart } from '../src/components/cart/entities/cart.entity';
 import { CartItem } from '../src/components/cart/entities/cartItem.entity';
@@ -30,7 +30,7 @@ export default (): any => ({
     UserEntity,
     RoleEntity,
     PermissionEntity,
-    PasswordReset,
+    PasswordResetEntity,
     RolePermissionEntity,
     UserRoleEntity,
     Product,
