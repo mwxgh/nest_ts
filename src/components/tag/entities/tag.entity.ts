@@ -10,7 +10,7 @@ export const TagStatus = {
 
 @Notifiable()
 @Entity({ name: 'tags' })
-export class TagName extends TimeStampEntity {
+export class TagEntity extends TimeStampEntity {
   @Column({ type: 'varchar' })
   name: string;
 

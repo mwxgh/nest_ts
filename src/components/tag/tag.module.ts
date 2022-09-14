@@ -3,12 +3,12 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TagController } from './controllers/tag.controller';
 
-import { TagName } from './entities/tag.entity';
+import { TagEntity } from './entities/tag.entity';
 import { TagAble } from './entities/tagAble.entity';
 import { tagProviders } from './tag.providers';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([TagName, TagAble]), ConfigModule],
+  imports: [TypeOrmModule.forFeature([TagEntity, TagAble]), ConfigModule],
   providers: [...tagProviders],
   controllers: [TagController],
 })

@@ -1,7 +1,7 @@
 import { Product } from '../../../../src/components/product/entities/product.entity';
 import { Notifiable } from '../../../../src/shared/services/notification/decorators/notifiable.decorator';
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
-import { TagName } from './tag.entity';
+import { TagEntity } from './tag.entity';
 import { PostAble } from '../../post/entities/post.entity';
 import { TimeStampEntity } from '../../base.entity';
 
@@ -25,12 +25,12 @@ export class TagAble extends TimeStampEntity {
   @Column({ type: 'timestamp' })
   public verifiedAt: Date;
 
-  @ManyToOne(() => TagName, (tag) => tag.tagAbles)
+  @ManyToOne(() => TagEntity, (tag) => tag.tagAbles)
   @JoinColumn({
     name: 'tagId',
     referencedColumnName: 'id',
   })
-  tag: TagName;
+  tag: TagEntity;
 
   @ManyToOne(() => PostAble, (post) => post.tags)
   @JoinColumn({

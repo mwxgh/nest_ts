@@ -21,4 +21,28 @@ export class TagAbleService extends BaseService {
       updatedAt: new Date(),
     });
   }
+
+  async detachTagAble(params: {
+    tagId?: number;
+    tagAbleId?: number;
+    tagAbleType?: string;
+  }): Promise<void> {
+    const { tagId, tagAbleId, tagAbleType } = params;
+
+    if (tagId) {
+      const tagsExisting = await this.tagAbleRepository.find({
+        where: { tagId },
+      });
+
+      await this.tagAbleRepository.delete(tagsExisting.map((tag) => tag.id));
+    }
+
+    if (tagAbleId && tagAbleType) {
+      const tagsExisting = await this.tagAbleRepository.find({
+        where: { tagAbleId, tagAbleType },
+      });
+
+      await this.tagAbleRepository.delete(tagsExisting.map((tag) => tag.id));
+    }
+  }
 }

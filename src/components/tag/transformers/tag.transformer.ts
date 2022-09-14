@@ -1,8 +1,8 @@
 import { Transformer } from '../../../shared/transformers/transformer';
-import { TagName } from '../entities/tag.entity';
+import { TagEntity } from '../entities/tag.entity';
 
 export class TagTransformer extends Transformer {
-  transform(model: TagName): any {
+  transform(model: TagEntity): any {
     if (!model.tagAbles) {
       return model;
     } else {

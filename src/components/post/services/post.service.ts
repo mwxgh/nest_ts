@@ -10,6 +10,7 @@ import { CategoryAbleService } from 'src/components/category/services/categoryAb
 import { ImageAbleType } from 'src/components/image/entities/imageAble.entity';
 import { ImageService } from 'src/components/image/services/image.service';
 import { ImageAbleService } from 'src/components/image/services/imageAble.service';
+import { TagEntity } from 'src/components/tag/entities/tag.entity';
 import {
   TagAble,
   TagAbleType,
@@ -197,29 +198,30 @@ export class PostService extends BaseService {
 
     const currentPost = await this.findOneOrFail(id);
 
-    const currentTagAbles = await this.tagAbleService.findWhere({
+    const currentTagAbles: TagAble[] = await this.tagAbleService.findWhere({
       where: {
         tagAbleId: currentPost.id,
         tagAbleType: TagAbleType.post,
       },
     });
 
-    const currentCategoryAbles = await this.categoryAbleService.findWhere({
-      where: {
-        categoryAbleId: currentPost.id,
-        categoryAbleType: CategoryAbleType.post,
-      },
-    });
+    const currentCategoryAbles: CategoryAble[] =
+      await this.categoryAbleService.findWhere({
+        where: {
+          categoryAbleId: currentPost.id,
+          categoryAbleType: CategoryAbleType.post,
+        },
+      });
 
-    const currentTagIds = currentTagAbles.map(
+    const currentTagIds: number[] = currentTagAbles.map(
       (currentTagAble) => currentTagAble.tagId,
     );
 
-    const currentCategoryIds = currentCategoryAbles.map(
+    const currentCategoryIds: number[] = currentCategoryAbles.map(
       (currentCategory) => currentCategory.categoryId,
     );
 
-    const detachTagIds = difference(currentTagIds, data.tagIds);
+    const detachTagIds: number[] = difference(currentTagIds, data.tagIds);
 
     if (detachTagIds.length > 0) {
       const queryTagAble: SelectQueryBuilder<TagAble> =
@@ -236,10 +238,11 @@ export class PostService extends BaseService {
       }
     }
 
-    const newAttachTagIds = difference(data.tagIds, currentTagIds);
+    const newAttachTagIds: number[] = difference(data.tagIds, currentTagIds);
 
     if (newAttachTagIds.length > 0) {
-      const queryTag = await this.tagService.queryBuilder({ entity: 'tags' });
+      const queryTag: SelectQueryBuilder<TagEntity> =
+        await this.tagService.queryBuilder({ entity: 'tags' });
 
       const newAttachTags = await queryTag
         .andWhere('tags.id IN (:tagIds)', {
@@ -334,7 +337,7 @@ export class PostService extends BaseService {
 
     const currentPost = await this.findOneOrFail(id);
 
-    const currentTagAbles = await this.tagAbleService.findWhere({
+    const currentTagAbles: TagAble[] = await this.tagAbleService.findWhere({
       where: {
         tagAbleId: currentPost.id,
         tagAbleType: TagAbleType.post,
@@ -349,12 +352,13 @@ export class PostService extends BaseService {
       await this.tagAbleService.destroy(currentTagAbleIds);
     }
 
-    const currentCategoryAbles = await this.categoryAbleService.findWhere({
-      where: {
-        categoryAbleId: currentPost.id,
-        categoryAbleType: CategoryAbleType.post,
-      },
-    });
+    const currentCategoryAbles: CategoryAble[] =
+      await this.categoryAbleService.findWhere({
+        where: {
+          categoryAbleId: currentPost.id,
+          categoryAbleType: CategoryAbleType.post,
+        },
+      });
 
     if (currentCategoryAbles.length > 0) {
       const currentCategoryAbleIds = currentCategoryAbles.map(

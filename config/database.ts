@@ -11,7 +11,7 @@ import { Category } from '../src/components/category/entities/category.entity';
 import { CategoryAble } from '../src/components/category/entities/categoryAble.entity';
 import { Order } from '../src/components/order/entities/order.entity';
 import { OrderProduct } from '../src/components/order/entities/orderProduct.entity';
-import { TagName } from '../src/components/tag/entities/tag.entity';
+import { TagEntity } from '../src/components/tag/entities/tag.entity';
 import { TagAble } from '../src/components/tag/entities/tagAble.entity';
 import { Comment } from '../src/components/comment/entities/comment.entity';
 import { Image } from '../src/components/image/entities/image.entity';
@@ -45,7 +45,7 @@ export default (): any => ({
     Image,
     ImageAble,
     PostAble,
-    TagName,
+    TagEntity,
     Contact,
   ],
 

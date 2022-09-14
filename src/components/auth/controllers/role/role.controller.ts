@@ -35,6 +35,9 @@ import {
 } from 'src/shared/services/apiResponse/apiResponse.interface';
 import Messages from 'src/shared/message/message';
 import { CommonService } from 'src/shared/services/common.service';
+import { RolePermission } from '../../entities/rolePermission.entity';
+import { Role } from '../../entities/role.entity';
+import { SelectQueryBuilder } from 'typeorm';
 
 @ApiTags('Roles')
 @ApiHeader({
@@ -70,24 +73,21 @@ export class RoleController {
 
   @Get()
   @Auth('admin')
-  @ApiOperation({
-    summary: 'Admin list roles',
-  })
-  @ApiOkResponse({
-    description: 'List roles with query param',
-  })
+  @ApiOperation({ summary: 'Admin list roles' })
+  @ApiOkResponse({ description: 'List roles with query param' })
   async readRoles(
     @Query() query: QueryManyDto,
   ): Promise<GetListResponse | GetListPaginationResponse> {
     const { search, includes, sortBy, sortType } = query;
 
-    let queryBuilder = await this.roleService.queryBuilder({
-      entity: this.entity,
-      fields: this.fields,
-      keyword: search,
-      sortBy,
-      sortType,
-    });
+    let queryBuilder: SelectQueryBuilder<Role> =
+      await this.roleService.queryBuilder({
+        entity: this.entity,
+        fields: this.fields,
+        keyword: search,
+        sortBy,
+        sortType,
+      });
 
     let joinAndSelects = [];
 
@@ -179,11 +179,12 @@ export class RoleController {
 
     await this.roleService.destroy(id);
 
-    const rolePermissions = await this.rolePermissionService.findWhere({
-      where: { roleId: id },
-    });
+    const rolePermissions: RolePermission[] =
+      await this.rolePermissionService.findWhere({
+        where: { roleId: id },
+      });
 
-    const rolePermissionIds = rolePermissions.map(
+    const rolePermissionIds: number[] = rolePermissions.map(
       (rolePermission) => rolePermission.id,
     );
 
