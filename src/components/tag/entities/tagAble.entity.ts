@@ -5,10 +5,10 @@ import { TagEntity } from './tag.entity';
 import { PostEntity } from '../../post/entities/post.entity';
 import { TimeStampEntity } from '../../base.entity';
 
-export const TagAbleType = {
-  post: 'POST',
-  product: 'PRODUCT',
-} as const;
+export enum TagAbleType {
+  post = 'POST',
+  product = 'PRODUCT',
+}
 
 @Notifiable()
 @Entity({ name: 'tagAbles' })

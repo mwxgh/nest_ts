@@ -166,30 +166,28 @@ export class PostService extends BaseService {
 
     const newPost = await this.create(dataSlugify);
 
-    const tagAbleData = tagsAvailable.map((tag: any) => ({
-      name: tag.name,
+    // tagAble
+    const tagsAbleData = tagsAvailable.map((tag: any) => ({
       tagId: tag.id,
       tagAbleId: newPost.id,
       tagAbleType: TagAbleType.post,
-      status: tag.status,
     }));
+    await this.tagAbleService.attachTagAble(...tagsAbleData);
 
+    // categoryAble
     const categoryAbleData = categoriesAvailable.map((category: any) => ({
       categoryId: category.id,
       categoryAbleId: newPost.id,
       categoryAbleType: CategoryAbleType.post,
     }));
+    await this.categoryAbleService.save(categoryAbleData);
 
+    // imageAble
     const imageAbleData = imagesAvailable.map((image: any) => ({
       imageId: image.id,
       imageAbleId: newPost.id,
       imageAbleType: ImageAbleType.post,
     }));
-
-    await this.tagAbleService.save(tagAbleData);
-
-    await this.categoryAbleService.save(categoryAbleData);
-
     await this.imageAbleService.save(imageAbleData);
   }
 
@@ -225,44 +223,24 @@ export class PostService extends BaseService {
     const detachTagIds: number[] = difference(currentTagIds, data.tagIds);
 
     if (detachTagIds.length > 0) {
-      const queryTagAble: SelectQueryBuilder<TagAbleEntity> =
-        await this.tagService.queryBuilder({
-          entity: 'tagAbles',
+      detachTagIds.forEach(async (tagAbleId: number) => {
+        await this.tagAbleService.detachTagAble({
+          tagAbleId,
+          tagAbleType: TagAbleType.post,
         });
-
-      const expireTagAbles = await queryTagAble
-        .andWhere('tagAbles.tagId IN (:tagIds)', { tagIds: detachTagIds })
-        .getMany();
-
-      for (const expireTagAble of expireTagAbles) {
-        await this.tagAbleService.destroy(expireTagAble.id);
-      }
+      });
     }
 
     const newAttachTagIds: number[] = difference(data.tagIds, currentTagIds);
 
-    if (newAttachTagIds.length > 0) {
-      const queryTag: SelectQueryBuilder<TagEntity> =
-        await this.tagService.queryBuilder({ entity: 'tags' });
+    await this.tagService.findIdInOrFail(newAttachTagIds);
 
-      const newAttachTags = await queryTag
-        .andWhere('tags.id IN (:tagIds)', {
-          tagIds: newAttachTagIds,
-        })
-        .getMany();
-
-      const tagAbles = newAttachTags.map((newAttachTag: any) => ({
-        name: newAttachTag.name,
-        tagId: newAttachTag.id,
-        tagAbleId: Number(id),
-        tagAbleType: TagAbleType.post,
-        status: newAttachTag.status,
-      }));
-
-      for (const tagAble of tagAbles) {
-        await this.tagAbleService.save(tagAble);
-      }
-    }
+    const tagsAbleData = newAttachTagIds.map((tagId: number) => ({
+      tagId,
+      tagAbleId: id,
+      tagAbleType: TagAbleType.post,
+    }));
+    await this.tagAbleService.attachTagAble(...tagsAbleData);
 
     const detachCategoryIds = difference(currentCategoryIds, data.categoryIds);
 
@@ -301,11 +279,9 @@ export class PostService extends BaseService {
 
       const categoryAbles = newAttachCategories.map(
         (newAttachCategory: any) => ({
-          name: newAttachCategory.name,
           categoryId: newAttachCategory.id,
           categoryAbleId: Number(id),
           categoryAbleType: CategoryAbleType.post,
-          status: newAttachCategory.status,
         }),
       );
 
@@ -338,21 +314,10 @@ export class PostService extends BaseService {
 
     const currentPost = await this.findOneOrFail(id);
 
-    const currentTagAbles: TagAbleEntity[] =
-      await this.tagAbleService.findWhere({
-        where: {
-          tagAbleId: currentPost.id,
-          tagAbleType: TagAbleType.post,
-        },
-      });
-
-    if (currentTagAbles.length > 0) {
-      const currentTagAbleIds = currentTagAbles.map(
-        (currentTagAble) => currentTagAble.id,
-      );
-
-      await this.tagAbleService.destroy(currentTagAbleIds);
-    }
+    await this.tagAbleService.detachTagAble({
+      tagAbleId: id,
+      tagAbleType: TagAbleType.post,
+    });
 
     const currentCategoryAbles: CategoryAbleEntity[] =
       await this.categoryAbleService.findWhere({

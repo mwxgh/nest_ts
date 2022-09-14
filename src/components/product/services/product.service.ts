@@ -9,6 +9,9 @@ import { ImageAbleType } from '../../image/entities/imageAble.entity';
 import { CreateProductDto, UpdateProductDto } from '../dto/product.dto';
 import { ImageService } from 'src/components/image/services/image.service';
 import { CategoryAbleService } from 'src/components/category/services/categoryAble.service';
+import { TagAbleService } from 'src/components/tag/services/tagAble.service';
+import { TagAbleType } from 'src/components/tag/entities/tagAble.entity';
+import { TagService } from 'src/components/tag/services/tag.service';
 
 @Injectable()
 export class ProductService extends BaseService {
@@ -19,6 +22,9 @@ export class ProductService extends BaseService {
     private connection: Connection,
     private imagesService: ImageService,
     private categoryAbleService: CategoryAbleService,
+    private tagAbleService: TagAbleService,
+    private tagService: TagService,
+    private categoryService: CategoryAbleService,
   ) {
     super();
     this.repository = this.connection.getCustomRepository(ProductRepository);
@@ -67,8 +73,12 @@ export class ProductService extends BaseService {
   }
 
   async createProduct(data: CreateProductDto): Promise<ProductEntity> {
-    data.slug = slugify(data.name.toLowerCase());
+    const tagsAvailable = await this.tagService.findIdInOrFail(data.tagIds);
+    const categoriesAvailable = await this.categoryService.findIdInOrFail(
+      data.categoryIds,
+    );
 
+    data.slug = slugify(data.name.toLowerCase());
     const num = await this.repository
       .createQueryBuilder('products')
       .where('products.name = :name', { name: data.name })
@@ -80,6 +90,7 @@ export class ProductService extends BaseService {
 
     const product: ProductEntity = await this.repository.create(data);
 
+    // sync with sample tagAble
     if (data.images) {
       data.images.forEach(async (item: any) => {
         if (item.url) {
@@ -93,14 +104,24 @@ export class ProductService extends BaseService {
       });
     }
 
-    if (data.categoryId && data.categoryId != null) {
-      const cate = {
-        categoryId: data.categoryId,
-        categoryAbleId: product.id,
-        categoryAbleType: CategoryAbleType.product,
-      };
-      await this.categoryAbleService.save(cate);
-    }
+    // sync with sample tagAble
+    // categoryAble
+    const categoryAbleData = categoriesAvailable.map((category: any) => ({
+      categoryId: category.id,
+      categoryAbleId: product.id,
+      categoryAbleType: CategoryAbleType.post,
+    }));
+
+    await this.categoryAbleService.save(categoryAbleData);
+
+    // tagAble
+    const tagsAbleData = tagsAvailable.map((tag: any) => ({
+      tagId: tag.id,
+      tagAbleId: product.id,
+      tagAbleType: TagAbleType.product,
+    }));
+    await this.tagAbleService.attachTagAble(...tagsAbleData);
+
     return product;
   }
 
@@ -126,13 +147,13 @@ export class ProductService extends BaseService {
       });
     }
 
-    if (data.categoryId && data.categoryId != null) {
-      const cate = {
-        categoryId: data.categoryId,
-        categoryAbleId: product.id,
-        categoryAbleType: CategoryAbleType.product,
-      };
-      await this.categoryAbleService.create(cate);
-    }
+    // if (data.categoryId && data.categoryId != null) {
+    //   const cate = {
+    //     categoryId: data.categoryId,
+    //     categoryAbleId: product.id,
+    //     categoryAbleType: CategoryAbleType.product,
+    //   };
+    //   await this.categoryAbleService.create(cate);
+    // }
   }
 }

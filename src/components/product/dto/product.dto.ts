@@ -5,7 +5,7 @@ import {
   PartialType,
 } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsNotEmpty, IsNumber, IsOptional } from 'class-validator';
+import { IsArray, IsNotEmpty, IsNumber, IsOptional } from 'class-validator';
 
 export class ProductProperties {
   @ApiProperty()
@@ -24,14 +24,28 @@ export class ProductProperties {
   @IsOptional()
   images: [];
 
+  @ApiPropertyOptional({
+    type: 'array',
+    items: {
+      type: 'number',
+    },
+  })
+  @IsOptional()
+  tagIds: [];
+
+  @ApiProperty({
+    type: 'array',
+    items: {
+      type: 'int',
+      default: 0,
+    },
+  })
+  @IsArray()
+  categoryIds: [];
+
   @ApiProperty()
   @IsOptional()
   sku: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsNumber()
-  categoryId: number;
 
   @ApiPropertyOptional({ type: Number, default: 1 })
   @IsNotEmpty()

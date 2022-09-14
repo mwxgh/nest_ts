@@ -148,6 +148,8 @@ export class TagController {
   ): Promise<SuccessfullyOperation> {
     await this.tagService.findOneOrFail(id);
 
+    await this.tagAbleService.detachTagAble({ tagId: id });
+
     await this.tagService.destroy(id);
 
     return this.response.success({

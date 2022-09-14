@@ -8,7 +8,7 @@ import { OrderProductEntity } from '../../order/entities/orderProduct.entity';
 import { TimeStampEntity } from '../../base.entity';
 import { ImageAbleEntity } from '../../image/entities/imageAble.entity';
 
-export const StatusProduct = {
+export const ProductStatus = {
   inventory: 'INVENTORY',
   outOfStock: 'OUT_OF_STOCK',
   hide: 'HIDE',
@@ -26,7 +26,7 @@ export class ProductEntity extends TimeStampEntity {
   @Column({ type: 'varchar', unique: true })
   slug: string;
 
-  @Column({ type: 'varchar', enum: StatusProduct, default: 'INVENTORY' })
+  @Column({ type: 'varchar', enum: ProductStatus, default: 'INVENTORY' })
   status: string;
 
   @Column({ type: 'int', default: 0 })

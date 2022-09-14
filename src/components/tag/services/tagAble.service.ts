@@ -1,48 +1,80 @@
 import { Injectable } from '@nestjs/common';
 import { BaseService } from 'src/shared/services/base.service';
-import { Connection, Repository, UpdateResult } from 'typeorm';
-import { TagAbleEntity } from '../entities/tagAble.entity';
+import { Connection, Repository } from 'typeorm';
+import { TagAbleEntity, TagAbleType } from '../entities/tagAble.entity';
 import { TagAbleRepository } from '../repositories/tagAble.repository';
+import { TagService } from './tag.service';
 
 @Injectable()
 export class TagAbleService extends BaseService {
   public tagAbleRepository: Repository<any>;
   public entity: any = TagAbleEntity;
-  constructor(private dataSource: Connection) {
+  constructor(private dataSource: Connection, private tagService: TagService) {
     super();
     this.tagAbleRepository =
       this.dataSource.getCustomRepository(TagAbleRepository);
   }
 
-  //update tagAble from update post
-  async update(id: number, data: any): Promise<UpdateResult> {
-    return await this.tagAbleRepository.update(Number(id), {
-      ...data,
-      updatedAt: new Date(),
+  /**
+   * Attach tagAble when crate or update product, post, ...
+   * @param params tagId
+   * @param params tagAbleId
+   * @param params tagAbleType
+   */
+  async attachTagAble(
+    ...rest: {
+      tagId: number;
+      tagAbleId: number;
+      tagAbleType: TagAbleType;
+    }[]
+  ): Promise<void> {
+    rest.forEach(async (restItem: any) => {
+      const { tagId, tagAbleId, tagAbleType } = restItem;
+
+      const tagAble = new TagAbleEntity();
+
+      tagAble.tagId = tagId;
+      tagAble.tagAbleId = tagAbleId;
+      tagAble.tagAbleType = tagAbleType;
+
+      await this.tagAbleRepository.save(tagAble);
     });
   }
 
+  /**
+   * Detach tagAble when delete tag
+   * All product, post, ... need to remove foreign key to this tag
+   * @param params tagId
+   */
+  async detachTagAble(params: { tagId: number });
+
+  /**
+   * Detach tagAble when delete product, post, ...
+   * Some tag need to remove foreign key to this product, post
+   * @param params tagAbleId
+   * @param params tagAbleType
+   */
+  async detachTagAble(params: { tagAbleId: number; tagAbleType: string });
+
+  /**
+   * Detach tagAble
+   * @param params tagId
+   * @param params tagAbleId
+   * @param params tagAbleType
+   */
   async detachTagAble(params: {
     tagId?: number;
     tagAbleId?: number;
     tagAbleType?: string;
   }): Promise<void> {
-    const { tagId, tagAbleId, tagAbleType } = params;
+    const tagAblesExisting = await this.tagAbleRepository.find({
+      where: params,
+    });
 
-    if (tagId) {
-      const tagsExisting = await this.tagAbleRepository.find({
-        where: { tagId },
-      });
-
-      await this.tagAbleRepository.delete(tagsExisting.map((tag) => tag.id));
-    }
-
-    if (tagAbleId && tagAbleType) {
-      const tagsExisting = await this.tagAbleRepository.find({
-        where: { tagAbleId, tagAbleType },
-      });
-
-      await this.tagAbleRepository.delete(tagsExisting.map((tag) => tag.id));
+    if (tagAblesExisting.length > 0) {
+      await this.tagAbleRepository.delete(
+        tagAblesExisting.map((tag) => tag.id),
+      );
     }
   }
 }

@@ -35,6 +35,8 @@ import {
 } from 'src/shared/services/apiResponse/apiResponse.interface';
 import Messages from 'src/shared/message/message';
 import { CommonService } from 'src/shared/services/common.service';
+import { TagAbleService } from 'src/components/tag/services/tagAble.service';
+import { TagAbleType } from 'src/components/tag/entities/tagAble.entity';
 
 @ApiTags('Products')
 @ApiHeader({
@@ -51,6 +53,7 @@ export class ProductController {
     private imagesService: ImageService,
     private categoryAbleService: CategoryAbleService,
     private commonService: CommonService,
+    private tagAbleService: TagAbleService,
   ) {}
 
   private entity = 'products';
@@ -149,6 +152,11 @@ export class ProductController {
     @Param('id', ParseIntPipe) id: number,
   ): Promise<SuccessfullyOperation> {
     await this.productService.findOneOrFail(id);
+
+    await this.tagAbleService.detachTagAble({
+      tagAbleId: id,
+      tagAbleType: TagAbleType.product,
+    });
 
     await this.productService.destroy(id);
 
