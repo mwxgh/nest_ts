@@ -1,5 +1,5 @@
 import { Transformer } from '../../../shared/transformers/transformer';
-import { CategoryAble } from '../entities/categoryAble.entity';
+import { CategoryAbleEntity } from '../entities/categoryAble.entity';
 
 export class CategoryAbleTransformer extends Transformer {
   data = (data) => {
@@ -9,7 +9,7 @@ export class CategoryAbleTransformer extends Transformer {
       status: data.status,
     };
   };
-  transform(model: CategoryAble): any {
+  transform(model: CategoryAbleEntity): any {
     return this.data(model.category);
   }
 }

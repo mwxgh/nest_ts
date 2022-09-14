@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { assign, difference } from 'lodash';
 import slugify from 'slugify';
 import {
-  CategoryAble,
+  CategoryAbleEntity,
   CategoryAbleType,
 } from 'src/components/category/entities/categoryAble.entity';
 import { CategoryService } from 'src/components/category/services/category.service';
@@ -205,7 +205,7 @@ export class PostService extends BaseService {
       },
     });
 
-    const currentCategoryAbles: CategoryAble[] =
+    const currentCategoryAbles: CategoryAbleEntity[] =
       await this.categoryAbleService.findWhere({
         where: {
           categoryAbleId: currentPost.id,
@@ -266,7 +266,7 @@ export class PostService extends BaseService {
     const detachCategoryIds = difference(currentCategoryIds, data.categoryIds);
 
     if (detachCategoryIds.length > 0) {
-      const queryCategoryAble: SelectQueryBuilder<CategoryAble> =
+      const queryCategoryAble: SelectQueryBuilder<CategoryAbleEntity> =
         await this.categoryAbleService.queryBuilder({
           entity: 'categoryAbles',
         });
@@ -352,7 +352,7 @@ export class PostService extends BaseService {
       await this.tagAbleService.destroy(currentTagAbleIds);
     }
 
-    const currentCategoryAbles: CategoryAble[] =
+    const currentCategoryAbles: CategoryAbleEntity[] =
       await this.categoryAbleService.findWhere({
         where: {
           categoryAbleId: currentPost.id,

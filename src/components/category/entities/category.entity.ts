@@ -1,7 +1,7 @@
 import { TimeStampEntity } from '../../base.entity';
 import { Entity, Column, OneToMany, JoinColumn } from 'typeorm';
 import { Notifiable } from '../../../shared/services/notification/decorators/notifiable.decorator';
-import { CategoryAble } from './categoryAble.entity';
+import { CategoryAbleEntity } from './categoryAble.entity';
 
 @Notifiable()
 @Entity({ name: 'categories' })
@@ -28,6 +28,9 @@ export class CategoryEntity extends TimeStampEntity {
   })
   children: CategoryEntity[];
 
-  @OneToMany(() => CategoryAble, (categoryAbles) => categoryAbles.category)
-  categoryAbles: CategoryAble[];
+  @OneToMany(
+    () => CategoryAbleEntity,
+    (categoryAbles) => categoryAbles.category,
+  )
+  categoryAbles: CategoryAbleEntity[];
 }

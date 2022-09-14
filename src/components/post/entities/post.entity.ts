@@ -1,7 +1,7 @@
 import { Comment } from '../../comment/entities/comment.entity';
 import { OneToMany, Entity, Column } from 'typeorm';
 import { Notifiable } from '../../../shared/services/notification/decorators/notifiable.decorator';
-import { CategoryAble } from '../../category/entities/categoryAble.entity';
+import { CategoryAbleEntity } from '../../category/entities/categoryAble.entity';
 import { TagAble } from '../../tag/entities/tagAble.entity';
 import { TimeStampEntity } from '../../base.entity';
 import { ImageAble } from '../../image/entities/imageAble.entity';
@@ -76,8 +76,8 @@ export class PostAble extends TimeStampEntity {
   @OneToMany(() => TagAble, (tag) => tag.post)
   tags: TagAble[];
 
-  @OneToMany(() => CategoryAble, (category) => category.post)
-  categories: CategoryAble[];
+  @OneToMany(() => CategoryAbleEntity, (category) => category.post)
+  categories: CategoryAbleEntity[];
 
   @OneToMany(() => ImageAble, (imageAble) => imageAble.post)
   images: ImageAble[];

@@ -12,7 +12,7 @@ export const CategoryAbleType = {
 
 @Notifiable()
 @Entity({ name: 'categoryAble' })
-export class CategoryAble extends TimeStampEntity {
+export class CategoryAbleEntity extends TimeStampEntity {
   @Column({ type: 'int' })
   public categoryId: number;
 
