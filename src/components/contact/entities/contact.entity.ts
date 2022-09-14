@@ -5,7 +5,7 @@ import { UserEntity } from '../../user/entities/user.entity';
 
 @Notifiable()
 @Entity({ name: 'contacts' })
-export class Contact extends TimeStampEntity {
+export class ContactEntity extends TimeStampEntity {
   @Column({ type: 'number' })
   userId: number;
 

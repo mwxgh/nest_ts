@@ -35,7 +35,7 @@ import {
 } from 'src/shared/services/apiResponse/apiResponse.interface';
 import { CommonService } from 'src/shared/services/common.service';
 import Messages from 'src/shared/message/message';
-import { Contact } from '../entities/contact.entity';
+import { ContactEntity } from '../entities/contact.entity';
 import { SelectQueryBuilder } from 'typeorm';
 import { Me } from 'src/components/user/dto/user.dto';
 
@@ -93,7 +93,7 @@ export class ContactController {
   ): Promise<GetListResponse | GetListPaginationResponse> {
     const { search, sortBy, sortType } = query;
 
-    const queryBuilder: SelectQueryBuilder<Contact> =
+    const queryBuilder: SelectQueryBuilder<ContactEntity> =
       await this.contactService.queryBuilder({
         entity: this.entity,
         fields: this.fields,
@@ -142,7 +142,7 @@ export class ContactController {
   async readSelfContacts(
     @AuthenticatedUser() currentUser: Me,
   ): Promise<GetListResponse> {
-    const contacts: Contact[] = await this.contactService.findWhere({
+    const contacts: ContactEntity[] = await this.contactService.findWhere({
       where: { userId: currentUser.id },
     });
 

@@ -15,7 +15,7 @@ import { TagEntity } from '../src/components/tag/entities/tag.entity';
 import { TagAbleEntity } from '../src/components/tag/entities/tagAble.entity';
 import { CommentEntity } from '../src/components/comment/entities/comment.entity';
 import { ImageEntity } from '../src/components/image/entities/image.entity';
-import { Contact } from '../src/components/contact/entities/contact.entity';
+import { ContactEntity } from '../src/components/contact/entities/contact.entity';
 import { PostAble } from '../src/components/post/entities/post.entity';
 import { ImageAble } from '../src/components/image/entities/imageAble.entity';
 
@@ -46,7 +46,7 @@ export default (): any => ({
     ImageAble,
     PostAble,
     TagEntity,
-    Contact,
+    ContactEntity,
   ],
 
   // We are using migrations, synchronize should be set to false.

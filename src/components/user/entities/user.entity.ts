@@ -2,7 +2,7 @@ import { Entity, Column, ManyToMany, JoinTable, OneToMany } from 'typeorm';
 import { RoleEntity } from '../../auth/entities/role.entity';
 import { Notifiable } from '../../../shared/services/notification/decorators/notifiable.decorator';
 import { TimeStampEntity } from '../../base.entity';
-import { Contact } from '../../contact/entities/contact.entity';
+import { ContactEntity } from '../../contact/entities/contact.entity';
 
 export const UserStatus = {
   active: 'ACTIVE',
@@ -56,8 +56,8 @@ export class UserEntity extends TimeStampEntity {
   })
   roles: RoleEntity[];
 
-  @OneToMany(() => Contact, (contact) => contact.user)
-  contacts: Contact[];
+  @OneToMany(() => ContactEntity, (contact) => contact.user)
+  contacts: ContactEntity[];
 
   getEmail(): string {
     return this.email;

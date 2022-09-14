@@ -1,8 +1,8 @@
 import { Transformer } from '../../../shared/transformers/transformer';
-import { Contact } from '../entities/contact.entity';
+import { ContactEntity } from '../entities/contact.entity';
 
 export class ContactTransformer extends Transformer {
-  transform(contact: Contact): any {
+  transform(contact: ContactEntity): any {
     return {
       id: contact.id,
       name: contact.name,
