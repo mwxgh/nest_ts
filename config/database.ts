@@ -13,7 +13,7 @@ import { OrderEntity } from '../src/components/order/entities/order.entity';
 import { OrderProductEntity } from '../src/components/order/entities/orderProduct.entity';
 import { TagEntity } from '../src/components/tag/entities/tag.entity';
 import { TagAbleEntity } from '../src/components/tag/entities/tagAble.entity';
-import { Comment } from '../src/components/comment/entities/comment.entity';
+import { CommentEntity } from '../src/components/comment/entities/comment.entity';
 import { Image } from '../src/components/image/entities/image.entity';
 import { Contact } from '../src/components/contact/entities/contact.entity';
 import { PostAble } from '../src/components/post/entities/post.entity';
@@ -41,7 +41,7 @@ export default (): any => ({
     OrderEntity,
     OrderProductEntity,
     TagAbleEntity,
-    Comment,
+    CommentEntity,
     Image,
     ImageAble,
     PostAble,

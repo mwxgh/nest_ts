@@ -16,7 +16,7 @@ export enum JoinCommentAble {
 
 @Notifiable()
 @Entity({ name: 'comments' })
-export class Comment extends TimeStampEntity {
+export class CommentEntity extends TimeStampEntity {
   @Column({ type: 'varchar' })
   email: string;
 

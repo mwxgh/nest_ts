@@ -1,7 +1,7 @@
 import { Entity, Column, OneToMany } from 'typeorm';
 import { Notifiable } from '../../../shared/services/notification/decorators/notifiable.decorator';
 import { CartItemEntity } from '../../../components/cart/entities/cartItem.entity';
-import { Comment } from '../../../components/comment/entities/comment.entity';
+import { CommentEntity } from '../../../components/comment/entities/comment.entity';
 import { CategoryAbleEntity } from '../../category/entities/categoryAble.entity';
 import { TagAbleEntity } from '../../tag/entities/tagAble.entity';
 import { OrderProductEntity } from '../../order/entities/orderProduct.entity';
@@ -50,8 +50,8 @@ export class ProductEntity extends TimeStampEntity {
   @OneToMany(() => ImageAble, (imageAble) => imageAble.product)
   images: ImageAble[];
 
-  @OneToMany(() => Comment, (comment) => comment.product)
-  comments: Comment[];
+  @OneToMany(() => CommentEntity, (comment) => comment.product)
+  comments: CommentEntity[];
 
   @OneToMany(() => OrderProductEntity, (orderItem) => orderItem.products)
   orders: OrderProductEntity[];
