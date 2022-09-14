@@ -5,7 +5,7 @@ import { OrderProduct } from './orderProduct.entity';
 
 @Notifiable()
 @Entity({ name: 'orders' })
-export class Order extends BaseTimeStampEntity {
+export class OrderEntity extends BaseTimeStampEntity {
   @Column({ type: 'varchar', name: 'fullName' })
   fullName: string;
 

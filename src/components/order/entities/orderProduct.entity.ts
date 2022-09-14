@@ -1,7 +1,7 @@
 import { ProductEntity } from '../../product/entities/product.entity';
 import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { Notifiable } from '../../../shared/services/notification/decorators/notifiable.decorator';
-import { Order } from './order.entity';
+import { OrderEntity } from './order.entity';
 import { BaseTimeStampEntity } from '../../base.entity';
 
 @Notifiable()
@@ -25,9 +25,9 @@ export class OrderProduct extends BaseTimeStampEntity {
   })
   products: ProductEntity;
 
-  @ManyToOne(() => Order, (order) => order.items)
+  @ManyToOne(() => OrderEntity, (order) => order.items)
   @JoinColumn({
     name: 'orderId',
   })
-  orders: Order;
+  orders: OrderEntity;
 }

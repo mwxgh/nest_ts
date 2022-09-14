@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { BaseService } from 'src/shared/services/base.service';
 import { Connection, Repository } from 'typeorm';
-import { Order } from '../entities/order.entity';
+import { OrderEntity } from '../entities/order.entity';
 import { OrderRepository } from '../repositories/order.repository';
 import { ImageAbleType } from '../../image/entities/imageAble.entity';
 
 @Injectable()
 export class OrderService extends BaseService {
   public repository: Repository<any>;
-  public entity: any = Order;
+  public entity: any = OrderEntity;
 
   constructor(private connection: Connection) {
     super();

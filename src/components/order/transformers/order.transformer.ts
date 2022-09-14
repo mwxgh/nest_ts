@@ -1,8 +1,8 @@
 import { Transformer } from '../../../shared/transformers/transformer';
-import { Order } from '../entities/order.entity';
+import { OrderEntity } from '../entities/order.entity';
 
 export class OrderTransformer extends Transformer {
-  transform(model: Order): any {
+  transform(model: OrderEntity): any {
     return model;
   }
 }
