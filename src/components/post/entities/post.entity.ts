@@ -42,7 +42,7 @@ export const PrivacyPost = {
 
 @Notifiable()
 @Entity({ name: 'posts' })
-export class PostAble extends TimeStampEntity {
+export class PostEntity extends TimeStampEntity {
   @Column()
   title: string;
 

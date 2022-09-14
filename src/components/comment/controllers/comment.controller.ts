@@ -7,7 +7,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { ApiHeader, ApiQuery, ApiTags } from '@nestjs/swagger';
-import { PostAble } from '../../post/entities/post.entity';
+import { PostEntity } from '../../post/entities/post.entity';
 import { PostTransformer } from '../../post/transformers/post.transformer';
 import { ProductEntity } from '../../product/entities/product.entity';
 import { ProductTransformer } from '../../product/transformers/product.transformer';
@@ -39,7 +39,7 @@ export class UserCommentController {
     }
 
     if (query.type == 'posts') {
-      const post = await getRepository(PostAble)
+      const post = await getRepository(PostEntity)
         .createQueryBuilder(query.type)
         .leftJoinAndSelect(`${query.type}.comments`, 'comments')
         .where(`${query.type}.id = :id`, { id: Number(query.id) })

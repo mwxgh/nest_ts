@@ -1,4 +1,4 @@
-import { PostAble } from '../../post/entities/post.entity';
+import { PostEntity } from '../../post/entities/post.entity';
 import { JoinColumn, ManyToOne, Entity, Column } from 'typeorm';
 import { Notifiable } from '../../../shared/services/notification/decorators/notifiable.decorator';
 import { ProductEntity } from '../../product/entities/product.entity';
@@ -45,10 +45,10 @@ export class CommentEntity extends TimeStampEntity {
   })
   public product: ProductEntity;
 
-  @ManyToOne(() => PostAble, (post) => post.comments)
+  @ManyToOne(() => PostEntity, (post) => post.comments)
   @JoinColumn({
     name: 'commentAbleId',
     referencedColumnName: 'id',
   })
-  public post: PostAble;
+  public post: PostEntity;
 }

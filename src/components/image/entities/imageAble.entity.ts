@@ -3,7 +3,7 @@ import { Notifiable } from '../../../shared/services/notification/decorators/not
 import { TimeStampEntity } from '../../base.entity';
 import { ImageEntity } from './image.entity';
 import { ProductEntity } from '../../product/entities/product.entity';
-import { PostAble } from '../../post/entities/post.entity';
+import { PostEntity } from '../../post/entities/post.entity';
 export const ImageAbleType = {
   product: 'PRODUCT',
   post: 'POST',
@@ -35,10 +35,10 @@ export class ImageAble extends TimeStampEntity {
   })
   product: ProductEntity;
 
-  @ManyToOne(() => PostAble, (post) => post.images)
+  @ManyToOne(() => PostEntity, (post) => post.images)
   @JoinColumn({
     name: 'imageAbleId',
     referencedColumnName: 'id',
   })
-  post: PostAble;
+  post: PostEntity;
 }

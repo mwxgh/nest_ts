@@ -27,7 +27,7 @@ import { QueryManyPostDto, QueryOneDto } from 'src/shared/dto/queryParams.dto';
 import { Auth } from 'src/components/auth/decorators/auth.decorator';
 
 import { JwtAuthGuard } from 'src/components/auth/guards/jwtAuth.guard';
-import { PostAble } from '../entities/post.entity';
+import { PostEntity } from '../entities/post.entity';
 import { SuccessfullyOperation } from 'src/shared/services/apiResponse/apiResponse.interface';
 import Messages from 'src/shared/message/message';
 import { CommonService } from 'src/shared/services/common.service';
@@ -82,7 +82,7 @@ export class PostController {
       type,
     } = query;
 
-    const queryBuilder: SelectQueryBuilder<PostAble> =
+    const queryBuilder: SelectQueryBuilder<PostEntity> =
       await this.postService.queryPost({
         entity: this.entity,
         fields: this.fields,

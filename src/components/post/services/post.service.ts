@@ -20,13 +20,13 @@ import { TagAbleService } from 'src/components/tag/services/tagAble.service';
 import { BaseService } from 'src/shared/services/base.service';
 import { Repository, Connection, SelectQueryBuilder } from 'typeorm';
 import { CreatePostDto, UpdatePostDto } from '../dto/post.dto';
-import { JoinPostAbleType, PostAble } from '../entities/post.entity';
+import { JoinPostAbleType, PostEntity } from '../entities/post.entity';
 import { PostRepository } from '../repositories/post.repository';
 
 @Injectable()
 export class PostService extends BaseService {
   public repository: Repository<any>;
-  public entity: any = PostAble;
+  public entity: any = PostEntity;
 
   constructor(
     private dataSource: Connection,
@@ -52,7 +52,7 @@ export class PostService extends BaseService {
     status?: string;
     priority?: string;
     type?: string;
-  }): Promise<SelectQueryBuilder<PostAble>> {
+  }): Promise<SelectQueryBuilder<PostEntity>> {
     const {
       entity,
       fields,
@@ -66,7 +66,7 @@ export class PostService extends BaseService {
       type,
     } = params;
 
-    let baseQuery: SelectQueryBuilder<PostAble> = await this.queryBuilder({
+    let baseQuery: SelectQueryBuilder<PostEntity> = await this.queryBuilder({
       entity,
       fields,
       keyword,

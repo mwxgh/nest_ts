@@ -1,8 +1,8 @@
 import { Transformer } from 'src/shared/transformers/transformer';
-import { PostAble } from '../entities/post.entity';
+import { PostEntity } from '../entities/post.entity';
 
 export class PostTransformer extends Transformer {
-  transform(data: PostAble) {
+  transform(data: PostEntity) {
     return data;
   }
 }

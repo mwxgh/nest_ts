@@ -2,7 +2,7 @@ import { ProductEntity } from '../../../../src/components/product/entities/produ
 import { Notifiable } from '../../../../src/shared/services/notification/decorators/notifiable.decorator';
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { TagEntity } from './tag.entity';
-import { PostAble } from '../../post/entities/post.entity';
+import { PostEntity } from '../../post/entities/post.entity';
 import { TimeStampEntity } from '../../base.entity';
 
 export const TagAbleType = {
@@ -32,12 +32,12 @@ export class TagAbleEntity extends TimeStampEntity {
   })
   tag: TagEntity;
 
-  @ManyToOne(() => PostAble, (post) => post.tags)
+  @ManyToOne(() => PostEntity, (post) => post.tags)
   @JoinColumn({
     name: 'tagAbleId',
     referencedColumnName: 'id',
   })
-  public post: PostAble;
+  public post: PostEntity;
 
   @ManyToOne(() => ProductEntity, (product) => product.tags)
   @JoinColumn({
