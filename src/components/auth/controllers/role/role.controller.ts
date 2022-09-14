@@ -35,7 +35,7 @@ import {
 } from 'src/shared/services/apiResponse/apiResponse.interface';
 import Messages from 'src/shared/message/message';
 import { CommonService } from 'src/shared/services/common.service';
-import { RolePermission } from '../../entities/rolePermission.entity';
+import { RolePermissionEntity } from '../../entities/rolePermission.entity';
 import { RoleEntity } from '../../entities/role.entity';
 import { SelectQueryBuilder } from 'typeorm';
 
@@ -179,7 +179,7 @@ export class RoleController {
 
     await this.roleService.destroy(id);
 
-    const rolePermissions: RolePermission[] =
+    const rolePermissions: RolePermissionEntity[] =
       await this.rolePermissionService.findWhere({
         where: { roleId: id },
       });

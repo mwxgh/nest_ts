@@ -1,5 +1,5 @@
 import { EntityRepository, Repository } from 'typeorm';
-import { RolePermission } from '../entities/rolePermission.entity';
+import { RolePermissionEntity } from '../entities/rolePermission.entity';
 
-@EntityRepository(RolePermission)
-export class RolePermissionRepository extends Repository<RolePermission> {}
+@EntityRepository(RolePermissionEntity)
+export class RolePermissionRepository extends Repository<RolePermissionEntity> {}
