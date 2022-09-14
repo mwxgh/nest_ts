@@ -5,7 +5,7 @@ import { CartItem } from './cartItem.entity';
 
 @Notifiable()
 @Entity({ name: 'carts' })
-export class Cart extends BaseTimeStampEntity {
+export class CartEntity extends BaseTimeStampEntity {
   @OneToMany(() => CartItem, (cartItem) => cartItem.cart)
   public items: CartItem[];
 }

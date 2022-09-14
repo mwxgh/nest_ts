@@ -17,7 +17,7 @@ import {
 } from '@nestjs/swagger';
 import { ApiResponseService } from '../../../shared/services/apiResponse/apiResponse.service';
 import { getManager } from 'typeorm';
-import { Cart } from '../entities/cart.entity';
+import { CartEntity } from '../entities/cart.entity';
 import { CartService } from '../services/cart.service';
 import { CartTransformer } from '../transformers/cart.transformer';
 
@@ -51,7 +51,7 @@ export class CartController {
   @Get(':id')
   async show(@Param('id') id: string): Promise<any> {
     const data = await getManager()
-      .createQueryBuilder(Cart, 'carts')
+      .createQueryBuilder(CartEntity, 'carts')
       .leftJoinAndSelect('carts.items', 'cartItems')
       .leftJoinAndSelect('cartItems.product', 'products')
       .leftJoinAndSelect(

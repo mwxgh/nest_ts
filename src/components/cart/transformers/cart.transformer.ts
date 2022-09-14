@@ -1,8 +1,8 @@
 import { Transformer } from 'src/shared/transformers/transformer';
-import { Cart } from '../entities/cart.entity';
+import { CartEntity } from '../entities/cart.entity';
 
 export class CartTransformer extends Transformer {
-  transform(data: Cart) {
+  transform(data: CartEntity) {
     return data;
   }
 }
