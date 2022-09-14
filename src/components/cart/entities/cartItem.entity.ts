@@ -6,7 +6,7 @@ import { BaseTimeStampEntity } from '../../base.entity';
 
 @Notifiable()
 @Entity({ name: 'cartItems' })
-export class CartItem extends BaseTimeStampEntity {
+export class CartItemEntity extends BaseTimeStampEntity {
   @Column({ name: 'productId', type: 'int' })
   public productId: number;
 

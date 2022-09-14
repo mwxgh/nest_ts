@@ -5,10 +5,13 @@ import { cartProviders } from './cart.providers';
 import { CartController } from './controllers/cart.controller';
 import { CartItemController } from './controllers/cartItem.controller';
 import { CartEntity } from './entities/cart.entity';
-import { CartItem } from './entities/cartItem.entity';
+import { CartItemEntity } from './entities/cartItem.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([CartEntity, CartItem]), ConfigModule],
+  imports: [
+    TypeOrmModule.forFeature([CartEntity, CartItemEntity]),
+    ConfigModule,
+  ],
   providers: [...cartProviders],
   controllers: [CartController, CartItemController],
 })

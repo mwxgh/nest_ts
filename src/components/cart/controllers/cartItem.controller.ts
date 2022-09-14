@@ -12,7 +12,7 @@ import { ApiHeader, ApiTags } from '@nestjs/swagger';
 
 import { getManager } from 'typeorm';
 import { CreateCartItemDto, UpdateCartItemDto } from '../dto/cart.dto';
-import { CartItem } from '../entities/cartItem.entity';
+import { CartItemEntity } from '../entities/cartItem.entity';
 import { CartItemService } from '../services/cartItem.service';
 import { CartItemTransformer } from '../transformers/cartItem.transformer';
 import { ProductService } from 'src/components/product/services/product.service';
@@ -81,7 +81,7 @@ export class CartItemController {
     };
 
     const check_cart_item = await getManager()
-      .createQueryBuilder(CartItem, 'cartItems')
+      .createQueryBuilder(CartItemEntity, 'cartItems')
       .where(
         'cartItems.productId = :productId  AND cartItems.cartId = :cartId ',
         data_check_cart_item,

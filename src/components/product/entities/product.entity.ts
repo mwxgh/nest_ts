@@ -1,6 +1,6 @@
 import { Entity, Column, OneToMany } from 'typeorm';
 import { Notifiable } from '../../../shared/services/notification/decorators/notifiable.decorator';
-import { CartItem } from '../../../components/cart/entities/cartItem.entity';
+import { CartItemEntity } from '../../../components/cart/entities/cartItem.entity';
 import { Comment } from '../../../components/comment/entities/comment.entity';
 import { CategoryAble } from '../../category/entities/categoryAble.entity';
 import { TagAble } from '../../tag/entities/tagAble.entity';
@@ -56,6 +56,6 @@ export class ProductEntity extends TimeStampEntity {
   @OneToMany(() => OrderProduct, (orderItem) => orderItem.products)
   orders: OrderProduct[];
 
-  @OneToMany(() => CartItem, (cartItem) => cartItem.cart)
-  products: Promise<CartItem[]>;
+  @OneToMany(() => CartItemEntity, (cartItem) => cartItem.cart)
+  products: Promise<CartItemEntity[]>;
 }
