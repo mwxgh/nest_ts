@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { BaseService } from 'src/shared/services/base.service';
-import { Connection, Repository } from 'typeorm';
-import { Category } from '../entities/category.entity';
+import { Connection, Repository, SelectQueryBuilder } from 'typeorm';
+import { CategoryEntity } from '../entities/category.entity';
 import { CategoryAbleType } from '../entities/categoryAble.entity';
 import { CategoryRepository } from '../repositories/category.repository';
 
 @Injectable()
 export class CategoryService extends BaseService {
   public repository: Repository<any>;
-  public entity: any = Category;
+  public entity: any = CategoryEntity;
 
   constructor(private dataSource: Connection) {
     super();
@@ -22,7 +22,7 @@ export class CategoryService extends BaseService {
     includes?: any;
     sortBy?: string;
     sortType?: 'ASC' | 'DESC';
-  }) {
+  }): Promise<SelectQueryBuilder<CategoryEntity>> {
     const include = [];
 
     if (params.includes) {
@@ -32,13 +32,15 @@ export class CategoryService extends BaseService {
 
     const { entity, fields, keyword, sortBy, sortType } = params;
 
-    let baseQuery = await this.queryBuilder({
-      entity,
-      fields,
-      keyword,
-      sortBy,
-      sortType,
-    });
+    let baseQuery: SelectQueryBuilder<CategoryEntity> = await this.queryBuilder(
+      {
+        entity,
+        fields,
+        keyword,
+        sortBy,
+        sortType,
+      },
+    );
 
     if (include.includes('products')) {
       baseQuery = baseQuery.where(`${entity}.categoryType = :type`, {

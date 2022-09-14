@@ -1,7 +1,7 @@
 import { Notifiable } from '../../../shared/services/notification/decorators/notifiable.decorator';
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { ProductEntity } from '../../../components/product/entities/product.entity';
-import { Category } from './category.entity';
+import { CategoryEntity } from './category.entity';
 import { PostAble } from '../../post/entities/post.entity';
 import { TimeStampEntity } from '../../base.entity';
 
@@ -25,12 +25,12 @@ export class CategoryAble extends TimeStampEntity {
   @Column({ type: 'timestamp' })
   public verifiedAt: Date;
 
-  @ManyToOne(() => Category, (category) => category.categoryAbles)
+  @ManyToOne(() => CategoryEntity, (category) => category.categoryAbles)
   @JoinColumn({
     name: 'categoryId',
     referencedColumnName: 'id',
   })
-  category: Category;
+  category: CategoryEntity;
 
   @ManyToOne(() => ProductEntity, (product) => product.categories)
   @JoinColumn({

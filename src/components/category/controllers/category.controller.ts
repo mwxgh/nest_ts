@@ -34,6 +34,8 @@ import {
 } from 'src/shared/services/apiResponse/apiResponse.interface';
 import Messages from 'src/shared/message/message';
 import { CommonService } from 'src/shared/services/common.service';
+import { CategoryEntity } from '../entities/category.entity';
+import { SelectQueryBuilder } from 'typeorm';
 
 @ApiTags('Categories')
 @ApiHeader({
@@ -78,14 +80,15 @@ export class CategoryController {
   ): Promise<GetListResponse | GetListPaginationResponse> {
     const { search, includes, sortBy, sortType } = query;
 
-    const queryBuilder = await this.categoryService.queryCategory({
-      entity: this.entity,
-      fields: this.fields,
-      keyword: search,
-      includes,
-      sortBy,
-      sortType,
-    });
+    const queryBuilder: SelectQueryBuilder<CategoryEntity> =
+      await this.categoryService.queryCategory({
+        entity: this.entity,
+        fields: this.fields,
+        keyword: search,
+        includes,
+        sortBy,
+        sortType,
+      });
 
     if (query.perPage || query.page) {
       const paginateOption: IPaginationOptions = {

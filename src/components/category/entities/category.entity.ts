@@ -5,7 +5,7 @@ import { CategoryAble } from './categoryAble.entity';
 
 @Notifiable()
 @Entity({ name: 'categories' })
-export class Category extends TimeStampEntity {
+export class CategoryEntity extends TimeStampEntity {
   @Column({ type: 'varchar' })
   name: string;
 
@@ -21,12 +21,12 @@ export class Category extends TimeStampEntity {
   @Column({ type: 'timestamp' })
   public verifiedAt: Date;
 
-  @OneToMany(() => Category, (cate) => cate.children)
+  @OneToMany(() => CategoryEntity, (cate) => cate.children)
   @JoinColumn({
     name: 'parentId',
     referencedColumnName: 'id',
   })
-  children: Category[];
+  children: CategoryEntity[];
 
   @OneToMany(() => CategoryAble, (categoryAbles) => categoryAbles.category)
   categoryAbles: CategoryAble[];
