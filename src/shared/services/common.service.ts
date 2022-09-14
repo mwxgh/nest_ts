@@ -1,6 +1,6 @@
 import { BadRequestException, ForbiddenException } from '@nestjs/common';
 import { includes, map } from 'lodash';
-import { User } from 'src/components/user/entities/user.entity';
+import { Me } from 'src/components/user/dto/user.dto';
 
 export class CommonService {
   /**
@@ -12,7 +12,7 @@ export class CommonService {
    * @return void
    */
   checkUserPermissionOperation(params: {
-    currentUser: User;
+    currentUser: Me;
     userId: number;
   }): void {
     const { currentUser, userId } = params;

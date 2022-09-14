@@ -1,5 +1,5 @@
 import { ConflictException, Injectable } from '@nestjs/common';
-import { User } from '../entities/user.entity';
+import { UserEntity } from '../entities/user.entity';
 import { BaseService } from '../../../shared/services/base.service';
 import { UserRepository } from '../repositories/user.repository';
 import { Repository, Connection } from 'typeorm';
@@ -13,7 +13,7 @@ import { defaultUserStatus } from 'src/shared/defaultValue/defaultValue';
 @Injectable()
 export class UserService extends BaseService {
   public repository: Repository<any>;
-  public entity: any = User;
+  public entity: any = UserEntity;
 
   constructor(
     private dataSource: Connection,
@@ -42,7 +42,7 @@ export class UserService extends BaseService {
     return item;
   }
 
-  async verify(id: number): Promise<User> {
+  async verify(id: number): Promise<UserEntity> {
     const item = await this.update(id, {
       verifyToken: '',
       verified: true,
@@ -70,7 +70,7 @@ export class UserService extends BaseService {
    * @param id  number
    * @param password string
    */
-  async changePassword(id: number, password: string): Promise<User> {
+  async changePassword(id: number, password: string): Promise<UserEntity> {
     return await this.update(id, { password: this.hashService.hash(password) });
   }
 
@@ -118,7 +118,7 @@ export class UserService extends BaseService {
    * @param params.user  user properties
    * @return User
    */
-  async saveUser(params: { user: BaseUserProperties }): Promise<User> {
+  async saveUser(params: { user: BaseUserProperties }): Promise<UserEntity> {
     const { user } = params;
     const { email, username, password } = user;
     const userStatus = user.status ?? defaultUserStatus;

@@ -49,7 +49,7 @@ import {
 } from 'src/shared/services/apiResponse/apiResponse.interface';
 import Messages from 'src/shared/message/message';
 import { CommonService } from 'src/shared/services/common.service';
-import { User } from '../entities/user.entity';
+import { UserEntity } from '../entities/user.entity';
 import { SelectQueryBuilder } from 'typeorm';
 
 @ApiTags('Users')
@@ -108,7 +108,7 @@ export class UserController {
   ): Promise<GetListResponse | GetListPaginationResponse> {
     const { search, includes, sortBy, sortType } = query;
 
-    let queryBuilder: SelectQueryBuilder<User> =
+    let queryBuilder: SelectQueryBuilder<UserEntity> =
       await this.userService.queryBuilder({
         entity: this.entity,
         fields: this.fields,

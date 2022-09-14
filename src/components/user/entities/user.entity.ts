@@ -11,7 +11,7 @@ export const UserStatus = {
 
 @Notifiable()
 @Entity({ name: 'users' })
-export class User extends TimeStampEntity {
+export class UserEntity extends TimeStampEntity {
   @Column({ type: 'varchar', unique: true })
   email: string;
 

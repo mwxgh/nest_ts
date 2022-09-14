@@ -1,5 +1,5 @@
 import { Connection } from 'typeorm';
-import { User } from '../../src/components/user/entities/user.entity';
+import { UserEntity } from '../../src/components/user/entities/user.entity';
 import { HashService } from '../../src/shared/services/hash/hash.service';
 import { Role } from '../../src/components/auth/entities/role.entity';
 import * as _ from 'lodash';
@@ -36,7 +36,7 @@ export default class UsersTableSeeder {
       },
     ];
     const users = seed.map((item) => {
-      const user = new User();
+      const user = new UserEntity();
 
       user.email = item.email;
       user.username = item.username;

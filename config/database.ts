@@ -1,4 +1,4 @@
-import { User } from '../src/components/user/entities/user.entity';
+import { UserEntity } from '../src/components/user/entities/user.entity';
 import { Role } from '../src/components/auth/entities/role.entity';
 import { Permission } from '../src/components/auth/entities/permission.entity';
 import { PasswordReset } from '../src/components/auth/entities/passwordReset.entity';
@@ -27,7 +27,7 @@ export default (): any => ({
   database: process.env.DB_DATABASE,
   port: parseInt(process.env.DB_PORT),
   entities: [
-    User,
+    UserEntity,
     Role,
     Permission,
     PasswordReset,

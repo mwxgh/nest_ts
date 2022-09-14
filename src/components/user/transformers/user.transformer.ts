@@ -1,9 +1,9 @@
 import { Transformer } from '../../../shared/transformers/transformer';
 import { RoleTransformer } from '../../auth/transformers/role.transformer';
-import { User } from '../entities/user.entity';
+import { UserEntity } from '../entities/user.entity';
 
 export class UserTransformer extends Transformer {
-  transform(model: User): any {
+  transform(model: UserEntity): any {
     return {
       id: model.id,
       email: model.email,
@@ -20,7 +20,7 @@ export class UserTransformer extends Transformer {
     };
   }
 
-  includeRoles(model: User): any {
+  includeRoles(model: UserEntity): any {
     return this.collection(model.roles, new RoleTransformer());
   }
 }

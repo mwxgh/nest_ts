@@ -20,8 +20,8 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { AuthenticatedUser } from 'src/components/auth/decorators/authenticatedUser.decorator';
-import { User } from 'src/components/user/entities/user.entity';
 import { GetItemResponse } from 'src/shared/services/apiResponse/apiResponse.interface';
+import { Me } from 'src/components/user/dto/user.dto';
 
 @ApiTags('Profile')
 @ApiBearerAuth()
@@ -42,7 +42,7 @@ export class ProfileController {
   @ApiOperation({ summary: 'Get profile current user' })
   @ApiOkResponse({ description: 'Profile current user' })
   async profile(
-    @AuthenticatedUser() currentUser: User,
+    @AuthenticatedUser() currentUser: Me,
   ): Promise<GetItemResponse> {
     const user = await this.userService.findOneOrFail(currentUser.id, {
       relations: ['roles'],
@@ -55,7 +55,7 @@ export class ProfileController {
   @ApiOperation({ summary: 'Update profile current user' })
   @ApiOkResponse({ description: 'New profile current user' })
   async updateProfile(
-    @AuthenticatedUser() currentUser: User,
+    @AuthenticatedUser() currentUser: Me,
     @Body() body: UpdateProfileDto,
   ): Promise<any> {
     const data: any = {};
@@ -79,7 +79,7 @@ export class ProfileController {
   @ApiOperation({ summary: 'Update password current user' })
   @ApiOkResponse({ description: 'New profile current user' })
   async changePassword(
-    @AuthenticatedUser() currentUser: User,
+    @AuthenticatedUser() currentUser: Me,
     @Body() body: UpdatePasswordDto,
   ): Promise<any> {
     const { password, oldPassword } = body;

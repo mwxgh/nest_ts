@@ -1,7 +1,7 @@
 import { TimeStampEntity } from '../../base.entity';
 import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { Notifiable } from '../../../shared/services/notification/decorators/notifiable.decorator';
-import { User } from '../../user/entities/user.entity';
+import { UserEntity } from '../../user/entities/user.entity';
 
 @Notifiable()
 @Entity({ name: 'contacts' })
@@ -30,10 +30,10 @@ export class Contact extends TimeStampEntity {
   @Column({ type: 'timestamp' })
   public verifiedAt: Date;
 
-  @ManyToOne(() => User, (user) => user.contacts)
+  @ManyToOne(() => UserEntity, (user) => user.contacts)
   @JoinColumn({
     name: 'userId',
     referencedColumnName: 'id',
   })
-  public user: User;
+  public user: UserEntity;
 }

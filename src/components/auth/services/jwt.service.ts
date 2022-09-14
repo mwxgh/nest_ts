@@ -1,7 +1,7 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as jwt from 'jsonwebtoken';
-import { User } from '../../user/entities/user.entity';
+import { UserEntity } from '../../user/entities/user.entity';
 import { UserService } from '../../user/services/user.service';
 import { WsException } from '@nestjs/websockets';
 
@@ -12,7 +12,7 @@ export class JwtService {
     private userService: UserService,
   ) {}
 
-  async verify(token: string, isWs = false): Promise<User | null> {
+  async verify(token: string, isWs = false): Promise<UserEntity | null> {
     try {
       const payload = <any>jwt.verify(token, this.configService.get('APP_KEY'));
 

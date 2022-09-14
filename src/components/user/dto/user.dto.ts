@@ -11,7 +11,7 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
-import { User, UserStatus } from '../entities/user.entity';
+import { UserEntity, UserStatus } from '../entities/user.entity';
 
 export class BaseUserProperties {
   @ApiProperty()
@@ -104,4 +104,4 @@ export class UserDetachRoleDto extends PickType(UserRoleProperties, [
   'roleId',
 ] as const) {}
 
-export type Me = User;
+export type Me = UserEntity;
