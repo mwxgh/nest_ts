@@ -1,6 +1,6 @@
 import { UserEntity } from '../src/components/user/entities/user.entity';
 import { RoleEntity } from '../src/components/auth/entities/role.entity';
-import { Permission } from '../src/components/auth/entities/permission.entity';
+import { PermissionEntity } from '../src/components/auth/entities/permission.entity';
 import { PasswordReset } from '../src/components/auth/entities/passwordReset.entity';
 import { RolePermission } from '../src/components/auth/entities/rolePermission.entity';
 import { UserRole } from '../src/components/auth/entities/userRole.entity';
@@ -29,7 +29,7 @@ export default (): any => ({
   entities: [
     UserEntity,
     RoleEntity,
-    Permission,
+    PermissionEntity,
     PasswordReset,
     RolePermission,
     UserRole,

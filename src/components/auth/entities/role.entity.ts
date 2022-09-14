@@ -1,7 +1,7 @@
 import { TimeStampEntity } from '../../base.entity';
 import { Entity, Column, ManyToMany, JoinTable } from 'typeorm';
 import { UserEntity } from '../../user/entities/user.entity';
-import { Permission } from './permission.entity';
+import { PermissionEntity } from './permission.entity';
 
 @Entity({ name: 'roles' })
 export class RoleEntity extends TimeStampEntity {
@@ -14,7 +14,7 @@ export class RoleEntity extends TimeStampEntity {
   @ManyToMany(() => UserEntity)
   users: RoleEntity[];
 
-  @ManyToMany(() => Permission, (permission) => permission.roles, {
+  @ManyToMany(() => PermissionEntity, (permission) => permission.roles, {
     cascade: ['insert'],
   })
   @JoinTable({
@@ -28,5 +28,5 @@ export class RoleEntity extends TimeStampEntity {
       referencedColumnName: 'id',
     },
   })
-  permissions: Permission[];
+  permissions: PermissionEntity[];
 }
