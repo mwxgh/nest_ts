@@ -1,4 +1,4 @@
-import { Product } from '../../../components/product/entities/product.entity';
+import { ProductEntity } from '../../../components/product/entities/product.entity';
 import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { Notifiable } from '../../../shared/services/notification/decorators/notifiable.decorator';
 import { Cart } from './cart.entity';
@@ -19,11 +19,11 @@ export class CartItem extends BaseTimeStampEntity {
   @Column({ type: 'int' })
   amount: string;
 
-  @ManyToOne(() => Product, (product) => product.products)
+  @ManyToOne(() => ProductEntity, (product) => product.products)
   @JoinColumn({
     name: 'productId',
   })
-  product: Product;
+  product: ProductEntity;
 
   @ManyToOne(() => Cart, (cart) => cart.items)
   @JoinColumn({

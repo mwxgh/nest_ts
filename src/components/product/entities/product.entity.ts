@@ -16,7 +16,7 @@ export const StatusProduct = {
 
 @Notifiable()
 @Entity({ name: 'products' })
-export class Product extends TimeStampEntity {
+export class ProductEntity extends TimeStampEntity {
   @Column({ type: 'varchar' })
   name: string;
 

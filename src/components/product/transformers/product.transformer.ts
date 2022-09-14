@@ -1,11 +1,11 @@
 import { Transformer } from '../../../shared/transformers/transformer';
-import { Product } from '../entities/product.entity';
+import { ProductEntity } from '../entities/product.entity';
 import { ImageTransformer } from '../../image/transformers/image.transformer';
 import { CategoryAbleTransformer } from 'src/components/category/transformers/categoryAble.transformer';
 import { CommentTransformer } from 'src/components/comment/transformers/comment.transformer';
 
 export class ProductTransformer extends Transformer {
-  transform(model: Product): any {
+  transform(model: ProductEntity): any {
     return {
       id: model.id,
       name: model.name,

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { BaseService } from 'src/shared/services/base.service';
 import { Connection, Repository, SelectQueryBuilder } from 'typeorm';
-import { Product } from '../entities/product.entity';
+import { ProductEntity } from '../entities/product.entity';
 import { ProductRepository } from '../repositories/product.repository';
 import slugify from 'slugify';
 import { CategoryAbleType } from 'src/components/category/entities/categoryAble.entity';
@@ -13,7 +13,7 @@ import { CategoryAbleService } from 'src/components/category/services/categoryAb
 @Injectable()
 export class ProductService extends BaseService {
   public repository: Repository<any>;
-  public entity: any = Product;
+  public entity: any = ProductEntity;
 
   constructor(
     private connection: Connection,
@@ -31,16 +31,17 @@ export class ProductService extends BaseService {
     sortBy?: string;
     sortType?: 'ASC' | 'DESC';
     includes?: string[];
-  }): Promise<SelectQueryBuilder<Product>> {
+  }): Promise<SelectQueryBuilder<ProductEntity>> {
     const { entity, fields, keyword, sortBy, sortType, includes } = params;
 
-    let queryBuilder: SelectQueryBuilder<Product> = await this.queryBuilder({
-      entity,
-      fields,
-      keyword,
-      sortBy,
-      sortType,
-    });
+    let queryBuilder: SelectQueryBuilder<ProductEntity> =
+      await this.queryBuilder({
+        entity,
+        fields,
+        keyword,
+        sortBy,
+        sortType,
+      });
 
     if (includes.length > 0) {
       if (includes.includes('images')) {
@@ -65,7 +66,7 @@ export class ProductService extends BaseService {
     return queryBuilder;
   }
 
-  async createProduct(data: CreateProductDto): Promise<Product> {
+  async createProduct(data: CreateProductDto): Promise<ProductEntity> {
     data.slug = slugify(data.name.toLowerCase());
 
     const num = await this.repository
@@ -77,7 +78,7 @@ export class ProductService extends BaseService {
 
     data.sku = data.sku || `MH${Date.now()}`;
 
-    const product: Product = await this.repository.create(data);
+    const product: ProductEntity = await this.repository.create(data);
 
     if (data.images) {
       data.images.forEach(async (item: any) => {
