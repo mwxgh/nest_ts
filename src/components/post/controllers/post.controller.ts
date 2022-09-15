@@ -28,7 +28,12 @@ import { Auth } from 'src/components/auth/decorators/auth.decorator';
 
 import { JwtAuthGuard } from 'src/components/auth/guards/jwtAuth.guard';
 import { PostEntity } from '../entities/post.entity';
-import { SuccessfullyOperation } from 'src/shared/services/apiResponse/apiResponse.interface';
+import {
+  GetItemResponse,
+  GetListPaginationResponse,
+  GetListResponse,
+  SuccessfullyOperation,
+} from 'src/shared/services/apiResponse/apiResponse.interface';
 import Messages from 'src/shared/message/message';
 import { CommonService } from 'src/shared/services/common.service';
 @ApiTags('Posts')
@@ -70,7 +75,9 @@ export class PostController {
   @Get()
   @ApiOperation({ summary: 'Get list posts' })
   @ApiOkResponse({ description: 'List posts with query param' })
-  async readPosts(@Query() query: QueryManyPostDto): Promise<any> {
+  async readPosts(
+    @Query() query: QueryManyPostDto,
+  ): Promise<GetListResponse | GetListPaginationResponse> {
     const {
       search,
       sortBy,
@@ -122,7 +129,7 @@ export class PostController {
   async readPost(
     @Param('id', ParseIntPipe) id: number,
     @Query() query: QueryOneDto,
-  ): Promise<any> {
+  ): Promise<GetItemResponse> {
     const { includes } = query;
 
     const post = await this.postService.findOneOrFail(id, {

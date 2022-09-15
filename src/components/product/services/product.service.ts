@@ -125,6 +125,11 @@ export class ProductService extends BaseService {
     return product;
   }
 
+  /**
+   * Update product and update relation foreign key
+   * @param params.id
+   * @param params.data UpdateProductDto
+   */
   async updateProduct(params: {
     id: number;
     data: UpdateProductDto;
@@ -164,5 +169,31 @@ export class ProductService extends BaseService {
       });
       await this.update(id, data);
     }
+  }
+
+  /**
+   * Delete product and detach foreign key
+   * @param params.id
+   */
+  async deleteProduct(params: { id: number }): Promise<void> {
+    const { id } = params;
+
+    const currentProduct = await this.findOneOrFail(id);
+
+    await this.tagAbleService.detachTagAble([
+      {
+        tagAbleId: currentProduct.id,
+        tagAbleType: TagAbleType.product,
+      },
+    ]);
+
+    await this.categoryAbleService.detachCategoryAble([
+      {
+        categoryAbleId: currentProduct.id,
+        categoryAbleType: CategoryAbleType.product,
+      },
+    ]);
+
+    await this.destroy(currentProduct.id);
   }
 }

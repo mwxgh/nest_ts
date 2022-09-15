@@ -191,6 +191,11 @@ export class PostService extends BaseService {
     await this.imageAbleService.save(imageAbleData);
   }
 
+  /**
+   * Update post and update relation foreign key
+   * @param params.id
+   * @param params.data UpdatePostDto
+   */
   async updatePost(params: { id: number; data: UpdatePostDto }): Promise<void> {
     const { id, data } = params;
 
