@@ -1,5 +1,8 @@
 import { Connection } from 'typeorm';
-import { UserEntity } from '../../src/components/user/entities/user.entity';
+import {
+  UserEntity,
+  UserStatus,
+} from '../../src/components/user/entities/user.entity';
 import { HashService } from '../../src/shared/services/hash/hash.service';
 import { RoleEntity } from '../../src/components/auth/entities/role.entity';
 import * as _ from 'lodash';
@@ -17,21 +20,21 @@ export default class UsersTableSeeder {
         email: 'superadmin@mwx.com',
         username: 'superadmin',
         password: this.hashService.hash('secret'),
-        status: 'ACTIVE',
+        status: UserStatus.active,
         role: 'superadmin',
       },
       {
         email: 'admin@mwx.com',
         username: 'admin',
         password: this.hashService.hash('secret'),
-        status: 'ACTIVE',
+        status: UserStatus.active,
         role: 'admin',
       },
       {
         email: 'user@mwx.com',
         username: 'user',
         password: this.hashService.hash('secret'),
-        status: 'ACTIVE',
+        status: UserStatus.active,
         role: 'user',
       },
     ];

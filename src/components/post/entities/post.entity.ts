@@ -6,39 +6,39 @@ import { TagAbleEntity } from '../../tag/entities/tagAble.entity';
 import { TimeStampEntity } from '../../base.entity';
 import { ImageAbleEntity } from '../../image/entities/imageAble.entity';
 
-export const JoinPostAbleType = {
-  images: 'posts.images',
-  comments: 'posts.comments',
-  tags: 'posts.tags',
-  categories: 'posts.categories',
-} as const;
+export enum JoinPostAbleType {
+  images = 'posts.images',
+  comments = 'posts.comments',
+  tags = 'posts.tags',
+  categories = 'posts.categories',
+}
 
-export const StatusPost = {
-  draft: 'DRAFT',
-  pending: 'PENDING',
-  publish: 'PUBLISH',
-  hide: 'HIDE',
-} as const;
+export enum PostStatus {
+  draft = 'DRAFT',
+  pending = 'PENDING',
+  publish = 'PUBLISH',
+  hide = 'HIDE',
+}
 
-export const PriorityPost = {
-  highest: 'HIGHEST',
-  high: 'HIGH',
-  medium: 'MEDIUM',
-  low: 'LOW',
-} as const;
+export enum PostPriority {
+  highest = 'HIGHEST',
+  high = 'HIGH',
+  medium = 'MEDIUM',
+  low = 'LOW',
+}
 
-export const TypePost = {
-  gallery: 'GALLERY',
-  sidebar: 'SIDEBAR',
-  content: 'CONTENT',
-} as const;
+export enum PostType {
+  gallery = 'GALLERY',
+  sidebar = 'SIDEBAR',
+  content = 'CONTENT',
+}
 
-export const PrivacyPost = {
-  public: 'PUBLIC',
-  system: 'SYSTEM',
-  protected: 'PROTECTED',
-  private: 'PRIVATE',
-} as const;
+export enum PostPrivacy {
+  public = 'PUBLIC',
+  system = 'SYSTEM',
+  protected = 'PROTECTED',
+  private = 'PRIVATE',
+}
 
 @Notifiable()
 @Entity({ name: 'posts' })
@@ -58,17 +58,17 @@ export class PostEntity extends TimeStampEntity {
   @Column({ type: 'varchar', default: '' })
   content: string;
 
-  @Column({ type: 'varchar' })
-  status: string;
+  @Column({ type: 'enum', enum: PostStatus })
+  status: PostStatus;
 
-  @Column({ type: 'varchar' })
-  priority: string;
+  @Column({ type: 'enum', enum: PostPriority })
+  priority: PostPriority;
 
-  @Column({ type: 'varchar' })
-  type: string;
+  @Column({ type: 'enum', enum: PostType })
+  type: PostType;
 
-  @Column({ type: 'varchar' })
-  privacy: string;
+  @Column({ type: 'enum', enum: PostPrivacy })
+  privacy: PostPrivacy;
 
   @Column({ type: 'date' })
   releaseDate: Date;

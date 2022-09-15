@@ -19,8 +19,8 @@ export class TagAbleEntity extends TimeStampEntity {
   @Column({ name: 'tagAbleId', type: 'int' })
   tagAbleId: number;
 
-  @Column({ name: 'tagAbleType', type: 'varchar' })
-  tagAbleType: string;
+  @Column({ name: 'tagAbleType', type: 'enum', enum: TagAbleType })
+  tagAbleType: TagAbleType;
 
   @Column({ type: 'timestamp' })
   public verifiedAt: Date;

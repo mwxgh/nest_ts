@@ -31,7 +31,12 @@ import { FileFastifyInterceptor } from 'fastify-file-interceptor';
 import { QueryManyDto } from 'src/shared/dto/queryParams.dto';
 import { IPaginationOptions } from 'src/shared/services/pagination';
 import { JwtAuthGuard } from 'src/components/auth/guards/jwtAuth.guard';
-import { SuccessfullyOperation } from 'src/shared/services/apiResponse/apiResponse.interface';
+import {
+  GetItemResponse,
+  GetListPaginationResponse,
+  GetListResponse,
+  SuccessfullyOperation,
+} from 'src/shared/services/apiResponse/apiResponse.interface';
 import Messages from 'src/shared/message/message';
 import { CommonService } from 'src/shared/services/common.service';
 
@@ -100,7 +105,9 @@ export class ImageController {
   @Auth('admin')
   @ApiOperation({ summary: 'Admin get list image' })
   @ApiOkResponse({ description: 'List images with param query' })
-  async readImages(@Query() query: QueryManyDto): Promise<any> {
+  async readImages(
+    @Query() query: QueryManyDto,
+  ): Promise<GetListResponse | GetListPaginationResponse> {
     const { search, sortBy, sortType } = query;
 
     const queryBuilder = await this.imageService.queryBuilder({
@@ -135,7 +142,9 @@ export class ImageController {
   @Auth('admin')
   @ApiOperation({ summary: 'Admin get image by id' })
   @ApiOkResponse({ description: 'Image entity' })
-  async readImage(@Param('id', ParseIntPipe) id: number): Promise<any> {
+  async readImage(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<GetItemResponse> {
     const image = await this.imageService.findOneOrFail(id);
 
     return this.response.item(image, new ImageTransformer());

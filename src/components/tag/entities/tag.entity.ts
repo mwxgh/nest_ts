@@ -3,10 +3,10 @@ import { Column, Entity, OneToMany } from 'typeorm';
 import { TagAbleEntity } from './tagAble.entity';
 import { TimeStampEntity } from '../../base.entity';
 
-export const TagStatus = {
-  publish: 'PUBLISH',
-  hide: 'HIDE',
-} as const;
+export enum TagStatus {
+  publish = 'PUBLISH',
+  hide = 'HIDE',
+}
 
 @Notifiable()
 @Entity({ name: 'tags' })
@@ -14,8 +14,8 @@ export class TagEntity extends TimeStampEntity {
   @Column({ type: 'varchar' })
   name: string;
 
-  @Column({ type: 'varchar', enum: TagStatus })
-  status: string;
+  @Column({ type: 'enum', enum: TagStatus, default: TagStatus.publish })
+  status: TagStatus;
 
   @Column({ type: 'timestamp' })
   public verifiedAt: Date;

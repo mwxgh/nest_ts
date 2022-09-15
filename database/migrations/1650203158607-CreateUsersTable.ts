@@ -39,7 +39,8 @@ export class CreateUsersTable1650203158607 implements MigrationInterface {
           },
           {
             name: 'status',
-            type: 'varchar',
+            type: 'enum',
+            enum: ['ACTIVE', 'INACTIVE'],
           },
           {
             name: 'socketId',

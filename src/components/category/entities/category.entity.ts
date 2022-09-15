@@ -3,6 +3,10 @@ import { Entity, Column, OneToMany, JoinColumn } from 'typeorm';
 import { Notifiable } from '../../../shared/services/notification/decorators/notifiable.decorator';
 import { CategoryAbleEntity } from './categoryAble.entity';
 
+export enum CategoryStatus {
+  publish = 'PUBLISH',
+  hide = 'HIDE',
+}
 @Notifiable()
 @Entity({ name: 'categories' })
 export class CategoryEntity extends TimeStampEntity {
@@ -15,8 +19,8 @@ export class CategoryEntity extends TimeStampEntity {
   @Column({ name: 'parentId', type: 'int' })
   public parentId: number;
 
-  @Column({ type: 'int', default: 1 })
-  status: number;
+  @Column({ type: 'enum', enum: CategoryStatus })
+  status: CategoryStatus;
 
   @Column({ type: 'timestamp' })
   public verifiedAt: Date;

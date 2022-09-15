@@ -9,7 +9,7 @@ export class ImageEntity extends TimeStampEntity {
   @Column({ type: 'varchar', default: "''" })
   title: string;
 
-  @Column()
+  @Column({ type: 'varchar' })
   slug: string;
 
   @Column({ type: 'varchar', default: "''" })

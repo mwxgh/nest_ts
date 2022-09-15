@@ -7,10 +7,10 @@ import {
   PickType,
 } from '@nestjs/swagger';
 import {
-  PriorityPost,
-  PrivacyPost,
-  StatusPost,
-  TypePost,
+  PostPriority,
+  PostPrivacy,
+  PostStatus,
+  PostType,
 } from 'src/components/post/entities/post.entity';
 import { SortType } from '../constant/constant';
 
@@ -66,22 +66,22 @@ export class QueryProperties {
 export class PostProperties {
   @ApiProperty()
   @IsOptional()
-  @IsEnum(PrivacyPost)
+  @IsEnum(PostPrivacy)
   privacy: string;
 
   @ApiProperty()
-  @IsEnum(StatusPost)
+  @IsEnum(PostStatus)
   @IsOptional()
   status: string;
 
   @ApiProperty()
   @IsOptional()
-  @IsEnum(PriorityPost)
+  @IsEnum(PostPriority)
   priority: string;
 
   @ApiProperty()
   @IsOptional()
-  @IsEnum(TypePost)
+  @IsEnum(PostType)
   type: string;
 }
 

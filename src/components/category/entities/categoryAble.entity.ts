@@ -19,7 +19,7 @@ export class CategoryAbleEntity extends TimeStampEntity {
   @Column({ type: 'int' })
   public categoryAbleId: number;
 
-  @Column({ type: 'varchar', enum: CategoryAbleType })
+  @Column({ type: 'enum', enum: CategoryAbleType })
   public categoryAbleType: CategoryAbleType;
 
   @Column({ type: 'timestamp' })
