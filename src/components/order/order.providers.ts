@@ -1,5 +1,6 @@
 import { CartService } from '../cart/services/cart.service';
 import { CartItemService } from '../cart/services/cartItem.service';
+import { CategoryService } from '../category/services/category.service';
 import { CategoryAbleService } from '../category/services/categoryAble.service';
 import { ImageService } from '../image/services/image.service';
 import { ProductService } from '../product/services/product.service';
@@ -18,4 +19,5 @@ export const orderProviders = [
   CategoryAbleService,
   TagAbleService,
   TagService,
+  CategoryService,
 ];

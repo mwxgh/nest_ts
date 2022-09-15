@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { SortType } from 'src/shared/constant/constant';
 import { BaseService } from 'src/shared/services/base.service';
 import { Connection, Repository, SelectQueryBuilder } from 'typeorm';
 import { CategoryEntity } from '../entities/category.entity';
@@ -21,7 +22,7 @@ export class CategoryService extends BaseService {
     keyword?: string | '';
     includes?: any;
     sortBy?: string;
-    sortType?: 'ASC' | 'DESC';
+    sortType?: SortType;
   }): Promise<SelectQueryBuilder<CategoryEntity>> {
     const include = [];
 

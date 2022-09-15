@@ -5,10 +5,10 @@ import { CategoryEntity } from './category.entity';
 import { PostEntity } from '../../post/entities/post.entity';
 import { TimeStampEntity } from '../../base.entity';
 
-export const CategoryAbleType = {
-  product: 'PRODUCT',
-  post: 'POST',
-} as const;
+export enum CategoryAbleType {
+  product = 'PRODUCT',
+  post = 'POST',
+}
 
 @Notifiable()
 @Entity({ name: 'categoryAble' })
@@ -19,8 +19,8 @@ export class CategoryAbleEntity extends TimeStampEntity {
   @Column({ type: 'int' })
   public categoryAbleId: number;
 
-  @Column({ type: 'varchar' })
-  public categoryAbleType: string;
+  @Column({ type: 'varchar', enum: CategoryAbleType })
+  public categoryAbleType: CategoryAbleType;
 
   @Column({ type: 'timestamp' })
   public verifiedAt: Date;

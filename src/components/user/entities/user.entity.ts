@@ -4,10 +4,10 @@ import { Notifiable } from '../../../shared/services/notification/decorators/not
 import { TimeStampEntity } from '../../base.entity';
 import { ContactEntity } from '../../contact/entities/contact.entity';
 
-export const UserStatus = {
-  active: 'ACTIVE',
-  inactive: 'INACTIVE',
-} as const;
+export enum UserStatus {
+  active = 'ACTIVE',
+  inactive = 'INACTIVE',
+}
 
 @Notifiable()
 @Entity({ name: 'users' })

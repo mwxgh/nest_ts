@@ -9,8 +9,8 @@ export class ImageAbleService extends BaseService {
   public repository: Repository<any>;
   public entity: any = ImageAbleEntity;
 
-  constructor(private dataSource: Connection) {
+  constructor(private connection: Connection) {
     super();
-    this.repository = this.dataSource.getCustomRepository(ImageAbleRepository);
+    this.repository = this.connection.getCustomRepository(ImageAbleRepository);
   }
 }

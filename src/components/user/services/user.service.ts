@@ -115,7 +115,7 @@ export class UserService extends BaseService {
   /**
    * Save user and return user entity
    *
-   * @param params.user  user properties
+   * @param params.user  BaseUserProperties
    * @return User
    */
   async saveUser(params: { user: BaseUserProperties }): Promise<UserEntity> {

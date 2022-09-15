@@ -56,7 +56,7 @@ export class QueryProperties {
   @ApiProperty()
   @IsOptional()
   @IsEnum(SortType)
-  sortType: 'ASC' | 'DESC';
+  sortType: SortType;
 
   @ApiProperty()
   @IsOptional()

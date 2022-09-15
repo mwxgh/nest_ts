@@ -36,6 +36,7 @@ import Messages from 'src/shared/message/message';
 import { CommonService } from 'src/shared/services/common.service';
 import { CategoryEntity } from '../entities/category.entity';
 import { SelectQueryBuilder } from 'typeorm';
+import { CategoryAbleService } from '../services/categoryAble.service';
 
 @ApiTags('Categories')
 @ApiHeader({
@@ -50,6 +51,7 @@ export class CategoryController {
     private categoryService: CategoryService,
     private response: ApiResponseService,
     private commonService: CommonService,
+    private categoryAbleService: CategoryAbleService,
   ) {}
 
   private entity = 'categories';
@@ -151,6 +153,8 @@ export class CategoryController {
     await this.categoryService.findOneOrFail(id);
 
     await this.categoryService.destroy(id);
+
+    await this.categoryAbleService.detachCategoryAble([{ categoryId: id }]);
 
     return this.response.success({
       message: this.commonService.getMessage({

@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { SortType } from 'src/shared/constant/constant';
 import { BaseService } from 'src/shared/services/base.service';
 import { Connection, Repository } from 'typeorm';
 import { TagEntity } from '../entities/tag.entity';
@@ -18,7 +19,7 @@ export class TagService extends BaseService {
     fields?: string[];
     keyword?: string | '';
     sortBy?: string;
-    sortType?: 'ASC' | 'DESC';
+    sortType?: SortType;
   }) {
     const { entity, fields, keyword, sortBy, sortType } = params;
 

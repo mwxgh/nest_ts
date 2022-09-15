@@ -153,10 +153,12 @@ export class ProductController {
   ): Promise<SuccessfullyOperation> {
     await this.productService.findOneOrFail(id);
 
-    await this.tagAbleService.detachTagAble({
-      tagAbleId: id,
-      tagAbleType: TagAbleType.product,
-    });
+    await this.tagAbleService.detachTagAble([
+      {
+        tagAbleId: id,
+        tagAbleType: TagAbleType.product,
+      },
+    ]);
 
     await this.productService.destroy(id);
 

@@ -12,9 +12,9 @@ export class ImageService extends BaseService {
   public repository: Repository<any>;
   public entity: any = ImageEntity;
 
-  constructor(private dataSource: Connection) {
+  constructor(private connection: Connection) {
     super();
-    this.repository = this.dataSource.getCustomRepository(ImageRepository);
+    this.repository = this.connection.getCustomRepository(ImageRepository);
   }
 
   async saveImage(params: {

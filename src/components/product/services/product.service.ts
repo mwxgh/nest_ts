@@ -12,6 +12,7 @@ import { CategoryAbleService } from 'src/components/category/services/categoryAb
 import { TagAbleService } from 'src/components/tag/services/tagAble.service';
 import { TagAbleType } from 'src/components/tag/entities/tagAble.entity';
 import { TagService } from 'src/components/tag/services/tag.service';
+import { SortType } from 'src/shared/constant/constant';
 
 @Injectable()
 export class ProductService extends BaseService {
@@ -35,7 +36,7 @@ export class ProductService extends BaseService {
     fields?: string[];
     keyword?: string | '';
     sortBy?: string;
-    sortType?: 'ASC' | 'DESC';
+    sortType?: SortType;
     includes?: string[];
   }): Promise<SelectQueryBuilder<ProductEntity>> {
     const { entity, fields, keyword, sortBy, sortType, includes } = params;
@@ -90,7 +91,7 @@ export class ProductService extends BaseService {
 
     const product: ProductEntity = await this.repository.create(data);
 
-    // sync with sample tagAble
+    // sync with sample tagAble, categoryAble
     if (data.images) {
       data.images.forEach(async (item: any) => {
         if (item.url) {
@@ -104,15 +105,14 @@ export class ProductService extends BaseService {
       });
     }
 
-    // sync with sample tagAble
     // categoryAble
     const categoryAbleData = categoriesAvailable.map((category: any) => ({
       categoryId: category.id,
       categoryAbleId: product.id,
-      categoryAbleType: CategoryAbleType.post,
+      categoryAbleType: CategoryAbleType.product,
     }));
 
-    await this.categoryAbleService.save(categoryAbleData);
+    await this.categoryAbleService.attachCategoryAble(categoryAbleData);
 
     // tagAble
     const tagsAbleData = tagsAvailable.map((tag: any) => ({
@@ -120,7 +120,7 @@ export class ProductService extends BaseService {
       tagAbleId: product.id,
       tagAbleType: TagAbleType.product,
     }));
-    await this.tagAbleService.attachTagAble(...tagsAbleData);
+    await this.tagAbleService.attachTagAble(tagsAbleData);
 
     return product;
   }
@@ -130,30 +130,39 @@ export class ProductService extends BaseService {
     data: UpdateProductDto;
   }): Promise<void> {
     const { id, data } = params;
-    await this.findOneOrFail(id);
 
-    const product = await this.update(id, data);
+    const currentProduct = await this.findOneOrFail(id);
+
+    // tag & tagAble
+    if (data.tagIds && data.tagIds.length > 0) {
+      await this.tagAbleService.updateRelationTagAble({
+        tagAbleId: currentProduct.id,
+        tagAbleType: TagAbleType.product,
+        tagIds: data.tagIds,
+      });
+    }
+
+    // category & categoryAble
+    if (data.categoryIds && data.categoryIds.length > 0) {
+      await this.categoryAbleService.updateRelationCategoryAble({
+        categoryAbleId: currentProduct.id,
+        categoryAbleType: CategoryAbleType.product,
+        categoryIds: data.categoryIds,
+      });
+    }
 
     if (data.images) {
       data.images.forEach(async (item) => {
         if (item['url']) {
           const img = {
             url: item['url'],
-            imageAbleId: product.id,
+            imageAbleId: currentProduct.id,
             imageAbleType: ImageAbleType.product,
           };
           await this.imagesService.create(img);
         }
       });
+      await this.update(id, data);
     }
-
-    // if (data.categoryId && data.categoryId != null) {
-    //   const cate = {
-    //     categoryId: data.categoryId,
-    //     categoryAbleId: product.id,
-    //     categoryAbleType: CategoryAbleType.product,
-    //   };
-    //   await this.categoryAbleService.create(cate);
-    // }
   }
 }

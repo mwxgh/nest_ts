@@ -1,16 +1,11 @@
 import { Module } from '@nestjs/common';
 import { AuthController } from './controllers/auth.controller';
-import { userProviders } from '../user/user.providers';
-import { JwtStrategy } from './strategies/jwt.strategy';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ForgotPasswordController } from './controllers/forgotPassword/forgotPassword.controller';
-import { PasswordResetService } from './services/passwordReset.service';
 import { PermissionController } from './controllers/permission/permission.controller';
-import { PermissionService } from './services/permission.service';
 import { RoleController } from './controllers/role/role.controller';
-import { RoleService } from './services/role.service';
-import { RolePermissionService } from './services/rolePermission.service';
+import { authProviders } from './auth.providers';
 
 @Module({
   imports: [
@@ -26,14 +21,7 @@ import { RolePermissionService } from './services/rolePermission.service';
       inject: [ConfigService],
     }),
   ],
-  providers: [
-    ...userProviders,
-    JwtStrategy,
-    PasswordResetService,
-    PermissionService,
-    RoleService,
-    RolePermissionService,
-  ],
+  providers: [...authProviders],
   controllers: [
     AuthController,
     ForgotPasswordController,

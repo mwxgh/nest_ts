@@ -1,22 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { assign, difference } from 'lodash';
 import slugify from 'slugify';
-import {
-  CategoryAbleEntity,
-  CategoryAbleType,
-} from 'src/components/category/entities/categoryAble.entity';
+import { CategoryEntity } from 'src/components/category/entities/category.entity';
+import { CategoryAbleType } from 'src/components/category/entities/categoryAble.entity';
 import { CategoryService } from 'src/components/category/services/category.service';
 import { CategoryAbleService } from 'src/components/category/services/categoryAble.service';
 import { ImageAbleType } from 'src/components/image/entities/imageAble.entity';
 import { ImageService } from 'src/components/image/services/image.service';
 import { ImageAbleService } from 'src/components/image/services/imageAble.service';
 import { TagEntity } from 'src/components/tag/entities/tag.entity';
-import {
-  TagAbleEntity,
-  TagAbleType,
-} from 'src/components/tag/entities/tagAble.entity';
+import { TagAbleType } from 'src/components/tag/entities/tagAble.entity';
 import { TagService } from 'src/components/tag/services/tag.service';
 import { TagAbleService } from 'src/components/tag/services/tagAble.service';
+import { SortType } from 'src/shared/constant/constant';
 import { BaseService } from 'src/shared/services/base.service';
 import { Repository, Connection, SelectQueryBuilder } from 'typeorm';
 import { CreatePostDto, UpdatePostDto } from '../dto/post.dto';
@@ -29,7 +25,7 @@ export class PostService extends BaseService {
   public entity: any = PostEntity;
 
   constructor(
-    private dataSource: Connection,
+    private connection: Connection,
     private tagService: TagService,
     private categoryService: CategoryService,
     private imageService: ImageService,
@@ -38,7 +34,7 @@ export class PostService extends BaseService {
     private imageAbleService: ImageAbleService,
   ) {
     super();
-    this.repository = this.dataSource.getCustomRepository(PostRepository);
+    this.repository = this.connection.getCustomRepository(PostRepository);
   }
 
   async queryPost(params: {
@@ -47,7 +43,7 @@ export class PostService extends BaseService {
     keyword?: string | '';
     includes?: any;
     sortBy?: string;
-    sortType?: 'ASC' | 'DESC';
+    sortType?: SortType;
     privacy?: string;
     status?: string;
     priority?: string;
@@ -143,6 +139,10 @@ export class PostService extends BaseService {
     return baseQuery;
   }
 
+  /**
+   * Save post and attach foreign key
+   * @param params.data CreatePostDto
+   */
   async savePost(params: { data: CreatePostDto }): Promise<void> {
     const { data } = params;
 
@@ -172,7 +172,7 @@ export class PostService extends BaseService {
       tagAbleId: newPost.id,
       tagAbleType: TagAbleType.post,
     }));
-    await this.tagAbleService.attachTagAble(...tagsAbleData);
+    await this.tagAbleService.attachTagAble(tagsAbleData);
 
     // categoryAble
     const categoryAbleData = categoriesAvailable.map((category: any) => ({
@@ -180,7 +180,7 @@ export class PostService extends BaseService {
       categoryAbleId: newPost.id,
       categoryAbleType: CategoryAbleType.post,
     }));
-    await this.categoryAbleService.save(categoryAbleData);
+    await this.categoryAbleService.attachCategoryAble(categoryAbleData);
 
     // imageAble
     const imageAbleData = imagesAvailable.map((image: any) => ({
@@ -196,100 +196,25 @@ export class PostService extends BaseService {
 
     const currentPost = await this.findOneOrFail(id);
 
-    const currentTagAbles: TagAbleEntity[] =
-      await this.tagAbleService.findWhere({
-        where: {
-          tagAbleId: currentPost.id,
-          tagAbleType: TagAbleType.post,
-        },
-      });
-
-    const currentCategoryAbles: CategoryAbleEntity[] =
-      await this.categoryAbleService.findWhere({
-        where: {
-          categoryAbleId: currentPost.id,
-          categoryAbleType: CategoryAbleType.post,
-        },
-      });
-
-    const currentTagIds: number[] = currentTagAbles.map(
-      (currentTagAble) => currentTagAble.tagId,
-    );
-
-    const currentCategoryIds: number[] = currentCategoryAbles.map(
-      (currentCategory) => currentCategory.categoryId,
-    );
-
-    const detachTagIds: number[] = difference(currentTagIds, data.tagIds);
-
-    if (detachTagIds.length > 0) {
-      detachTagIds.forEach(async (tagAbleId: number) => {
-        await this.tagAbleService.detachTagAble({
-          tagAbleId,
-          tagAbleType: TagAbleType.post,
-        });
+    // tag & tagAble
+    if (data.tagIds && data.tagIds.length > 0) {
+      await this.tagAbleService.updateRelationTagAble({
+        tagAbleId: currentPost.id,
+        tagAbleType: TagAbleType.post,
+        tagIds: data.tagIds,
       });
     }
 
-    const newAttachTagIds: number[] = difference(data.tagIds, currentTagIds);
-
-    await this.tagService.findIdInOrFail(newAttachTagIds);
-
-    const tagsAbleData = newAttachTagIds.map((tagId: number) => ({
-      tagId,
-      tagAbleId: id,
-      tagAbleType: TagAbleType.post,
-    }));
-    await this.tagAbleService.attachTagAble(...tagsAbleData);
-
-    const detachCategoryIds = difference(currentCategoryIds, data.categoryIds);
-
-    if (detachCategoryIds.length > 0) {
-      const queryCategoryAble: SelectQueryBuilder<CategoryAbleEntity> =
-        await this.categoryAbleService.queryBuilder({
-          entity: 'categoryAbles',
-        });
-
-      const expireCategoryAbles = await queryCategoryAble
-        .andWhere('categoryAbles.categoryAbleId IN (:categoryAbleIds)', {
-          categoryAbleIds: detachCategoryIds,
-        })
-        .getMany();
-
-      for (const expireCategoryAble of expireCategoryAbles) {
-        await this.categoryAbleService.destroy(expireCategoryAble.id);
-      }
-    }
-
-    const newAttachCategoryIds = difference(
-      data.categoryIds,
-      currentCategoryIds,
-    );
-
-    if (newAttachCategoryIds.length > 0) {
-      const queryCategories = await this.categoryService.queryBuilder({
-        entity: 'categories',
+    // category & categoryAble
+    if (data.categoryIds && data.categoryIds.length > 0) {
+      await this.categoryAbleService.updateRelationCategoryAble({
+        categoryAbleId: currentPost.id,
+        categoryAbleType: CategoryAbleType.post,
+        categoryIds: data.categoryIds,
       });
-
-      const newAttachCategories = await queryCategories
-        .andWhere('categories.id IN (:categoryIds)', {
-          categoryIds: newAttachTagIds,
-        })
-        .getMany();
-
-      const categoryAbles = newAttachCategories.map(
-        (newAttachCategory: any) => ({
-          categoryId: newAttachCategory.id,
-          categoryAbleId: Number(id),
-          categoryAbleType: CategoryAbleType.post,
-        }),
-      );
-
-      for (const categoryAble of categoryAbles) {
-        await this.categoryAbleService.save(categoryAble);
-      }
     }
 
+    // update post
     const dataSlugify = assign(data, { slug: slugify(data.title) });
 
     const count = await this.count({
@@ -309,31 +234,28 @@ export class PostService extends BaseService {
     await this.update(Number(id), dataSlugify);
   }
 
+  /**
+   * Delete post and detach foreign key
+   * @param params.id
+   */
   async deletePost(params: { id: number }): Promise<void> {
     const { id } = params;
 
     const currentPost = await this.findOneOrFail(id);
 
-    await this.tagAbleService.detachTagAble({
-      tagAbleId: id,
-      tagAbleType: TagAbleType.post,
-    });
+    await this.tagAbleService.detachTagAble([
+      {
+        tagAbleId: currentPost.id,
+        tagAbleType: TagAbleType.post,
+      },
+    ]);
 
-    const currentCategoryAbles: CategoryAbleEntity[] =
-      await this.categoryAbleService.findWhere({
-        where: {
-          categoryAbleId: currentPost.id,
-          categoryAbleType: CategoryAbleType.post,
-        },
-      });
-
-    if (currentCategoryAbles.length > 0) {
-      const currentCategoryAbleIds = currentCategoryAbles.map(
-        (currentCategoryAble) => currentCategoryAble.id,
-      );
-
-      await this.categoryAbleService.destroy(currentCategoryAbleIds);
-    }
+    await this.categoryAbleService.detachCategoryAble([
+      {
+        categoryAbleId: currentPost.id,
+        categoryAbleType: CategoryAbleType.post,
+      },
+    ]);
 
     await this.destroy(currentPost.id);
   }

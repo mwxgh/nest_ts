@@ -1,7 +1,7 @@
-export const SortType = {
-  DESC: 'DESC',
-  ASC: 'ASC',
-} as const;
+export enum SortType {
+  DESC = 'DESC',
+  ASC = 'ASC',
+}
 
 export const SortByProperties = {
   UPDATED_AT: 'updatedAt',

@@ -13,7 +13,11 @@ import {
 import { isArray, omit, filter, keys, isUndefined } from 'lodash';
 import { IPaginationOptions, Pagination } from './pagination';
 import { default as slugify } from 'slugify';
-import { DEFAULT_SORT_BY, DEFAULT_SORT_TYPE } from '../constant/constant';
+import {
+  DEFAULT_SORT_BY,
+  DEFAULT_SORT_TYPE,
+  SortType,
+} from '../constant/constant';
 import { Entity, ResponseEntity } from '../interfaces/interface';
 
 const defaultPaginationOption: IPaginationOptions = {
@@ -323,7 +327,7 @@ export class BaseService {
     fields?: string[];
     keyword?: string | '';
     sortBy?: string;
-    sortType?: 'ASC' | 'DESC';
+    sortType?: SortType;
     filter?: { [key: string]: string };
   }): Promise<SelectQueryBuilder<T>> {
     const { entity, fields, keyword } = params;
@@ -363,10 +367,10 @@ export class BaseService {
     const makeId = (length: number): string => {
       let result = '';
 
-      const characters = this.getCharFromASCII(
+      const characters = this.getCharFromASCII([
         { from: 97, range: 26 },
         { from: 48, range: 10 },
-      );
+      ]);
       const charactersLength = characters.length;
 
       for (let i = 0; i < length; i++) {
@@ -404,9 +408,15 @@ export class BaseService {
   /**
    * Get character from ASCII match criteria
    * ASCII table : https://www.asciitable.com/
+   * - ...rest: { from: number; range: number }[] to accept element params instead of array
+   * - Eg : getCharFromASCII({ from: 97, range: 26 },
+   *                         { from: 48, range: 10 })
+   * - params: { from: number; range: number }[] to accept array instead of element params
+   * - Eg : getCharFromASCII([{ from: 97, range: 26 },
+   *                          { from: 48, range: 10 }])
    */
-  getCharFromASCII(...rest: { from: number; range: number }[]): string {
-    const arrayCharsFromASCII = rest.map((o) => {
+  getCharFromASCII(params: { from: number; range: number }[]): string {
+    const arrayCharsFromASCII = params.map((o) => {
       const charFromASCII = Array.from(Array(o.range)).map(
         (e, i) => i + o.from,
       );
