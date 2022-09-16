@@ -3,6 +3,11 @@ import { Notifiable } from '../../../shared/services/notification/decorators/not
 import { TimeStampEntity } from '../../base.entity';
 import { ImageAbleEntity } from './imageAble.entity';
 
+export enum ImageStatus {
+  publish = 'PUBLISH',
+  hide = 'HIDE',
+}
+
 @Notifiable()
 @Entity({ name: 'images' })
 export class ImageEntity extends TimeStampEntity {
@@ -15,8 +20,8 @@ export class ImageEntity extends TimeStampEntity {
   @Column({ type: 'varchar', default: "''" })
   url: string;
 
-  @Column({ type: 'int', default: 1 })
-  status: number;
+  @Column({ type: 'enum', enum: ImageStatus })
+  status: ImageStatus;
 
   @Column({ type: 'timestamp' })
   public verifiedAt: Date;

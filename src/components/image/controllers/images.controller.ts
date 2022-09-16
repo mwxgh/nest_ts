@@ -87,7 +87,7 @@ export class ImageController {
       },
     }),
   )
-  async createImage(
+  async uploadImage(
     @UploadedFile() file: Express.Multer.File,
     @Body() data: CreateImageDto,
   ): Promise<SuccessfullyOperation> {

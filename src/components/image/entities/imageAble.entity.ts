@@ -4,10 +4,11 @@ import { TimeStampEntity } from '../../base.entity';
 import { ImageEntity } from './image.entity';
 import { ProductEntity } from '../../product/entities/product.entity';
 import { PostEntity } from '../../post/entities/post.entity';
-export const ImageAbleType = {
-  product: 'PRODUCT',
-  post: 'POST',
-} as const;
+
+export enum ImageAbleType {
+  product = 'PRODUCT',
+  post = 'POST',
+}
 
 @Notifiable()
 @Entity({ name: 'imageAbles' })
@@ -15,8 +16,8 @@ export class ImageAbleEntity extends TimeStampEntity {
   @Column({ name: 'imageAbleId', type: 'int' })
   public imageAbleId: number;
 
-  @Column({ name: 'imageAbleType', type: 'varchar' })
-  public imageAbleType: string;
+  @Column({ name: 'imageAbleType', type: 'enum', enum: ImageAbleType })
+  public imageAbleType: ImageAbleType;
 
   @Column({ type: 'int', default: 0 })
   public isThumbnail: number;

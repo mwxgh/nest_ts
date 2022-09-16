@@ -66,7 +66,14 @@ export class ProductService extends BaseService {
           'categories.categoryAbleType = :categoryAbleType',
           { categoryAbleType: CategoryAbleType.product },
         );
-        queryBuilder.leftJoinAndSelect('categories.category', 'category');
+      }
+      if (includes.includes('tags')) {
+        queryBuilder = queryBuilder.leftJoinAndSelect(
+          'products.tags',
+          'tags',
+          'tags.tagAbleType = :tagAbleType',
+          { tagAbleType: TagAbleType.product },
+        );
       }
     }
 
@@ -80,10 +87,12 @@ export class ProductService extends BaseService {
     );
 
     data.slug = slugify(data.name.toLowerCase());
-    const num = await this.repository
-      .createQueryBuilder('products')
-      .where('products.name = :name', { name: data.name })
-      .getCount();
+
+    const num = await this.count({
+      where: {
+        name: data.name,
+      },
+    });
 
     if (num > 0) data.slug = `${data.slug}-${num}`;
 

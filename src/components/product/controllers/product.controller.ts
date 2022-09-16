@@ -36,7 +36,6 @@ import {
 import Messages from 'src/shared/message/message';
 import { CommonService } from 'src/shared/services/common.service';
 import { TagAbleService } from 'src/components/tag/services/tagAble.service';
-import { TagAbleType } from 'src/components/tag/entities/tagAble.entity';
 
 @ApiTags('Products')
 @ApiHeader({
@@ -58,7 +57,7 @@ export class ProductController {
 
   private entity = 'products';
   private fields = ['name'];
-  private relations: ['images', 'categories'];
+  private relations: ['images', 'categories', 'tags'];
 
   @Post()
   @Auth('admin')
