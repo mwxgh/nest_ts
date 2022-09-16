@@ -13,11 +13,7 @@ import {
 import { isArray, omit, filter, keys, isUndefined } from 'lodash'
 import { IPaginationOptions, Pagination } from './pagination'
 import { default as slugify } from 'slugify'
-import {
-  DEFAULT_SORT_BY,
-  DEFAULT_SORT_TYPE,
-  SortType,
-} from '../constant/constant'
+import { DEFAULT_SORT_BY, DEFAULT_SORT_TYPE } from '../constant/constant'
 import { Entity, QueryParams, ResponseEntity } from '../interfaces/interface'
 
 const defaultPaginationOption: IPaginationOptions = {

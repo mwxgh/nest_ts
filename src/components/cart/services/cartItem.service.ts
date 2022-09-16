@@ -7,8 +7,8 @@ import { CartItemRepository } from '../repositories/cartItem.repository'
 export class CartItemService extends BaseService {
   public repository: Repository<any>
   public entity: any = CartItemEntity
-  constructor(private dataSource: Connection) {
+  constructor(private connection: Connection) {
     super()
-    this.repository = this.dataSource.getCustomRepository(CartItemRepository)
+    this.repository = this.connection.getCustomRepository(CartItemRepository)
   }
 }

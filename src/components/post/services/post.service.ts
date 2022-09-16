@@ -41,6 +41,7 @@ export class PostService extends BaseService {
       status?: string
       priority?: string
       type?: string
+      // update include -> string[] in future
       includes?: any
     },
   ): Promise<SelectQueryBuilder<PostEntity>> {

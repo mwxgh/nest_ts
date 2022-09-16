@@ -16,13 +16,13 @@ export class UserService extends BaseService {
   public entity: any = UserEntity
 
   constructor(
-    private dataSource: Connection,
+    private connection: Connection,
     private hashService: HashService,
     private roleService: RoleService,
     private userRoleService: UserRoleService,
   ) {
     super()
-    this.repository = dataSource.getCustomRepository(UserRepository)
+    this.repository = connection.getCustomRepository(UserRepository)
   }
 
   async emailExist(email: string): Promise<boolean> {

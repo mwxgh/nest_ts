@@ -11,10 +11,10 @@ import { TagService } from './tag.service'
 export class TagAbleService extends BaseService {
   public tagAbleRepository: Repository<any>
   public entity: any = TagAbleEntity
-  constructor(private dataSource: Connection, private tagService: TagService) {
+  constructor(private connection: Connection, private tagService: TagService) {
     super()
     this.tagAbleRepository =
-      this.dataSource.getCustomRepository(TagAbleRepository)
+      this.connection.getCustomRepository(TagAbleRepository)
   }
 
   /**

@@ -8,9 +8,9 @@ import { CommentRepository } from '../repositories/comment.repository'
 export class CommentService extends BaseService {
   public repository: Repository<any>
   public entity: any = CommentEntity
-  constructor(private dataSource: Connection, private post: Connection) {
+  constructor(private connection: Connection, private post: Connection) {
     super()
-    this.repository = this.dataSource.getCustomRepository(CommentRepository)
+    this.repository = this.connection.getCustomRepository(CommentRepository)
   }
 
   async joinComment(): Promise<SelectQueryBuilder<CommentEntity>> {

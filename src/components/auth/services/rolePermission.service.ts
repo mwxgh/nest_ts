@@ -9,8 +9,8 @@ export class RolePermissionService extends BaseService {
   public repository: Repository<any>
   public entity: any = RolePermissionEntity
 
-  constructor(private dataSource: Connection) {
+  constructor(private connection: Connection) {
     super()
-    this.repository = dataSource.getCustomRepository(RolePermissionRepository)
+    this.repository = connection.getCustomRepository(RolePermissionRepository)
   }
 }

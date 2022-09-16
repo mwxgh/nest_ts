@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common'
-import { SortType } from 'src/shared/constant/constant'
 import { QueryParams } from 'src/shared/interfaces/interface'
 import { BaseService } from 'src/shared/services/base.service'
 import { Connection, Repository } from 'typeorm'

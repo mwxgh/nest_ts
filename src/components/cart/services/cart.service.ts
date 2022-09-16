@@ -8,9 +8,9 @@ export class CartService extends BaseService {
   public repository: Repository<any>
   public entity: any = CartEntity
 
-  constructor(private dataSource: Connection) {
+  constructor(private connection: Connection) {
     super()
-    this.repository = this.dataSource.getCustomRepository(CartRepository)
+    this.repository = this.connection.getCustomRepository(CartRepository)
   }
 
   async store(): Promise<any> {

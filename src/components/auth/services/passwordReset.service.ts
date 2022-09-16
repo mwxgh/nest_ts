@@ -11,11 +11,11 @@ export class PasswordResetService extends BaseService {
   public entity: any = PasswordResetEntity
 
   constructor(
-    private dataSource: Connection,
+    private connection: Connection,
     private hashService: HashService,
   ) {
     super()
-    this.repository = dataSource.getCustomRepository(PasswordResetRepository)
+    this.repository = connection.getCustomRepository(PasswordResetRepository)
   }
 
   /**
