@@ -25,7 +25,8 @@ export class CreateCategoryAblesTable1650206464855
           },
           {
             name: 'categoryAbleType',
-            type: 'varchar',
+            type: 'enum',
+            enum: ['PRODUCT', 'POST'],
           },
           {
             name: 'verifiedAt',

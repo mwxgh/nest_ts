@@ -158,11 +158,11 @@ export class PostService extends BaseService {
       where: { title: data.title, type: data.type },
     });
 
-    const dataSlugify = assign(data, { slug: slugify(data.title) });
+    const dataToSave = assign(data, { slug: slugify(data.title) });
 
-    if (countPosts) dataSlugify.slug = `${dataSlugify.slug}-${countPosts}`;
+    if (countPosts) dataToSave.slug = `${dataToSave.slug}-${countPosts}`;
 
-    const newPost = await this.create(dataSlugify);
+    const newPost = await this.create(dataToSave);
 
     // tagAble
     const tagsAbleData = tagsAvailable.map((tag: any) => ({
@@ -218,23 +218,23 @@ export class PostService extends BaseService {
     }
 
     // update post
-    const dataSlugify = assign(data, { slug: slugify(data.title) });
+    const dataToUpdate = assign(data, { slug: slugify(data.title) });
 
     const count = await this.count({
       where: {
         title: data.title,
         type: data.type,
-        slug: dataSlugify.slug,
+        slug: dataToUpdate.slug,
       },
     });
 
     if (currentPost.title === data.title && currentPost.type === data.type) {
-      delete dataSlugify.slug;
+      delete dataToUpdate.slug;
     } else if (count) {
-      dataSlugify.slug = `${dataSlugify.slug}-${count}`;
+      dataToUpdate.slug = `${dataToUpdate.slug}-${count}`;
     }
 
-    await this.update(Number(id), dataSlugify);
+    await this.update(Number(id), dataToUpdate);
   }
 
   /**

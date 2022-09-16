@@ -40,19 +40,23 @@ export class CreatePostsTable1650206721948 implements MigrationInterface {
           },
           {
             name: 'status',
-            type: 'varchar',
+            type: 'enum',
+            enum: ['DRAFT', 'PENDING', 'PUBLISH', 'HIDE'],
           },
           {
             name: 'priority',
-            type: 'varchar',
+            type: 'enum',
+            enum: ['HIGHEST', 'HIGH', 'MEDIUM', 'LOW'],
           },
           {
             name: 'type',
-            type: 'varchar',
+            type: 'enum',
+            enum: ['GALLERY', 'SIDEBAR', 'CONTENT'],
           },
           {
             name: 'privacy',
-            type: 'varchar',
+            type: 'enum',
+            enum: ['PUBLIC', 'SYSTEM', 'PROTECTED', 'PRIVATE'],
           },
           {
             name: 'releaseDate',

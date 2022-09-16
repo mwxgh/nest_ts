@@ -28,22 +28,23 @@ export class CreateProductsTable1650204918437 implements MigrationInterface {
           },
           {
             name: 'status',
-            type: 'varchar',
+            type: 'enum',
+            enum: ['INVENTORY', 'OUT_OF_STOCK', 'HIDE'],
           },
           {
             name: 'originalPrice',
-            default: 1,
             type: 'int',
+            isNullable: true,
           },
           {
             name: 'price',
-            default: 1,
             type: 'int',
+            isNullable: true,
           },
           {
             name: 'quantity',
-            default: 1,
             type: 'int',
+            isNullable: true,
           },
           {
             name: 'verifiedAt',

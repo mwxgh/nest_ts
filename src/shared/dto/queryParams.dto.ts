@@ -6,13 +6,8 @@ import {
   OmitType,
   PickType,
 } from '@nestjs/swagger';
-import {
-  PostPriority,
-  PostPrivacy,
-  PostStatus,
-  PostType,
-} from 'src/components/post/entities/post.entity';
 import { SortType } from '../constant/constant';
+import { PostFilterAttributes } from 'src/components/post/dto/post.dto';
 
 export class QueryProperties {
   @ApiProperty()
@@ -63,28 +58,6 @@ export class QueryProperties {
   filters: { [key: string]: string };
 }
 
-export class PostProperties {
-  @ApiProperty()
-  @IsOptional()
-  @IsEnum(PostPrivacy)
-  privacy: string;
-
-  @ApiProperty()
-  @IsEnum(PostStatus)
-  @IsOptional()
-  status: string;
-
-  @ApiProperty()
-  @IsOptional()
-  @IsEnum(PostPriority)
-  priority: string;
-
-  @ApiProperty()
-  @IsOptional()
-  @IsEnum(PostType)
-  type: string;
-}
-
 export class QueryPaginateDto extends OmitType(QueryProperties, [] as const) {}
 
 export class QueryManyDto extends OmitType(QueryProperties, [] as const) {}
@@ -101,5 +74,5 @@ export class QueryOneDto extends PickType(QueryProperties, [
 
 export class QueryManyPostDto extends IntersectionType(
   QueryManyDto,
-  PostProperties,
+  PostFilterAttributes,
 ) {}

@@ -1,10 +1,33 @@
-import { ApiProperty, OmitType, PartialType } from '@nestjs/swagger';
-import { IsArray, IsNotEmpty, MinLength } from 'class-validator';
+import {
+  ApiProperty,
+  ApiPropertyOptional,
+  IntersectionType,
+  OmitType,
+  PartialType,
+} from '@nestjs/swagger';
+import {
+  IsArray,
+  IsDate,
+  IsEnum,
+  IsNotEmpty,
+  IsOptional,
+  MinLength,
+} from 'class-validator';
+import {
+  PostStatus,
+  PostType,
+  PostPriority,
+  PostPrivacy,
+} from '../entities/post.entity';
 
-export class PostProperties {
+export class PostBaseAttributes {
+  @ApiProperty()
+  @MinLength(5)
+  title: string;
+
   @ApiProperty()
   @MinLength(10)
-  title: string;
+  summary: string;
 
   @ApiProperty()
   @MinLength(10)
@@ -15,39 +38,64 @@ export class PostProperties {
   content: string;
 
   @ApiProperty()
-  @IsNotEmpty()
-  @MinLength(2)
-  type: string;
+  @IsDate()
+  @IsOptional()
+  releaseDate: Date;
+}
 
-  @ApiProperty({ default: 1 })
-  status: number;
+export class PostFilterAttributes {
+  @ApiProperty()
+  @IsOptional()
+  @IsEnum(PostPrivacy)
+  privacy: PostPrivacy;
 
-  @ApiProperty({
+  @ApiProperty()
+  @IsEnum(PostStatus)
+  @IsOptional()
+  status: PostStatus;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsEnum(PostPriority)
+  priority: PostPriority;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsEnum(PostType)
+  type: PostType;
+}
+
+export class PostProperties extends IntersectionType(
+  PostBaseAttributes,
+  PostFilterAttributes,
+) {
+  @ApiPropertyOptional({
     type: 'array',
     items: {
       type: 'int',
-      default: 0,
     },
   })
+  @IsOptional()
   @IsArray()
   tagIds: [];
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     type: 'array',
     items: {
       type: 'int',
-      default: 0,
     },
   })
+  @IsOptional()
   @IsArray()
   categoryIds: [];
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     type: 'array',
     items: {
       type: 'int',
     },
   })
+  @IsOptional()
   @IsArray()
   imageIds: [];
 }
@@ -55,9 +103,3 @@ export class PostProperties {
 export class CreatePostDto extends OmitType(PostProperties, [] as const) {}
 
 export class UpdatePostDto extends PartialType(PostProperties) {}
-
-export class Pagination {
-  @ApiProperty()
-  @MinLength(10)
-  include: string;
-}

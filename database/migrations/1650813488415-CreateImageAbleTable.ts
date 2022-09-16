@@ -23,7 +23,8 @@ export class CreateImageAbleTable1650813488415 implements MigrationInterface {
           },
           {
             name: 'imageAbleType',
-            type: 'varchar',
+            type: 'enum',
+            enum: ['PRODUCT', 'POST'],
           },
           {
             name: 'isThumbnail',

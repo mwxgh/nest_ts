@@ -13,6 +13,7 @@ import { TagAbleService } from 'src/components/tag/services/tagAble.service';
 import { TagAbleType } from 'src/components/tag/entities/tagAble.entity';
 import { TagService } from 'src/components/tag/services/tag.service';
 import { SortType } from 'src/shared/constant/constant';
+import { assign } from 'lodash';
 
 @Injectable()
 export class ProductService extends BaseService {
@@ -86,33 +87,35 @@ export class ProductService extends BaseService {
       data.categoryIds,
     );
 
-    data.slug = slugify(data.name.toLowerCase());
-
-    const num = await this.count({
+    const countProduct = await this.count({
       where: {
         name: data.name,
       },
     });
 
-    if (num > 0) data.slug = `${data.slug}-${num}`;
+    const dataToSave = assign(data, {
+      slug: slugify(data.name.toLowerCase()),
+    });
+
+    if (countProduct) dataToSave.slug = `${dataToSave.slug}-${countProduct}`;
 
     data.sku = data.sku || `MH${Date.now()}`;
 
-    const product: ProductEntity = await this.repository.create(data);
+    const product: ProductEntity = await this.repository.create(dataToSave);
 
     // sync with sample tagAble, categoryAble
-    if (data.images) {
-      data.images.forEach(async (item: any) => {
-        if (item.url) {
-          const img = {
-            url: item.url,
-            imageAbleId: product.id,
-            imageAbleType: ImageAbleType.product,
-          };
-          await this.imagesService.save(img);
-        }
-      });
-    }
+    // if (data.images) {
+    //   data.images.forEach(async (item: any) => {
+    //     if (item.url) {
+    //       const img = {
+    //         url: item.url,
+    //         imageAbleId: product.id,
+    //         imageAbleType: ImageAbleType.product,
+    //       };
+    //       await this.imagesService.save(img);
+    //     }
+    //   });
+    // }
 
     // categoryAble
     const categoryAbleData = categoriesAvailable.map((category: any) => ({
@@ -165,19 +168,35 @@ export class ProductService extends BaseService {
       });
     }
 
-    if (data.images) {
-      data.images.forEach(async (item) => {
-        if (item['url']) {
-          const img = {
-            url: item['url'],
-            imageAbleId: currentProduct.id,
-            imageAbleType: ImageAbleType.product,
-          };
-          await this.imagesService.create(img);
-        }
-      });
-      await this.update(id, data);
+    // if (data.images) {
+    //   data.images.forEach(async (item) => {
+    //     if (item['url']) {
+    //       const img = {
+    //         url: item['url'],
+    //         imageAbleId: currentProduct.id,
+    //         imageAbleType: ImageAbleType.product,
+    //       };
+    //       await this.imagesService.create(img);
+    //     }
+    //   });
+    // }
+
+    const dataToUpdate = assign(data, { slug: slugify(data.name) });
+
+    const count = await this.count({
+      where: {
+        name: data.name,
+        slug: dataToUpdate.slug,
+      },
+    });
+
+    if (currentProduct.name === data.name) {
+      delete dataToUpdate.slug;
+    } else if (count) {
+      dataToUpdate.slug = `${dataToUpdate.slug}-${count}`;
     }
+
+    await this.update(id, dataToUpdate);
   }
 
   /**

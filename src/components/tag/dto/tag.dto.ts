@@ -9,12 +9,12 @@ export class TagProperties {
 
   @ApiProperty({
     enum: TagStatus,
-    type: String,
+    isArray: true,
     example: TagStatus.publish,
   })
   @IsNotEmpty()
   @IsEnum(TagStatus)
-  status: string;
+  status: TagStatus;
 }
 
 export class CreateTagDto extends PickType(TagProperties, [

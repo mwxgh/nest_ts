@@ -19,7 +19,8 @@ export class CreateTagsTable1650205809178 implements MigrationInterface {
           },
           {
             name: 'status',
-            type: 'varchar',
+            type: 'enum',
+            enum: ['PUBLISH', 'HIDE'],
           },
           {
             name: 'verifiedAt',

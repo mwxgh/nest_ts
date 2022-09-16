@@ -28,7 +28,8 @@ export class CreateImagesTable1650207084687 implements MigrationInterface {
           },
           {
             name: 'status',
-            type: 'varchar',
+            type: 'enum',
+            enum: ['PUBLISH', 'HIDE'],
           },
           {
             name: 'verifiedAt',

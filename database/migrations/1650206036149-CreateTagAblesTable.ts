@@ -23,7 +23,8 @@ export class CreateTagAblesTable1650206036149 implements MigrationInterface {
           },
           {
             name: 'tagAbleType',
-            type: 'varchar',
+            type: 'enum',
+            enum: ['POST', 'PRODUCT'],
           },
           {
             name: 'verifiedAt',

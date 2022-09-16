@@ -52,6 +52,9 @@ export class OrderProperties {
   status: number;
 }
 
+// contact -> system user order
+// fullName, email, phone,... -> portal user order
+// => union type for createOrderDto
 export class CreateOrderDto extends OmitType(OrderProperties, [] as const) {}
 
 export class UpdateOrderDto extends PartialType(OrderProperties) {}

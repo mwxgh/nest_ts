@@ -5,47 +5,28 @@ import {
   PartialType,
 } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsArray, IsNotEmpty, IsNumber, IsOptional } from 'class-validator';
+import {
+  IsArray,
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+} from 'class-validator';
+import { ProductStatus } from '../entities/product.entity';
 
 export class ProductProperties {
   @ApiProperty()
   @IsNotEmpty()
   name: string;
 
-  @ApiProperty({ default: '' })
-  slug: string;
-
-  @ApiPropertyOptional({
-    type: 'array',
-    items: {
-      type: 'object',
-    },
-  })
-  @IsOptional()
-  images: [];
-
-  @ApiPropertyOptional({
-    type: 'array',
-    items: {
-      type: 'number',
-    },
-  })
-  @IsOptional()
-  tagIds: [];
-
-  @ApiProperty({
-    type: 'array',
-    items: {
-      type: 'int',
-      default: 0,
-    },
-  })
-  @IsArray()
-  categoryIds: [];
-
   @ApiProperty()
   @IsOptional()
   sku: string;
+
+  @ApiProperty()
+  @IsEnum(ProductStatus)
+  @IsNotEmpty()
+  status: ProductStatus;
 
   @ApiPropertyOptional({ type: Number, default: 1 })
   @IsNotEmpty()
@@ -67,6 +48,36 @@ export class ProductProperties {
   @IsNumber()
   @Type(() => Number)
   quantity: number;
+
+  @ApiPropertyOptional({
+    type: 'array',
+    items: {
+      type: 'int',
+    },
+  })
+  @IsArray()
+  @IsOptional()
+  imageIds: [];
+
+  @ApiPropertyOptional({
+    type: 'array',
+    items: {
+      type: 'int',
+    },
+  })
+  @IsArray()
+  @IsOptional()
+  tagIds: [];
+
+  @ApiPropertyOptional({
+    type: 'array',
+    items: {
+      type: 'int',
+    },
+  })
+  @IsArray()
+  @IsOptional()
+  categoryIds: [];
 }
 
 export class CreateProductDto extends OmitType(

@@ -67,7 +67,7 @@ export class PostController {
     return this.response.success({
       message: this.commonService.getMessage({
         message: Messages.successfullyOperation.create,
-        keywords: ['post'],
+        keywords: [this.entity],
       }),
     });
   }
@@ -152,7 +152,7 @@ export class PostController {
     return this.response.success({
       message: this.commonService.getMessage({
         message: Messages.successfullyOperation.update,
-        keywords: ['post'],
+        keywords: [this.entity],
       }),
     });
   }
@@ -169,7 +169,7 @@ export class PostController {
     return this.response.success({
       message: this.commonService.getMessage({
         message: Messages.successfullyOperation.delete,
-        keywords: ['post'],
+        keywords: [this.entity],
       }),
     });
   }

@@ -1,5 +1,6 @@
 import { ApiProperty, OmitType, PartialType } from '@nestjs/swagger';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
+import { ImageStatus } from '../entities/image.entity';
 
 export class ImageProperties {
   @ApiProperty()
@@ -8,8 +9,9 @@ export class ImageProperties {
   title: string;
 
   @ApiProperty()
+  @IsEnum(ImageStatus)
   @IsNotEmpty()
-  status: number;
+  status: ImageStatus;
 }
 
 export class CreateImageDto extends OmitType(ImageProperties, [] as const) {}

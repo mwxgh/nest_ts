@@ -27,7 +27,8 @@ export class CreateCommentsTable1650207390501 implements MigrationInterface {
           },
           {
             name: 'status',
-            type: 'varchar',
+            type: 'enum',
+            enum: ['PENDING', 'FORWARD', 'PUBLISH', 'HIDE'],
           },
           {
             name: 'commentAbleId',

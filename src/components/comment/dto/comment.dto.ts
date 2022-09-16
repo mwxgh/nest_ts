@@ -1,12 +1,14 @@
 import { ApiProperty, OmitType, PartialType } from '@nestjs/swagger';
 import {
   IsEmail,
+  IsEnum,
   IsInt,
   IsNumber,
   IsString,
   Min,
   MinLength,
 } from 'class-validator';
+import { CommentStatus } from '../entities/comment.entity';
 
 export class CommentProperties {
   @ApiProperty()
@@ -31,11 +33,9 @@ export class CommentProperties {
   @MinLength(3)
   commentAbleType: string;
 
-  @ApiProperty({ default: 1 })
-  @IsNumber()
-  @IsInt()
-  @Min(1)
-  status: number;
+  @ApiProperty()
+  @IsEnum(CommentStatus)
+  status: CommentStatus;
 }
 
 export class CreateCommentDto extends OmitType(

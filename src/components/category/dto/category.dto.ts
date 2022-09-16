@@ -5,8 +5,15 @@ import {
   PartialType,
 } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import {
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 import { Index } from 'typeorm';
+import { CategoryStatus } from '../entities/category.entity';
 
 export class CategoryProperties {
   @ApiProperty()
@@ -19,18 +26,17 @@ export class CategoryProperties {
   @IsString()
   categoryType: string;
 
-  @ApiPropertyOptional({ name: 'parentId', type: Number, default: 0 })
+  @ApiPropertyOptional({ name: 'parentId', type: Number })
   @IsOptional()
   @IsNumber()
   @Index('parentId')
   @Type(() => Number)
   public parentId: number;
 
-  @ApiPropertyOptional({ type: Number, default: 1 })
+  @ApiProperty()
+  @IsEnum(CategoryStatus)
   @IsOptional()
-  @IsNumber()
-  @Type(() => Number)
-  status: number;
+  status: CategoryStatus;
 }
 
 export class CreateCategoryDto extends OmitType(

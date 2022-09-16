@@ -39,8 +39,8 @@ export class CreateContactsTable1650209210350 implements MigrationInterface {
           },
           {
             name: 'status',
-            default: 1,
-            type: 'int',
+            type: 'enum',
+            enum: ['DEFAULT', 'NORMAL'],
           },
           {
             name: 'verifiedAt',

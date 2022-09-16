@@ -1,12 +1,18 @@
-import { ApiPropertyOptional, OmitType, PartialType } from '@nestjs/swagger';
+import {
+  ApiProperty,
+  ApiPropertyOptional,
+  OmitType,
+  PartialType,
+} from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
   IsEmail,
+  IsEnum,
   IsNotEmpty,
-  IsNumber,
   IsOptional,
   // IsPhoneNumber,
 } from 'class-validator';
+import { ContactStatus } from '../entities/contact.entity';
 
 export class ContactProperties {
   @ApiPropertyOptional({
@@ -53,14 +59,10 @@ export class ContactProperties {
   @Type(() => String)
   note: string;
 
-  @ApiPropertyOptional({
-    type: Number,
-    default: 1,
-  })
+  @ApiProperty()
+  @IsEnum(ContactStatus)
   @IsOptional()
-  @IsNumber()
-  @Type(() => Number)
-  status: number;
+  status: ContactStatus;
 }
 
 export class CreateContactDto extends OmitType(

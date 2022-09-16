@@ -27,7 +27,8 @@ export class CreateCategoriesTable1650206288109 implements MigrationInterface {
           },
           {
             name: 'status',
-            type: 'varchar',
+            type: 'enum',
+            enum: ['PUBLISH', 'HIDE'],
           },
           {
             name: 'verifiedAt',

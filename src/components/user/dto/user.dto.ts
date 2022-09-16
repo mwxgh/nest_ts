@@ -43,10 +43,14 @@ export class BaseUserProperties {
   @IsOptional()
   lastName: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    enum: UserStatus,
+    isArray: true,
+    default: UserStatus.active,
+  })
+  @IsNotEmpty()
   @IsEnum(UserStatus)
-  @IsOptional()
-  status: string;
+  status: UserStatus;
 }
 
 export class UserProperties extends OmitType(BaseUserProperties, [] as const) {

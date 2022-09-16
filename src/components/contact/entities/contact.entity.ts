@@ -3,6 +3,10 @@ import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { Notifiable } from '../../../shared/services/notification/decorators/notifiable.decorator';
 import { UserEntity } from '../../user/entities/user.entity';
 
+export enum ContactStatus {
+  default = 'DEFAULT',
+  normal = 'NORMAL',
+}
 @Notifiable()
 @Entity({ name: 'contacts' })
 export class ContactEntity extends TimeStampEntity {
@@ -24,8 +28,8 @@ export class ContactEntity extends TimeStampEntity {
   @Column({ type: 'varchar' })
   note: string;
 
-  @Column({ type: 'int', default: 1 })
-  status: number;
+  @Column({ type: 'enum', enum: ContactStatus, default: ContactStatus.normal })
+  status: ContactStatus;
 
   @Column({ type: 'timestamp' })
   public verifiedAt: Date;

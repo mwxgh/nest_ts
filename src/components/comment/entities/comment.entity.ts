@@ -5,8 +5,15 @@ import { ProductEntity } from '../../product/entities/product.entity';
 import { TimeStampEntity } from '../../base.entity';
 
 export enum CommentAbleType {
-  PRODUCT = 'products',
-  POST = 'posts',
+  product = 'PRODUCT',
+  post = 'POST',
+}
+
+export enum CommentStatus {
+  pending = 'PENDING',
+  forward = 'FORWARD',
+  publish = 'PUBLISH',
+  hide = 'HIDE',
 }
 
 export enum JoinCommentAble {
@@ -26,8 +33,8 @@ export class CommentEntity extends TimeStampEntity {
   @Column({ type: 'varchar' })
   contacts: string;
 
-  @Column({ type: 'int' })
-  status: number;
+  @Column({ type: 'enum', enum: CommentStatus })
+  status: CommentStatus;
 
   @Column({ name: 'commentAbleId', type: 'int' })
   commentAbleId: number;
