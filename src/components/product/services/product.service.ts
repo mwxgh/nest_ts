@@ -12,8 +12,9 @@ import { CategoryAbleService } from 'src/components/category/services/categoryAb
 import { TagAbleService } from 'src/components/tag/services/tagAble.service'
 import { TagAbleType } from 'src/components/tag/entities/tagAble.entity'
 import { TagService } from 'src/components/tag/services/tag.service'
-import { SortType } from 'src/shared/constant/constant'
 import { assign } from 'lodash'
+import { ImageAbleService } from 'src/components/image/services/imageAble.service'
+import { QueryParams } from 'src/shared/interfaces/interface'
 
 @Injectable()
 export class ProductService extends BaseService {
@@ -22,24 +23,23 @@ export class ProductService extends BaseService {
 
   constructor(
     private connection: Connection,
-    private imagesService: ImageService,
+    private imageService: ImageService,
+    private imageAbleService: ImageAbleService,
+    private categoryService: CategoryAbleService,
     private categoryAbleService: CategoryAbleService,
     private tagAbleService: TagAbleService,
     private tagService: TagService,
-    private categoryService: CategoryAbleService,
   ) {
     super()
     this.repository = this.connection.getCustomRepository(ProductRepository)
   }
 
-  async queryProduct(params: {
-    entity: string
-    fields?: string[]
-    keyword?: string | ''
-    sortBy?: string
-    sortType?: SortType
-    includes?: string[]
-  }): Promise<SelectQueryBuilder<ProductEntity>> {
+  /**
+   * Build query product with params
+   */
+  async queryProduct(
+    params: QueryParams,
+  ): Promise<SelectQueryBuilder<ProductEntity>> {
     const { entity, fields, keyword, sortBy, sortType, includes } = params
 
     let queryBuilder: SelectQueryBuilder<ProductEntity> =
@@ -81,10 +81,17 @@ export class ProductService extends BaseService {
     return queryBuilder
   }
 
+  /**
+   * Save product and create relation foreign key
+   * @param params.data CreateProductDto
+   */
   async createProduct(data: CreateProductDto): Promise<ProductEntity> {
     const tagsAvailable = await this.tagService.findIdInOrFail(data.tagIds)
     const categoriesAvailable = await this.categoryService.findIdInOrFail(
       data.categoryIds,
+    )
+    const imagesAvailable = await this.imageService.findIdInOrFail(
+      data.imageIds,
     )
 
     const countProduct = await this.count({
@@ -103,19 +110,13 @@ export class ProductService extends BaseService {
 
     const product: ProductEntity = await this.repository.create(dataToSave)
 
-    // sync with sample tagAble, categoryAble
-    // if (data.images) {
-    //   data.images.forEach(async (item: any) => {
-    //     if (item.url) {
-    //       const img = {
-    //         url: item.url,
-    //         imageAbleId: product.id,
-    //         imageAbleType: ImageAbleType.product,
-    //       };
-    //       await this.imagesService.save(img);
-    //     }
-    //   });
-    // }
+    // imageAble
+    const imageAbleData = imagesAvailable.map((image: any) => ({
+      imageId: image.id,
+      imageAbleId: product.id,
+      imageAbleType: ImageAbleType.product,
+    }))
+    await this.imageAbleService.attachImageAble(imageAbleData)
 
     // categoryAble
     const categoryAbleData = categoriesAvailable.map((category: any) => ({
@@ -150,7 +151,7 @@ export class ProductService extends BaseService {
 
     const currentProduct = await this.findOneOrFail(id)
 
-    // tag & tagAble
+    // tagAble
     if (data.tagIds && data.tagIds.length > 0) {
       await this.tagAbleService.updateRelationTagAble({
         tagAbleId: currentProduct.id,
@@ -159,7 +160,7 @@ export class ProductService extends BaseService {
       })
     }
 
-    // category & categoryAble
+    // categoryAble
     if (data.categoryIds && data.categoryIds.length > 0) {
       await this.categoryAbleService.updateRelationCategoryAble({
         categoryAbleId: currentProduct.id,
@@ -168,18 +169,14 @@ export class ProductService extends BaseService {
       })
     }
 
-    // if (data.images) {
-    //   data.images.forEach(async (item) => {
-    //     if (item['url']) {
-    //       const img = {
-    //         url: item['url'],
-    //         imageAbleId: currentProduct.id,
-    //         imageAbleType: ImageAbleType.product,
-    //       };
-    //       await this.imagesService.create(img);
-    //     }
-    //   });
-    // }
+    // imageAble
+    if (data.imageIds && data.imageIds.length > 0) {
+      await this.imageAbleService.updateRelationImageAble({
+        imageAbleId: currentProduct.id,
+        imageAbleType: ImageAbleType.product,
+        imageIds: data.categoryIds,
+      })
+    }
 
     const dataToUpdate = assign(data, { slug: slugify(data.name) })
 
@@ -219,6 +216,13 @@ export class ProductService extends BaseService {
       {
         categoryAbleId: currentProduct.id,
         categoryAbleType: CategoryAbleType.product,
+      },
+    ])
+
+    await this.imageAbleService.detachImageAble([
+      {
+        imageAbleId: currentProduct.id,
+        imageAbleType: ImageAbleType.product,
       },
     ])
 

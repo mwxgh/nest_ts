@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { SortType } from 'src/shared/constant/constant'
+import { QueryParams } from 'src/shared/interfaces/interface'
 import { BaseService } from 'src/shared/services/base.service'
 import { Connection, Repository } from 'typeorm'
 import { TagEntity } from '../entities/tag.entity'
@@ -14,13 +15,7 @@ export class TagService extends BaseService {
     this.repository = this.connection.getCustomRepository(TagRepository)
   }
 
-  async queryTag(params: {
-    entity: string
-    fields?: string[]
-    keyword?: string | ''
-    sortBy?: string
-    sortType?: SortType
-  }) {
+  async queryTag(params: QueryParams) {
     const { entity, fields, keyword, sortBy, sortType } = params
 
     const baseQuery = await this.queryBuilder({

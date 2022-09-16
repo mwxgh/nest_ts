@@ -3,6 +3,7 @@ import { CartItemService } from '../cart/services/cartItem.service'
 import { CategoryService } from '../category/services/category.service'
 import { CategoryAbleService } from '../category/services/categoryAble.service'
 import { ImageService } from '../image/services/image.service'
+import { ImageAbleService } from '../image/services/imageAble.service'
 import { ProductService } from '../product/services/product.service'
 import { TagService } from '../tag/services/tag.service'
 import { TagAbleService } from '../tag/services/tagAble.service'
@@ -16,6 +17,7 @@ export const orderProviders = [
   CartService,
   ProductService,
   ImageService,
+  ImageAbleService,
   CategoryAbleService,
   TagAbleService,
   TagService,

@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { SortType } from 'src/shared/constant/constant'
+import { QueryParams } from 'src/shared/interfaces/interface'
 import { BaseService } from 'src/shared/services/base.service'
 import { Connection, Repository, SelectQueryBuilder } from 'typeorm'
 import { CategoryEntity } from '../entities/category.entity'
@@ -16,20 +17,15 @@ export class CategoryService extends BaseService {
     this.repository = this.dataSource.getCustomRepository(CategoryRepository)
   }
 
-  async queryCategory(params: {
-    entity: string
-    fields?: string[]
-    keyword?: string | ''
-    includes?: any
-    sortBy?: string
-    sortType?: SortType
-  }): Promise<SelectQueryBuilder<CategoryEntity>> {
+  async queryCategory(
+    params: QueryParams,
+  ): Promise<SelectQueryBuilder<CategoryEntity>> {
     const include = []
 
-    if (params.includes) {
-      const arr = params.includes.split(',')
-      arr.map((i: any) => include.push(i))
-    }
+    // if (params.includes) {
+    //   const arr = params.includes.split(',')
+    //   arr.map((i: any) => include.push(i))
+    // }
 
     const { entity, fields, keyword, sortBy, sortType } = params
 

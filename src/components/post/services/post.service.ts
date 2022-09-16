@@ -10,7 +10,7 @@ import { ImageAbleService } from 'src/components/image/services/imageAble.servic
 import { TagAbleType } from 'src/components/tag/entities/tagAble.entity'
 import { TagService } from 'src/components/tag/services/tag.service'
 import { TagAbleService } from 'src/components/tag/services/tagAble.service'
-import { SortType } from 'src/shared/constant/constant'
+import { QueryParams } from 'src/shared/interfaces/interface'
 import { BaseService } from 'src/shared/services/base.service'
 import { Repository, Connection, SelectQueryBuilder } from 'typeorm'
 import { CreatePostDto, UpdatePostDto } from '../dto/post.dto'
@@ -35,18 +35,15 @@ export class PostService extends BaseService {
     this.repository = this.connection.getCustomRepository(PostRepository)
   }
 
-  async queryPost(params: {
-    entity: string
-    fields?: string[]
-    keyword?: string | ''
-    includes?: any
-    sortBy?: string
-    sortType?: SortType
-    privacy?: string
-    status?: string
-    priority?: string
-    type?: string
-  }): Promise<SelectQueryBuilder<PostEntity>> {
+  async queryPost(
+    params: QueryParams & {
+      privacy?: string
+      status?: string
+      priority?: string
+      type?: string
+      includes?: any
+    },
+  ): Promise<SelectQueryBuilder<PostEntity>> {
     const {
       entity,
       fields,
@@ -199,7 +196,16 @@ export class PostService extends BaseService {
 
     const currentPost = await this.findOneOrFail(id)
 
-    // tag & tagAble
+    // imageAble
+    if (data.imageIds && data.imageIds.length > 0) {
+      await this.imageAbleService.updateRelationImageAble({
+        imageAbleId: currentPost.id,
+        imageAbleType: ImageAbleType.post,
+        imageIds: data.imageIds,
+      })
+    }
+
+    // tagAble
     if (data.tagIds && data.tagIds.length > 0) {
       await this.tagAbleService.updateRelationTagAble({
         tagAbleId: currentPost.id,
@@ -208,7 +214,7 @@ export class PostService extends BaseService {
       })
     }
 
-    // category & categoryAble
+    // categoryAble
     if (data.categoryIds && data.categoryIds.length > 0) {
       await this.categoryAbleService.updateRelationCategoryAble({
         categoryAbleId: currentPost.id,
@@ -257,6 +263,13 @@ export class PostService extends BaseService {
       {
         categoryAbleId: currentPost.id,
         categoryAbleType: CategoryAbleType.post,
+      },
+    ])
+
+    await this.imageAbleService.detachImageAble([
+      {
+        imageAbleId: currentPost.id,
+        imageAbleType: ImageAbleType.post,
       },
     ])
 

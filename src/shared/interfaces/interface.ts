@@ -1,3 +1,5 @@
+import { SortType } from '../constant/constant'
+
 /**
  * Entity general form
  */
@@ -20,4 +22,24 @@ export interface LengthAwareMeta {
     currentPage: number
     totalPages: number
   }
+}
+
+/**
+ * Query params
+ */
+export interface QueryParams {
+  /** Entity */
+  entity: string
+  /** search by some fields */
+  fields?: string[]
+  /** search by keyword */
+  keyword?: string | ''
+  /** sort list by */
+  sortBy?: string
+  /** sort type */
+  sortType?: SortType
+  /** include with relation table */
+  includes?: string[]
+  /** filter some field with exact value */
+  filter?: { [key: string]: string }
 }

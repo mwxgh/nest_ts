@@ -1,15 +1,21 @@
 import { Injectable } from '@nestjs/common'
+import { difference } from 'lodash'
 import { BaseService } from 'src/shared/services/base.service'
 import { Connection, Repository } from 'typeorm'
+import { ImageEntity } from '../entities/image.entity'
 import { ImageAbleEntity, ImageAbleType } from '../entities/imageAble.entity'
 import { ImageAbleRepository } from '../repositories/imageAble.repository'
+import { ImageService } from './image.service'
 
 @Injectable()
 export class ImageAbleService extends BaseService {
   public imageAbleRepository: Repository<any>
   public entity: any = ImageAbleEntity
 
-  constructor(private connection: Connection) {
+  constructor(
+    private connection: Connection,
+    private imageService: ImageService,
+  ) {
     super()
     this.imageAbleRepository =
       this.connection.getCustomRepository(ImageAbleRepository)
@@ -81,5 +87,56 @@ export class ImageAbleService extends BaseService {
     if (imageAbleIdsExisting.length > 0) {
       await this.imageAbleRepository.delete(imageAbleIdsExisting)
     }
+  }
+
+  /**
+   * Update relation imageAble when update product, post, ...
+   * @param params.imageId
+   * @param params.imageAbleId
+   * @param params.imageAbleType
+   */
+  async updateRelationImageAble(params: {
+    imageIds: number[]
+    imageAbleId: number
+    imageAbleType: ImageAbleType
+  }): Promise<void> {
+    const { imageIds, imageAbleId, imageAbleType } = params
+
+    const currentImageIds: number[] = await this.findWhere({
+      where: {
+        imageAbleId,
+        imageAbleType,
+      },
+      select: ['imageId'],
+    })
+
+    if (currentImageIds.length === 0) {
+      return
+    }
+
+    // detach new imageAble
+    const detachImageIds: number[] = difference(currentImageIds, imageIds)
+
+    const imageAbles = detachImageIds.map((imageAbleId) => ({
+      imageAbleId,
+      imageAbleType,
+    }))
+
+    await this.detachImageAble(imageAbles)
+
+    // attach new imageAble
+    const newAttachImageIds: number[] = difference(imageIds, currentImageIds)
+
+    const existingImages = await this.imageService.findIdInOrFail(
+      newAttachImageIds,
+    )
+
+    const imagesAbleData = existingImages.map((image: ImageEntity) => ({
+      imageId: image.id,
+      imageAbleId,
+      imageAbleType,
+    }))
+
+    await this.attachImageAble(imagesAbleData)
   }
 }

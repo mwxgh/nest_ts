@@ -18,7 +18,7 @@ import {
   DEFAULT_SORT_TYPE,
   SortType,
 } from '../constant/constant'
-import { Entity, ResponseEntity } from '../interfaces/interface'
+import { Entity, QueryParams, ResponseEntity } from '../interfaces/interface'
 
 const defaultPaginationOption: IPaginationOptions = {
   limit: 10,
@@ -315,21 +315,8 @@ export class BaseService {
 
   /**
    * Create query builder with search field in entity
-   *
-   * @params {
-   *        entity string,
-   *        fields string[] | null,
-   *        keyword string | null
-   *        }
    */
-  async queryBuilder<T>(params: {
-    entity: string
-    fields?: string[]
-    keyword?: string | ''
-    sortBy?: string
-    sortType?: SortType
-    filter?: { [key: string]: string }
-  }): Promise<SelectQueryBuilder<T>> {
+  async queryBuilder<T>(params: QueryParams): Promise<SelectQueryBuilder<T>> {
     const { entity, fields, keyword } = params
     const orderBy = params.sortBy ?? DEFAULT_SORT_BY
     const orderType = params.sortType ?? DEFAULT_SORT_TYPE
