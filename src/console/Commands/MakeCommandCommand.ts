@@ -1,20 +1,20 @@
-import { Command, Error, Info, IOption } from './Command';
-import * as fse from 'fs-extra';
-import * as fs from 'fs';
-import * as path from 'path';
-import * as _ from 'lodash';
+import { Command, Error, Info, IOption } from './Command'
+import * as fse from 'fs-extra'
+import * as fs from 'fs'
+import * as path from 'path'
+import * as _ from 'lodash'
 
 export class MakeCommandCommand extends Command {
   signature(): string {
-    return 'make:command <command>';
+    return 'make:command <command>'
   }
 
   description(): string {
-    return 'Create new command';
+    return 'Create new command'
   }
 
   options(): IOption[] {
-    return [{ key: 'override?', description: 'Override existing file' }];
+    return [{ key: 'override?', description: 'Override existing file' }]
   }
 
   async handle(
@@ -22,18 +22,18 @@ export class MakeCommandCommand extends Command {
     options: { override: undefined | string },
   ): Promise<any> {
     if (_.isNil(command) || command === '') {
-      Error('Command name is required');
+      Error('Command name is required')
     }
     const file = path.resolve(
       __dirname,
       '../../Console/Commands',
       `${command}.ts`,
-    );
+    )
     if (
       fs.existsSync(file) &&
       (options.override === undefined || options.override.toString() !== 'true')
     ) {
-      Error(`${command} already exist`);
+      Error(`${command} already exist`)
     }
     const content = `import { Command, IOption } from './Command';
 
@@ -61,10 +61,10 @@ export class ${command} extends Command {
     // Your code goes here
   }
 }
-    `;
-    fse.outputFileSync(file, content);
-    Info(`${file} is created`);
+    `
+    fse.outputFileSync(file, content)
+    Info(`${file} is created`)
 
-    return file;
+    return file
   }
 }

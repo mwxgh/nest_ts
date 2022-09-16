@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-import { ApiResponseService } from './services/apiResponse/apiResponse.service';
-import { Module, Global } from '@nestjs/common';
-import { HashService } from './services/hash/hash.service';
-import { NotificationModule } from './services/notification/notification.module';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { EmailChannel } from './services/notification/channels/email/email.channel';
+import { ApiResponseService } from './services/apiResponse/apiResponse.service'
+import { Module, Global } from '@nestjs/common'
+import { HashService } from './services/hash/hash.service'
+import { NotificationModule } from './services/notification/notification.module'
+import { ConfigModule, ConfigService } from '@nestjs/config'
+import { EmailChannel } from './services/notification/channels/email/email.channel'
 
 @Global()
 @Module({

@@ -1,14 +1,14 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
-import { Pagination } from '../pagination';
-import { TransformerInterface } from '../../transformers/transformer';
+import { Injectable, BadRequestException } from '@nestjs/common'
+import { Pagination } from '../pagination'
+import { TransformerInterface } from '../../transformers/transformer'
 import {
   GetItemResponse,
   GetListPaginationResponse,
   GetListResponse,
   SuccessfullyOperation,
-} from './apiResponse.interface';
-import Messages from '../../message/message';
-import { Entity, ResponseEntity } from 'src/shared/interfaces/interface';
+} from './apiResponse.interface'
+import Messages from '../../message/message'
+import { Entity, ResponseEntity } from 'src/shared/interfaces/interface'
 
 @Injectable()
 export class ApiResponseService {
@@ -21,7 +21,7 @@ export class ApiResponseService {
    * @return Object
    */
   item(entity: Entity, transformer: TransformerInterface): GetItemResponse {
-    return { data: transformer.get(entity) };
+    return { data: transformer.get(entity) }
   }
 
   /**
@@ -32,7 +32,7 @@ export class ApiResponseService {
    * @return Object data
    */
   object(data: any) {
-    return { data };
+    return { data }
   }
 
   /**
@@ -49,9 +49,9 @@ export class ApiResponseService {
   ): GetListResponse {
     return {
       data: collection.map((i) => {
-        return transformer.get(i);
+        return transformer.get(i)
       }),
-    };
+    }
   }
 
   /**
@@ -63,7 +63,7 @@ export class ApiResponseService {
    * @return object
    */
   primitive(data: Entity): { data: ResponseEntity } {
-    return { data };
+    return { data }
   }
 
   /**
@@ -74,9 +74,9 @@ export class ApiResponseService {
    * @return message specific successful operation pr default message
    */
   success(params?: { message: string }): SuccessfullyOperation {
-    const message = params?.message ?? Messages.successfullyOperation.general;
+    const message = params?.message ?? Messages.successfullyOperation.general
 
-    return { data: { success: true, message: message } };
+    return { data: { success: true, message: message } }
   }
 
   /**
@@ -94,12 +94,12 @@ export class ApiResponseService {
     if (!(paginator instanceof Pagination)) {
       throw new BadRequestException(
         `ApiResponse.paginate expect a Pagination instead a ${typeof paginator}`,
-      );
+      )
     }
 
     const items = paginator.items.map((i) => {
-      return transformer.get(i);
-    });
+      return transformer.get(i)
+    })
 
     return {
       data: items,
@@ -111,6 +111,6 @@ export class ApiResponseService {
           totalPages: paginator.meta.totalPages,
         },
       },
-    };
+    }
   }
 }

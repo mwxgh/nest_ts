@@ -1,3 +1,3 @@
 export interface INotifiable {
-  is_notifiable: boolean;
+  is_notifiable: boolean
 }

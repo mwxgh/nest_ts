@@ -1,26 +1,26 @@
-import { NotificationService } from './notification.service';
+import { NotificationService } from './notification.service'
 import {
   NotificationAsyncOptions,
   INotificationChannelFactory,
-} from './interfaces';
-import { Global, Module, DynamicModule, Provider } from '@nestjs/common';
-import { NOTIFICATION_OPTIONS, NOTIFICATION_CHANNELS } from './constants';
+} from './interfaces'
+import { Global, Module, DynamicModule, Provider } from '@nestjs/common'
+import { NOTIFICATION_OPTIONS, NOTIFICATION_CHANNELS } from './constants'
 
 export const channelFactory = {
   provide: NOTIFICATION_CHANNELS,
   useFactory: async (notificationService) => {
-    return notificationService.register();
+    return notificationService.register()
   },
   inject: [NotificationService],
-};
+}
 
 export const optionFactory = {
   provide: NOTIFICATION_OPTIONS,
   useFactory: async (notificationService) => {
-    return notificationService.register();
+    return notificationService.register()
   },
   inject: [NotificationService],
-};
+}
 
 @Global()
 @Module({
@@ -40,7 +40,7 @@ export class NotificationModule {
         NotificationService,
       ],
       exports: [NotificationService, channelFactory, optionFactory],
-    };
+    }
   }
 
   private static createConnectOptionsProvider(
@@ -51,7 +51,7 @@ export class NotificationModule {
         provide: NOTIFICATION_OPTIONS,
         useFactory: options.useFactory,
         inject: options.inject || [],
-      };
+      }
     }
 
     return {
@@ -59,6 +59,6 @@ export class NotificationModule {
       useFactory: async (optionsFactory: INotificationChannelFactory) =>
         await optionsFactory.registerChannel(),
       inject: [options.useExisting || options.useClass],
-    };
+    }
   }
 }

@@ -1,12 +1,12 @@
-import { Entity, Column, OneToMany } from 'typeorm';
-import { Notifiable } from '../../../shared/services/notification/decorators/notifiable.decorator';
-import { CartItemEntity } from '../../../components/cart/entities/cartItem.entity';
-import { CommentEntity } from '../../../components/comment/entities/comment.entity';
-import { CategoryAbleEntity } from '../../category/entities/categoryAble.entity';
-import { TagAbleEntity } from '../../tag/entities/tagAble.entity';
-import { OrderProductEntity } from '../../order/entities/orderProduct.entity';
-import { TimeStampEntity } from '../../base.entity';
-import { ImageAbleEntity } from '../../image/entities/imageAble.entity';
+import { Entity, Column, OneToMany } from 'typeorm'
+import { Notifiable } from '../../../shared/services/notification/decorators/notifiable.decorator'
+import { CartItemEntity } from '../../../components/cart/entities/cartItem.entity'
+import { CommentEntity } from '../../../components/comment/entities/comment.entity'
+import { CategoryAbleEntity } from '../../category/entities/categoryAble.entity'
+import { TagAbleEntity } from '../../tag/entities/tagAble.entity'
+import { OrderProductEntity } from '../../order/entities/orderProduct.entity'
+import { TimeStampEntity } from '../../base.entity'
+import { ImageAbleEntity } from '../../image/entities/imageAble.entity'
 
 export enum ProductStatus {
   inventory = 'INVENTORY',
@@ -18,48 +18,48 @@ export enum ProductStatus {
 @Entity({ name: 'products' })
 export class ProductEntity extends TimeStampEntity {
   @Column({ type: 'varchar' })
-  name: string;
+  name: string
 
   @Column({ type: 'varchar', unique: true })
-  sku: string;
+  sku: string
 
   @Column({ type: 'varchar', unique: true })
-  slug: string;
+  slug: string
 
   @Column({
     type: 'enum',
     enum: ProductStatus,
     default: ProductStatus.inventory,
   })
-  status: ProductStatus;
+  status: ProductStatus
 
   @Column({ type: 'int', default: 0 })
-  originalPrice: number;
+  originalPrice: number
 
   @Column({ type: 'int', default: 0 })
-  price: number;
+  price: number
 
   @Column({ type: 'int', default: 0 })
-  quantity: number;
+  quantity: number
 
   @Column({ type: 'timestamp' })
-  public verifiedAt: Date;
+  public verifiedAt: Date
 
   @OneToMany(() => CategoryAbleEntity, (categoryAble) => categoryAble.product)
-  public categories!: CategoryAbleEntity[];
+  public categories!: CategoryAbleEntity[]
 
   @OneToMany(() => TagAbleEntity, (tag) => tag.product)
-  tags: TagAbleEntity[];
+  tags: TagAbleEntity[]
 
   @OneToMany(() => ImageAbleEntity, (imageAble) => imageAble.product)
-  images: ImageAbleEntity[];
+  images: ImageAbleEntity[]
 
   @OneToMany(() => CommentEntity, (comment) => comment.product)
-  comments: CommentEntity[];
+  comments: CommentEntity[]
 
   @OneToMany(() => OrderProductEntity, (orderItem) => orderItem.products)
-  orders: OrderProductEntity[];
+  orders: OrderProductEntity[]
 
   @OneToMany(() => CartItemEntity, (cartItem) => cartItem.cart)
-  products: Promise<CartItemEntity[]>;
+  products: Promise<CartItemEntity[]>
 }

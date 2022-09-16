@@ -9,31 +9,31 @@ import {
   Put,
   Query,
   UseGuards,
-} from '@nestjs/common';
+} from '@nestjs/common'
 import {
   ApiBearerAuth,
   ApiHeader,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
-} from '@nestjs/swagger';
-import { Auth } from 'src/components/auth/decorators/auth.decorator';
-import { JwtAuthGuard } from 'src/components/auth/guards/jwtAuth.guard';
-import { QueryManyDto } from 'src/shared/dto/queryParams.dto';
-import Messages from 'src/shared/message/message';
+} from '@nestjs/swagger'
+import { Auth } from 'src/components/auth/decorators/auth.decorator'
+import { JwtAuthGuard } from 'src/components/auth/guards/jwtAuth.guard'
+import { QueryManyDto } from 'src/shared/dto/queryParams.dto'
+import Messages from 'src/shared/message/message'
 import {
   GetItemResponse,
   GetListPaginationResponse,
   GetListResponse,
   SuccessfullyOperation,
-} from 'src/shared/services/apiResponse/apiResponse.interface';
-import { ApiResponseService } from 'src/shared/services/apiResponse/apiResponse.service';
-import { CommonService } from 'src/shared/services/common.service';
-import { IPaginationOptions } from 'src/shared/services/pagination';
-import { CreateTagDto, UpdateTagDto } from '../dto/tag.dto';
-import { TagService } from '../services/tag.service';
-import { TagAbleService } from '../services/tagAble.service';
-import { TagTransformer } from '../transformers/tag.transformer';
+} from 'src/shared/services/apiResponse/apiResponse.interface'
+import { ApiResponseService } from 'src/shared/services/apiResponse/apiResponse.service'
+import { CommonService } from 'src/shared/services/common.service'
+import { IPaginationOptions } from 'src/shared/services/pagination'
+import { CreateTagDto, UpdateTagDto } from '../dto/tag.dto'
+import { TagService } from '../services/tag.service'
+import { TagAbleService } from '../services/tagAble.service'
+import { TagTransformer } from '../transformers/tag.transformer'
 
 @ApiTags('Tags')
 @ApiHeader({
@@ -51,8 +51,8 @@ export class TagController {
     private commonService: CommonService,
   ) {}
 
-  private entity = 'tags';
-  private fields = ['name'];
+  private entity = 'tags'
+  private fields = ['name']
 
   @Post()
   @Auth('admin')
@@ -63,16 +63,16 @@ export class TagController {
       where: {
         name: data.name,
       },
-    });
+    })
 
-    await this.tagService.save(data);
+    await this.tagService.save(data)
 
     return this.response.success({
       message: this.commonService.getMessage({
         message: Messages.successfullyOperation.create,
         keywords: [this.entity],
       }),
-    });
+    })
   }
 
   @Get()
@@ -81,7 +81,7 @@ export class TagController {
   async readTags(
     @Query() query: QueryManyDto,
   ): Promise<GetListResponse | GetListPaginationResponse> {
-    const { search, sortBy, sortType } = query;
+    const { search, sortBy, sortType } = query
 
     const queryBuilder = await this.tagService.queryTag({
       entity: this.entity,
@@ -89,23 +89,23 @@ export class TagController {
       keyword: search,
       sortBy,
       sortType,
-    });
+    })
 
     if (query.perPage || query.page) {
       const paginateOption: IPaginationOptions = {
         limit: query.perPage ? query.perPage : 10,
         page: query.page ? query.page : 1,
-      };
+      }
 
-      const tags = await this.tagService.paginate(queryBuilder, paginateOption);
+      const tags = await this.tagService.paginate(queryBuilder, paginateOption)
 
-      return this.response.paginate(tags, new TagTransformer());
+      return this.response.paginate(tags, new TagTransformer())
     }
 
     return this.response.collection(
       await queryBuilder.getMany(),
       new TagTransformer(),
-    );
+    )
   }
 
   @Get(':id')
@@ -114,9 +114,9 @@ export class TagController {
   async readTag(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<GetItemResponse> {
-    const tag = await this.tagService.findOneOrFail(id);
+    const tag = await this.tagService.findOneOrFail(id)
 
-    return this.response.item(tag, new TagTransformer());
+    return this.response.item(tag, new TagTransformer())
   }
 
   @Put(':id')
@@ -127,16 +127,16 @@ export class TagController {
     @Param('id', ParseIntPipe) id: number,
     @Body() data: UpdateTagDto,
   ): Promise<SuccessfullyOperation> {
-    await this.tagService.findOneOrFail(id);
+    await this.tagService.findOneOrFail(id)
 
-    await this.tagService.update(id, { ...data, updatedAt: new Date() });
+    await this.tagService.update(id, { ...data, updatedAt: new Date() })
 
     return this.response.success({
       message: this.commonService.getMessage({
         message: Messages.successfullyOperation.update,
         keywords: [this.entity],
       }),
-    });
+    })
   }
 
   @Delete(':id')
@@ -146,17 +146,17 @@ export class TagController {
   async deleteTag(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<SuccessfullyOperation> {
-    await this.tagService.findOneOrFail(id);
+    await this.tagService.findOneOrFail(id)
 
-    await this.tagAbleService.detachTagAble([{ tagId: id }]);
+    await this.tagAbleService.detachTagAble([{ tagId: id }])
 
-    await this.tagService.destroy(id);
+    await this.tagService.destroy(id)
 
     return this.response.success({
       message: this.commonService.getMessage({
         message: Messages.successfullyOperation.delete,
         keywords: [this.entity],
       }),
-    });
+    })
   }
 }

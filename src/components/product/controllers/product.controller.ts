@@ -9,33 +9,30 @@ import {
   Put,
   Query,
   UseGuards,
-} from '@nestjs/common';
+} from '@nestjs/common'
 import {
   ApiBearerAuth,
   ApiHeader,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
-} from '@nestjs/swagger';
-import { CreateProductDto, UpdateProductDto } from '../dto/product.dto';
-import { ProductService } from '../services/product.service';
-import { ProductTransformer } from '../transformers/product.transformer';
-import { ImageService } from '../../image/services/image.service';
-import { CategoryAbleService } from '../../category/services/categoryAble.service';
-import { ApiResponseService } from 'src/shared/services/apiResponse/apiResponse.service';
-import { JwtAuthGuard } from 'src/components/auth/guards/jwtAuth.guard';
-import { QueryManyDto } from 'src/shared/dto/queryParams.dto';
-import { IPaginationOptions } from 'src/shared/services/pagination';
-import { Auth } from 'src/components/auth/decorators/auth.decorator';
+} from '@nestjs/swagger'
+import { CreateProductDto, UpdateProductDto } from '../dto/product.dto'
+import { ProductService } from '../services/product.service'
+import { ProductTransformer } from '../transformers/product.transformer'
+import { ApiResponseService } from 'src/shared/services/apiResponse/apiResponse.service'
+import { JwtAuthGuard } from 'src/components/auth/guards/jwtAuth.guard'
+import { QueryManyDto } from 'src/shared/dto/queryParams.dto'
+import { IPaginationOptions } from 'src/shared/services/pagination'
+import { Auth } from 'src/components/auth/decorators/auth.decorator'
 import {
   GetItemResponse,
   GetListPaginationResponse,
   GetListResponse,
   SuccessfullyOperation,
-} from 'src/shared/services/apiResponse/apiResponse.interface';
-import Messages from 'src/shared/message/message';
-import { CommonService } from 'src/shared/services/common.service';
-import { TagAbleService } from 'src/components/tag/services/tagAble.service';
+} from 'src/shared/services/apiResponse/apiResponse.interface'
+import Messages from 'src/shared/message/message'
+import { CommonService } from 'src/shared/services/common.service'
 
 @ApiTags('Products')
 @ApiHeader({
@@ -49,15 +46,12 @@ export class ProductController {
   constructor(
     private response: ApiResponseService,
     private productService: ProductService,
-    private imagesService: ImageService,
-    private categoryAbleService: CategoryAbleService,
     private commonService: CommonService,
-    private tagAbleService: TagAbleService,
   ) {}
 
-  private entity = 'products';
-  private fields = ['name'];
-  private relations: ['images', 'categories', 'tags'];
+  private entity = 'products'
+  private fields = ['name']
+  private relations: ['images', 'categories', 'tags']
 
   @Post()
   @Auth('admin')
@@ -66,14 +60,14 @@ export class ProductController {
   async createProduct(
     @Body() data: CreateProductDto,
   ): Promise<SuccessfullyOperation> {
-    await this.productService.createProduct(data);
+    await this.productService.createProduct(data)
 
     return this.response.success({
       message: this.commonService.getMessage({
         message: Messages.successfullyOperation.create,
         keywords: [this.entity],
       }),
-    });
+    })
   }
 
   @Get()
@@ -82,7 +76,7 @@ export class ProductController {
   async readProducts(
     @Query() query: QueryManyDto,
   ): Promise<GetListResponse | GetListPaginationResponse> {
-    const { search, includes, sortBy, sortType } = query;
+    const { search, includes, sortBy, sortType } = query
 
     const queryBuilder = await this.productService.queryProduct({
       entity: this.entity,
@@ -91,26 +85,26 @@ export class ProductController {
       sortBy,
       sortType,
       includes,
-    });
+    })
 
     if (query.perPage || query.page) {
       const paginateOption: IPaginationOptions = {
         limit: query.perPage ? query.perPage : 10,
         page: query.page ? query.page : 1,
-      };
+      }
 
       const products = await this.productService.paginate(
         queryBuilder,
         paginateOption,
-      );
+      )
 
-      return this.response.paginate(products, new ProductTransformer(includes));
+      return this.response.paginate(products, new ProductTransformer(includes))
     }
 
     return this.response.collection(
       await queryBuilder.getMany(),
       new ProductTransformer(includes),
-    );
+    )
   }
 
   @Get(':id')
@@ -121,9 +115,9 @@ export class ProductController {
   ): Promise<GetItemResponse> {
     const product = await this.productService.findOneOrFail(id, {
       relations: this.relations,
-    });
+    })
 
-    return this.response.item(product, new ProductTransformer(this.relations));
+    return this.response.item(product, new ProductTransformer(this.relations))
   }
 
   @Put(':id')
@@ -133,14 +127,14 @@ export class ProductController {
     @Param('id', ParseIntPipe) id: number,
     @Body() data: UpdateProductDto,
   ): Promise<SuccessfullyOperation> {
-    await this.productService.updateProduct({ id, data });
+    await this.productService.updateProduct({ id, data })
 
     return this.response.success({
       message: this.commonService.getMessage({
         message: Messages.successfullyOperation.update,
         keywords: [this.entity],
       }),
-    });
+    })
   }
 
   @Delete(':id')
@@ -150,13 +144,13 @@ export class ProductController {
   async deleteProduct(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<SuccessfullyOperation> {
-    await this.productService.deleteProduct({ id });
+    await this.productService.deleteProduct({ id })
 
     return this.response.success({
       message: this.commonService.getMessage({
         message: Messages.successfullyOperation.delete,
         keywords: [this.entity],
       }),
-    });
+    })
   }
 }

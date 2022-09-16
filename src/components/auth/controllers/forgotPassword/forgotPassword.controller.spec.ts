@@ -1,18 +1,18 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { ForgotPasswordController } from './forgotPassword.controller';
+import { Test, TestingModule } from '@nestjs/testing'
+import { ForgotPasswordController } from './forgotPassword.controller'
 
 describe('ForgotPassword Controller', () => {
-  let controller: ForgotPasswordController;
+  let controller: ForgotPasswordController
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [ForgotPasswordController],
-    }).compile();
+    }).compile()
 
-    controller = module.get<ForgotPasswordController>(ForgotPasswordController);
-  });
+    controller = module.get<ForgotPasswordController>(ForgotPasswordController)
+  })
 
   it('should be defined', () => {
-    expect(controller).toBeDefined();
-  });
-});
+    expect(controller).toBeDefined()
+  })
+})

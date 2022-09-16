@@ -9,6 +9,6 @@ const Messages = {
   errorsOperation: {
     conflict: '${keyword} already exists',
   },
-};
+}
 
-export default Messages;
+export default Messages

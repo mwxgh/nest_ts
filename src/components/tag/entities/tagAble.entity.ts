@@ -1,9 +1,9 @@
-import { ProductEntity } from '../../../../src/components/product/entities/product.entity';
-import { Notifiable } from '../../../../src/shared/services/notification/decorators/notifiable.decorator';
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
-import { TagEntity } from './tag.entity';
-import { PostEntity } from '../../post/entities/post.entity';
-import { TimeStampEntity } from '../../base.entity';
+import { ProductEntity } from '../../../../src/components/product/entities/product.entity'
+import { Notifiable } from '../../../../src/shared/services/notification/decorators/notifiable.decorator'
+import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm'
+import { TagEntity } from './tag.entity'
+import { PostEntity } from '../../post/entities/post.entity'
+import { TimeStampEntity } from '../../base.entity'
 
 export enum TagAbleType {
   post = 'POST',
@@ -14,35 +14,35 @@ export enum TagAbleType {
 @Entity({ name: 'tagAbles' })
 export class TagAbleEntity extends TimeStampEntity {
   @Column({ name: 'tagId', type: 'int' })
-  tagId: number;
+  tagId: number
 
   @Column({ name: 'tagAbleId', type: 'int' })
-  tagAbleId: number;
+  tagAbleId: number
 
   @Column({ name: 'tagAbleType', type: 'enum', enum: TagAbleType })
-  tagAbleType: TagAbleType;
+  tagAbleType: TagAbleType
 
   @Column({ type: 'timestamp' })
-  public verifiedAt: Date;
+  public verifiedAt: Date
 
   @ManyToOne(() => TagEntity, (tag) => tag.tagAbles)
   @JoinColumn({
     name: 'tagId',
     referencedColumnName: 'id',
   })
-  tag: TagEntity;
+  tag: TagEntity
 
   @ManyToOne(() => PostEntity, (post) => post.tags)
   @JoinColumn({
     name: 'tagAbleId',
     referencedColumnName: 'id',
   })
-  public post: PostEntity;
+  public post: PostEntity
 
   @ManyToOne(() => ProductEntity, (product) => product.tags)
   @JoinColumn({
     name: 'tagAbleId',
     referencedColumnName: 'id',
   })
-  public product: ProductEntity;
+  public product: ProductEntity
 }

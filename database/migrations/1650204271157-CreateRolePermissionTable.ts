@@ -1,4 +1,4 @@
-import { MigrationInterface, QueryRunner, Table, TableIndex } from 'typeorm';
+import { MigrationInterface, QueryRunner, Table, TableIndex } from 'typeorm'
 
 export class CreateRolePermissionTable1650204271157
   implements MigrationInterface
@@ -26,7 +26,7 @@ export class CreateRolePermissionTable1650204271157
         ],
       }),
       true,
-    );
+    )
 
     await queryRunner.createIndex(
       'rolePermission',
@@ -34,7 +34,7 @@ export class CreateRolePermissionTable1650204271157
         name: 'IDX_ROLE_PERMISSION_ROLE_ID',
         columnNames: ['roleId'],
       }),
-    );
+    )
 
     await queryRunner.createIndex(
       'rolePermission',
@@ -42,7 +42,7 @@ export class CreateRolePermissionTable1650204271157
         name: 'IDX_ROLE_PERMISSION_PERMISSION_ID',
         columnNames: ['permissionId'],
       }),
-    );
+    )
 
     // await queryRunner.createForeignKey(
     //   'rolePermission',
@@ -66,6 +66,6 @@ export class CreateRolePermissionTable1650204271157
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.dropTable('rolePermission');
+    await queryRunner.dropTable('rolePermission')
   }
 }

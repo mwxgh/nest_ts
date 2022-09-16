@@ -1,14 +1,14 @@
-import { TimeStampEntity } from '../../base.entity';
-import { Entity, Column, ManyToMany, JoinTable } from 'typeorm';
-import { RoleEntity } from './role.entity';
+import { TimeStampEntity } from '../../base.entity'
+import { Entity, Column, ManyToMany, JoinTable } from 'typeorm'
+import { RoleEntity } from './role.entity'
 
 @Entity({ name: 'permissions' })
 export class PermissionEntity extends TimeStampEntity {
   @Column({ type: 'varchar' })
-  name: string;
+  name: string
 
   @Column({ type: 'varchar' })
-  slug: string;
+  slug: string
 
   @ManyToMany(() => RoleEntity, (role) => role.permissions, {
     cascade: ['insert'],
@@ -24,5 +24,5 @@ export class PermissionEntity extends TimeStampEntity {
       referencedColumnName: 'id',
     },
   })
-  roles: RoleEntity[];
+  roles: RoleEntity[]
 }

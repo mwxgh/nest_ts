@@ -1,23 +1,23 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsOptional, MaxLength, IsNotEmpty } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger'
+import { IsString, IsOptional, MaxLength, IsNotEmpty } from 'class-validator'
 
 export class UpdateProfileDto {
   @ApiProperty()
   @IsString()
   @IsOptional()
   @MaxLength(30)
-  username: string;
+  username: string
 
   @ApiProperty()
   @IsString()
   @IsOptional()
-  firstName: string;
+  firstName: string
 
   @ApiProperty()
   @IsString()
   @IsOptional()
   @MaxLength(30)
-  lastName: string;
+  lastName: string
 }
 
 export class UpdatePasswordDto {
@@ -25,11 +25,11 @@ export class UpdatePasswordDto {
   @MaxLength(30)
   @IsString()
   @IsNotEmpty()
-  password: string;
+  password: string
 
   @ApiProperty()
   @MaxLength(30)
   @IsString()
   @IsNotEmpty()
-  oldPassword: string;
+  oldPassword: string
 }

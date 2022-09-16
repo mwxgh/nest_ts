@@ -1,20 +1,20 @@
-import { Injectable } from '@nestjs/common';
-import { difference } from 'lodash';
-import { BaseService } from 'src/shared/services/base.service';
-import { Connection, Repository } from 'typeorm';
-import { TagEntity } from '../entities/tag.entity';
-import { TagAbleEntity, TagAbleType } from '../entities/tagAble.entity';
-import { TagAbleRepository } from '../repositories/tagAble.repository';
-import { TagService } from './tag.service';
+import { Injectable } from '@nestjs/common'
+import { difference } from 'lodash'
+import { BaseService } from 'src/shared/services/base.service'
+import { Connection, Repository } from 'typeorm'
+import { TagEntity } from '../entities/tag.entity'
+import { TagAbleEntity, TagAbleType } from '../entities/tagAble.entity'
+import { TagAbleRepository } from '../repositories/tagAble.repository'
+import { TagService } from './tag.service'
 
 @Injectable()
 export class TagAbleService extends BaseService {
-  public tagAbleRepository: Repository<any>;
-  public entity: any = TagAbleEntity;
+  public tagAbleRepository: Repository<any>
+  public entity: any = TagAbleEntity
   constructor(private dataSource: Connection, private tagService: TagService) {
-    super();
+    super()
     this.tagAbleRepository =
-      this.dataSource.getCustomRepository(TagAbleRepository);
+      this.dataSource.getCustomRepository(TagAbleRepository)
   }
 
   /**
@@ -25,22 +25,22 @@ export class TagAbleService extends BaseService {
    */
   async attachTagAble(
     params: {
-      tagId: number;
-      tagAbleId: number;
-      tagAbleType: TagAbleType;
+      tagId: number
+      tagAbleId: number
+      tagAbleType: TagAbleType
     }[],
   ): Promise<void> {
     params.forEach(async (param: any) => {
-      const { tagId, tagAbleId, tagAbleType } = param;
+      const { tagId, tagAbleId, tagAbleType } = param
 
-      const tagAble = new TagAbleEntity();
+      const tagAble = new TagAbleEntity()
 
-      tagAble.tagId = tagId;
-      tagAble.tagAbleId = tagAbleId;
-      tagAble.tagAbleType = tagAbleType;
+      tagAble.tagId = tagId
+      tagAble.tagAbleId = tagAbleId
+      tagAble.tagAbleType = tagAbleType
 
-      await this.tagAbleRepository.save(tagAble);
-    });
+      await this.tagAbleRepository.save(tagAble)
+    })
   }
 
   /**
@@ -48,7 +48,7 @@ export class TagAbleService extends BaseService {
    * All product, post, ... need to remove foreign key to this tag
    * @param params.tagId
    */
-  async detachTagAble(params: { tagId: number }[]);
+  async detachTagAble(params: { tagId: number }[])
 
   /**
    * Detach tagAble when delete product, post, ...
@@ -56,7 +56,7 @@ export class TagAbleService extends BaseService {
    * @param params.tagAbleId
    * @param params.tagAbleType
    */
-  async detachTagAble(params: { tagAbleId: number; tagAbleType: string }[]);
+  async detachTagAble(params: { tagAbleId: number; tagAbleType: string }[])
 
   /**
    * Detach tagAble
@@ -66,18 +66,18 @@ export class TagAbleService extends BaseService {
    */
   async detachTagAble(
     params: {
-      tagId?: number;
-      tagAbleId?: number;
-      tagAbleType?: string;
+      tagId?: number
+      tagAbleId?: number
+      tagAbleType?: string
     }[],
   ): Promise<void> {
     const tagAbleIdsExisting: number[] = await this.findWhere({
       where: params,
       select: ['id'],
-    });
+    })
 
     if (tagAbleIdsExisting.length > 0) {
-      await this.tagAbleRepository.delete(tagAbleIdsExisting);
+      await this.tagAbleRepository.delete(tagAbleIdsExisting)
     }
   }
 
@@ -88,11 +88,11 @@ export class TagAbleService extends BaseService {
    * @param params.tagAbleType
    */
   async updateRelationTagAble(params: {
-    tagIds: number[];
-    tagAbleId: number;
-    tagAbleType: TagAbleType;
+    tagIds: number[]
+    tagAbleId: number
+    tagAbleType: TagAbleType
   }): Promise<void> {
-    const { tagIds, tagAbleId, tagAbleType } = params;
+    const { tagIds, tagAbleId, tagAbleType } = params
 
     const currentTagIds: number[] = await this.findWhere({
       where: {
@@ -100,33 +100,33 @@ export class TagAbleService extends BaseService {
         tagAbleType,
       },
       select: ['tagId'],
-    });
+    })
 
     if (currentTagIds.length === 0) {
-      return;
+      return
     }
 
     // detach new tagAble
-    const detachTagIds: number[] = difference(currentTagIds, tagIds);
+    const detachTagIds: number[] = difference(currentTagIds, tagIds)
 
     const tagAbles = detachTagIds.map((tagAbleId) => ({
       tagAbleId,
       tagAbleType,
-    }));
+    }))
 
-    await this.detachTagAble(tagAbles);
+    await this.detachTagAble(tagAbles)
 
     // attach new tagAble
-    const newAttachTagIds: number[] = difference(tagIds, currentTagIds);
+    const newAttachTagIds: number[] = difference(tagIds, currentTagIds)
 
-    const existingTags = await this.tagService.findIdInOrFail(newAttachTagIds);
+    const existingTags = await this.tagService.findIdInOrFail(newAttachTagIds)
 
     const tagsAbleData = existingTags.map((tag: TagEntity) => ({
       tagId: tag.id,
       tagAbleId,
       tagAbleType,
-    }));
+    }))
 
-    await this.attachTagAble(tagsAbleData);
+    await this.attachTagAble(tagsAbleData)
   }
 }

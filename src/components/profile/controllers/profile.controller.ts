@@ -5,23 +5,23 @@ import {
   Body,
   Put,
   BadRequestException,
-} from '@nestjs/common';
-import { ApiResponseService } from '../../../shared/services/apiResponse/apiResponse.service';
-import { UserService } from '../../user/services/user.service';
-import { UserTransformer } from '../../user/transformers/user.transformer';
-import { JwtAuthGuard } from '../../auth/guards/jwtAuth.guard';
-import { HashService } from '../../../shared/services/hash/hash.service';
-import { UpdateProfileDto, UpdatePasswordDto } from '../dto/updateProfile.dto';
+} from '@nestjs/common'
+import { ApiResponseService } from '../../../shared/services/apiResponse/apiResponse.service'
+import { UserService } from '../../user/services/user.service'
+import { UserTransformer } from '../../user/transformers/user.transformer'
+import { JwtAuthGuard } from '../../auth/guards/jwtAuth.guard'
+import { HashService } from '../../../shared/services/hash/hash.service'
+import { UpdateProfileDto, UpdatePasswordDto } from '../dto/updateProfile.dto'
 import {
   ApiBearerAuth,
   ApiHeader,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
-} from '@nestjs/swagger';
-import { AuthenticatedUser } from 'src/components/auth/decorators/authenticatedUser.decorator';
-import { GetItemResponse } from 'src/shared/services/apiResponse/apiResponse.interface';
-import { Me } from 'src/components/user/dto/user.dto';
+} from '@nestjs/swagger'
+import { AuthenticatedUser } from 'src/components/auth/decorators/authenticatedUser.decorator'
+import { GetItemResponse } from 'src/shared/services/apiResponse/apiResponse.interface'
+import { Me } from 'src/components/user/dto/user.dto'
 
 @ApiTags('Profile')
 @ApiBearerAuth()
@@ -46,9 +46,9 @@ export class ProfileController {
   ): Promise<GetItemResponse> {
     const user = await this.userService.findOneOrFail(currentUser.id, {
       relations: ['roles'],
-    });
+    })
 
-    return this.response.item(user, new UserTransformer(['roles']));
+    return this.response.item(user, new UserTransformer(['roles']))
   }
 
   @Put()
@@ -58,21 +58,21 @@ export class ProfileController {
     @AuthenticatedUser() currentUser: Me,
     @Body() body: UpdateProfileDto,
   ): Promise<any> {
-    const data: any = {};
+    const data: any = {}
 
     if (body.username) {
-      data.username = body.username;
+      data.username = body.username
     }
     if (body.firstName) {
-      data.firstName = body.firstName;
+      data.firstName = body.firstName
     }
     if (body.lastName) {
-      data.lastName = body.lastName;
+      data.lastName = body.lastName
     }
 
-    const user = await this.userService.update(currentUser.id, data);
+    const user = await this.userService.update(currentUser.id, data)
 
-    return this.response.item(user, new UserTransformer());
+    return this.response.item(user, new UserTransformer())
   }
 
   @Put('password')
@@ -82,18 +82,18 @@ export class ProfileController {
     @AuthenticatedUser() currentUser: Me,
     @Body() body: UpdatePasswordDto,
   ): Promise<any> {
-    const { password, oldPassword } = body;
+    const { password, oldPassword } = body
 
     if (!this.hashService.check(oldPassword, currentUser.password)) {
-      throw new BadRequestException('Old password is not correct');
+      throw new BadRequestException('Old password is not correct')
     }
 
-    const hashed = this.hashService.hash(password);
+    const hashed = this.hashService.hash(password)
 
     const result = await this.userService.update(currentUser.id, {
       password: hashed,
-    });
+    })
 
-    return this.response.item(result, new UserTransformer());
+    return this.response.item(result, new UserTransformer())
   }
 }

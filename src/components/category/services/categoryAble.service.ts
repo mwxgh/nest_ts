@@ -1,27 +1,27 @@
-import { Injectable } from '@nestjs/common';
-import { difference } from 'lodash';
-import { BaseService } from 'src/shared/services/base.service';
-import { Connection, Repository } from 'typeorm';
-import { CategoryEntity } from '../entities/category.entity';
+import { Injectable } from '@nestjs/common'
+import { difference } from 'lodash'
+import { BaseService } from 'src/shared/services/base.service'
+import { Connection, Repository } from 'typeorm'
+import { CategoryEntity } from '../entities/category.entity'
 import {
   CategoryAbleEntity,
   CategoryAbleType,
-} from '../entities/categoryAble.entity';
-import { CategoryAbleRepository } from '../repositories/categoryAble.repository';
-import { CategoryService } from './category.service';
+} from '../entities/categoryAble.entity'
+import { CategoryAbleRepository } from '../repositories/categoryAble.repository'
+import { CategoryService } from './category.service'
 
 @Injectable()
 export class CategoryAbleService extends BaseService {
-  public categoryAbleRepository: Repository<any>;
-  public entity: any = CategoryAbleEntity;
+  public categoryAbleRepository: Repository<any>
+  public entity: any = CategoryAbleEntity
   constructor(
     private connection: Connection,
     private categoryService: CategoryService,
   ) {
-    super();
+    super()
     this.categoryAbleRepository = this.connection.getCustomRepository(
       CategoryAbleRepository,
-    );
+    )
   }
 
   /**
@@ -32,22 +32,22 @@ export class CategoryAbleService extends BaseService {
    */
   async attachCategoryAble(
     params: {
-      categoryId: number;
-      categoryAbleId: number;
-      categoryAbleType: CategoryAbleType;
+      categoryId: number
+      categoryAbleId: number
+      categoryAbleType: CategoryAbleType
     }[],
   ): Promise<void> {
     params.forEach(async (param: any) => {
-      const { categoryId, categoryAbleId, categoryAbleType } = param;
+      const { categoryId, categoryAbleId, categoryAbleType } = param
 
-      const categoryAble = new CategoryAbleEntity();
+      const categoryAble = new CategoryAbleEntity()
 
-      categoryAble.categoryId = categoryId;
-      categoryAble.categoryAbleId = categoryAbleId;
-      categoryAble.categoryAbleType = categoryAbleType;
+      categoryAble.categoryId = categoryId
+      categoryAble.categoryAbleId = categoryAbleId
+      categoryAble.categoryAbleType = categoryAbleType
 
-      await this.categoryAbleRepository.save(categoryAble);
-    });
+      await this.categoryAbleRepository.save(categoryAble)
+    })
   }
 
   /**
@@ -55,7 +55,7 @@ export class CategoryAbleService extends BaseService {
    * All product, post, ... need to remove foreign key to this category
    * @param params.categoryId number
    */
-  async detachCategoryAble(params: { categoryId: number }[]);
+  async detachCategoryAble(params: { categoryId: number }[])
 
   /**
    * Detach categoryAble when delete product, post, ...
@@ -64,8 +64,8 @@ export class CategoryAbleService extends BaseService {
    * @param params.categoryAbleType
    */
   async detachCategoryAble(
-    params: { categoryAbleId: number; categoryAbleType: string }[],
-  );
+    params: { categoryAbleId: number; categoryAbleType: CategoryAbleType }[],
+  )
 
   /**
    * Detach categoryAble
@@ -77,18 +77,18 @@ export class CategoryAbleService extends BaseService {
    */
   async detachCategoryAble(
     params: {
-      categoryId?: number;
-      categoryAbleId?: number;
-      categoryAbleType?: string;
+      categoryId?: number
+      categoryAbleId?: number
+      categoryAbleType?: CategoryAbleType
     }[],
   ): Promise<void> {
     const categoryAbleIdsExisting: number[] = await this.findWhere({
       where: params,
       select: ['id'],
-    });
+    })
 
     if (categoryAbleIdsExisting.length > 0) {
-      await this.categoryAbleRepository.delete(categoryAbleIdsExisting);
+      await this.categoryAbleRepository.delete(categoryAbleIdsExisting)
     }
   }
 
@@ -99,11 +99,11 @@ export class CategoryAbleService extends BaseService {
    * @param params.categoryAbleType
    */
   async updateRelationCategoryAble(params: {
-    categoryIds: number[];
-    categoryAbleId: number;
-    categoryAbleType: CategoryAbleType;
+    categoryIds: number[]
+    categoryAbleId: number
+    categoryAbleType: CategoryAbleType
   }): Promise<void> {
-    const { categoryIds, categoryAbleId, categoryAbleType } = params;
+    const { categoryIds, categoryAbleId, categoryAbleType } = params
 
     const currentCategoryIds: number[] = await this.findWhere({
       where: {
@@ -111,34 +111,34 @@ export class CategoryAbleService extends BaseService {
         categoryAbleType,
       },
       select: ['categoryId'],
-    });
+    })
 
     if (currentCategoryIds.length === 0) {
-      return;
+      return
     }
 
     // detach new categoryAble
     const detachCategoryIds: number[] = difference(
       currentCategoryIds,
       categoryIds,
-    );
+    )
 
     const categoryAbles = detachCategoryIds.map((categoryAbleId) => ({
       categoryAbleId,
       categoryAbleType,
-    }));
+    }))
 
-    await this.detachCategoryAble(categoryAbles);
+    await this.detachCategoryAble(categoryAbles)
 
     // attach new categoryAble
     const newAttachCategoryIds: number[] = difference(
       categoryIds,
       currentCategoryIds,
-    );
+    )
 
     const existingCategories = await this.categoryService.findIdInOrFail(
       newAttachCategoryIds,
-    );
+    )
 
     const categoriesAbleData = existingCategories.map(
       (category: CategoryEntity) => ({
@@ -146,8 +146,8 @@ export class CategoryAbleService extends BaseService {
         categoryAbleId,
         categoryAbleType,
       }),
-    );
+    )
 
-    await this.attachCategoryAble(categoriesAbleData);
+    await this.attachCategoryAble(categoriesAbleData)
   }
 }

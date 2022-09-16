@@ -11,4 +11,4 @@ export const environment = {
   dbName: 'root',
   dbUser: '',
   dbPass: '',
-};
+}

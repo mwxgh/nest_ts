@@ -1,16 +1,16 @@
-import { ApiProperty, PartialType, PickType } from '@nestjs/swagger';
-import { IsInt, IsNotEmpty, IsString } from 'class-validator';
+import { ApiProperty, PartialType, PickType } from '@nestjs/swagger'
+import { IsInt, IsNotEmpty, IsString } from 'class-validator'
 
 export class RoleProperties {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  name: string;
+  name: string
 
   @ApiProperty({ type: Number, default: 1 })
   @IsInt()
   @IsNotEmpty()
-  level: number;
+  level: number
 }
 
 export class CreateRoleDto extends PickType(RoleProperties, [

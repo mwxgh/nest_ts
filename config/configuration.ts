@@ -1,5 +1,5 @@
-import database from './database';
+import database from './database'
 
 export default (): any => ({
   database: database(),
-});
+})

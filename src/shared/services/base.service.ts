@@ -4,55 +4,55 @@ import {
   SelectQueryBuilder,
   FindManyOptions,
   FindOneOptions,
-} from 'typeorm';
+} from 'typeorm'
 import {
   BadRequestException,
   ConflictException,
   NotFoundException,
-} from '@nestjs/common';
-import { isArray, omit, filter, keys, isUndefined } from 'lodash';
-import { IPaginationOptions, Pagination } from './pagination';
-import { default as slugify } from 'slugify';
+} from '@nestjs/common'
+import { isArray, omit, filter, keys, isUndefined } from 'lodash'
+import { IPaginationOptions, Pagination } from './pagination'
+import { default as slugify } from 'slugify'
 import {
   DEFAULT_SORT_BY,
   DEFAULT_SORT_TYPE,
   SortType,
-} from '../constant/constant';
-import { Entity, ResponseEntity } from '../interfaces/interface';
+} from '../constant/constant'
+import { Entity, ResponseEntity } from '../interfaces/interface'
 
 const defaultPaginationOption: IPaginationOptions = {
   limit: 10,
   page: 1,
-};
+}
 
 export class BaseService {
-  public repository: Repository<any>;
-  public entity: any;
-  public alias = 'alias';
+  public repository: Repository<any>
+  public entity: any
+  public alias = 'alias'
 
   async get<T>(): Promise<T[]> {
-    return this.repository.find();
+    return this.repository.find()
   }
 
   private resolveOptions(options: IPaginationOptions): [number, number] {
-    const page = options.page;
-    const limit = options.limit;
+    const page = options.page
+    const limit = options.limit
 
-    return [page, limit];
+    return [page, limit]
   }
 
   private async paginateQueryBuilder<T>(
     queryBuilder: SelectQueryBuilder<T>,
     options: IPaginationOptions,
   ): Promise<Pagination<T>> {
-    const [page, limit] = this.resolveOptions(options);
+    const [page, limit] = this.resolveOptions(options)
 
     const [items, total] = await queryBuilder
       .take(limit)
       .skip((page - 1) * limit)
-      .getManyAndCount();
+      .getManyAndCount()
 
-    return this.createPaginationObject<T>(items, total, page, limit);
+    return this.createPaginationObject<T>(items, total, page, limit)
   }
 
   private createPaginationObject<T>(
@@ -61,7 +61,7 @@ export class BaseService {
     currentPage: number,
     limit: number,
   ) {
-    const totalPages = Math.ceil(totalItems / limit);
+    const totalPages = Math.ceil(totalItems / limit)
 
     return new Pagination(items, {
       totalItems: totalItems,
@@ -69,7 +69,7 @@ export class BaseService {
       itemsPerPage: limit,
       totalPages: totalPages,
       currentPage: currentPage,
-    });
+    })
   }
 
   /**
@@ -85,18 +85,18 @@ export class BaseService {
     const query =
       queryBuilder instanceof SelectQueryBuilder
         ? queryBuilder
-        : this.repository.createQueryBuilder(this.alias);
+        : this.repository.createQueryBuilder(this.alias)
 
     options = omit(
       options,
       filter(keys(options), function (key) {
-        return isUndefined(options[key]);
+        return isUndefined(options[key])
       }),
-    );
+    )
 
-    options = { ...defaultPaginationOption, ...options };
+    options = { ...defaultPaginationOption, ...options }
 
-    return this.paginateQueryBuilder(query, options);
+    return this.paginateQueryBuilder(query, options)
   }
 
   /**
@@ -109,13 +109,13 @@ export class BaseService {
     id: number,
     options?: { relations: string[] },
   ): Promise<any> {
-    const item = await this.repository.findOne(id, options);
+    const item = await this.repository.findOne(id, options)
 
     if (!item) {
-      throw new BadRequestException(`Resource not found`);
+      throw new BadRequestException(`Resource not found`)
     }
 
-    return item;
+    return item
   }
 
   /**
@@ -124,13 +124,13 @@ export class BaseService {
    * @param ids number[]
    */
   async findIdInOrFail(ids: number[]): Promise<ResponseEntity[]> {
-    const items = await this.repository.findByIds(ids);
+    const items = await this.repository.findByIds(ids)
 
     if (!items) {
-      throw new BadRequestException('Resources not found');
+      throw new BadRequestException('Resources not found')
     }
 
-    return items;
+    return items
   }
 
   /**
@@ -138,13 +138,13 @@ export class BaseService {
    * @returns entity | error
    */
   async findAllOrFail(): Promise<ResponseEntity> {
-    const items = await this.repository.find();
+    const items = await this.repository.find()
 
     if (!items) {
-      throw new BadRequestException('Resource not found');
+      throw new BadRequestException('Resource not found')
     }
 
-    return items;
+    return items
   }
 
   /**
@@ -155,11 +155,11 @@ export class BaseService {
    * @returns data save to entity
    */
   async create(data: Entity): Promise<any> {
-    const item = await this.repository.create(data);
+    const item = await this.repository.create(data)
 
-    await getManager().save(this.entity, item);
+    await getManager().save(this.entity, item)
 
-    return item;
+    return item
   }
 
   /**
@@ -170,7 +170,7 @@ export class BaseService {
    * @returns save data
    */
   async save(data: Entity): Promise<void> {
-    await this.repository.save(data);
+    await this.repository.save(data)
   }
 
   /**
@@ -180,17 +180,17 @@ export class BaseService {
    * @param values
    */
   async firstOrCreate(options: FindOneOptions, values: Entity): Promise<any> {
-    let item: any;
+    let item: any
 
-    const items = await this.repository.find({ ...options, ...{ take: 1 } });
+    const items = await this.repository.find({ ...options, ...{ take: 1 } })
 
     if (!isArray(items) || items.length === 0) {
-      item = await this.create(values);
+      item = await this.create(values)
     } else {
-      item = items[0];
+      item = items[0]
     }
 
-    return item;
+    return item
   }
 
   /**
@@ -199,12 +199,12 @@ export class BaseService {
    * @param options FindOneOptions
    */
   async first(options: FindOneOptions): Promise<any> {
-    const items = await this.repository.find({ ...options, ...{ take: 1 } });
+    const items = await this.repository.find({ ...options, ...{ take: 1 } })
 
     if (Array.isArray(items) && items.length !== 0) {
-      return items[0];
+      return items[0]
     } else {
-      return null;
+      return null
     }
   }
 
@@ -214,13 +214,13 @@ export class BaseService {
    * @param options FindOneOptions
    */
   async firstOrFail(options: FindOneOptions): Promise<any> {
-    const items = await this.repository.find({ ...options, ...{ take: 1 } });
+    const items = await this.repository.find({ ...options, ...{ take: 1 } })
 
     if (!Array.isArray(items) || items.length === 0) {
-      throw new NotFoundException('Resource');
+      throw new NotFoundException('Resource')
     }
 
-    return items[0];
+    return items[0]
   }
 
   /**
@@ -229,10 +229,10 @@ export class BaseService {
    * @param options FindOneOptions
    */
   async checkExisting(options: FindOneOptions): Promise<void> {
-    const items = await this.repository.find({ ...options, ...{ take: 1 } });
+    const items = await this.repository.find({ ...options, ...{ take: 1 } })
 
     if (Array.isArray(items) && items.length !== 0) {
-      throw new ConflictException('Data existing');
+      throw new ConflictException('Data existing')
     }
   }
 
@@ -243,11 +243,11 @@ export class BaseService {
    * @param data object
    */
   async update(id: number, data: Entity): Promise<any> {
-    const item = await this.repository.findOne(id);
+    const item = await this.repository.findOne(id)
 
-    const result = await getManager().save(this.entity, { ...item, ...data });
+    const result = await getManager().save(this.entity, { ...item, ...data })
 
-    return result;
+    return result
   }
 
   /**
@@ -262,17 +262,17 @@ export class BaseService {
     attributes: { [key: string]: any },
     values: { [key: string]: any },
   ): Promise<any> {
-    let item: any;
+    let item: any
 
-    const items = await this.repository.find({ where: attributes, take: 1 });
+    const items = await this.repository.find({ where: attributes, take: 1 })
 
     if (!isArray(items) || items.length === 0) {
-      item = await this.create(values);
+      item = await this.create(values)
     } else {
-      item = await this.update(items[0].id, values);
+      item = await this.update(items[0].id, values)
     }
 
-    return item;
+    return item
   }
 
   /**
@@ -290,7 +290,7 @@ export class BaseService {
     return this.repository.find({
       where: condition,
       select: columns,
-    });
+    })
   }
 
   /**
@@ -299,7 +299,7 @@ export class BaseService {
    * @param options
    */
   async count(options: FindManyOptions): Promise<number> {
-    return await this.repository.count(options);
+    return await this.repository.count(options)
   }
 
   /**
@@ -310,7 +310,7 @@ export class BaseService {
   async destroy(
     criteria: string | string[] | number | number[],
   ): Promise<void> {
-    await this.repository.delete(criteria);
+    await this.repository.delete(criteria)
   }
 
   /**
@@ -323,37 +323,37 @@ export class BaseService {
    *        }
    */
   async queryBuilder<T>(params: {
-    entity: string;
-    fields?: string[];
-    keyword?: string | '';
-    sortBy?: string;
-    sortType?: SortType;
-    filter?: { [key: string]: string };
+    entity: string
+    fields?: string[]
+    keyword?: string | ''
+    sortBy?: string
+    sortType?: SortType
+    filter?: { [key: string]: string }
   }): Promise<SelectQueryBuilder<T>> {
-    const { entity, fields, keyword } = params;
-    const orderBy = params.sortBy ?? DEFAULT_SORT_BY;
-    const orderType = params.sortType ?? DEFAULT_SORT_TYPE;
+    const { entity, fields, keyword } = params
+    const orderBy = params.sortBy ?? DEFAULT_SORT_BY
+    const orderType = params.sortType ?? DEFAULT_SORT_TYPE
 
-    let baseQuery = this.repository.createQueryBuilder(`${entity}`);
+    let baseQuery = this.repository.createQueryBuilder(`${entity}`)
 
     if (keyword && keyword !== '' && fields) {
       for (const field of fields) {
         baseQuery = baseQuery.where(`${entity}.${field}  LIKE :keyword`, {
           keyword: `%${keyword}%`,
-        });
+        })
       }
     }
 
-    baseQuery = baseQuery.orderBy(`${entity}.${orderBy}`, orderType);
+    baseQuery = baseQuery.orderBy(`${entity}.${orderBy}`, orderType)
 
     if (orderBy !== DEFAULT_SORT_BY) {
       baseQuery = baseQuery.addOrderBy(
         `${entity}.${DEFAULT_SORT_BY}`,
         DEFAULT_SORT_TYPE,
-      );
+      )
     }
 
-    return baseQuery;
+    return baseQuery
   }
 
   /**
@@ -365,44 +365,44 @@ export class BaseService {
    */
   async generateSlug(name: string): Promise<string> {
     const makeId = (length: number): string => {
-      let result = '';
+      let result = ''
 
       const characters = this.getCharFromASCII([
         { from: 97, range: 26 },
         { from: 48, range: 10 },
-      ]);
-      const charactersLength = characters.length;
+      ])
+      const charactersLength = characters.length
 
       for (let i = 0; i < length; i++) {
         result += characters.charAt(
           Math.floor(Math.random() * charactersLength),
-        );
+        )
       }
 
-      return result;
-    };
+      return result
+    }
 
-    let i = 0;
+    let i = 0
     let slug = slugify(name, {
       replacement: '-',
       remove: undefined,
       lower: true,
-    });
-    let s = slug;
+    })
+    let s = slug
 
     while (true) {
-      i++;
-      if (i == 100) break;
-      const count = await this.count({ where: { slug: s } });
+      i++
+      if (i == 100) break
+      const count = await this.count({ where: { slug: s } })
       if (count === 0) {
-        slug = s;
-        break;
+        slug = s
+        break
       } else {
-        s = `${slug}-${makeId(8)}`;
+        s = `${slug}-${makeId(8)}`
       }
     }
 
-    return slug;
+    return slug
   }
 
   /**
@@ -417,13 +417,11 @@ export class BaseService {
    */
   getCharFromASCII(params: { from: number; range: number }[]): string {
     const arrayCharsFromASCII = params.map((o) => {
-      const charFromASCII = Array.from(Array(o.range)).map(
-        (e, i) => i + o.from,
-      );
+      const charFromASCII = Array.from(Array(o.range)).map((e, i) => i + o.from)
 
-      return charFromASCII.map((x) => String.fromCharCode(x)).join('');
-    });
+      return charFromASCII.map((x) => String.fromCharCode(x)).join('')
+    })
 
-    return arrayCharsFromASCII.join('');
+    return arrayCharsFromASCII.join('')
   }
 }

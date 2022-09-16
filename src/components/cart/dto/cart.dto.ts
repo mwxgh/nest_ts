@@ -1,24 +1,24 @@
-import { ApiProperty, PartialType, PickType } from '@nestjs/swagger';
-import { IsInt, IsNumber, Min } from 'class-validator';
+import { ApiProperty, PartialType, PickType } from '@nestjs/swagger'
+import { IsInt, IsNumber, Min } from 'class-validator'
 
 export class CartItemProperties {
   @ApiProperty()
   @IsNumber()
   @Min(1)
   @IsInt()
-  productId: number;
+  productId: number
 
   @ApiProperty()
   @IsNumber()
   @Min(1)
   @IsInt()
-  cartId: number;
+  cartId: number
 
   @ApiProperty()
   @IsNumber()
   @IsInt()
   @Min(1)
-  quantity: number;
+  quantity: number
 }
 
 export class CreateCartItemDto extends PickType(CartItemProperties, [

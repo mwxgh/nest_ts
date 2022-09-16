@@ -1,4 +1,4 @@
-import { MigrationInterface, QueryRunner, Table, TableIndex } from 'typeorm';
+import { MigrationInterface, QueryRunner, Table, TableIndex } from 'typeorm'
 
 export class CreateCartItemsTable1650208769595 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
@@ -42,24 +42,24 @@ export class CreateCartItemsTable1650208769595 implements MigrationInterface {
         ],
       }),
       true,
-    );
+    )
     await queryRunner.createIndex(
       'cartItems',
       new TableIndex({
         name: 'IDX_CART_ITEM_PROD',
         columnNames: ['productId'],
       }),
-    );
+    )
     await queryRunner.createIndex(
       'cartItems',
       new TableIndex({
         name: 'IDX_CART_ITEM_CART',
         columnNames: ['cartId'],
       }),
-    );
+    )
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.dropTable('cartItems');
+    await queryRunner.dropTable('cartItems')
   }
 }

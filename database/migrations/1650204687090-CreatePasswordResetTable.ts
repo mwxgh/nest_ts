@@ -1,4 +1,4 @@
-import { MigrationInterface, QueryRunner, Table, TableIndex } from 'typeorm';
+import { MigrationInterface, QueryRunner, Table, TableIndex } from 'typeorm'
 
 export class CreatePasswordResetTable1650204687090
   implements MigrationInterface
@@ -42,17 +42,17 @@ export class CreatePasswordResetTable1650204687090
         ],
       }),
       true,
-    );
+    )
     await queryRunner.createIndex(
       'passwordResets',
       new TableIndex({
         name: 'IDX_PWD_RESET_EMAIL',
         columnNames: ['email'],
       }),
-    );
+    )
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.dropTable('passwordResets');
+    await queryRunner.dropTable('passwordResets')
   }
 }

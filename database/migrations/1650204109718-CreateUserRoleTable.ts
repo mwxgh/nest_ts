@@ -1,4 +1,4 @@
-import { MigrationInterface, QueryRunner, Table, TableIndex } from 'typeorm';
+import { MigrationInterface, QueryRunner, Table, TableIndex } from 'typeorm'
 
 export class CreateUserRoleTable1650204109718 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
@@ -24,14 +24,14 @@ export class CreateUserRoleTable1650204109718 implements MigrationInterface {
         ],
       }),
       true,
-    );
+    )
     await queryRunner.createIndex(
       'userRole',
       new TableIndex({
         name: 'IDX_USER_ROLE_USER_ID',
         columnNames: ['userId'],
       }),
-    );
+    )
 
     await queryRunner.createIndex(
       'userRole',
@@ -39,7 +39,7 @@ export class CreateUserRoleTable1650204109718 implements MigrationInterface {
         name: 'IDX_USER_ROLE_ROLE_ID',
         columnNames: ['roleId'],
       }),
-    );
+    )
 
     // await queryRunner.createForeignKey(
     //   'userRole',
@@ -63,6 +63,6 @@ export class CreateUserRoleTable1650204109718 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.dropTable('userRole');
+    await queryRunner.dropTable('userRole')
   }
 }

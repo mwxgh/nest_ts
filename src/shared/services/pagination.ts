@@ -2,38 +2,38 @@ export interface IPaginationOptions {
   /**
    * the amount of items to be requested per page
    */
-  limit?: number;
+  limit?: number
   /**
    * the page that is requested
    */
-  page?: number;
+  page?: number
   /**
    * a basic route for generating links (i.e., WITHOUT query params)
    */
-  route?: string;
+  route?: string
 }
 
 export interface IPaginationMeta {
   /**
    * the amount of items on this specific page
    */
-  itemCount: number;
+  itemCount: number
   /**
    * the total amount of items
    */
-  totalItems: number;
+  totalItems: number
   /**
    * the amount of items that were requested per page
    */
-  itemsPerPage: number;
+  itemsPerPage: number
   /**
    * the total amount of pages in this paginator
    */
-  totalPages: number;
+  totalPages: number
   /**
    * the current page this paginator "points" to
    */
-  currentPage: number;
+  currentPage: number
 }
 
 export class Pagination<PaginationObject> {

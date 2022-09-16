@@ -1,4 +1,4 @@
-import { MigrationInterface, QueryRunner, Table, TableIndex } from 'typeorm';
+import { MigrationInterface, QueryRunner, Table, TableIndex } from 'typeorm'
 
 export class CreateCategoryAblesTable1650206464855
   implements MigrationInterface
@@ -51,17 +51,17 @@ export class CreateCategoryAblesTable1650206464855
         ],
       }),
       true,
-    );
+    )
     await queryRunner.createIndex(
       'categoryAble',
       new TableIndex({
         name: 'IDX_CATEGORIABLE_ID',
         columnNames: ['categoryId'],
       }),
-    );
+    )
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.dropTable('categoryAble');
+    await queryRunner.dropTable('categoryAble')
   }
 }

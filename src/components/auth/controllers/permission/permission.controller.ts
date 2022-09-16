@@ -9,35 +9,35 @@ import {
   Put,
   Query,
   UseGuards,
-} from '@nestjs/common';
-import { ApiResponseService } from '../../../../shared/services/apiResponse/apiResponse.service';
-import { PermissionService } from '../../services/permission.service';
-import { PermissionTransformer } from '../../transformers/permission.transformer';
-import { IPaginationOptions } from '../../../../shared/services/pagination';
+} from '@nestjs/common'
+import { ApiResponseService } from '../../../../shared/services/apiResponse/apiResponse.service'
+import { PermissionService } from '../../services/permission.service'
+import { PermissionTransformer } from '../../transformers/permission.transformer'
+import { IPaginationOptions } from '../../../../shared/services/pagination'
 import {
   ApiBearerAuth,
   ApiHeader,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
-} from '@nestjs/swagger';
-import { Auth } from '../../decorators/auth.decorator';
-import { assign } from 'lodash';
+} from '@nestjs/swagger'
+import { Auth } from '../../decorators/auth.decorator'
+import { assign } from 'lodash'
 import {
   CreatePermissionDto,
   UpdatePermissionDto,
-} from '../../dto/permission.dto';
+} from '../../dto/permission.dto'
 
-import { JwtAuthGuard } from '../../guards/jwtAuth.guard';
-import { QueryManyDto } from 'src/shared/dto/queryParams.dto';
+import { JwtAuthGuard } from '../../guards/jwtAuth.guard'
+import { QueryManyDto } from 'src/shared/dto/queryParams.dto'
 import {
   GetItemResponse,
   GetListPaginationResponse,
   GetListResponse,
   SuccessfullyOperation,
-} from 'src/shared/services/apiResponse/apiResponse.interface';
-import Messages from 'src/shared/message/message';
-import { CommonService } from 'src/shared/services/common.service';
+} from 'src/shared/services/apiResponse/apiResponse.interface'
+import Messages from 'src/shared/message/message'
+import { CommonService } from 'src/shared/services/common.service'
 
 @ApiTags('Permissions')
 @ApiHeader({
@@ -54,21 +54,21 @@ export class PermissionController {
     private commonService: CommonService,
   ) {}
 
-  private entity = 'permissions';
-  private fields = ['name'];
+  private entity = 'permissions'
+  private fields = ['name']
 
   @Post('')
   @Auth('admin')
   @ApiOperation({ summary: 'Admin create new permission' })
   @ApiOkResponse({ description: 'New permission entity' })
   async createPermission(@Body() data: CreatePermissionDto): Promise<any> {
-    const slug = await this.permissionService.generateSlug(data.name);
+    const slug = await this.permissionService.generateSlug(data.name)
 
     const permission = await this.permissionService.create(
       assign(data, { slug: slug }),
-    );
+    )
 
-    return this.response.item(permission, new PermissionTransformer());
+    return this.response.item(permission, new PermissionTransformer())
   }
 
   @Get()
@@ -82,7 +82,7 @@ export class PermissionController {
   async readPermissions(
     @Query() query: QueryManyDto,
   ): Promise<GetListResponse | GetListPaginationResponse> {
-    const { search, sortBy, sortType } = query;
+    const { search, sortBy, sortType } = query
 
     const queryBuilder = await this.permissionService.queryBuilder({
       entity: this.entity,
@@ -90,25 +90,25 @@ export class PermissionController {
       keyword: search,
       sortBy,
       sortType,
-    });
+    })
 
     if (query.perPage || query.page) {
       const paginateOption: IPaginationOptions = {
         limit: query.perPage ? query.perPage : 10,
         page: query.page ? query.page : 1,
-      };
+      }
       const permissions = await this.permissionService.paginate(
         queryBuilder,
         paginateOption,
-      );
+      )
 
-      return this.response.paginate(permissions, new PermissionTransformer());
+      return this.response.paginate(permissions, new PermissionTransformer())
     }
 
     return this.response.collection(
       await queryBuilder.getMany(),
       new PermissionTransformer(),
-    );
+    )
   }
 
   @Get(':id')
@@ -118,9 +118,9 @@ export class PermissionController {
   async readPermission(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<GetItemResponse> {
-    const permission = await this.permissionService.findOneOrFail(id);
+    const permission = await this.permissionService.findOneOrFail(id)
 
-    return this.response.item(permission, new PermissionTransformer());
+    return this.response.item(permission, new PermissionTransformer())
   }
 
   @Put(':id')
@@ -131,16 +131,16 @@ export class PermissionController {
     @Param('id', ParseIntPipe) id: number,
     @Body() data: UpdatePermissionDto,
   ): Promise<any> {
-    await this.permissionService.findOneOrFail(id);
+    await this.permissionService.findOneOrFail(id)
 
-    const slug = await this.permissionService.generateSlug(data.name);
+    const slug = await this.permissionService.generateSlug(data.name)
 
     const permission = await this.permissionService.update(
       id,
       assign(data, { slug: slug }),
-    );
+    )
 
-    return this.response.item(permission, new PermissionTransformer());
+    return this.response.item(permission, new PermissionTransformer())
   }
 
   @Delete(':id')
@@ -150,15 +150,15 @@ export class PermissionController {
   async delete(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<SuccessfullyOperation> {
-    await this.permissionService.findOneOrFail(id);
+    await this.permissionService.findOneOrFail(id)
 
-    await this.permissionService.destroy(id);
+    await this.permissionService.destroy(id)
 
     return this.response.success({
       message: this.commonService.getMessage({
         message: Messages.successfullyOperation.delete,
         keywords: ['permission'],
       }),
-    });
+    })
   }
 }

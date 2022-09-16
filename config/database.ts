@@ -1,23 +1,23 @@
-import { UserEntity } from '../src/components/user/entities/user.entity';
-import { RoleEntity } from '../src/components/auth/entities/role.entity';
-import { UserRoleEntity } from '../src/components/auth/entities/userRole.entity';
-import { PermissionEntity } from '../src/components/auth/entities/permission.entity';
-import { RolePermissionEntity } from '../src/components/auth/entities/rolePermission.entity';
-import { PasswordResetEntity } from '../src/components/auth/entities/passwordReset.entity';
-import { ProductEntity } from '../src/components/product/entities/product.entity';
-import { CartEntity } from '../src/components/cart/entities/cart.entity';
-import { CartItemEntity } from '../src/components/cart/entities/cartItem.entity';
-import { CategoryEntity } from '../src/components/category/entities/category.entity';
-import { CategoryAbleEntity } from '../src/components/category/entities/categoryAble.entity';
-import { OrderEntity } from '../src/components/order/entities/order.entity';
-import { OrderProductEntity } from '../src/components/order/entities/orderProduct.entity';
-import { TagEntity } from '../src/components/tag/entities/tag.entity';
-import { TagAbleEntity } from '../src/components/tag/entities/tagAble.entity';
-import { CommentEntity } from '../src/components/comment/entities/comment.entity';
-import { ImageEntity } from '../src/components/image/entities/image.entity';
-import { ContactEntity } from '../src/components/contact/entities/contact.entity';
-import { PostEntity } from '../src/components/post/entities/post.entity';
-import { ImageAbleEntity } from '../src/components/image/entities/imageAble.entity';
+import { UserEntity } from '../src/components/user/entities/user.entity'
+import { RoleEntity } from '../src/components/auth/entities/role.entity'
+import { UserRoleEntity } from '../src/components/auth/entities/userRole.entity'
+import { PermissionEntity } from '../src/components/auth/entities/permission.entity'
+import { RolePermissionEntity } from '../src/components/auth/entities/rolePermission.entity'
+import { PasswordResetEntity } from '../src/components/auth/entities/passwordReset.entity'
+import { ProductEntity } from '../src/components/product/entities/product.entity'
+import { CartEntity } from '../src/components/cart/entities/cart.entity'
+import { CartItemEntity } from '../src/components/cart/entities/cartItem.entity'
+import { CategoryEntity } from '../src/components/category/entities/category.entity'
+import { CategoryAbleEntity } from '../src/components/category/entities/categoryAble.entity'
+import { OrderEntity } from '../src/components/order/entities/order.entity'
+import { OrderProductEntity } from '../src/components/order/entities/orderProduct.entity'
+import { TagEntity } from '../src/components/tag/entities/tag.entity'
+import { TagAbleEntity } from '../src/components/tag/entities/tagAble.entity'
+import { CommentEntity } from '../src/components/comment/entities/comment.entity'
+import { ImageEntity } from '../src/components/image/entities/image.entity'
+import { ContactEntity } from '../src/components/contact/entities/contact.entity'
+import { PostEntity } from '../src/components/post/entities/post.entity'
+import { ImageAbleEntity } from '../src/components/image/entities/imageAble.entity'
 
 export default (): any => ({
   type: process.env.DB_CONNECTION || 'mysql',
@@ -67,4 +67,4 @@ export default (): any => ({
     // to be compiled into dist/ folder.
     migrationsDir: 'database/migrations',
   },
-});
+})

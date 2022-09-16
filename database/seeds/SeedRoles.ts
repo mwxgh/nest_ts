@@ -1,5 +1,5 @@
-import { Connection } from 'typeorm';
-import { RoleEntity } from '../../src/components/auth/entities/role.entity';
+import { Connection } from 'typeorm'
+import { RoleEntity } from '../../src/components/auth/entities/role.entity'
 
 export default class RolesTableSeeder {
   async up(connection: Connection): Promise<any> {
@@ -7,15 +7,15 @@ export default class RolesTableSeeder {
       { name: 'Super Admin', slug: 'superadmin' },
       { name: 'Admin', slug: 'admin' },
       { name: 'User', slug: 'user' },
-    ];
+    ]
 
     const roles = seed.map((item) => {
-      const role = new RoleEntity();
-      role.name = item.name;
-      role.slug = item.slug;
-      return role;
-    });
+      const role = new RoleEntity()
+      role.name = item.name
+      role.slug = item.slug
+      return role
+    })
 
-    await connection.manager.save(roles);
+    await connection.manager.save(roles)
   }
 }

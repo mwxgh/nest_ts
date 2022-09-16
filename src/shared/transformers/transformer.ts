@@ -1,9 +1,9 @@
-import { InternalServerErrorException } from '@nestjs/common';
-import { isNil, isArray, forEach, camelCase, isFunction, map } from 'lodash';
-import { Entity, ResponseEntity } from '../interfaces/interface';
+import { InternalServerErrorException } from '@nestjs/common'
+import { isNil, isArray, forEach, camelCase, isFunction, map } from 'lodash'
+import { Entity, ResponseEntity } from '../interfaces/interface'
 
 export interface TransformerInterface {
-  get(entity: Entity): Entity;
+  get(entity: Entity): Entity
   /**
    * Create a new item resource object
    *
@@ -15,7 +15,7 @@ export interface TransformerInterface {
   item(
     entity: Entity,
     transformer: TransformerInterface,
-  ): { data: ResponseEntity };
+  ): { data: ResponseEntity }
 
   /**
    * Create a new collection resource object
@@ -28,7 +28,7 @@ export interface TransformerInterface {
   collection(
     collection: Entity[],
     transformer: TransformerInterface,
-  ): { data: ResponseEntity[] };
+  ): { data: ResponseEntity[] }
 
   /**
    * Create a new primitive resource object
@@ -38,13 +38,13 @@ export interface TransformerInterface {
    *
    * @return object
    */
-  primitive(data: { [key: string]: any }): { data: { [key: string]: any } };
+  primitive(data: { [key: string]: any }): { data: { [key: string]: any } }
 }
 
 export class Transformer implements TransformerInterface {
-  public includes: any[];
+  public includes: any[]
   constructor(includes?: any[]) {
-    this.includes = includes;
+    this.includes = includes
   }
 
   item(
@@ -52,9 +52,9 @@ export class Transformer implements TransformerInterface {
     transformer: TransformerInterface,
   ): { data: ResponseEntity } {
     if (isNil(entity)) {
-      return null;
+      return null
     }
-    return { data: transformer.get(entity) };
+    return { data: transformer.get(entity) }
   }
 
   collection(
@@ -62,32 +62,32 @@ export class Transformer implements TransformerInterface {
     transformer: TransformerInterface,
   ): { data: ResponseEntity[] } {
     if (!isArray(collection)) {
-      throw new InternalServerErrorException('collection should be an array');
+      throw new InternalServerErrorException('collection should be an array')
     }
-    const data = map(collection, (i) => transformer.get(i));
-    return { data };
+    const data = map(collection, (i) => transformer.get(i))
+    return { data }
   }
 
   primitive(data: { [key: string]: any }): { data: { [key: string]: any } } {
-    return { data };
+    return { data }
   }
 
   get(entity: Entity): Entity {
-    const data = (this as any).transform(entity);
+    const data = (this as any).transform(entity)
     if (Array.isArray(this.includes) && this.includes.length > 0) {
       forEach(this.includes, (include) => {
-        const f = camelCase(`include_${include}`);
+        const f = camelCase(`include_${include}`)
         if (!isFunction(this[f])) {
-          throw new Error(`${f} function is missing`);
+          throw new Error(`${f} function is missing`)
         }
-        data[include] = this[f](entity);
-      });
+        data[include] = this[f](entity)
+      })
     }
-    return data;
+    return data
   }
 
   with(include: string): TransformerInterface {
-    this.includes.push(include);
-    return this;
+    this.includes.push(include)
+    return this
   }
 }

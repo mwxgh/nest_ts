@@ -7,17 +7,17 @@ import {
   ParseIntPipe,
   Post,
   Put,
-} from '@nestjs/common';
-import { ApiHeader, ApiTags } from '@nestjs/swagger';
+} from '@nestjs/common'
+import { ApiHeader, ApiTags } from '@nestjs/swagger'
 
-import { getManager } from 'typeorm';
-import { CreateCartItemDto, UpdateCartItemDto } from '../dto/cart.dto';
-import { CartItemEntity } from '../entities/cartItem.entity';
-import { CartItemService } from '../services/cartItem.service';
-import { CartItemTransformer } from '../transformers/cartItem.transformer';
-import { ProductService } from 'src/components/product/services/product.service';
-import { CartService } from '../services/cart.service';
-import { ApiResponseService } from 'src/shared/services/apiResponse/apiResponse.service';
+import { getManager } from 'typeorm'
+import { CreateCartItemDto, UpdateCartItemDto } from '../dto/cart.dto'
+import { CartItemEntity } from '../entities/cartItem.entity'
+import { CartItemService } from '../services/cartItem.service'
+import { CartItemTransformer } from '../transformers/cartItem.transformer'
+import { ProductService } from 'src/components/product/services/product.service'
+import { CartService } from '../services/cart.service'
+import { ApiResponseService } from 'src/shared/services/apiResponse/apiResponse.service'
 
 @ApiTags('Carts')
 @ApiHeader({
@@ -38,47 +38,45 @@ export class CartItemController {
     @Param('id', ParseIntPipe) id: number,
     @Body() body: UpdateCartItemDto,
   ): Promise<any> {
-    if (!Number(id)) throw new NotFoundException();
+    if (!Number(id)) throw new NotFoundException()
     if (body.quantity <= 0) {
-      await this.cartItemService.destroy(Number(id));
-      return this.response.success();
+      await this.cartItemService.destroy(Number(id))
+      return this.response.success()
     }
 
-    await this.cartItemService.findOneOrFail(id);
+    await this.cartItemService.findOneOrFail(id)
 
-    const product = await this.productService.findOneOrFail(body.productId);
+    const product = await this.productService.findOneOrFail(body.productId)
 
     const update_data = {
       quantity: `${body.quantity}`,
       amount: `${Number(product.price) * Number(body.quantity)}`,
       updated_at: new Date(),
-    };
-    await this.cartItemService.update(id, update_data);
+    }
+    await this.cartItemService.update(id, update_data)
 
-    return this.response.success();
+    return this.response.success()
   }
 
   @Delete(':id')
   async destroy(@Param('id', ParseIntPipe) id: number): Promise<any> {
-    await this.cartItemService.findOneOrFail(id);
+    await this.cartItemService.findOneOrFail(id)
 
-    await this.cartItemService.destroy(Number(id));
+    await this.cartItemService.destroy(Number(id))
 
-    return this.response.success();
+    return this.response.success()
   }
 
   @Post()
   async store(@Body() body: CreateCartItemDto): Promise<any> {
-    const productExist = await this.productService.findOneOrFail(
-      body.productId,
-    );
+    const productExist = await this.productService.findOneOrFail(body.productId)
 
-    const cartExist = await this.cartService.findOneOrFail(body.cartId);
+    const cartExist = await this.cartService.findOneOrFail(body.cartId)
 
     const data_check_cart_item = {
       productId: productExist.id,
       cartId: cartExist.id,
-    };
+    }
 
     const check_cart_item = await getManager()
       .createQueryBuilder(CartItemEntity, 'cartItems')
@@ -86,7 +84,7 @@ export class CartItemController {
         'cartItems.productId = :productId  AND cartItems.cartId = :cartId ',
         data_check_cart_item,
       )
-      .getOne();
+      .getOne()
 
     if (check_cart_item) {
       const data_update = {
@@ -99,11 +97,11 @@ export class CartItemController {
             : productExist.price * body.quantity,
         )}`,
         updated_at: new Date(),
-      };
+      }
 
-      await this.cartItemService.update(check_cart_item.id, data_update);
+      await this.cartItemService.update(check_cart_item.id, data_update)
 
-      return this.response.success();
+      return this.response.success()
     }
 
     const data = {
@@ -111,10 +109,10 @@ export class CartItemController {
       productId: productExist.id,
       quantity: body.quantity,
       amount: Number(productExist.price) * body.quantity,
-    };
+    }
 
-    const data_item = await this.cartItemService.create(data);
+    const data_item = await this.cartItemService.create(data)
 
-    return this.response.item(data_item, new CartItemTransformer());
+    return this.response.item(data_item, new CartItemTransformer())
   }
 }

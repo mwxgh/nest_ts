@@ -3,16 +3,16 @@ import {
   ApiPropertyOptional,
   OmitType,
   PartialType,
-} from '@nestjs/swagger';
-import { Type } from 'class-transformer';
+} from '@nestjs/swagger'
+import { Type } from 'class-transformer'
 import {
   IsEmail,
   IsEnum,
   IsNotEmpty,
   IsOptional,
   // IsPhoneNumber,
-} from 'class-validator';
-import { ContactStatus } from '../entities/contact.entity';
+} from 'class-validator'
+import { ContactStatus } from '../entities/contact.entity'
 
 export class ContactProperties {
   @ApiPropertyOptional({
@@ -20,14 +20,14 @@ export class ContactProperties {
   })
   @IsNotEmpty()
   @Type(() => Number)
-  userId: number;
+  userId: number
 
   @ApiPropertyOptional({
     type: String,
   })
   @IsNotEmpty()
   @Type(() => String)
-  name: string;
+  name: string
 
   @ApiPropertyOptional({
     type: String,
@@ -35,7 +35,7 @@ export class ContactProperties {
   @IsOptional()
   @IsEmail()
   @Type(() => String)
-  email: string;
+  email: string
 
   @ApiPropertyOptional({
     type: Number,
@@ -43,26 +43,26 @@ export class ContactProperties {
   @IsNotEmpty()
   // @IsPhoneNumber()
   @Type(() => Number)
-  phone: number;
+  phone: number
 
   @ApiPropertyOptional({
     type: String,
   })
   @IsNotEmpty()
   @Type(() => String)
-  address: string;
+  address: string
 
   @ApiPropertyOptional({
     type: String,
   })
   @IsOptional()
   @Type(() => String)
-  note: string;
+  note: string
 
   @ApiProperty()
   @IsEnum(ContactStatus)
   @IsOptional()
-  status: ContactStatus;
+  status: ContactStatus
 }
 
 export class CreateContactDto extends OmitType(

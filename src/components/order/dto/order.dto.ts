@@ -1,4 +1,4 @@
-import { ApiProperty, OmitType, PartialType } from '@nestjs/swagger';
+import { ApiProperty, OmitType, PartialType } from '@nestjs/swagger'
 import {
   IsEmail,
   IsInt,
@@ -6,7 +6,7 @@ import {
   IsNumber,
   IsOptional,
   IsPhoneNumber,
-} from 'class-validator';
+} from 'class-validator'
 
 export class OrderProperties {
   @ApiProperty({
@@ -14,7 +14,7 @@ export class OrderProperties {
     default: 'Nguyễn Văn A',
   })
   @IsNotEmpty()
-  fullName: string;
+  fullName: string
 
   @ApiProperty({
     type: String,
@@ -22,7 +22,7 @@ export class OrderProperties {
   })
   @IsOptional()
   @IsEmail()
-  email: string;
+  email: string
 
   @ApiProperty({
     type: String,
@@ -30,18 +30,18 @@ export class OrderProperties {
   })
   @IsNotEmpty()
   @IsPhoneNumber()
-  phoneNumber: string;
+  phoneNumber: string
 
   @ApiProperty({
     type: String,
     default: 'Hà Nội',
   })
   @IsNotEmpty()
-  address: string;
+  address: string
 
   @ApiProperty()
   @IsOptional()
-  note: string;
+  note: string
 
   @ApiProperty({
     type: Number,
@@ -49,7 +49,7 @@ export class OrderProperties {
   })
   @IsOptional()
   @IsNumber()
-  status: number;
+  status: number
 }
 
 // contact -> system user order
@@ -65,7 +65,7 @@ export class OrderProductProperties {
   })
   @IsNumber()
   @IsInt()
-  orderId: number;
+  orderId: number
 
   @ApiProperty({
     type: 'array',
@@ -79,17 +79,17 @@ export class OrderProductProperties {
       },
     ],
   })
-  products: [ProductItems];
+  products: [ProductItems]
 }
 
 export class ProductItems {
   @ApiProperty({ type: Number })
   @IsInt()
-  productId: number;
+  productId: number
 
   @ApiProperty({ type: Number })
   @IsInt()
-  quantity: number;
+  quantity: number
 }
 
 export class CreateOrderProductDto extends OmitType(

@@ -1,7 +1,7 @@
-import { Entity, Column, OneToMany } from 'typeorm';
-import { Notifiable } from '../../../shared/services/notification/decorators/notifiable.decorator';
-import { TimeStampEntity } from '../../base.entity';
-import { ImageAbleEntity } from './imageAble.entity';
+import { Entity, Column, OneToMany } from 'typeorm'
+import { Notifiable } from '../../../shared/services/notification/decorators/notifiable.decorator'
+import { TimeStampEntity } from '../../base.entity'
+import { ImageAbleEntity } from './imageAble.entity'
 
 export enum ImageStatus {
   publish = 'PUBLISH',
@@ -12,20 +12,20 @@ export enum ImageStatus {
 @Entity({ name: 'images' })
 export class ImageEntity extends TimeStampEntity {
   @Column({ type: 'varchar', default: "''" })
-  title: string;
+  title: string
 
   @Column({ type: 'varchar' })
-  slug: string;
+  slug: string
 
   @Column({ type: 'varchar', default: "''" })
-  url: string;
+  url: string
 
   @Column({ type: 'enum', enum: ImageStatus })
-  status: ImageStatus;
+  status: ImageStatus
 
   @Column({ type: 'timestamp' })
-  public verifiedAt: Date;
+  public verifiedAt: Date
 
   @OneToMany(() => ImageAbleEntity, (imageAbles) => imageAbles.image)
-  imageAbles: ImageAbleEntity[];
+  imageAbles: ImageAbleEntity[]
 }

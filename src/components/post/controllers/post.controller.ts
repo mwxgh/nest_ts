@@ -9,33 +9,33 @@ import {
   Query,
   ParseIntPipe,
   UseGuards,
-} from '@nestjs/common';
+} from '@nestjs/common'
 import {
   ApiBearerAuth,
   ApiHeader,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
-} from '@nestjs/swagger';
-import { Connection, SelectQueryBuilder } from 'typeorm';
-import { PostService } from '../services/post.service';
-import { CreatePostDto, UpdatePostDto } from '../dto/post.dto';
-import { IPaginationOptions } from 'src/shared/services/pagination';
-import { ApiResponseService } from 'src/shared/services/apiResponse/apiResponse.service';
-import { PostTransformer } from '../transformers/post.transformer';
-import { QueryManyPostDto, QueryOneDto } from 'src/shared/dto/queryParams.dto';
-import { Auth } from 'src/components/auth/decorators/auth.decorator';
+} from '@nestjs/swagger'
+import { Connection, SelectQueryBuilder } from 'typeorm'
+import { PostService } from '../services/post.service'
+import { CreatePostDto, UpdatePostDto } from '../dto/post.dto'
+import { IPaginationOptions } from 'src/shared/services/pagination'
+import { ApiResponseService } from 'src/shared/services/apiResponse/apiResponse.service'
+import { PostTransformer } from '../transformers/post.transformer'
+import { QueryManyPostDto, QueryOneDto } from 'src/shared/dto/queryParams.dto'
+import { Auth } from 'src/components/auth/decorators/auth.decorator'
 
-import { JwtAuthGuard } from 'src/components/auth/guards/jwtAuth.guard';
-import { PostEntity } from '../entities/post.entity';
+import { JwtAuthGuard } from 'src/components/auth/guards/jwtAuth.guard'
+import { PostEntity } from '../entities/post.entity'
 import {
   GetItemResponse,
   GetListPaginationResponse,
   GetListResponse,
   SuccessfullyOperation,
-} from 'src/shared/services/apiResponse/apiResponse.interface';
-import Messages from 'src/shared/message/message';
-import { CommonService } from 'src/shared/services/common.service';
+} from 'src/shared/services/apiResponse/apiResponse.interface'
+import Messages from 'src/shared/message/message'
+import { CommonService } from 'src/shared/services/common.service'
 @ApiTags('Posts')
 @ApiHeader({
   name: 'Content-Type',
@@ -52,8 +52,8 @@ export class PostController {
     private commonService: CommonService,
   ) {}
 
-  private entity = 'posts';
-  private fields = ['title', 'summary', 'releaseDate'];
+  private entity = 'posts'
+  private fields = ['title', 'summary', 'releaseDate']
 
   @Post()
   @Auth('admin')
@@ -62,14 +62,14 @@ export class PostController {
   async createPost(
     @Body() data: CreatePostDto,
   ): Promise<SuccessfullyOperation> {
-    await this.postService.savePost({ data });
+    await this.postService.savePost({ data })
 
     return this.response.success({
       message: this.commonService.getMessage({
         message: Messages.successfullyOperation.create,
         keywords: [this.entity],
       }),
-    });
+    })
   }
 
   @Get()
@@ -87,7 +87,7 @@ export class PostController {
       status,
       priority,
       type,
-    } = query;
+    } = query
 
     const queryBuilder: SelectQueryBuilder<PostEntity> =
       await this.postService.queryPost({
@@ -101,26 +101,26 @@ export class PostController {
         status,
         priority,
         type,
-      });
+      })
 
     if (query.perPage || query.page) {
       const paginateOption: IPaginationOptions = {
         limit: query.perPage ? query.perPage : 10,
         page: query.page ? query.page : 1,
-      };
+      }
 
       const posts = await this.postService.paginate(
         queryBuilder,
         paginateOption,
-      );
+      )
 
-      return this.response.paginate(posts, new PostTransformer());
+      return this.response.paginate(posts, new PostTransformer())
     }
 
     return this.response.collection(
       await queryBuilder.getMany(),
       new PostTransformer(),
-    );
+    )
   }
 
   @Get(':id')
@@ -130,13 +130,13 @@ export class PostController {
     @Param('id', ParseIntPipe) id: number,
     @Query() query: QueryOneDto,
   ): Promise<GetItemResponse> {
-    const { includes } = query;
+    const { includes } = query
 
     const post = await this.postService.findOneOrFail(id, {
       relations: includes,
-    });
+    })
 
-    return this.response.item(post, new PostTransformer(includes));
+    return this.response.item(post, new PostTransformer(includes))
   }
 
   @Put(':id')
@@ -147,14 +147,14 @@ export class PostController {
     @Param('id', ParseIntPipe) id: number,
     @Body() data: UpdatePostDto,
   ): Promise<SuccessfullyOperation> {
-    await this.postService.updatePost({ id, data });
+    await this.postService.updatePost({ id, data })
 
     return this.response.success({
       message: this.commonService.getMessage({
         message: Messages.successfullyOperation.update,
         keywords: [this.entity],
       }),
-    });
+    })
   }
 
   @Delete(':id')
@@ -164,13 +164,13 @@ export class PostController {
   async deletePost(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<SuccessfullyOperation> {
-    await this.postService.deletePost({ id });
+    await this.postService.deletePost({ id })
 
     return this.response.success({
       message: this.commonService.getMessage({
         message: Messages.successfullyOperation.delete,
         keywords: [this.entity],
       }),
-    });
+    })
   }
 }

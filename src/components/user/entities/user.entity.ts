@@ -1,8 +1,8 @@
-import { Entity, Column, ManyToMany, JoinTable, OneToMany } from 'typeorm';
-import { RoleEntity } from '../../auth/entities/role.entity';
-import { Notifiable } from '../../../shared/services/notification/decorators/notifiable.decorator';
-import { TimeStampEntity } from '../../base.entity';
-import { ContactEntity } from '../../contact/entities/contact.entity';
+import { Entity, Column, ManyToMany, JoinTable, OneToMany } from 'typeorm'
+import { RoleEntity } from '../../auth/entities/role.entity'
+import { Notifiable } from '../../../shared/services/notification/decorators/notifiable.decorator'
+import { TimeStampEntity } from '../../base.entity'
+import { ContactEntity } from '../../contact/entities/contact.entity'
 
 export enum UserStatus {
   active = 'ACTIVE',
@@ -13,34 +13,34 @@ export enum UserStatus {
 @Entity({ name: 'users' })
 export class UserEntity extends TimeStampEntity {
   @Column({ type: 'varchar', unique: true })
-  email: string;
+  email: string
 
   @Column({ type: 'varchar', unique: true })
-  username: string;
+  username: string
 
   @Column({ type: 'varchar' })
-  password: string;
+  password: string
 
   @Column({ type: 'varchar', default: '' })
-  firstName: string;
+  firstName: string
 
   @Column({ type: 'varchar', default: '' })
-  lastName: string;
+  lastName: string
 
   @Column({ type: 'enum', enum: UserStatus, default: UserStatus.active })
-  status: UserStatus;
+  status: UserStatus
 
   @Column({ type: 'varchar' })
-  socketId: string;
+  socketId: string
 
   @Column({ type: 'varchar', default: '' })
-  verifyToken: string;
+  verifyToken: string
 
   @Column({ type: 'boolean', default: false })
-  verified: boolean;
+  verified: boolean
 
   @Column({ type: 'timestamp' })
-  public verifiedAt: Date;
+  public verifiedAt: Date
 
   @ManyToMany(() => RoleEntity, (role) => role.users, { cascade: ['insert'] })
   @JoinTable({
@@ -54,18 +54,18 @@ export class UserEntity extends TimeStampEntity {
       referencedColumnName: 'id',
     },
   })
-  roles: RoleEntity[];
+  roles: RoleEntity[]
 
   @OneToMany(() => ContactEntity, (contact) => contact.user)
-  contacts: ContactEntity[];
+  contacts: ContactEntity[]
 
   getEmail(): string {
-    return this.email;
+    return this.email
   }
 
   generateVerifyEmailLink(baseUrl: string): string {
-    const path = `/auth/verify?token=${this.verifyToken}`;
-    const url = new URL(path, baseUrl);
-    return url.href;
+    const path = `/auth/verify?token=${this.verifyToken}`
+    const url = new URL(path, baseUrl)
+    return url.href
   }
 }

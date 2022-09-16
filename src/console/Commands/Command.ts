@@ -1,35 +1,35 @@
 export interface IOption {
-  key: string;
-  description: string;
+  key: string
+  description: string
 }
 
 interface ICommand {
-  signature(): string;
-  description(): string;
+  signature(): string
+  description(): string
 }
 export class Command implements ICommand {
   signature(): string {
-    return '';
+    return ''
   }
 
   description(): string {
-    return '';
+    return ''
   }
 
   options(): IOption[] {
-    return [];
+    return []
   }
 }
 
 export const Info = (content: string): void => {
-  console.log('\x1b[32m%s\x1b[0m', content);
-};
+  console.log('\x1b[32m%s\x1b[0m', content)
+}
 
 export const Warning = (content: string): void => {
-  console.log('\x1b[33m%s\x1b[0m', content);
-};
+  console.log('\x1b[33m%s\x1b[0m', content)
+}
 
 export const Error = (content: string): void => {
-  console.log('\x1b[31m%s\x1b[0m', content);
-  process.exit(1);
-};
+  console.log('\x1b[31m%s\x1b[0m', content)
+  process.exit(1)
+}

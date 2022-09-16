@@ -1,5 +1,5 @@
-import { Transformer } from '../../../shared/transformers/transformer';
-import { CategoryEntity } from '../entities/category.entity';
+import { Transformer } from '../../../shared/transformers/transformer'
+import { CategoryEntity } from '../entities/category.entity'
 
 export class CategoryTransformer extends Transformer {
   transform(model: CategoryEntity): any {
@@ -9,6 +9,6 @@ export class CategoryTransformer extends Transformer {
       parentId: model.parentId,
       status: model.status,
       categoryType: model.categoryType,
-    };
+    }
   }
 }

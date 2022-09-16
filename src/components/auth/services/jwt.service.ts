@@ -1,9 +1,9 @@
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import * as jwt from 'jsonwebtoken';
-import { UserEntity } from '../../user/entities/user.entity';
-import { UserService } from '../../user/services/user.service';
-import { WsException } from '@nestjs/websockets';
+import { Injectable, HttpException, HttpStatus } from '@nestjs/common'
+import { ConfigService } from '@nestjs/config'
+import * as jwt from 'jsonwebtoken'
+import { UserEntity } from '../../user/entities/user.entity'
+import { UserService } from '../../user/services/user.service'
+import { WsException } from '@nestjs/websockets'
 
 @Injectable()
 export class JwtService {
@@ -14,26 +14,23 @@ export class JwtService {
 
   async verify(token: string, isWs = false): Promise<UserEntity | null> {
     try {
-      const payload = <any>jwt.verify(token, this.configService.get('APP_KEY'));
+      const payload = <any>jwt.verify(token, this.configService.get('APP_KEY'))
 
-      const user = await this.userService.findOneOrFail(payload.id);
+      const user = await this.userService.findOneOrFail(payload.id)
 
       if (!user) {
         if (isWs) {
-          throw new WsException('Unauthorized access');
+          throw new WsException('Unauthorized access')
         } else {
-          throw new HttpException(
-            'Unauthorized access',
-            HttpStatus.BAD_REQUEST,
-          );
+          throw new HttpException('Unauthorized access', HttpStatus.BAD_REQUEST)
         }
       }
-      return user;
+      return user
     } catch (err) {
       if (isWs) {
-        throw new WsException(err.message);
+        throw new WsException(err.message)
       } else {
-        throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
+        throw new HttpException(err.message, HttpStatus.BAD_REQUEST)
       }
     }
   }

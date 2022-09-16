@@ -9,35 +9,35 @@ import {
   Delete,
   Body,
   UseGuards,
-} from '@nestjs/common';
-import { ApiResponseService } from 'src/shared/services/apiResponse/apiResponse.service';
-import { RoleService } from '../../services/role.service';
-import { IPaginationOptions } from '../../../../shared/services/pagination';
-import { Auth } from '../../decorators/auth.decorator';
-import { RoleTransformer } from '../../transformers/role.transformer';
-import { assign, isNil } from 'lodash';
+} from '@nestjs/common'
+import { ApiResponseService } from 'src/shared/services/apiResponse/apiResponse.service'
+import { RoleService } from '../../services/role.service'
+import { IPaginationOptions } from '../../../../shared/services/pagination'
+import { Auth } from '../../decorators/auth.decorator'
+import { RoleTransformer } from '../../transformers/role.transformer'
+import { assign, isNil } from 'lodash'
 import {
   ApiBearerAuth,
   ApiHeader,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
-} from '@nestjs/swagger';
-import { QueryManyDto } from 'src/shared/dto/queryParams.dto';
-import { JwtAuthGuard } from '../../guards/jwtAuth.guard';
-import { CreateRoleDto, UpdateRoleDto } from '../../dto/role.dto';
-import { RolePermissionService } from '../../services/rolePermission.service';
+} from '@nestjs/swagger'
+import { QueryManyDto } from 'src/shared/dto/queryParams.dto'
+import { JwtAuthGuard } from '../../guards/jwtAuth.guard'
+import { CreateRoleDto, UpdateRoleDto } from '../../dto/role.dto'
+import { RolePermissionService } from '../../services/rolePermission.service'
 import {
   GetItemResponse,
   GetListPaginationResponse,
   GetListResponse,
   SuccessfullyOperation,
-} from 'src/shared/services/apiResponse/apiResponse.interface';
-import Messages from 'src/shared/message/message';
-import { CommonService } from 'src/shared/services/common.service';
-import { RolePermissionEntity } from '../../entities/rolePermission.entity';
-import { RoleEntity } from '../../entities/role.entity';
-import { SelectQueryBuilder } from 'typeorm';
+} from 'src/shared/services/apiResponse/apiResponse.interface'
+import Messages from 'src/shared/message/message'
+import { CommonService } from 'src/shared/services/common.service'
+import { RolePermissionEntity } from '../../entities/rolePermission.entity'
+import { RoleEntity } from '../../entities/role.entity'
+import { SelectQueryBuilder } from 'typeorm'
 
 @ApiTags('Roles')
 @ApiHeader({
@@ -55,20 +55,20 @@ export class RoleController {
     private commonService: CommonService,
   ) {}
 
-  private entity = 'roles';
-  private fields = ['name', 'level'];
-  private relations = ['permissions'];
+  private entity = 'roles'
+  private fields = ['name', 'level']
+  private relations = ['permissions']
 
   @Post('')
   @Auth('admin')
   @ApiOperation({ summary: 'Admin create new role' })
   @ApiOkResponse({ description: 'New role entity' })
   async createRole(@Body() data: CreateRoleDto): Promise<any> {
-    const slug = await this.roleService.generateSlug(data.name);
+    const slug = await this.roleService.generateSlug(data.name)
 
-    const role = await this.roleService.create(assign(data, { slug: slug }));
+    const role = await this.roleService.create(assign(data, { slug: slug }))
 
-    return this.response.item(role, new RoleTransformer());
+    return this.response.item(role, new RoleTransformer())
   }
 
   @Get()
@@ -78,7 +78,7 @@ export class RoleController {
   async readRoles(
     @Query() query: QueryManyDto,
   ): Promise<GetListResponse | GetListPaginationResponse> {
-    const { search, includes, sortBy, sortType } = query;
+    const { search, includes, sortBy, sortType } = query
 
     let queryBuilder: SelectQueryBuilder<RoleEntity> =
       await this.roleService.queryBuilder({
@@ -87,25 +87,25 @@ export class RoleController {
         keyword: search,
         sortBy,
         sortType,
-      });
+      })
 
-    let joinAndSelects = [];
+    let joinAndSelects = []
 
     if (!isNil(includes)) {
-      const includesParams = Array.isArray(includes) ? includes : [includes];
+      const includesParams = Array.isArray(includes) ? includes : [includes]
 
       joinAndSelects = this.commonService.includesParamToJoinAndSelects({
         includesParams,
         relations: this.relations,
-      });
+      })
 
       if (joinAndSelects.length > 0) {
         joinAndSelects.forEach((joinAndSelect) => {
           queryBuilder = queryBuilder.leftJoinAndSelect(
             `${this.entity}.${joinAndSelect}`,
             `${joinAndSelect}`,
-          );
-        });
+          )
+        })
       }
     }
 
@@ -113,19 +113,19 @@ export class RoleController {
       const paginateOption: IPaginationOptions = {
         limit: query.perPage ? query.perPage : 10,
         page: query.page ? query.page : 1,
-      };
+      }
 
       const roles = await this.roleService.paginate(
         queryBuilder,
         paginateOption,
-      );
+      )
 
       return this.response.paginate(
         roles,
         new RoleTransformer(
           joinAndSelects.length > 0 ? joinAndSelects : undefined,
         ),
-      );
+      )
     }
 
     return this.response.collection(
@@ -133,7 +133,7 @@ export class RoleController {
       new RoleTransformer(
         joinAndSelects.length > 0 ? joinAndSelects : undefined,
       ),
-    );
+    )
   }
 
   @Get(':id')
@@ -145,9 +145,9 @@ export class RoleController {
   ): Promise<GetItemResponse> {
     const role = await this.roleService.findOneOrFail(id, {
       relations: this.relations,
-    });
+    })
 
-    return this.response.item(role, new RoleTransformer(this.relations));
+    return this.response.item(role, new RoleTransformer(this.relations))
   }
 
   @Put(':id')
@@ -158,14 +158,11 @@ export class RoleController {
     @Param('id', ParseIntPipe) id: number,
     @Body() data: UpdateRoleDto,
   ): Promise<any> {
-    const slug = await this.roleService.generateSlug(data.name);
+    const slug = await this.roleService.generateSlug(data.name)
 
-    const role = await this.roleService.update(
-      id,
-      assign(data, { slug: slug }),
-    );
+    const role = await this.roleService.update(id, assign(data, { slug: slug }))
 
-    return this.response.item(role, new RoleTransformer());
+    return this.response.item(role, new RoleTransformer())
   }
 
   @Delete(':id')
@@ -175,26 +172,26 @@ export class RoleController {
   async deleteRole(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<SuccessfullyOperation> {
-    await this.roleService.findOneOrFail(id);
+    await this.roleService.findOneOrFail(id)
 
-    await this.roleService.destroy(id);
+    await this.roleService.destroy(id)
 
     const rolePermissions: RolePermissionEntity[] =
       await this.rolePermissionService.findWhere({
         where: { roleId: id },
-      });
+      })
 
     const rolePermissionIds: number[] = rolePermissions.map(
       (rolePermission) => rolePermission.id,
-    );
+    )
 
-    await this.rolePermissionService.destroy(rolePermissionIds);
+    await this.rolePermissionService.destroy(rolePermissionIds)
 
     return this.response.success({
       message: this.commonService.getMessage({
         message: Messages.successfullyOperation.delete,
         keywords: ['role'],
       }),
-    });
+    })
   }
 }

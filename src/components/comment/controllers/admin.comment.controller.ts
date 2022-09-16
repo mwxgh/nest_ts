@@ -9,26 +9,26 @@ import {
   Post,
   Put,
   Query,
-} from '@nestjs/common';
+} from '@nestjs/common'
 import {
   ApiHeader,
   ApiOkResponse,
   ApiOperation,
   ApiParam,
   ApiTags,
-} from '@nestjs/swagger';
-import { QueryManyDto } from 'src/shared/dto/queryParams.dto';
-import Messages from 'src/shared/message/message';
-import { SuccessfullyOperation } from 'src/shared/services/apiResponse/apiResponse.interface';
-import { ApiResponseService } from 'src/shared/services/apiResponse/apiResponse.service';
-import { CommonService } from 'src/shared/services/common.service';
+} from '@nestjs/swagger'
+import { QueryManyDto } from 'src/shared/dto/queryParams.dto'
+import Messages from 'src/shared/message/message'
+import { SuccessfullyOperation } from 'src/shared/services/apiResponse/apiResponse.interface'
+import { ApiResponseService } from 'src/shared/services/apiResponse/apiResponse.service'
+import { CommonService } from 'src/shared/services/common.service'
 
-import { IPaginationOptions } from 'src/shared/services/pagination';
+import { IPaginationOptions } from 'src/shared/services/pagination'
 
-import { CreateCommentDto, UpdateCommentDto } from '../dto/comment.dto';
-import { CommentAbleType } from '../entities/comment.entity';
-import { CommentService } from '../services/comment.service';
-import { CommentTransformer } from '../transformers/comment.transformer';
+import { CreateCommentDto, UpdateCommentDto } from '../dto/comment.dto'
+import { CommentAbleType } from '../entities/comment.entity'
+import { CommentService } from '../services/comment.service'
+import { CommentTransformer } from '../transformers/comment.transformer'
 
 @ApiTags('Comments')
 @ApiHeader({
@@ -49,61 +49,61 @@ export class AdminCommentController {
   async createComment(
     @Body() body: CreateCommentDto,
   ): Promise<SuccessfullyOperation> {
-    const value = Object.values(CommentAbleType);
+    const value = Object.values(CommentAbleType)
 
-    const arr = [];
+    const arr = []
 
-    value.forEach((el) => arr.push(el));
+    value.forEach((el) => arr.push(el))
 
-    if (!arr.includes(body.commentAbleType)) throw new NotFoundException();
+    if (!arr.includes(body.commentAbleType)) throw new NotFoundException()
 
-    await this.commentService.create(body);
+    await this.commentService.create(body)
 
     return this.response.success({
       message: this.commonService.getMessage({
         message: Messages.successfullyOperation.create,
         keywords: ['comment'],
       }),
-    });
+    })
   }
 
   @Get()
   async readComments(@Query() query: QueryManyDto): Promise<any> {
-    const queryBuilder = await this.commentService.joinComment();
+    const queryBuilder = await this.commentService.joinComment()
 
     if (query.perPage || query.page) {
       const paginateOption: IPaginationOptions = {
         limit: query.perPage ? query.perPage : 10,
         page: query.page ? query.page : 1,
-      };
+      }
 
       const contacts = await this.commentService.paginate(
         queryBuilder,
         paginateOption,
-      );
+      )
 
-      return this.response.paginate(contacts, new CommentTransformer());
+      return this.response.paginate(contacts, new CommentTransformer())
     }
 
     return this.response.collection(
       await queryBuilder.getMany(),
       new CommentTransformer(),
-    );
+    )
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Admin get comment by id' })
   @ApiOkResponse({ description: 'Comment entity' })
   async readComment(@Param('id', ParseIntPipe) id: number): Promise<any> {
-    const queryBuilder = await this.commentService.joinComment();
+    const queryBuilder = await this.commentService.joinComment()
 
     const comment = await queryBuilder
       .where('comments.id = :id', { id: Number(id) })
-      .getMany();
+      .getMany()
 
-    if (comment) throw new NotFoundException();
+    if (comment) throw new NotFoundException()
 
-    return this.response.collection(comment, new CommentTransformer());
+    return this.response.collection(comment, new CommentTransformer())
   }
 
   @Put(':id')
@@ -112,16 +112,16 @@ export class AdminCommentController {
     @Param('id', ParseIntPipe) id: number,
     @Body() body: UpdateCommentDto,
   ): Promise<SuccessfullyOperation> {
-    await this.commentService.findOneOrFail(id);
+    await this.commentService.findOneOrFail(id)
 
-    await this.commentService.update(id, body);
+    await this.commentService.update(id, body)
 
     return this.response.success({
       message: this.commonService.getMessage({
         message: Messages.successfullyOperation.update,
         keywords: ['comment'],
       }),
-    });
+    })
   }
 
   @Delete(':id')
@@ -129,15 +129,15 @@ export class AdminCommentController {
   async destroy(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<SuccessfullyOperation> {
-    await this.commentService.findOneOrFail(id);
+    await this.commentService.findOneOrFail(id)
 
-    await this.commentService.destroy(id);
+    await this.commentService.destroy(id)
 
     return this.response.success({
       message: this.commonService.getMessage({
         message: Messages.successfullyOperation.delete,
         keywords: ['comment'],
       }),
-    });
+    })
   }
 }

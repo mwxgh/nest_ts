@@ -1,4 +1,4 @@
-import { Transformer } from '../../../shared/transformers/transformer';
+import { Transformer } from '../../../shared/transformers/transformer'
 
 export class PermissionTransformer extends Transformer {
   transform(model) {
@@ -6,6 +6,6 @@ export class PermissionTransformer extends Transformer {
       id: model.id,
       name: model.name,
       slug: model.slug,
-    };
+    }
   }
 }

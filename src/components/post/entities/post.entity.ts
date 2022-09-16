@@ -1,10 +1,10 @@
-import { CommentEntity } from '../../comment/entities/comment.entity';
-import { OneToMany, Entity, Column } from 'typeorm';
-import { Notifiable } from '../../../shared/services/notification/decorators/notifiable.decorator';
-import { CategoryAbleEntity } from '../../category/entities/categoryAble.entity';
-import { TagAbleEntity } from '../../tag/entities/tagAble.entity';
-import { TimeStampEntity } from '../../base.entity';
-import { ImageAbleEntity } from '../../image/entities/imageAble.entity';
+import { CommentEntity } from '../../comment/entities/comment.entity'
+import { OneToMany, Entity, Column } from 'typeorm'
+import { Notifiable } from '../../../shared/services/notification/decorators/notifiable.decorator'
+import { CategoryAbleEntity } from '../../category/entities/categoryAble.entity'
+import { TagAbleEntity } from '../../tag/entities/tagAble.entity'
+import { TimeStampEntity } from '../../base.entity'
+import { ImageAbleEntity } from '../../image/entities/imageAble.entity'
 
 export enum JoinPostAbleType {
   images = 'posts.images',
@@ -44,44 +44,44 @@ export enum PostPrivacy {
 @Entity({ name: 'posts' })
 export class PostEntity extends TimeStampEntity {
   @Column()
-  title: string;
+  title: string
 
   @Column()
-  slug: string;
+  slug: string
 
   @Column()
-  summary: string;
+  summary: string
 
   @Column()
-  description: string;
+  description: string
 
   @Column({ type: 'varchar', default: '' })
-  content: string;
+  content: string
 
   @Column({ type: 'enum', enum: PostStatus })
-  status: PostStatus;
+  status: PostStatus
 
   @Column({ type: 'enum', enum: PostPriority })
-  priority: PostPriority;
+  priority: PostPriority
 
   @Column({ type: 'enum', enum: PostType })
-  type: PostType;
+  type: PostType
 
   @Column({ type: 'enum', enum: PostPrivacy })
-  privacy: PostPrivacy;
+  privacy: PostPrivacy
 
   @Column({ type: 'date' })
-  releaseDate: Date;
+  releaseDate: Date
 
   @OneToMany(() => TagAbleEntity, (tag) => tag.post)
-  tags: TagAbleEntity[];
+  tags: TagAbleEntity[]
 
   @OneToMany(() => CategoryAbleEntity, (category) => category.post)
-  categories: CategoryAbleEntity[];
+  categories: CategoryAbleEntity[]
 
   @OneToMany(() => ImageAbleEntity, (imageAble) => imageAble.post)
-  images: ImageAbleEntity[];
+  images: ImageAbleEntity[]
 
   @OneToMany(() => CommentEntity, (comment) => comment.post)
-  comments: CommentEntity[];
+  comments: CommentEntity[]
 }

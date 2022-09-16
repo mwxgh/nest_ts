@@ -1,9 +1,9 @@
-import { Notifiable } from '../../../shared/services/notification/decorators/notifiable.decorator';
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
-import { ProductEntity } from '../../../components/product/entities/product.entity';
-import { CategoryEntity } from './category.entity';
-import { PostEntity } from '../../post/entities/post.entity';
-import { TimeStampEntity } from '../../base.entity';
+import { Notifiable } from '../../../shared/services/notification/decorators/notifiable.decorator'
+import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm'
+import { ProductEntity } from '../../../components/product/entities/product.entity'
+import { CategoryEntity } from './category.entity'
+import { PostEntity } from '../../post/entities/post.entity'
+import { TimeStampEntity } from '../../base.entity'
 
 export enum CategoryAbleType {
   product = 'PRODUCT',
@@ -14,35 +14,35 @@ export enum CategoryAbleType {
 @Entity({ name: 'categoryAble' })
 export class CategoryAbleEntity extends TimeStampEntity {
   @Column({ type: 'int' })
-  public categoryId: number;
+  public categoryId: number
 
   @Column({ type: 'int' })
-  public categoryAbleId: number;
+  public categoryAbleId: number
 
   @Column({ type: 'enum', enum: CategoryAbleType })
-  public categoryAbleType: CategoryAbleType;
+  public categoryAbleType: CategoryAbleType
 
   @Column({ type: 'timestamp' })
-  public verifiedAt: Date;
+  public verifiedAt: Date
 
   @ManyToOne(() => CategoryEntity, (category) => category.categoryAbles)
   @JoinColumn({
     name: 'categoryId',
     referencedColumnName: 'id',
   })
-  category: CategoryEntity;
+  category: CategoryEntity
 
   @ManyToOne(() => ProductEntity, (product) => product.categories)
   @JoinColumn({
     name: 'categoryAbleId',
     referencedColumnName: 'id',
   })
-  product: ProductEntity;
+  product: ProductEntity
 
   @ManyToOne(() => PostEntity, (post) => post.categories)
   @JoinColumn({
     name: 'categoryAbleId',
     referencedColumnName: 'id',
   })
-  post: PostEntity;
+  post: PostEntity
 }

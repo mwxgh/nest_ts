@@ -1,4 +1,4 @@
-import { ApiProperty, OmitType, PartialType, PickType } from '@nestjs/swagger';
+import { ApiProperty, OmitType, PartialType, PickType } from '@nestjs/swagger'
 import {
   IsArray,
   IsBoolean,
@@ -10,38 +10,38 @@ import {
   IsString,
   MaxLength,
   MinLength,
-} from 'class-validator';
-import { UserEntity, UserStatus } from '../entities/user.entity';
+} from 'class-validator'
+import { UserEntity, UserStatus } from '../entities/user.entity'
 
 export class BaseUserProperties {
   @ApiProperty()
   @IsEmail()
   @IsNotEmpty()
-  email: string;
+  email: string
 
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
   @MinLength(6)
   @MaxLength(60)
-  password: string;
+  password: string
 
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
   @MinLength(3)
   @MaxLength(20)
-  username: string;
+  username: string
 
   @ApiProperty()
   @MaxLength(20)
   @IsOptional()
-  firstName: string;
+  firstName: string
 
   @ApiProperty()
   @MaxLength(20)
   @IsOptional()
-  lastName: string;
+  lastName: string
 
   @ApiProperty({
     enum: UserStatus,
@@ -50,7 +50,7 @@ export class BaseUserProperties {
   })
   @IsNotEmpty()
   @IsEnum(UserStatus)
-  status: UserStatus;
+  status: UserStatus
 }
 
 export class UserProperties extends OmitType(BaseUserProperties, [] as const) {
@@ -62,7 +62,7 @@ export class UserProperties extends OmitType(BaseUserProperties, [] as const) {
   })
   @IsArray()
   @IsOptional()
-  roleIds: number[];
+  roleIds: number[]
 }
 
 export class CreateUserDto extends OmitType(UserProperties, [] as const) {}
@@ -70,7 +70,7 @@ export class UpdateUserDto extends PartialType(UserProperties) {
   @ApiProperty()
   @IsBoolean()
   @IsOptional()
-  notifyUser: boolean;
+  notifyUser: boolean
 }
 
 export class UpdateUserPasswordDto extends PickType(UserProperties, [
@@ -79,25 +79,25 @@ export class UpdateUserPasswordDto extends PickType(UserProperties, [
   @ApiProperty()
   @IsBoolean()
   @IsOptional()
-  notifyUser: boolean;
+  notifyUser: boolean
 }
 
 export class UserSendMailReportDto {
   @ApiProperty()
   @IsEmail()
   @IsNotEmpty()
-  toEmail: string;
+  toEmail: string
 
   @ApiProperty()
   @IsNotEmpty()
-  linkReport: string;
+  linkReport: string
 }
 
 export class UserRoleProperties {
   @ApiProperty()
   @IsNumber()
   @IsNotEmpty()
-  roleId: number;
+  roleId: number
 }
 
 export class UserAttachRoleDto extends PickType(UserRoleProperties, [
@@ -108,4 +108,4 @@ export class UserDetachRoleDto extends PickType(UserRoleProperties, [
   'roleId',
 ] as const) {}
 
-export type Me = UserEntity;
+export type Me = UserEntity

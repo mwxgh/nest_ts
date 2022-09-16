@@ -12,4 +12,4 @@ export const environment = {
   dbName: 'blog',
   dbUser: 'mwx',
   dbPass: '0111mvtT',
-};
+}

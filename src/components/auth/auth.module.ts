@@ -1,11 +1,11 @@
-import { Module } from '@nestjs/common';
-import { AuthController } from './controllers/auth.controller';
-import { JwtModule } from '@nestjs/jwt';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { ForgotPasswordController } from './controllers/forgotPassword/forgotPassword.controller';
-import { PermissionController } from './controllers/permission/permission.controller';
-import { RoleController } from './controllers/role/role.controller';
-import { authProviders } from './auth.providers';
+import { Module } from '@nestjs/common'
+import { AuthController } from './controllers/auth.controller'
+import { JwtModule } from '@nestjs/jwt'
+import { ConfigModule, ConfigService } from '@nestjs/config'
+import { ForgotPasswordController } from './controllers/forgotPassword/forgotPassword.controller'
+import { PermissionController } from './controllers/permission/permission.controller'
+import { RoleController } from './controllers/role/role.controller'
+import { authProviders } from './auth.providers'
 
 @Module({
   imports: [

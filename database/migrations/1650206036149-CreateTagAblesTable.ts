@@ -1,4 +1,4 @@
-import { MigrationInterface, QueryRunner, Table, TableIndex } from 'typeorm';
+import { MigrationInterface, QueryRunner, Table, TableIndex } from 'typeorm'
 
 export class CreateTagAblesTable1650206036149 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
@@ -49,17 +49,17 @@ export class CreateTagAblesTable1650206036149 implements MigrationInterface {
         ],
       }),
       true,
-    );
+    )
     await queryRunner.createIndex(
       'tagAbles',
       new TableIndex({
         name: 'IDX_TAG_ID',
         columnNames: ['tagId'],
       }),
-    );
+    )
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.dropTable('tagAbles');
+    await queryRunner.dropTable('tagAbles')
   }
 }

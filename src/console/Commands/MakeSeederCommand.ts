@@ -1,21 +1,21 @@
-import { Command, Error, Info, IOption } from './Command';
-import * as fse from 'fs-extra';
-import * as fs from 'fs';
-import * as path from 'path';
-import * as _ from 'lodash';
-import * as moment from 'moment';
+import { Command, Error, Info, IOption } from './Command'
+import * as fse from 'fs-extra'
+import * as fs from 'fs'
+import * as path from 'path'
+import * as _ from 'lodash'
+import * as moment from 'moment'
 
 export class MakeSeederCommand extends Command {
   signature(): string {
-    return 'make:seeder <seeder>';
+    return 'make:seeder <seeder>'
   }
 
   description(): string {
-    return 'Create new seeder file';
+    return 'Create new seeder file'
   }
 
   options(): IOption[] {
-    return [{ key: 'override?', description: 'Override existing file' }];
+    return [{ key: 'override?', description: 'Override existing file' }]
   }
 
   async handle(
@@ -23,18 +23,18 @@ export class MakeSeederCommand extends Command {
     options: { override: undefined | string },
   ): Promise<any> {
     if (_.isNil(seeder) || seeder === '') {
-      Error('Seeder name is required');
+      Error('Seeder name is required')
     }
     const file = path.resolve(
       __dirname,
       '../../../database/seeds',
       `${moment().format('YYYYMMDD_HHmmss')}_${seeder}.ts`,
-    );
+    )
     if (
       fs.existsSync(file) &&
       (options.override === undefined || options.override.toString() !== 'true')
     ) {
-      Error(`${seeder} already exist`);
+      Error(`${seeder} already exist`)
     }
     const content = `import { Connection } from 'typeorm';
 // import { User } from '../../entities/user.entity';
@@ -54,10 +54,10 @@ export default class ${seeder} {
     // await connection.manager.save(items);
   }
 }    
-    `;
-    fse.outputFileSync(file, content);
-    Info(`${file} is created`);
+    `
+    fse.outputFileSync(file, content)
+    Info(`${file} is created`)
 
-    return file;
+    return file
   }
 }

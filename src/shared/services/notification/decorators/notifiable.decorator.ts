@@ -1,4 +1,4 @@
-import { SetMetadata } from '@nestjs/common';
+import { SetMetadata } from '@nestjs/common'
 
 export const Notifiable = (...abilities: any[]): any =>
-  SetMetadata('abilities', abilities);
+  SetMetadata('abilities', abilities)

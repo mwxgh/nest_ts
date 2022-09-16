@@ -1,4 +1,4 @@
-import * as Joi from '@hapi/joi';
+import * as Joi from '@hapi/joi'
 
 const validationSchema = Joi.object({
   APP_NAME: Joi.string().default('MWX BLOG'),
@@ -39,6 +39,6 @@ const validationSchema = Joi.object({
   MAIL_FROM_ADDRESS: Joi.string().email().allow('').allow('null').optional(),
   MAIL_FROM_NAME: Joi.string().allow('').optional(),
   PORT: Joi.number().default(3000),
-});
+})
 
-export default validationSchema;
+export default validationSchema

@@ -1,7 +1,7 @@
-import { TimeStampEntity } from '../../base.entity';
-import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
-import { Notifiable } from '../../../shared/services/notification/decorators/notifiable.decorator';
-import { UserEntity } from '../../user/entities/user.entity';
+import { TimeStampEntity } from '../../base.entity'
+import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm'
+import { Notifiable } from '../../../shared/services/notification/decorators/notifiable.decorator'
+import { UserEntity } from '../../user/entities/user.entity'
 
 export enum ContactStatus {
   default = 'DEFAULT',
@@ -11,33 +11,33 @@ export enum ContactStatus {
 @Entity({ name: 'contacts' })
 export class ContactEntity extends TimeStampEntity {
   @Column({ type: 'number' })
-  userId: number;
+  userId: number
 
   @Column({ type: 'varchar' })
-  name: string;
+  name: string
 
   @Column({ type: 'varchar' })
-  email: string;
+  email: string
 
   @Column({ type: 'int' })
-  phone: number;
+  phone: number
 
   @Column({ type: 'varchar' })
-  address: string;
+  address: string
 
   @Column({ type: 'varchar' })
-  note: string;
+  note: string
 
   @Column({ type: 'enum', enum: ContactStatus, default: ContactStatus.normal })
-  status: ContactStatus;
+  status: ContactStatus
 
   @Column({ type: 'timestamp' })
-  public verifiedAt: Date;
+  public verifiedAt: Date
 
   @ManyToOne(() => UserEntity, (user) => user.contacts)
   @JoinColumn({
     name: 'userId',
     referencedColumnName: 'id',
   })
-  public user: UserEntity;
+  public user: UserEntity
 }

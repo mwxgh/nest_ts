@@ -4,65 +4,58 @@ import {
   IntersectionType,
   OmitType,
   PartialType,
-} from '@nestjs/swagger';
-import {
-  IsArray,
-  IsDate,
-  IsEnum,
-  IsNotEmpty,
-  IsOptional,
-  MinLength,
-} from 'class-validator';
+} from '@nestjs/swagger'
+import { IsArray, IsDate, IsEnum, IsOptional, MinLength } from 'class-validator'
 import {
   PostStatus,
   PostType,
   PostPriority,
   PostPrivacy,
-} from '../entities/post.entity';
+} from '../entities/post.entity'
 
 export class PostBaseAttributes {
   @ApiProperty()
   @MinLength(5)
-  title: string;
+  title: string
 
   @ApiProperty()
   @MinLength(10)
-  summary: string;
+  summary: string
 
   @ApiProperty()
   @MinLength(10)
-  description: string;
+  description: string
 
   @ApiProperty()
   @MinLength(10)
-  content: string;
+  content: string
 
   @ApiProperty()
   @IsDate()
   @IsOptional()
-  releaseDate: Date;
+  releaseDate: Date
 }
 
 export class PostFilterAttributes {
   @ApiProperty()
   @IsOptional()
   @IsEnum(PostPrivacy)
-  privacy: PostPrivacy;
+  privacy: PostPrivacy
 
   @ApiProperty()
   @IsEnum(PostStatus)
   @IsOptional()
-  status: PostStatus;
+  status: PostStatus
 
   @ApiProperty()
   @IsOptional()
   @IsEnum(PostPriority)
-  priority: PostPriority;
+  priority: PostPriority
 
   @ApiProperty()
   @IsOptional()
   @IsEnum(PostType)
-  type: PostType;
+  type: PostType
 }
 
 export class PostProperties extends IntersectionType(
@@ -77,7 +70,7 @@ export class PostProperties extends IntersectionType(
   })
   @IsOptional()
   @IsArray()
-  tagIds: [];
+  tagIds: []
 
   @ApiPropertyOptional({
     type: 'array',
@@ -87,7 +80,7 @@ export class PostProperties extends IntersectionType(
   })
   @IsOptional()
   @IsArray()
-  categoryIds: [];
+  categoryIds: []
 
   @ApiPropertyOptional({
     type: 'array',
@@ -97,7 +90,7 @@ export class PostProperties extends IntersectionType(
   })
   @IsOptional()
   @IsArray()
-  imageIds: [];
+  imageIds: []
 }
 
 export class CreatePostDto extends OmitType(PostProperties, [] as const) {}

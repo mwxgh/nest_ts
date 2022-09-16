@@ -1,6 +1,6 @@
-import { BadRequestException, ForbiddenException } from '@nestjs/common';
-import { includes, map } from 'lodash';
-import { Me } from 'src/components/user/dto/user.dto';
+import { BadRequestException, ForbiddenException } from '@nestjs/common'
+import { includes, map } from 'lodash'
+import { Me } from 'src/components/user/dto/user.dto'
 
 export class CommonService {
   /**
@@ -12,18 +12,18 @@ export class CommonService {
    * @return void
    */
   checkUserPermissionOperation(params: {
-    currentUser: Me;
-    userId: number;
+    currentUser: Me
+    userId: number
   }): void {
-    const { currentUser, userId } = params;
+    const { currentUser, userId } = params
 
-    const userRoles = map(currentUser.roles, (r) => r.slug);
+    const userRoles = map(currentUser.roles, (r) => r.slug)
 
     if (includes(userRoles, 'user') && userRoles.length == 1) {
       if (currentUser.id !== userId) {
         throw new ForbiddenException(
           'Permission denied : User role can not operation',
-        );
+        )
       }
     }
   }
@@ -37,20 +37,20 @@ export class CommonService {
    * @return join and select table
    */
   includesParamToJoinAndSelects(params: {
-    includesParams: string[];
-    relations: string[];
+    includesParams: string[]
+    relations: string[]
   }): string[] {
-    const { includesParams, relations } = params;
+    const { includesParams, relations } = params
 
     const joinAndSelects = includesParams.filter((item) =>
       relations.includes(item),
-    );
+    )
 
     if (joinAndSelects.length === 0) {
-      throw new BadRequestException('Can not join table with includes params');
+      throw new BadRequestException('Can not join table with includes params')
     }
 
-    return joinAndSelects;
+    return joinAndSelects
   }
 
   /**
@@ -62,12 +62,12 @@ export class CommonService {
    * @return string
    */
   getMessage(params: { message: string; keywords: string[] }): string {
-    let { message } = params;
+    let { message } = params
 
     params.keywords.forEach((keyword) => {
-      message = message.replace('${keyword}', keyword);
-    });
+      message = message.replace('${keyword}', keyword)
+    })
 
-    return message;
+    return message
   }
 }

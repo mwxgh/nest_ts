@@ -1,5 +1,5 @@
-import { IChannel } from './channel.interface';
+import { IChannel } from './channel.interface'
 
 export interface INotificationChannelFactory {
-  registerChannel(): Promise<IChannel[]> | IChannel[] | [];
+  registerChannel(): Promise<IChannel[]> | IChannel[] | []
 }

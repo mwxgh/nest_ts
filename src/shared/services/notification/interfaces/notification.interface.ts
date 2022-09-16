@@ -1,4 +1,4 @@
 export interface INotification {
-  notifiable: any;
-  via(): string[];
+  notifiable: any
+  via(): string[]
 }

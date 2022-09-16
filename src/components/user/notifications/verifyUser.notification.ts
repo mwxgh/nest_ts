@@ -1,18 +1,18 @@
-import { MAIL } from '../../../shared/services/notification/channels/email/constants';
+import { MAIL } from '../../../shared/services/notification/channels/email/constants'
 import {
   Mailable,
   IMailable,
-} from '../../../shared/services/notification/channels/email/mailable';
-import { Notification } from '../../../shared/services/notification/notification';
+} from '../../../shared/services/notification/channels/email/mailable'
+import { Notification } from '../../../shared/services/notification/notification'
 
 export class VerifyUserNotification extends Notification {
-  public url: string;
+  public url: string
   constructor(url: string) {
-    super();
-    this.url = url;
+    super()
+    this.url = url
   }
   via(): string[] {
-    return [MAIL];
+    return [MAIL]
   }
 
   toMail(): IMailable | Promise<IMailable> {
@@ -26,6 +26,6 @@ export class VerifyUserNotification extends Notification {
       .action('Verify', this.url)
       .line(
         'If you did not make this request, you can ignore this email. No Blog ID will be created without verification.',
-      );
+      )
   }
 }

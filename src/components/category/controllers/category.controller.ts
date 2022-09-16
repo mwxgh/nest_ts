@@ -9,34 +9,34 @@ import {
   Put,
   Query,
   UseGuards,
-} from '@nestjs/common';
+} from '@nestjs/common'
 import {
   ApiBearerAuth,
   ApiHeader,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
-} from '@nestjs/swagger';
+} from '@nestjs/swagger'
 
-import { IPaginationOptions } from 'src/shared/services/pagination';
-import { QueryManyDto } from 'src/shared/dto/queryParams.dto';
-import { CreateCategoryDto, UpdateCategoryDto } from '../dto/category.dto';
-import { CategoryService } from '../services/category.service';
-import { CategoryTransformer } from '../transformers/category.transformer';
-import { ApiResponseService } from 'src/shared/services/apiResponse/apiResponse.service';
-import { Auth } from 'src/components/auth/decorators/auth.decorator';
-import { JwtAuthGuard } from 'src/components/auth/guards/jwtAuth.guard';
+import { IPaginationOptions } from 'src/shared/services/pagination'
+import { QueryManyDto } from 'src/shared/dto/queryParams.dto'
+import { CreateCategoryDto, UpdateCategoryDto } from '../dto/category.dto'
+import { CategoryService } from '../services/category.service'
+import { CategoryTransformer } from '../transformers/category.transformer'
+import { ApiResponseService } from 'src/shared/services/apiResponse/apiResponse.service'
+import { Auth } from 'src/components/auth/decorators/auth.decorator'
+import { JwtAuthGuard } from 'src/components/auth/guards/jwtAuth.guard'
 import {
   GetItemResponse,
   GetListPaginationResponse,
   GetListResponse,
   SuccessfullyOperation,
-} from 'src/shared/services/apiResponse/apiResponse.interface';
-import Messages from 'src/shared/message/message';
-import { CommonService } from 'src/shared/services/common.service';
-import { CategoryEntity } from '../entities/category.entity';
-import { SelectQueryBuilder } from 'typeorm';
-import { CategoryAbleService } from '../services/categoryAble.service';
+} from 'src/shared/services/apiResponse/apiResponse.interface'
+import Messages from 'src/shared/message/message'
+import { CommonService } from 'src/shared/services/common.service'
+import { CategoryEntity } from '../entities/category.entity'
+import { SelectQueryBuilder } from 'typeorm'
+import { CategoryAbleService } from '../services/categoryAble.service'
 
 @ApiTags('Categories')
 @ApiHeader({
@@ -54,8 +54,8 @@ export class CategoryController {
     private categoryAbleService: CategoryAbleService,
   ) {}
 
-  private entity = 'categories';
-  private fields = ['name', 'categoryType'];
+  private entity = 'categories'
+  private fields = ['name', 'categoryType']
 
   @Post()
   @Auth('admin')
@@ -64,14 +64,14 @@ export class CategoryController {
   async createCategory(
     @Body() data: CreateCategoryDto,
   ): Promise<SuccessfullyOperation> {
-    await this.categoryService.create(data);
+    await this.categoryService.create(data)
 
     return this.response.success({
       message: this.commonService.getMessage({
         message: Messages.successfullyOperation.create,
         keywords: ['category'],
       }),
-    });
+    })
   }
 
   @Get()
@@ -80,7 +80,7 @@ export class CategoryController {
   async readCategories(
     @Query() query: QueryManyDto,
   ): Promise<GetListResponse | GetListPaginationResponse> {
-    const { search, includes, sortBy, sortType } = query;
+    const { search, includes, sortBy, sortType } = query
 
     const queryBuilder: SelectQueryBuilder<CategoryEntity> =
       await this.categoryService.queryCategory({
@@ -90,26 +90,26 @@ export class CategoryController {
         includes,
         sortBy,
         sortType,
-      });
+      })
 
     if (query.perPage || query.page) {
       const paginateOption: IPaginationOptions = {
         limit: query.perPage ? query.perPage : 10,
         page: query.page ? query.page : 1,
-      };
+      }
 
       const data = await this.categoryService.paginate(
         queryBuilder,
         paginateOption,
-      );
+      )
 
-      return this.response.paginate(data, new CategoryTransformer());
+      return this.response.paginate(data, new CategoryTransformer())
     }
 
     return this.response.collection(
       await queryBuilder.getMany(),
       new CategoryTransformer(),
-    );
+    )
   }
 
   @Get(':id')
@@ -118,9 +118,9 @@ export class CategoryController {
   async readCategory(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<GetItemResponse> {
-    const category = await this.categoryService.findOneOrFail(id);
+    const category = await this.categoryService.findOneOrFail(id)
 
-    return this.response.item(category, new CategoryTransformer());
+    return this.response.item(category, new CategoryTransformer())
   }
 
   @Put(':id')
@@ -131,16 +131,16 @@ export class CategoryController {
     @Param('id', ParseIntPipe) id: number,
     @Body() data: UpdateCategoryDto,
   ): Promise<SuccessfullyOperation> {
-    await this.categoryService.findOneOrFail(id);
+    await this.categoryService.findOneOrFail(id)
 
-    await this.categoryService.update(id, data);
+    await this.categoryService.update(id, data)
 
     return this.response.success({
       message: this.commonService.getMessage({
         message: Messages.successfullyOperation.update,
         keywords: ['category'],
       }),
-    });
+    })
   }
 
   @Delete(':id')
@@ -150,17 +150,17 @@ export class CategoryController {
   async deleteCategory(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<SuccessfullyOperation> {
-    await this.categoryService.findOneOrFail(id);
+    await this.categoryService.findOneOrFail(id)
 
-    await this.categoryService.destroy(id);
+    await this.categoryService.destroy(id)
 
-    await this.categoryAbleService.detachCategoryAble([{ categoryId: id }]);
+    await this.categoryAbleService.detachCategoryAble([{ categoryId: id }])
 
     return this.response.success({
       message: this.commonService.getMessage({
         message: Messages.successfullyOperation.delete,
         keywords: ['category'],
       }),
-    });
+    })
   }
 }

@@ -1,40 +1,40 @@
-import { isNil } from 'lodash';
-import { MailableDefaultStyle } from './default.style';
+import { isNil } from 'lodash'
+import { MailableDefaultStyle } from './default.style'
 
 export interface IMailableNodeMailerParams {
-  from: string;
-  to: string;
-  subject: string;
-  html: string;
+  from: string
+  to: string
+  subject: string
+  html: string
 }
 
 export interface IMailable {
-  from(from_address: string, name: string): IMailable;
-  to(address: string): IMailable;
-  cc(address: string): IMailable;
-  bcc(address: string): IMailable;
-  attach(attachment: string): IMailable;
-  subject(subject: string, customStyle?: string): IMailable;
-  greeting(msg: string, customStyle?: string): IMailable;
-  greeting(msg: string, customStyle?: string): IMailable;
-  line(text: string, customStyle?: string): IMailable;
-  section(data: string, customStyle?: string): IMailable;
-  action(text: string, link: string, type?: string): IMailable;
-  buildContent(): string;
-  getParams(): IMailableNodeMailerParams;
+  from(from_address: string, name: string): IMailable
+  to(address: string): IMailable
+  cc(address: string): IMailable
+  bcc(address: string): IMailable
+  attach(attachment: string): IMailable
+  subject(subject: string, customStyle?: string): IMailable
+  greeting(msg: string, customStyle?: string): IMailable
+  greeting(msg: string, customStyle?: string): IMailable
+  line(text: string, customStyle?: string): IMailable
+  section(data: string, customStyle?: string): IMailable
+  action(text: string, link: string, type?: string): IMailable
+  buildContent(): string
+  getParams(): IMailableNodeMailerParams
 }
 
 export class Mailable implements IMailable {
-  private _content = '';
-  private _to_addresses: string[] = [];
-  private _greeting: any;
-  private _customGreetingStyle: any;
-  private _customSubjectStyle: any;
-  private _attachments: any[];
-  private _ccs: any[];
-  private _bccs: any[];
-  private _from_address: string;
-  private _subject: string;
+  private _content = ''
+  private _to_addresses: string[] = []
+  private _greeting: any
+  private _customGreetingStyle: any
+  private _customSubjectStyle: any
+  private _attachments: any[]
+  private _ccs: any[]
+  private _bccs: any[]
+  private _from_address: string
+  private _subject: string
   constructor() {
     if (
       !isNil(process.env.DEFAULT_SENDER_EMAIL) &&
@@ -44,9 +44,9 @@ export class Mailable implements IMailable {
         !isNil(process.env.DEFAULT_SENDER) &&
         process.env.DEFAULT_SENDER !== ''
       ) {
-        this._from_address = `"${process.env.DEFAULT_SENDER}" ${process.env.DEFAULT_SENDER_EMAIL}`;
+        this._from_address = `"${process.env.DEFAULT_SENDER}" ${process.env.DEFAULT_SENDER_EMAIL}`
       } else {
-        this._from_address = process.env.DEFAULT_SENDER_EMAIL;
+        this._from_address = process.env.DEFAULT_SENDER_EMAIL
       }
     }
   }
@@ -59,8 +59,8 @@ export class Mailable implements IMailable {
    * @return self
    */
   to(address: string): IMailable {
-    this._to_addresses.push(address);
-    return this;
+    this._to_addresses.push(address)
+    return this
   }
 
   /**
@@ -72,8 +72,8 @@ export class Mailable implements IMailable {
    */
 
   cc(address: string): IMailable {
-    this._ccs.push(address);
-    return this;
+    this._ccs.push(address)
+    return this
   }
 
   /**
@@ -85,8 +85,8 @@ export class Mailable implements IMailable {
    */
 
   bcc(address: string): IMailable {
-    this._bccs.push(address);
-    return this;
+    this._bccs.push(address)
+    return this
   }
 
   /**
@@ -98,8 +98,8 @@ export class Mailable implements IMailable {
    */
 
   attach(attachment: string): IMailable {
-    this._attachments.push(attachment);
-    return this;
+    this._attachments.push(attachment)
+    return this
   }
 
   /**
@@ -112,14 +112,14 @@ export class Mailable implements IMailable {
    */
   from(from_address: string, name: string): IMailable {
     if (isNil(from_address)) {
-      throw new Error("sender's email is required");
+      throw new Error("sender's email is required")
     }
     if (isNil(name) || name === '') {
-      this._from_address = from_address;
+      this._from_address = from_address
     } else {
-      this._from_address = `"${name}" <${from_address}>`;
+      this._from_address = `"${name}" <${from_address}>`
     }
-    return this;
+    return this
   }
 
   /**
@@ -132,10 +132,10 @@ export class Mailable implements IMailable {
    */
   subject(content = '', customStyle?: string): IMailable {
     if (customStyle) {
-      this._customSubjectStyle = customStyle;
+      this._customSubjectStyle = customStyle
     }
-    this._subject = content;
-    return this;
+    this._subject = content
+    return this
   }
 
   /**
@@ -147,9 +147,9 @@ export class Mailable implements IMailable {
    * @return self
    */
   greeting(msg = '', customStyle?: string): IMailable {
-    this._customGreetingStyle = customStyle;
-    this._greeting = msg;
-    return this;
+    this._customGreetingStyle = customStyle
+    this._greeting = msg
+    return this
   }
 
   /**
@@ -164,8 +164,8 @@ export class Mailable implements IMailable {
   line(text = '', customStyle?: string): IMailable {
     this._content += isNil(customStyle)
       ? `<p style="${MailableDefaultStyle.paragraph}">${text}</p>`
-      : `<p style="${MailableDefaultStyle.paragraph} ${customStyle}">${text}</p>`;
-    return this;
+      : `<p style="${MailableDefaultStyle.paragraph} ${customStyle}">${text}</p>`
+    return this
   }
 
   /**
@@ -180,8 +180,8 @@ export class Mailable implements IMailable {
   section(data = '', customStyle?: string): IMailable {
     this._content += isNil(customStyle)
       ? `<div>${data}</div>`
-      : `<div style="${customStyle}">${data}</div>`;
-    return this;
+      : `<div style="${customStyle}">${data}</div>`
+    return this
   }
 
   /**
@@ -198,24 +198,24 @@ export class Mailable implements IMailable {
                 <a href="${link}">
                     <button style="${MailableDefaultStyle.button} ${MailableDefaultStyle.button_default}" class="${type}">${text}</button>
                 </a>    
-            </div>`;
-    return this;
+            </div>`
+    return this
   }
 
   buildContent(): string {
-    let html = `<html><body style="${MailableDefaultStyle.body}">`;
-    html += `<div style="${MailableDefaultStyle.box}">`;
+    let html = `<html><body style="${MailableDefaultStyle.body}">`
+    html += `<div style="${MailableDefaultStyle.box}">`
     html += isNil(this._customSubjectStyle)
       ? `<h1 style="${MailableDefaultStyle.subject}">${this._subject}</h1>`
-      : `<h1 style="${MailableDefaultStyle.subject} ${this._customSubjectStyle}">${this._subject}</h1>`;
+      : `<h1 style="${MailableDefaultStyle.subject} ${this._customSubjectStyle}">${this._subject}</h1>`
     if (this._greeting !== undefined && this._greeting !== '') {
       html += isNil(this._customGreetingStyle)
         ? `<div style="${MailableDefaultStyle.greeting}">${this._greeting}</div>`
-        : `<div style="${MailableDefaultStyle.greeting} ${this._customGreetingStyle}">${this._greeting}</div>`;
+        : `<div style="${MailableDefaultStyle.greeting} ${this._customGreetingStyle}">${this._greeting}</div>`
     }
-    html += `<div style="${MailableDefaultStyle.content}">${this._content}</div>`;
-    html += '</div></body></html>';
-    return html;
+    html += `<div style="${MailableDefaultStyle.content}">${this._content}</div>`
+    html += '</div></body></html>'
+    return html
   }
 
   getParams(): IMailableNodeMailerParams {
@@ -224,6 +224,6 @@ export class Mailable implements IMailable {
       to: this._to_addresses.join(', '),
       subject: this._subject,
       html: this.buildContent(),
-    };
+    }
   }
 }

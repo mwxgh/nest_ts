@@ -1,5 +1,5 @@
-import { Transformer } from '../../../shared/transformers/transformer';
-import { ContactEntity } from '../entities/contact.entity';
+import { Transformer } from '../../../shared/transformers/transformer'
+import { ContactEntity } from '../entities/contact.entity'
 
 export class ContactTransformer extends Transformer {
   transform(contact: ContactEntity): any {
@@ -11,6 +11,6 @@ export class ContactTransformer extends Transformer {
       address: contact.address,
       note: contact.note,
       status: contact.status,
-    };
+    }
   }
 }

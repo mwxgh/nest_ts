@@ -1,4 +1,4 @@
-import { MigrationInterface, QueryRunner, Table, TableIndex } from 'typeorm';
+import { MigrationInterface, QueryRunner, Table, TableIndex } from 'typeorm'
 
 export class CreateImageAbleTable1650813488415 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
@@ -54,17 +54,17 @@ export class CreateImageAbleTable1650813488415 implements MigrationInterface {
         ],
       }),
       true,
-    );
+    )
     await queryRunner.createIndex(
       'imageAbles',
       new TableIndex({
         name: 'FK_IMAGE_ABLE_ID',
         columnNames: ['imageAbleId'],
       }),
-    );
+    )
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.dropTable('imageAbles');
+    await queryRunner.dropTable('imageAbles')
   }
 }

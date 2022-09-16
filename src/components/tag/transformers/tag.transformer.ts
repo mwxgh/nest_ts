@@ -1,17 +1,17 @@
-import { Transformer } from '../../../shared/transformers/transformer';
-import { TagEntity } from '../entities/tag.entity';
+import { Transformer } from '../../../shared/transformers/transformer'
+import { TagEntity } from '../entities/tag.entity'
 
 export class TagTransformer extends Transformer {
   transform(model: TagEntity): any {
     if (!model.tagAbles) {
-      return model;
+      return model
     } else {
-      const posts = [];
-      const products = [];
+      const posts = []
+      const products = []
       model.tagAbles.map((i) => {
-        if (i.product) products.push(i.product);
-        if (i.post) posts.push(i.post);
-      });
+        if (i.product) products.push(i.product)
+        if (i.post) posts.push(i.post)
+      })
       return {
         id: model.id,
         name: model.name,
@@ -22,7 +22,7 @@ export class TagTransformer extends Transformer {
         deletedAt: model.deletedAt,
         posts: posts,
         products: products,
-      };
+      }
     }
   }
 }

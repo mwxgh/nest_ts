@@ -3,51 +3,51 @@ import {
   ApiPropertyOptional,
   OmitType,
   PartialType,
-} from '@nestjs/swagger';
-import { Type } from 'class-transformer';
+} from '@nestjs/swagger'
+import { Type } from 'class-transformer'
 import {
   IsArray,
   IsEnum,
   IsNotEmpty,
   IsNumber,
   IsOptional,
-} from 'class-validator';
-import { ProductStatus } from '../entities/product.entity';
+} from 'class-validator'
+import { ProductStatus } from '../entities/product.entity'
 
 export class ProductProperties {
   @ApiProperty()
   @IsNotEmpty()
-  name: string;
+  name: string
 
   @ApiProperty()
   @IsOptional()
-  sku: string;
+  sku: string
 
   @ApiProperty()
   @IsEnum(ProductStatus)
   @IsNotEmpty()
-  status: ProductStatus;
+  status: ProductStatus
 
   @ApiPropertyOptional({ type: Number, default: 1 })
   @IsNotEmpty()
   @IsOptional()
   @IsNumber()
   @Type(() => Number)
-  originalPrice: number;
+  originalPrice: number
 
   @ApiPropertyOptional({ type: Number, default: 1 })
   @IsNotEmpty()
   @IsOptional()
   @IsNumber()
   @Type(() => Number)
-  price: number;
+  price: number
 
   @ApiPropertyOptional({ type: Number, default: 1 })
   @IsNotEmpty()
   @IsOptional()
   @IsNumber()
   @Type(() => Number)
-  quantity: number;
+  quantity: number
 
   @ApiPropertyOptional({
     type: 'array',
@@ -57,7 +57,7 @@ export class ProductProperties {
   })
   @IsArray()
   @IsOptional()
-  imageIds: [];
+  imageIds: []
 
   @ApiPropertyOptional({
     type: 'array',
@@ -67,7 +67,7 @@ export class ProductProperties {
   })
   @IsArray()
   @IsOptional()
-  tagIds: [];
+  tagIds: []
 
   @ApiPropertyOptional({
     type: 'array',
@@ -77,7 +77,7 @@ export class ProductProperties {
   })
   @IsArray()
   @IsOptional()
-  categoryIds: [];
+  categoryIds: []
 }
 
 export class CreateProductDto extends OmitType(

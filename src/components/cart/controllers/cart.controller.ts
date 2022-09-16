@@ -7,25 +7,25 @@ import {
   Param,
   ParseIntPipe,
   Post,
-} from '@nestjs/common';
+} from '@nestjs/common'
 import {
   ApiHeader,
   ApiOkResponse,
   ApiOperation,
   ApiResponse,
   ApiTags,
-} from '@nestjs/swagger';
-import { ApiResponseService } from '../../../shared/services/apiResponse/apiResponse.service';
-import { getManager } from 'typeorm';
-import { CartEntity } from '../entities/cart.entity';
-import { CartService } from '../services/cart.service';
-import { CartTransformer } from '../transformers/cart.transformer';
+} from '@nestjs/swagger'
+import { ApiResponseService } from '../../../shared/services/apiResponse/apiResponse.service'
+import { getManager } from 'typeorm'
+import { CartEntity } from '../entities/cart.entity'
+import { CartService } from '../services/cart.service'
+import { CartTransformer } from '../transformers/cart.transformer'
 
-import { CreateCartItemDto } from '../dto/cart.dto';
-import { ImageAbleType } from '../../image/entities/imageAble.entity';
-import { SuccessfullyOperation } from 'src/shared/services/apiResponse/apiResponse.interface';
-import Messages from 'src/shared/message/message';
-import { CommonService } from 'src/shared/services/common.service';
+import { CreateCartItemDto } from '../dto/cart.dto'
+import { ImageAbleType } from '../../image/entities/imageAble.entity'
+import { SuccessfullyOperation } from 'src/shared/services/apiResponse/apiResponse.interface'
+import Messages from 'src/shared/message/message'
+import { CommonService } from 'src/shared/services/common.service'
 
 @ApiTags('Carts')
 @ApiHeader({
@@ -43,9 +43,9 @@ export class CartController {
   @Post()
   @ApiResponse({ status: 201, description: 'Cart created' })
   async create(@Body() data: CreateCartItemDto): Promise<any> {
-    const cart = await this.cartService.create(data);
+    const cart = await this.cartService.create(data)
 
-    return this.response.item(cart, new CartTransformer());
+    return this.response.item(cart, new CartTransformer())
   }
 
   @Get(':id')
@@ -61,11 +61,11 @@ export class CartController {
         { imageAbleType: ImageAbleType.product },
       )
       .where('carts.id = :id', { id: Number(id) })
-      .getOne();
+      .getOne()
 
-    if (!data) throw new NotFoundException();
+    if (!data) throw new NotFoundException()
 
-    return this.response.item(data, new CartTransformer());
+    return this.response.item(data, new CartTransformer())
   }
 
   @Delete()
@@ -74,15 +74,15 @@ export class CartController {
   async deleteCart(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<SuccessfullyOperation> {
-    await this.cartService.findOneOrFail(id);
+    await this.cartService.findOneOrFail(id)
 
-    await this.cartService.destroy(Number(id));
+    await this.cartService.destroy(Number(id))
 
     return this.response.success({
       message: this.commonService.getMessage({
         message: Messages.successfullyOperation.delete,
         keywords: ['tag'],
       }),
-    });
+    })
   }
 }

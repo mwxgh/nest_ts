@@ -1,4 +1,4 @@
-import { UserService } from '../services/user.service';
+import { UserService } from '../services/user.service'
 import {
   Controller,
   Get,
@@ -11,46 +11,46 @@ import {
   Req,
   BadRequestException,
   UseGuards,
-} from '@nestjs/common';
-import { ApiResponseService } from '../../../shared/services/apiResponse/apiResponse.service';
-import { UserTransformer } from '../transformers/user.transformer';
-import { isNil, pick, isBoolean } from 'lodash';
-import { IPaginationOptions } from '../../../shared/services/pagination';
-import { Auth } from '../../auth/decorators/auth.decorator';
-import { NotificationService } from '../../../shared/services/notification/notification.service';
-import { ConfigService } from '@nestjs/config';
-import { VerifyUserNotification } from '../notifications/verifyUser.notification';
-import { UserPasswordChangedNotification } from '../notifications/userPasswordChanged.notification';
-import { InviteUserService } from '../services/inviteUser.service';
-import { SendInviteUserLinkNotification } from '../../auth/notifications/sendInviteUserLink.notification';
-import { QueryManyDto } from '../../../shared/dto/queryParams.dto';
-import { Request } from 'express';
-import { UserSendMailReportNotification } from '../notifications/userSendEmailReport.notification';
+} from '@nestjs/common'
+import { ApiResponseService } from '../../../shared/services/apiResponse/apiResponse.service'
+import { UserTransformer } from '../transformers/user.transformer'
+import { isNil, pick, isBoolean } from 'lodash'
+import { IPaginationOptions } from '../../../shared/services/pagination'
+import { Auth } from '../../auth/decorators/auth.decorator'
+import { NotificationService } from '../../../shared/services/notification/notification.service'
+import { ConfigService } from '@nestjs/config'
+import { VerifyUserNotification } from '../notifications/verifyUser.notification'
+import { UserPasswordChangedNotification } from '../notifications/userPasswordChanged.notification'
+import { InviteUserService } from '../services/inviteUser.service'
+import { SendInviteUserLinkNotification } from '../../auth/notifications/sendInviteUserLink.notification'
+import { QueryManyDto } from '../../../shared/dto/queryParams.dto'
+import { Request } from 'express'
+import { UserSendMailReportNotification } from '../notifications/userSendEmailReport.notification'
 import {
   ApiBearerAuth,
   ApiHeader,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
-} from '@nestjs/swagger';
+} from '@nestjs/swagger'
 import {
   UpdateUserPasswordDto,
   UserAttachRoleDto,
   UserDetachRoleDto,
   UserSendMailReportDto,
-} from '../dto/user.dto';
-import { CreateUserDto, UpdateUserDto } from '../dto/user.dto';
-import { JwtAuthGuard } from 'src/components/auth/guards/jwtAuth.guard';
+} from '../dto/user.dto'
+import { CreateUserDto, UpdateUserDto } from '../dto/user.dto'
+import { JwtAuthGuard } from 'src/components/auth/guards/jwtAuth.guard'
 import {
   GetItemResponse,
   GetListPaginationResponse,
   GetListResponse,
   SuccessfullyOperation,
-} from 'src/shared/services/apiResponse/apiResponse.interface';
-import Messages from 'src/shared/message/message';
-import { CommonService } from 'src/shared/services/common.service';
-import { UserEntity } from '../entities/user.entity';
-import { SelectQueryBuilder } from 'typeorm';
+} from 'src/shared/services/apiResponse/apiResponse.interface'
+import Messages from 'src/shared/message/message'
+import { CommonService } from 'src/shared/services/common.service'
+import { UserEntity } from '../entities/user.entity'
+import { SelectQueryBuilder } from 'typeorm'
 
 @ApiTags('Users')
 @ApiHeader({
@@ -70,9 +70,9 @@ export class UserController {
     private commonService: CommonService,
   ) {}
 
-  private entity = 'users';
-  private fields = ['email', 'username', 'firstName', 'lastName'];
-  private relations = ['roles'];
+  private entity = 'users'
+  private fields = ['email', 'username', 'firstName', 'lastName']
+  private relations = ['roles']
 
   @Post()
   @Auth('admin')
@@ -83,11 +83,11 @@ export class UserController {
   ): Promise<SuccessfullyOperation> {
     const user = await this.userService.saveUser({
       user: data,
-    });
+    })
 
     if (data.roleIds.length > 0) {
       for (const roleId of data.roleIds) {
-        await this.userService.attachRole({ userId: user.id, roleId });
+        await this.userService.attachRole({ userId: user.id, roleId })
       }
     }
 
@@ -96,7 +96,7 @@ export class UserController {
         message: Messages.successfullyOperation.create,
         keywords: ['user'],
       }),
-    });
+    })
   }
 
   @Get()
@@ -106,7 +106,7 @@ export class UserController {
   async readUsers(
     @Query() query: QueryManyDto,
   ): Promise<GetListResponse | GetListPaginationResponse> {
-    const { search, includes, sortBy, sortType } = query;
+    const { search, includes, sortBy, sortType } = query
 
     let queryBuilder: SelectQueryBuilder<UserEntity> =
       await this.userService.queryBuilder({
@@ -115,25 +115,25 @@ export class UserController {
         keyword: search,
         sortBy,
         sortType,
-      });
+      })
 
-    let joinAndSelects = [];
+    let joinAndSelects = []
 
     if (!isNil(includes)) {
-      const includesParams = Array.isArray(includes) ? includes : [includes];
+      const includesParams = Array.isArray(includes) ? includes : [includes]
 
       joinAndSelects = this.commonService.includesParamToJoinAndSelects({
         includesParams,
         relations: this.relations,
-      });
+      })
 
       if (joinAndSelects.length > 0) {
         joinAndSelects.forEach((joinAndSelect) => {
           queryBuilder = queryBuilder.leftJoinAndSelect(
             `${this.entity}.${joinAndSelect}`,
             `${joinAndSelect}`,
-          );
-        });
+          )
+        })
       }
     }
 
@@ -141,29 +141,26 @@ export class UserController {
       const paginateOption: IPaginationOptions = {
         limit: query.perPage ? query.perPage : 10,
         page: query.page ? query.page : 1,
-      };
+      }
 
-      const data = await this.userService.paginate(
-        queryBuilder,
-        paginateOption,
-      );
+      const data = await this.userService.paginate(queryBuilder, paginateOption)
 
       return this.response.paginate(
         data,
         new UserTransformer(
           joinAndSelects.length > 0 ? joinAndSelects : undefined,
         ),
-      );
+      )
     }
 
-    const users = await queryBuilder.getMany();
+    const users = await queryBuilder.getMany()
 
     return this.response.collection(
       users,
       new UserTransformer(
         joinAndSelects.length > 0 ? joinAndSelects : undefined,
       ),
-    );
+    )
   }
 
   @Get(':id')
@@ -175,9 +172,9 @@ export class UserController {
   ): Promise<GetItemResponse> {
     const user = await this.userService.findOneOrFail(id, {
       relations: this.relations,
-    });
+    })
 
-    return this.response.item(user, new UserTransformer(this.relations));
+    return this.response.item(user, new UserTransformer(this.relations))
   }
 
   @Put(':id')
@@ -188,20 +185,20 @@ export class UserController {
     @Param('id', ParseIntPipe) id: number,
     @Body() data: UpdateUserDto,
   ): Promise<SuccessfullyOperation> {
-    const user = await this.userService.findOneOrFail(id);
+    const user = await this.userService.findOneOrFail(id)
 
-    delete data.roleIds;
+    delete data.roleIds
 
     await this.userService.update(
       user.id,
       pick(data, ['email', 'username', 'firstName', 'lastName']),
-    );
+    )
 
     if (isBoolean(data.notifyUser) && data.notifyUser === true) {
       this.notificationService.send(
         user,
         new UserPasswordChangedNotification(data.password),
-      );
+      )
     }
 
     return this.response.success({
@@ -209,7 +206,7 @@ export class UserController {
         message: Messages.successfullyOperation.update,
         keywords: ['user'],
       }),
-    });
+    })
   }
 
   @Put(':id/password')
@@ -220,17 +217,17 @@ export class UserController {
     @Param('id', ParseIntPipe) id: number,
     @Body() data: UpdateUserPasswordDto,
   ): Promise<SuccessfullyOperation> {
-    const user = await this.userService.findOneOrFail(id);
+    const user = await this.userService.findOneOrFail(id)
 
     await this.userService.update(user.id, {
       password: this.userService.hashPassword(data.password),
-    });
+    })
 
     if (isBoolean(data.notifyUser) && data.notifyUser === true) {
       this.notificationService.send(
         user,
         new UserPasswordChangedNotification(data.password),
-      );
+      )
     }
 
     return this.response.success({
@@ -238,7 +235,7 @@ export class UserController {
         message: Messages.successfullyOperation.updatePassword,
         keywords: ['password', 'user'],
       }),
-    });
+    })
   }
 
   @Post(':id/sendVerifyLink')
@@ -248,18 +245,18 @@ export class UserController {
   async sendVerifyLink(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<SuccessfullyOperation> {
-    const user = await this.userService.findOneOrFail(id);
+    const user = await this.userService.findOneOrFail(id)
 
-    await this.userService.generateVerifyToken(user.id);
+    await this.userService.generateVerifyToken(user.id)
 
     this.notificationService.send(
       user,
       new VerifyUserNotification(
         user.generateVerifyEmailLink(this.configService.get('FRONTEND_URL')),
       ),
-    );
+    )
 
-    return this.response.success();
+    return this.response.success()
   }
 
   @Post(':id/verify')
@@ -268,11 +265,11 @@ export class UserController {
   async verify(@Query('token') token: string): Promise<any> {
     const user = await this.userService.firstOrFail({
       where: { verifyToken: token, verified: false, verifiedAt: null },
-    });
+    })
 
-    const result = await this.userService.verify(user.id);
+    const result = await this.userService.verify(user.id)
 
-    return this.response.item(result, new UserTransformer());
+    return this.response.item(result, new UserTransformer())
   }
 
   @Post('invite')
@@ -280,19 +277,19 @@ export class UserController {
   @ApiOperation({ summary: 'Invite new user using system' })
   @ApiOkResponse({ description: 'Mail notification user' })
   async inviteUser(@Req() request: Request): Promise<SuccessfullyOperation> {
-    const data = (request as any).body;
+    const data = (request as any).body
 
-    const check = await this.userService.emailExist(data.email);
+    const check = await this.userService.emailExist(data.email)
 
     if (check) {
-      throw new BadRequestException('User is exist in system');
+      throw new BadRequestException('User is exist in system')
     }
 
-    const item = await this.userService.create(pick(data, ['email']));
+    const item = await this.userService.create(pick(data, ['email']))
 
-    await this.inviteUserService.expireAllToken(item.email);
+    await this.inviteUserService.expireAllToken(item.email)
 
-    const passwordReset = await this.inviteUserService.generate(item.email);
+    const passwordReset = await this.inviteUserService.generate(item.email)
 
     await this.notificationService.send(
       item,
@@ -300,9 +297,9 @@ export class UserController {
         passwordReset,
         this.configService.get('FRONTEND_URL'),
       ),
-    );
+    )
 
-    return this.response.success();
+    return this.response.success()
   }
 
   @Post(':id/attachRole')
@@ -313,9 +310,9 @@ export class UserController {
     @Param('id', ParseIntPipe) id: number,
     @Body() data: UserAttachRoleDto,
   ): Promise<SuccessfullyOperation> {
-    await this.userService.attachRole({ userId: id, roleId: data.roleId });
+    await this.userService.attachRole({ userId: id, roleId: data.roleId })
 
-    return this.response.success();
+    return this.response.success()
   }
 
   @Post(':id/detachRole')
@@ -326,9 +323,9 @@ export class UserController {
     @Param('id', ParseIntPipe) id: number,
     @Body() data: UserDetachRoleDto,
   ): Promise<SuccessfullyOperation> {
-    await this.userService.detachRole({ userId: id, roleId: data.roleId });
+    await this.userService.detachRole({ userId: id, roleId: data.roleId })
 
-    return this.response.success();
+    return this.response.success()
   }
 
   @Post(':id/sendMail')
@@ -339,13 +336,13 @@ export class UserController {
     @Body() data: UserSendMailReportDto,
     @Param('id', ParseIntPipe) id: number,
   ): Promise<SuccessfullyOperation> {
-    const user = await this.userService.findOneOrFail(id);
+    const user = await this.userService.findOneOrFail(id)
 
     this.notificationService.send(
       user,
       new UserSendMailReportNotification(data.toEmail, data.linkReport),
-    );
+    )
 
-    return this.response.success();
+    return this.response.success()
   }
 }

@@ -3,11 +3,11 @@ import {
   DeleteDateColumn,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
-} from 'typeorm';
+} from 'typeorm'
 
 export class IdEntity {
   @PrimaryGeneratedColumn()
-  id: number;
+  id: number
 }
 
 export class BaseTimeStampEntity extends IdEntity {
@@ -16,16 +16,16 @@ export class BaseTimeStampEntity extends IdEntity {
     precision: null,
     default: () => 'NOW()',
   })
-  public createdAt: Date;
+  public createdAt: Date
 
   @UpdateDateColumn({
     type: 'timestamp',
     precision: null,
     default: () => 'NOW()',
   })
-  public updatedAt: Date;
+  public updatedAt: Date
 }
 export class TimeStampEntity extends BaseTimeStampEntity {
   @DeleteDateColumn({ type: 'timestamp' })
-  public deletedAt: Date;
+  public deletedAt: Date
 }

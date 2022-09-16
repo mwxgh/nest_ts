@@ -1,7 +1,7 @@
-import { Notifiable } from '../../../../src/shared/services/notification/decorators/notifiable.decorator';
-import { Column, Entity, OneToMany } from 'typeorm';
-import { TagAbleEntity } from './tagAble.entity';
-import { TimeStampEntity } from '../../base.entity';
+import { Notifiable } from '../../../../src/shared/services/notification/decorators/notifiable.decorator'
+import { Column, Entity, OneToMany } from 'typeorm'
+import { TagAbleEntity } from './tagAble.entity'
+import { TimeStampEntity } from '../../base.entity'
 
 export enum TagStatus {
   publish = 'PUBLISH',
@@ -12,14 +12,14 @@ export enum TagStatus {
 @Entity({ name: 'tags' })
 export class TagEntity extends TimeStampEntity {
   @Column({ type: 'varchar' })
-  name: string;
+  name: string
 
   @Column({ type: 'enum', enum: TagStatus, default: TagStatus.publish })
-  status: TagStatus;
+  status: TagStatus
 
   @Column({ type: 'timestamp' })
-  public verifiedAt: Date;
+  public verifiedAt: Date
 
   @OneToMany(() => TagAbleEntity, (tagAbles) => tagAbles.tag)
-  tagAbles: TagAbleEntity[];
+  tagAbles: TagAbleEntity[]
 }

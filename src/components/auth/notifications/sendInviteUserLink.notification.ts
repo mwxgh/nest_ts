@@ -1,23 +1,23 @@
-import { MAIL } from '../../../shared/services/notification/channels/email/constants';
-import { Notification } from '../../../shared/services/notification/notification';
+import { MAIL } from '../../../shared/services/notification/channels/email/constants'
+import { Notification } from '../../../shared/services/notification/notification'
 import {
   IMailable,
   Mailable,
-} from '../../../shared/services/notification/channels/email/mailable';
-import { PasswordResetEntity } from '../entities/passwordReset.entity';
+} from '../../../shared/services/notification/channels/email/mailable'
+import { PasswordResetEntity } from '../entities/passwordReset.entity'
 
 export class SendInviteUserLinkNotification extends Notification {
-  public password_reset: PasswordResetEntity;
-  public base_url: string;
+  public password_reset: PasswordResetEntity
+  public base_url: string
 
   constructor(password_reset: PasswordResetEntity, base_url: string) {
-    super();
-    this.password_reset = password_reset;
-    this.base_url = base_url;
+    super()
+    this.password_reset = password_reset
+    this.base_url = base_url
   }
 
   via(): string[] {
-    return [MAIL];
+    return [MAIL]
   }
 
   toMail(): IMailable | Promise<IMailable> {
@@ -36,6 +36,6 @@ export class SendInviteUserLinkNotification extends Notification {
         this.password_reset.generatePasswordResetLink(this.base_url),
       )
       .line('The link will expire in 48 hours. Let contact for support')
-      .line('Thank you for your patience.');
+      .line('Thank you for your patience.')
   }
 }

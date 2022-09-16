@@ -1,12 +1,12 @@
-import { Body, Controller, Delete, Param, Post, Put } from '@nestjs/common';
-import { ApiHeader, ApiParam, ApiTags } from '@nestjs/swagger';
-import { ProductService } from 'src/components/product/services/product.service';
-import { ApiResponseService } from 'src/shared/services/apiResponse/apiResponse.service';
-import { getCustomRepository } from 'typeorm';
-import { CreateOrderProductDto, UpdateOrderProductDto } from '../dto/order.dto';
-import { OrderProductRepository } from '../repositories/orderProduct.repository';
-import { OrderService } from '../services/order.service';
-import { OrderProductService } from '../services/orderProduct.service';
+import { Body, Controller, Delete, Param, Post, Put } from '@nestjs/common'
+import { ApiHeader, ApiParam, ApiTags } from '@nestjs/swagger'
+import { ProductService } from 'src/components/product/services/product.service'
+import { ApiResponseService } from 'src/shared/services/apiResponse/apiResponse.service'
+import { getCustomRepository } from 'typeorm'
+import { CreateOrderProductDto, UpdateOrderProductDto } from '../dto/order.dto'
+import { OrderProductRepository } from '../repositories/orderProduct.repository'
+import { OrderService } from '../services/order.service'
+import { OrderProductService } from '../services/orderProduct.service'
 
 @ApiTags('Orders')
 @ApiHeader({
@@ -24,79 +24,79 @@ export class OrderProductController {
 
   @Post()
   async create(@Body() data: CreateOrderProductDto): Promise<any> {
-    await this.orderService.findOneOrFail(data.orderId);
+    await this.orderService.findOneOrFail(data.orderId)
 
-    let total = 0;
+    let total = 0
 
     data.products.forEach(async (item) => {
-      const result = await this.productService.findOneOrFail(item.productId);
+      const result = await this.productService.findOneOrFail(item.productId)
       if (result && item.quantity > 0) {
-        const amount = Number(item.quantity) * Number(result.price);
-        total += amount;
+        const amount = Number(item.quantity) * Number(result.price)
+        total += amount
 
         const record = {
           orderId: data.orderId,
           productId: item.productId,
           quantity: item.quantity,
           amount: amount,
-        };
-        await this.orderProductService.create(record);
-        await this.orderService.update(data.orderId, { amount: total });
+        }
+        await this.orderProductService.create(record)
+        await this.orderService.update(data.orderId, { amount: total })
       }
-    });
+    })
 
-    return this.response.success();
+    return this.response.success()
   }
 
   @Put()
   async update(@Body() data: UpdateOrderProductDto): Promise<any> {
-    await this.orderService.findOneOrFail(data.orderId);
+    await this.orderService.findOneOrFail(data.orderId)
 
     const list_order = await getCustomRepository(OrderProductRepository)
       .createQueryBuilder('orderProducts')
       .where('orderProducts.orderId = :orderId', { orderId: data.orderId })
-      .getMany();
+      .getMany()
 
     list_order.forEach(async (item) => {
-      await this.orderProductService.destroy(item.id);
-    });
+      await this.orderProductService.destroy(item.id)
+    })
 
-    let total = 0;
+    let total = 0
 
     data.products.forEach(async (item) => {
-      const result = await this.productService.findOneOrFail(item.productId);
+      const result = await this.productService.findOneOrFail(item.productId)
 
       if (result && item.quantity > 0) {
-        const amount = Number(item.quantity) * Number(result.price);
-        total += Number(amount);
+        const amount = Number(item.quantity) * Number(result.price)
+        total += Number(amount)
 
         const record = {
           orderId: data.orderId,
           productId: item.productId,
           quantity: item.quantity,
           amount: amount,
-        };
-        await this.orderProductService.create(record);
-        await this.orderService.update(data.orderId, { amount: total });
+        }
+        await this.orderProductService.create(record)
+        await this.orderService.update(data.orderId, { amount: total })
       }
-    });
+    })
 
-    return await this.response.success();
+    return await this.response.success()
   }
 
   @Delete(':id')
   @ApiParam({ name: 'id' })
   async destroy(@Param() params: any): Promise<any> {
-    const record = await this.orderProductService.findOneOrFail(params.id);
+    const record = await this.orderProductService.findOneOrFail(params.id)
 
-    const order = await this.orderService.findOneOrFail(record.orderId);
+    const order = await this.orderService.findOneOrFail(record.orderId)
 
     await this.orderService.update(order.id, {
       amount: order.amount - record.amount,
-    });
+    })
 
-    await this.orderProductService.destroy(params.id);
+    await this.orderProductService.destroy(params.id)
 
-    return this.response.success();
+    return this.response.success()
   }
 }

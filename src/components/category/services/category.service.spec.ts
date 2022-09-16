@@ -1,11 +1,11 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { ApiResponseService } from 'src/shared/services/apiResponse/apiResponse.service';
-import { Repository } from 'typeorm';
-import { CategoryController } from '../controllers/category.controller';
-import { CategoryService } from './category.service';
+import { Test, TestingModule } from '@nestjs/testing'
+import { ApiResponseService } from 'src/shared/services/apiResponse/apiResponse.service'
+import { Repository } from 'typeorm'
+import { CategoryController } from '../controllers/category.controller'
+import { CategoryService } from './category.service'
 
 describe('ProductService', () => {
-  let service: CategoryService;
+  let service: CategoryService
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -18,12 +18,12 @@ describe('ProductService', () => {
           useClass: Repository,
         },
       ],
-    }).compile();
+    }).compile()
 
-    service = module.get<CategoryService>(CategoryService);
-  });
+    service = module.get<CategoryService>(CategoryService)
+  })
 
   it('should be defined', () => {
-    expect(service).toBeDefined();
-  });
-});
+    expect(service).toBeDefined()
+  })
+})

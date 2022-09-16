@@ -1,26 +1,26 @@
-import { Controller, Post, Body, BadRequestException } from '@nestjs/common';
+import { Controller, Post, Body, BadRequestException } from '@nestjs/common'
 import {
   SendResetLinkDto,
   ResetPasswordDto,
-} from '../../dto/forgotPassword.dto';
-import { UserService } from '../../../user/services/user.service';
-import { NotificationService } from '../../../../shared/services/notification/notification.service';
-import { SendResetLinkNotification } from '../../notifications/sendResetLink.notification';
-import { ApiResponseService } from '../../../../shared/services/apiResponse/apiResponse.service';
-import { PasswordResetService } from '../../services/passwordReset.service';
-import { UserTransformer } from '../../../user/transformers/user.transformer';
-import { ConfigService } from '@nestjs/config';
+} from '../../dto/forgotPassword.dto'
+import { UserService } from '../../../user/services/user.service'
+import { NotificationService } from '../../../../shared/services/notification/notification.service'
+import { SendResetLinkNotification } from '../../notifications/sendResetLink.notification'
+import { ApiResponseService } from '../../../../shared/services/apiResponse/apiResponse.service'
+import { PasswordResetService } from '../../services/passwordReset.service'
+import { UserTransformer } from '../../../user/transformers/user.transformer'
+import { ConfigService } from '@nestjs/config'
 import {
   ApiBadRequestResponse,
   ApiHeader,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
-} from '@nestjs/swagger';
+} from '@nestjs/swagger'
 import {
   GetItemResponse,
   SuccessfullyOperation,
-} from 'src/shared/services/apiResponse/apiResponse.interface';
+} from 'src/shared/services/apiResponse/apiResponse.interface'
 
 @ApiTags('Auth')
 @ApiHeader({
@@ -43,15 +43,15 @@ export class ForgotPasswordController {
   async sendResetLinkEmail(
     @Body() data: SendResetLinkDto,
   ): Promise<SuccessfullyOperation> {
-    const { email } = data;
+    const { email } = data
 
     const user = await this.userService.firstOrFail({
       where: { email: this.userService.sanitizeEmail(email) },
-    });
+    })
 
-    await this.passwordResetService.expireAllToken(user.email);
+    await this.passwordResetService.expireAllToken(user.email)
 
-    const password_reset = await this.passwordResetService.generate(user.email);
+    const password_reset = await this.passwordResetService.generate(user.email)
 
     await this.notificationService.send(
       user,
@@ -59,9 +59,9 @@ export class ForgotPasswordController {
         password_reset,
         this.configService.get('FRONTEND_URL'),
       ),
-    );
+    )
 
-    return this.response.success();
+    return this.response.success()
   }
 
   @Post('resetPassword')
@@ -71,24 +71,24 @@ export class ForgotPasswordController {
   async resetPassword(
     @Body() data: ResetPasswordDto,
   ): Promise<GetItemResponse> {
-    const { token, password } = data;
+    const { token, password } = data
 
     const passwordReset = await this.passwordResetService.firstOrFail({
       where: { token },
-    });
+    })
 
     if (this.passwordResetService.isExpired(passwordReset)) {
-      throw new BadRequestException('Token is expired');
+      throw new BadRequestException('Token is expired')
     }
 
-    await this.passwordResetService.expire(token);
+    await this.passwordResetService.expire(token)
 
     const user = await this.userService.first({
       where: { email: passwordReset.email },
-    });
+    })
 
-    await this.userService.changePassword(user.id, password);
+    await this.userService.changePassword(user.id, password)
 
-    return this.response.item(user, new UserTransformer());
+    return this.response.item(user, new UserTransformer())
   }
 }

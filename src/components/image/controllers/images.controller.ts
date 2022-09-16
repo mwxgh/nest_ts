@@ -11,7 +11,7 @@ import {
   UploadedFile,
   UseGuards,
   UseInterceptors,
-} from '@nestjs/common';
+} from '@nestjs/common'
 import {
   ApiBearerAuth,
   ApiConsumes,
@@ -19,26 +19,26 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiTags,
-} from '@nestjs/swagger';
-import { diskStorage } from 'multer';
-import { extname } from 'path';
-import { Auth } from 'src/components/auth/decorators/auth.decorator';
-import { ApiResponseService } from 'src/shared/services/apiResponse/apiResponse.service';
-import { CreateImageDto, UpdateImageDto } from '../dto/image.dto';
-import { ImageService } from '../services/image.service';
-import { ImageTransformer } from '../transformers/image.transformer';
-import { FileFastifyInterceptor } from 'fastify-file-interceptor';
-import { QueryManyDto } from 'src/shared/dto/queryParams.dto';
-import { IPaginationOptions } from 'src/shared/services/pagination';
-import { JwtAuthGuard } from 'src/components/auth/guards/jwtAuth.guard';
+} from '@nestjs/swagger'
+import { diskStorage } from 'multer'
+import { extname } from 'path'
+import { Auth } from 'src/components/auth/decorators/auth.decorator'
+import { ApiResponseService } from 'src/shared/services/apiResponse/apiResponse.service'
+import { CreateImageDto, UpdateImageDto } from '../dto/image.dto'
+import { ImageService } from '../services/image.service'
+import { ImageTransformer } from '../transformers/image.transformer'
+import { FileFastifyInterceptor } from 'fastify-file-interceptor'
+import { QueryManyDto } from 'src/shared/dto/queryParams.dto'
+import { IPaginationOptions } from 'src/shared/services/pagination'
+import { JwtAuthGuard } from 'src/components/auth/guards/jwtAuth.guard'
 import {
   GetItemResponse,
   GetListPaginationResponse,
   GetListResponse,
   SuccessfullyOperation,
-} from 'src/shared/services/apiResponse/apiResponse.interface';
-import Messages from 'src/shared/message/message';
-import { CommonService } from 'src/shared/services/common.service';
+} from 'src/shared/services/apiResponse/apiResponse.interface'
+import Messages from 'src/shared/message/message'
+import { CommonService } from 'src/shared/services/common.service'
 
 @ApiTags('Images')
 @ApiHeader({
@@ -55,9 +55,9 @@ export class ImageController {
     private commonService: CommonService,
   ) {}
 
-  private entity = 'images';
+  private entity = 'images'
 
-  private fields = ['title'];
+  private fields = ['title']
 
   @ApiConsumes('multipart/form-data')
   @Post()
@@ -75,15 +75,15 @@ export class ImageController {
           const randomName = Array(32)
             .fill(null)
             .map(() => Math.round(Math.random() * 16).toString(16))
-            .join('');
-          cb(null, `${randomName}${extname(file.originalname)}`);
+            .join('')
+          cb(null, `${randomName}${extname(file.originalname)}`)
         },
       }),
       fileFilter: (req, file: Express.Multer.File, cb) => {
         if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
-          return new Error('Only image files are allowed!');
+          return new Error('Only image files are allowed!')
         }
-        cb(null, true);
+        cb(null, true)
       },
     }),
   )
@@ -91,14 +91,14 @@ export class ImageController {
     @UploadedFile() file: Express.Multer.File,
     @Body() data: CreateImageDto,
   ): Promise<SuccessfullyOperation> {
-    await this.imageService.saveImage({ file, data });
+    await this.imageService.saveImage({ file, data })
 
     return this.response.success({
       message: this.commonService.getMessage({
         message: Messages.successfullyOperation.create,
-        keywords: ['image'],
+        keywords: [this.entity],
       }),
-    });
+    })
   }
 
   @Get()
@@ -108,7 +108,7 @@ export class ImageController {
   async readImages(
     @Query() query: QueryManyDto,
   ): Promise<GetListResponse | GetListPaginationResponse> {
-    const { search, sortBy, sortType } = query;
+    const { search, sortBy, sortType } = query
 
     const queryBuilder = await this.imageService.queryBuilder({
       entity: this.entity,
@@ -116,26 +116,26 @@ export class ImageController {
       keyword: search,
       sortBy,
       sortType,
-    });
+    })
 
     if (query.perPage || query.page) {
       const paginateOption: IPaginationOptions = {
         limit: query.perPage ? query.perPage : 10,
         page: query.page ? query.page : 1,
-      };
+      }
 
       const images = await this.imageService.paginate(
         queryBuilder,
         paginateOption,
-      );
+      )
 
-      return this.response.paginate(images, new ImageTransformer());
+      return this.response.paginate(images, new ImageTransformer())
     }
 
     return this.response.collection(
       await queryBuilder.getMany(),
       new ImageTransformer(),
-    );
+    )
   }
 
   @Get(':id')
@@ -145,9 +145,9 @@ export class ImageController {
   async readImage(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<GetItemResponse> {
-    const image = await this.imageService.findOneOrFail(id);
+    const image = await this.imageService.findOneOrFail(id)
 
-    return this.response.item(image, new ImageTransformer());
+    return this.response.item(image, new ImageTransformer())
   }
 
   @Put(':id')
@@ -157,14 +157,14 @@ export class ImageController {
     @Param('id', ParseIntPipe) id: number,
     @Body() data: UpdateImageDto,
   ): Promise<SuccessfullyOperation> {
-    await this.imageService.updateImage({ id, data });
+    await this.imageService.updateImage({ id, data })
 
     return this.response.success({
       message: this.commonService.getMessage({
         message: Messages.successfullyOperation.update,
-        keywords: ['image'],
+        keywords: [this.entity],
       }),
-    });
+    })
   }
 
   @Delete(':id')
@@ -174,8 +174,13 @@ export class ImageController {
   async deleteImage(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<SuccessfullyOperation> {
-    await this.imageService.deleteImage({ id });
+    await this.imageService.deleteImage({ id })
 
-    return this.response.success();
+    return this.response.success({
+      message: this.commonService.getMessage({
+        message: Messages.successfullyOperation.delete,
+        keywords: [this.entity],
+      }),
+    })
   }
 }

@@ -1,36 +1,36 @@
 import {
   ResponseEntity,
   LengthAwareMeta,
-} from 'src/shared/interfaces/interface';
+} from 'src/shared/interfaces/interface'
 
 /**
  *  Response for success operations
  */
 export interface SuccessfullyOperation {
   data: {
-    success: boolean;
-    message?: string;
-  };
+    success: boolean
+    message?: string
+  }
 }
 
 /**
  * Response for item apis
  */
 export type GetItemResponse = {
-  data: ResponseEntity;
-};
+  data: ResponseEntity
+}
 
 /**
  * Response for list apis
  */
 export type GetListResponse = {
-  data: ResponseEntity[];
-};
+  data: ResponseEntity[]
+}
 
 /**
  * Response for list pagination apis
  */
 export type GetListPaginationResponse = {
-  data: ResponseEntity[];
-  meta: LengthAwareMeta;
-};
+  data: ResponseEntity[]
+  meta: LengthAwareMeta
+}

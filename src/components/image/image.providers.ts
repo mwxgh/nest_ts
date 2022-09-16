@@ -1,4 +1,4 @@
-import { CommonService } from 'src/shared/services/common.service';
-import { ImageService } from './services/image.service';
+import { CommonService } from 'src/shared/services/common.service'
+import { ImageService } from './services/image.service'
 
-export const imageProviders = [ImageService, CommonService];
+export const imageProviders = [ImageService, CommonService]

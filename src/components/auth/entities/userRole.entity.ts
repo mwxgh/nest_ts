@@ -1,11 +1,11 @@
-import { IdEntity } from '../../base.entity';
-import { Entity, Column } from 'typeorm';
+import { IdEntity } from '../../base.entity'
+import { Entity, Column } from 'typeorm'
 
 @Entity({ name: 'userRole' })
 export class UserRoleEntity extends IdEntity {
   @Column()
-  userId: number;
+  userId: number
 
   @Column()
-  roleId: number;
+  roleId: number
 }

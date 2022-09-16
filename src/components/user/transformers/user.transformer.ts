@@ -1,6 +1,6 @@
-import { Transformer } from '../../../shared/transformers/transformer';
-import { RoleTransformer } from '../../auth/transformers/role.transformer';
-import { UserEntity } from '../entities/user.entity';
+import { Transformer } from '../../../shared/transformers/transformer'
+import { RoleTransformer } from '../../auth/transformers/role.transformer'
+import { UserEntity } from '../entities/user.entity'
 
 export class UserTransformer extends Transformer {
   transform(model: UserEntity): any {
@@ -17,10 +17,10 @@ export class UserTransformer extends Transformer {
       deletedAt: model.deletedAt,
       createdAt: model.createdAt,
       updatedAt: model.updatedAt,
-    };
+    }
   }
 
   includeRoles(model: UserEntity): any {
-    return this.collection(model.roles, new RoleTransformer());
+    return this.collection(model.roles, new RoleTransformer())
   }
 }

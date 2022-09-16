@@ -1,13 +1,13 @@
-import { IsString, IsOptional, Min, IsNumber, IsEnum } from 'class-validator';
-import { Type } from 'class-transformer';
+import { IsString, IsOptional, Min, IsNumber, IsEnum } from 'class-validator'
+import { Type } from 'class-transformer'
 import {
   ApiProperty,
   IntersectionType,
   OmitType,
   PickType,
-} from '@nestjs/swagger';
-import { SortType } from '../constant/constant';
-import { PostFilterAttributes } from 'src/components/post/dto/post.dto';
+} from '@nestjs/swagger'
+import { SortType } from '../constant/constant'
+import { PostFilterAttributes } from 'src/components/post/dto/post.dto'
 
 export class QueryProperties {
   @ApiProperty()
@@ -15,19 +15,19 @@ export class QueryProperties {
   @Min(0)
   @IsNumber()
   @Type(() => Number)
-  page: number;
+  page: number
 
   @ApiProperty()
   @IsOptional()
   @Min(0)
   @IsNumber()
   @Type(() => Number)
-  perPage: number;
+  perPage: number
 
   @ApiProperty()
   @IsOptional()
   @IsString()
-  search: string;
+  search: string
 
   @ApiProperty({
     oneOf: [
@@ -41,21 +41,21 @@ export class QueryProperties {
     ],
   })
   @IsOptional()
-  includes: string[];
+  includes: string[]
 
   @ApiProperty()
   @IsOptional()
   @IsString()
-  sortBy: string;
+  sortBy: string
 
   @ApiProperty()
   @IsOptional()
   @IsEnum(SortType)
-  sortType: SortType;
+  sortType: SortType
 
   @ApiProperty()
   @IsOptional()
-  filters: { [key: string]: string };
+  filters: { [key: string]: string }
 }
 
 export class QueryPaginateDto extends OmitType(QueryProperties, [] as const) {}

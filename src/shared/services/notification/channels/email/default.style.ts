@@ -57,4 +57,4 @@ export const MailableDefaultStyle = {
           font-weight: bold,
           font-size: 15px;
           `,
-};
+}
