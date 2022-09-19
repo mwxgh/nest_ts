@@ -14,6 +14,13 @@ export interface SuccessfullyOperation {
 }
 
 /**
+ * Response for create and update apis
+ */
+export type CreateAndUpdateResponse = {
+  data: ResponseEntity
+}
+
+/**
  * Response for item apis
  */
 export type GetItemResponse = {

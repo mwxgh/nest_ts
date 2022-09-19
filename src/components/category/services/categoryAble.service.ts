@@ -117,7 +117,7 @@ export class CategoryAbleService extends BaseService {
       return
     }
 
-    // detach new categoryAble
+    // detach categoryAble
     const detachCategoryIds: number[] = difference(
       currentCategoryIds,
       categoryIds,

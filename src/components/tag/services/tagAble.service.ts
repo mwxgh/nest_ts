@@ -106,7 +106,7 @@ export class TagAbleService extends BaseService {
       return
     }
 
-    // detach new tagAble
+    // detach tagAble
     const detachTagIds: number[] = difference(currentTagIds, tagIds)
 
     const tagAbles = detachTagIds.map((tagAbleId) => ({

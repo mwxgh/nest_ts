@@ -42,6 +42,7 @@ import {
 import { CreateUserDto, UpdateUserDto } from '../dto/user.dto'
 import { JwtAuthGuard } from 'src/components/auth/guards/jwtAuth.guard'
 import {
+  CreateAndUpdateResponse,
   GetItemResponse,
   GetListPaginationResponse,
   GetListResponse,
@@ -80,23 +81,12 @@ export class UserController {
   @ApiOkResponse({ description: 'New user entity' })
   async createUser(
     @Body() data: CreateUserDto,
-  ): Promise<SuccessfullyOperation> {
-    const user = await this.userService.saveUser({
-      user: data,
+  ): Promise<CreateAndUpdateResponse> {
+    const saveUser = await this.userService.saveUser({
+      data,
     })
 
-    if (data.roleIds.length > 0) {
-      for (const roleId of data.roleIds) {
-        await this.userService.attachRole({ userId: user.id, roleId })
-      }
-    }
-
-    return this.response.success({
-      message: this.commonService.getMessage({
-        message: Messages.successfullyOperation.create,
-        keywords: ['user'],
-      }),
-    })
+    return this.response.item(saveUser, new UserTransformer(this.relations))
   }
 
   @Get()
@@ -184,29 +174,17 @@ export class UserController {
   async updateUser(
     @Param('id', ParseIntPipe) id: number,
     @Body() data: UpdateUserDto,
-  ): Promise<SuccessfullyOperation> {
-    const user = await this.userService.findOneOrFail(id)
-
-    delete data.roleIds
-
-    await this.userService.update(
-      user.id,
-      pick(data, ['email', 'username', 'firstName', 'lastName']),
-    )
+  ): Promise<CreateAndUpdateResponse> {
+    const updateUser = await this.userService.updateUser({ id, data })
 
     if (isBoolean(data.notifyUser) && data.notifyUser === true) {
       this.notificationService.send(
-        user,
+        updateUser,
         new UserPasswordChangedNotification(data.password),
       )
     }
 
-    return this.response.success({
-      message: this.commonService.getMessage({
-        message: Messages.successfullyOperation.update,
-        keywords: ['user'],
-      }),
-    })
+    return this.response.item(updateUser, new UserTransformer(this.relations))
   }
 
   @Put(':id/password')
