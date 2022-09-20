@@ -85,7 +85,7 @@ export class AuthController {
   @ApiOkResponse({ description: 'Token for access system' })
   async userRegister(@Body() data: UserRegisterDto): Promise<ResponseEntity> {
     const user = await this.userService.saveUser({
-      user: data,
+      data,
     })
 
     return this.response.primitive({

@@ -42,11 +42,12 @@ import {
 import { CreateUserDto, UpdateUserDto } from '../dto/user.dto'
 import { JwtAuthGuard } from 'src/components/auth/guards/jwtAuth.guard'
 import {
-  CreateAndUpdateResponse,
+  CreateResponse,
   GetItemResponse,
   GetListPaginationResponse,
   GetListResponse,
   SuccessfullyOperation,
+  UpdateResponse,
 } from 'src/shared/services/apiResponse/apiResponse.interface'
 import Messages from 'src/shared/message/message'
 import { CommonService } from 'src/shared/services/common.service'
@@ -79,9 +80,7 @@ export class UserController {
   @Auth('admin')
   @ApiOperation({ summary: 'Admin create user' })
   @ApiOkResponse({ description: 'New user entity' })
-  async createUser(
-    @Body() data: CreateUserDto,
-  ): Promise<CreateAndUpdateResponse> {
+  async createUser(@Body() data: CreateUserDto): Promise<CreateResponse> {
     const saveUser = await this.userService.saveUser({
       data,
     })
@@ -174,7 +173,7 @@ export class UserController {
   async updateUser(
     @Param('id', ParseIntPipe) id: number,
     @Body() data: UpdateUserDto,
-  ): Promise<CreateAndUpdateResponse> {
+  ): Promise<UpdateResponse> {
     const updateUser = await this.userService.updateUser({ id, data })
 
     if (isBoolean(data.notifyUser) && data.notifyUser === true) {

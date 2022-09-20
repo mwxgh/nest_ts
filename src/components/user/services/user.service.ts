@@ -7,12 +7,9 @@ import { HashService } from '../../../shared/services/hash/hash.service'
 import { RoleService } from 'src/components/auth/services/role.service'
 import { UserRoleService } from 'src/components/auth/services/userRole.service'
 import { difference, pick } from 'lodash'
-import {
-  BaseUserProperties,
-  CreateUserDto,
-  UpdateUserDto,
-} from '../dto/user.dto'
+import { CreateUserDto, UpdateUserDto } from '../dto/user.dto'
 import { defaultUserStatus } from 'src/shared/defaultValue/defaultValue'
+import { UserRegisterDto } from 'src/components/auth/dto/auth.dto'
 
 @Injectable()
 export class UserService extends BaseService {
@@ -122,7 +119,9 @@ export class UserService extends BaseService {
    * @param params.data  CreateUserDto
    * @return User
    */
-  async saveUser(params: { data: CreateUserDto }): Promise<UserEntity> {
+  async saveUser(params: {
+    data: CreateUserDto | UserRegisterDto
+  }): Promise<UserEntity> {
     const { data } = params
     const { email, username, password } = data
     const userStatus = data.status ?? defaultUserStatus
@@ -151,9 +150,11 @@ export class UserService extends BaseService {
       },
     })
 
-    if (data.roleIds.length > 0) {
-      for (const roleId of data.roleIds) {
-        await this.attachRole({ userId: saveUser.id, roleId })
+    if (data instanceof CreateUserDto) {
+      if (data.roleIds && data.roleIds.length > 0) {
+        for (const roleId of data.roleIds) {
+          await this.attachRole({ userId: saveUser.id, roleId })
+        }
       }
     }
 
