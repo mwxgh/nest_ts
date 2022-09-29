@@ -8,7 +8,7 @@ import { RoleService } from 'src/components/auth/services/role.service'
 import { UserRoleService } from 'src/components/auth/services/userRole.service'
 import { difference, pick } from 'lodash'
 import { CreateUserDto, UpdateUserDto } from '../dto/user.dto'
-import { defaultUserStatus } from 'src/shared/defaultValue/defaultValue'
+import { DEFAULT_USER_STATUS } from 'src/shared/defaultValue/defaultValue'
 import { UserRegisterDto } from 'src/components/auth/dto/auth.dto'
 
 @Injectable()
@@ -122,10 +122,8 @@ export class UserService extends BaseService {
   async saveUser(params: {
     data: CreateUserDto | UserRegisterDto
   }): Promise<UserEntity> {
-    const { data } = params
+    let { data } = params
     const { email, username, password } = data
-    const userStatus = data.status ?? defaultUserStatus
-    data.status = userStatus
 
     if (await this.emailExist(email)) {
       throw new ConflictException('Email already exist')
@@ -134,6 +132,19 @@ export class UserService extends BaseService {
     if (await this.usernameExist(username)) {
       throw new ConflictException('Username already exist')
     }
+
+    const userStatus = data.status ?? DEFAULT_USER_STATUS
+
+    if (data instanceof UserRegisterDto) {
+      const roleUser: number[] = await this.roleService.findWhere({
+        where: { slug: 'user' },
+        select: ['id'],
+      })
+
+      data = { ...data, roleIds: roleUser }
+    }
+
+    data.status = userStatus
 
     const saveUser = await this.create({
       ...pick(data, [
@@ -150,11 +161,9 @@ export class UserService extends BaseService {
       },
     })
 
-    if (data instanceof CreateUserDto) {
-      if (data.roleIds && data.roleIds.length > 0) {
-        for (const roleId of data.roleIds) {
-          await this.attachRole({ userId: saveUser.id, roleId })
-        }
+    if (data.roleIds && data.roleIds.length > 0) {
+      for (const roleId of data.roleIds) {
+        await this.attachRole({ userId: saveUser.id, roleId })
       }
     }
 
