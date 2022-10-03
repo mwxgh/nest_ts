@@ -17,13 +17,6 @@ export default class UsersTableSeeder {
 
     const seed = [
       {
-        email: 'superadmin@mwx.com',
-        username: 'superadmin',
-        password: this.hashService.hash('secret'),
-        status: UserStatus.active,
-        role: 'superadmin',
-      },
-      {
         email: 'admin@mwx.com',
         username: 'admin',
         password: this.hashService.hash('secret'),

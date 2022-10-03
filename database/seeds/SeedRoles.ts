@@ -4,7 +4,6 @@ import { RoleEntity } from '../../src/components/auth/entities/role.entity'
 export default class RolesTableSeeder {
   async up(connection: Connection): Promise<any> {
     const seed = [
-      { name: 'Super Admin', slug: 'superadmin' },
       { name: 'Admin', slug: 'admin' },
       { name: 'User', slug: 'user' },
     ]

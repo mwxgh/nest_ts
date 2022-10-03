@@ -48,6 +48,7 @@ export default (): any => ({
     TagEntity,
     ContactEntity,
   ],
+  // autoLoadEntities: true,
 
   // We are using migrations, synchronize should be set to false.
   synchronize: false,

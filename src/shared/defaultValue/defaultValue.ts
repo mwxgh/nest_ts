@@ -3,4 +3,4 @@ import { UserStatus } from 'src/components/user/entities/user.entity'
 
 export const DEFAULT_USER_STATUS = UserStatus.active
 
-export const defaultTagStatus = TagStatus.publish
+export const DEFAULT_TAG_STATUS = TagStatus.publish
