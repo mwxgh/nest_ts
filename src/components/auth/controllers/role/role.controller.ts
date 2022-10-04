@@ -177,9 +177,7 @@ export class RoleController {
     await this.roleService.destroy(id)
 
     const rolePermissions: RolePermissionEntity[] =
-      await this.rolePermissionService.findWhere({
-        where: { roleId: id },
-      })
+      await this.rolePermissionService.findWhere({ roleId: id })
 
     const rolePermissionIds: number[] = rolePermissions.map(
       (rolePermission) => rolePermission.id,

@@ -116,7 +116,7 @@ export class UserService extends BaseService {
   /**
    * Save user and return user entity with relations
    *
-   * @param params.data  CreateUserDto
+   * @param params.data  CreateUserDto | UserRegisterDto
    * @return User
    */
   async saveUser(params: {
@@ -135,11 +135,13 @@ export class UserService extends BaseService {
 
     const userStatus = data.status ?? DEFAULT_USER_STATUS
 
-    if (data instanceof UserRegisterDto) {
-      const roleUser: number[] = await this.roleService.findWhere({
-        where: { slug: 'user' },
-        select: ['id'],
-      })
+    if (data instanceof UserRegisterDto || data['roleIds'] === undefined) {
+      const roleUser: number[] = await this.roleService.findWhere(
+        {
+          slug: 'user',
+        },
+        ['id'],
+      )
 
       data = { ...data, roleIds: roleUser }
     }
@@ -229,12 +231,12 @@ export class UserService extends BaseService {
   }): Promise<void> {
     const { userId, roleIds } = params
 
-    const currentRoleIds: number[] = await this.userRoleService.findWhere({
-      where: {
+    const currentRoleIds: number[] = await this.userRoleService.findWhere(
+      {
         userId,
       },
-      select: ['roleId'],
-    })
+      ['roleId'],
+    )
 
     if (currentRoleIds.length === 0) {
       return

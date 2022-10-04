@@ -280,7 +280,7 @@ export class BaseService {
    * @returns entity
    */
   async findWhere<T>(
-    condition: FindManyOptions,
+    condition: { [key: string]: any },
     columns?: string[],
   ): Promise<T[]> {
     return this.repository.find({

@@ -79,10 +79,7 @@ export class ImageAbleService extends BaseService {
       imageAbleType?: string
     }[],
   ): Promise<void> {
-    const imageAbleIdsExisting: number[] = await this.findWhere({
-      where: params,
-      select: ['id'],
-    })
+    const imageAbleIdsExisting: number[] = await this.findWhere(params, ['id'])
 
     if (imageAbleIdsExisting.length > 0) {
       await this.imageAbleRepository.delete(imageAbleIdsExisting)
@@ -102,13 +99,13 @@ export class ImageAbleService extends BaseService {
   }): Promise<void> {
     const { imageIds, imageAbleId, imageAbleType } = params
 
-    const currentImageIds: number[] = await this.findWhere({
-      where: {
+    const currentImageIds: number[] = await this.findWhere(
+      {
         imageAbleId,
         imageAbleType,
       },
-      select: ['imageId'],
-    })
+      ['imageId'],
+    )
 
     if (currentImageIds.length === 0) {
       return

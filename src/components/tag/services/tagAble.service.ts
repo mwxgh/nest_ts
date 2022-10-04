@@ -71,10 +71,7 @@ export class TagAbleService extends BaseService {
       tagAbleType?: string
     }[],
   ): Promise<void> {
-    const tagAbleIdsExisting: number[] = await this.findWhere({
-      where: params,
-      select: ['id'],
-    })
+    const tagAbleIdsExisting: number[] = await this.findWhere(params, ['id'])
 
     if (tagAbleIdsExisting.length > 0) {
       await this.tagAbleRepository.delete(tagAbleIdsExisting)
@@ -94,13 +91,13 @@ export class TagAbleService extends BaseService {
   }): Promise<void> {
     const { tagIds, tagAbleId, tagAbleType } = params
 
-    const currentTagIds: number[] = await this.findWhere({
-      where: {
+    const currentTagIds: number[] = await this.findWhere(
+      {
         tagAbleId,
         tagAbleType,
       },
-      select: ['tagId'],
-    })
+      ['tagId'],
+    )
 
     if (currentTagIds.length === 0) {
       return

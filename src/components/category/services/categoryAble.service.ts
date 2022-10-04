@@ -82,10 +82,9 @@ export class CategoryAbleService extends BaseService {
       categoryAbleType?: CategoryAbleType
     }[],
   ): Promise<void> {
-    const categoryAbleIdsExisting: number[] = await this.findWhere({
-      where: params,
-      select: ['id'],
-    })
+    const categoryAbleIdsExisting: number[] = await this.findWhere(params, [
+      'id',
+    ])
 
     if (categoryAbleIdsExisting.length > 0) {
       await this.categoryAbleRepository.delete(categoryAbleIdsExisting)
@@ -105,13 +104,13 @@ export class CategoryAbleService extends BaseService {
   }): Promise<void> {
     const { categoryIds, categoryAbleId, categoryAbleType } = params
 
-    const currentCategoryIds: number[] = await this.findWhere({
-      where: {
+    const currentCategoryIds: number[] = await this.findWhere(
+      {
         categoryAbleId,
         categoryAbleType,
       },
-      select: ['categoryId'],
-    })
+      ['categoryId'],
+    )
 
     if (currentCategoryIds.length === 0) {
       return

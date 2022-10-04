@@ -48,7 +48,7 @@ export class BaseUserProperties {
     isArray: true,
     default: UserStatus.active,
   })
-  @IsNotEmpty()
+  @IsOptional()
   @IsEnum(UserStatus)
   status: UserStatus
 }

@@ -143,7 +143,7 @@ export class ContactController {
     @AuthenticatedUser() currentUser: Me,
   ): Promise<GetListResponse> {
     const contacts: ContactEntity[] = await this.contactService.findWhere({
-      where: { userId: currentUser.id },
+      userId: currentUser.id,
     })
 
     if (!contacts) {
@@ -163,7 +163,8 @@ export class ContactController {
     @Param('id', ParseIntPipe) id: number,
   ): Promise<GetItemResponse> {
     const contact = await this.contactService.findWhere({
-      where: { id, userId: currentUser.id },
+      id,
+      userId: currentUser.id,
     })
 
     return this.response.item(contact, new ContactTransformer())
