@@ -55,7 +55,7 @@ export class ImageController {
     private commonService: CommonService,
   ) {}
 
-  private entity = 'images'
+  private entity = 'image'
 
   private fields = ['title']
 

@@ -4,7 +4,7 @@ import { Notifiable } from '../../../shared/services/notification/decorators/not
 import { CartItemEntity } from './cartItem.entity'
 
 @Notifiable()
-@Entity({ name: 'carts' })
+@Entity({ name: 'cart' })
 export class CartEntity extends BaseTimeStampEntity {
   @OneToMany(() => CartItemEntity, (cartItem) => cartItem.cart)
   public items: CartItemEntity[]

@@ -22,7 +22,7 @@ export enum JoinCommentAble {
 }
 
 @Notifiable()
-@Entity({ name: 'comments' })
+@Entity({ name: 'comment' })
 export class CommentEntity extends TimeStampEntity {
   @Column({ type: 'varchar' })
   email: string
@@ -31,7 +31,7 @@ export class CommentEntity extends TimeStampEntity {
   fullName: string
 
   @Column({ type: 'varchar' })
-  contacts: string
+  contact: string
 
   @Column({ type: 'enum', enum: CommentStatus })
   status: CommentStatus

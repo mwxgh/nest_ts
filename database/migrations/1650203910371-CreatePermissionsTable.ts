@@ -1,10 +1,11 @@
 import { MigrationInterface, QueryRunner, Table, TableIndex } from 'typeorm'
+import { baseTimeColumn } from './baseColumn'
 
 export class CreatePermissionsTable1650203910371 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.createTable(
       new Table({
-        name: 'permissions',
+        name: 'permission',
         columns: [
           {
             name: 'id',
@@ -21,27 +22,13 @@ export class CreatePermissionsTable1650203910371 implements MigrationInterface {
             name: 'slug',
             type: 'varchar',
           },
-          {
-            name: 'deletedAt',
-            isNullable: true,
-            type: 'datetime',
-          },
-          {
-            name: 'createdAt',
-            type: 'timestamp',
-            default: 'NOW()',
-          },
-          {
-            name: 'updatedAt',
-            type: 'timestamp',
-            default: 'NOW()',
-          },
+          ...baseTimeColumn,
         ],
       }),
       true,
     )
     await queryRunner.createIndex(
-      'permissions',
+      'permission',
       new TableIndex({
         name: 'IDX_PERMISSION_SLUG',
         columnNames: ['slug'],
@@ -50,6 +37,6 @@ export class CreatePermissionsTable1650203910371 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.dropTable('permissions')
+    await queryRunner.dropTable('permission')
   }
 }

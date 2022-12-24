@@ -2,7 +2,7 @@ import { TimeStampEntity } from '../../base.entity'
 import { Entity, Column, ManyToMany, JoinTable } from 'typeorm'
 import { RoleEntity } from './role.entity'
 
-@Entity({ name: 'permissions' })
+@Entity({ name: 'permission' })
 export class PermissionEntity extends TimeStampEntity {
   @Column({ type: 'varchar' })
   name: string

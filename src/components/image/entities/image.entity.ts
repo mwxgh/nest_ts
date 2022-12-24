@@ -9,7 +9,7 @@ export enum ImageStatus {
 }
 
 @Notifiable()
-@Entity({ name: 'images' })
+@Entity({ name: 'image' })
 export class ImageEntity extends TimeStampEntity {
   @Column({ type: 'varchar', default: "''" })
   title: string

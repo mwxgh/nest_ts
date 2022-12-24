@@ -51,7 +51,7 @@ export class TagController {
     private commonService: CommonService,
   ) {}
 
-  private entity = 'tags'
+  private entity = 'tag'
   private fields = ['name']
 
   @Post()

@@ -6,6 +6,9 @@ export class PermissionTransformer extends Transformer {
       id: model.id,
       name: model.name,
       slug: model.slug,
+      createdAt: model.createdAt,
+      updatedAt: model.updatedAt,
+      deletedAt: model.deletedAt,
     }
   }
 }

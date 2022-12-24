@@ -8,7 +8,7 @@ export enum ContactStatus {
   normal = 'NORMAL',
 }
 @Notifiable()
-@Entity({ name: 'contacts' })
+@Entity({ name: 'contact' })
 export class ContactEntity extends TimeStampEntity {
   @Column({ type: 'number' })
   userId: number

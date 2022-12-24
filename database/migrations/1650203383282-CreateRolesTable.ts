@@ -1,10 +1,11 @@
 import { MigrationInterface, QueryRunner, Table } from 'typeorm'
+import { baseTimeColumn } from './baseColumn'
 
 export class CreateRolesTable1650203383282 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.createTable(
       new Table({
-        name: 'roles',
+        name: 'role',
         columns: [
           {
             name: 'id',
@@ -26,21 +27,7 @@ export class CreateRolesTable1650203383282 implements MigrationInterface {
             default: 0,
             type: 'int',
           },
-          {
-            name: 'deletedAt',
-            isNullable: true,
-            type: 'datetime',
-          },
-          {
-            name: 'createdAt',
-            type: 'timestamp',
-            default: 'NOW()',
-          },
-          {
-            name: 'updatedAt',
-            type: 'timestamp',
-            default: 'NOW()',
-          },
+          ...baseTimeColumn,
         ],
       }),
       true,
@@ -48,6 +35,6 @@ export class CreateRolesTable1650203383282 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.dropTable('roles')
+    await queryRunner.dropTable('role')
   }
 }

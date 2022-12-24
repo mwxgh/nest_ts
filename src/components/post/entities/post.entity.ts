@@ -41,7 +41,7 @@ export enum PostPrivacy {
 }
 
 @Notifiable()
-@Entity({ name: 'posts' })
+@Entity({ name: 'post' })
 export class PostEntity extends TimeStampEntity {
   @Column()
   title: string

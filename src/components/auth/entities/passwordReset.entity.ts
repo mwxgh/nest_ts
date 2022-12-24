@@ -1,7 +1,7 @@
 import { BaseTimeStampEntity } from '../../base.entity'
 import { Entity, Column } from 'typeorm'
 
-@Entity({ name: 'passwordResets' })
+@Entity({ name: 'passwordReset' })
 export class PasswordResetEntity extends BaseTimeStampEntity {
   @Column({ type: 'varchar' })
   email: string

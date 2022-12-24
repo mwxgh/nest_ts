@@ -11,7 +11,7 @@ export enum TagAbleType {
 }
 
 @Notifiable()
-@Entity({ name: 'tagAbles' })
+@Entity({ name: 'tagAble' })
 export class TagAbleEntity extends TimeStampEntity {
   @Column({ name: 'tagId', type: 'int' })
   tagId: number

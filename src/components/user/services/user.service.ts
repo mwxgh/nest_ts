@@ -26,14 +26,40 @@ export class UserService extends BaseService {
     this.repository = connection.getCustomRepository(UserRepository)
   }
 
+  /**
+   * Check email exist
+   * @param email string
+   */
   async emailExist(email: string): Promise<boolean> {
     return (await this.repository.count({ where: { email } })) > 0
   }
 
+  /**
+   * Check username exist
+   * @param username string
+   */
   async usernameExist(username: string): Promise<boolean> {
     return (await this.repository.count({ where: { username } })) > 0
   }
 
+  /**
+   * Check identifier
+   * @param email string
+   * @param username string
+   */
+  async checkIdentifier(email?: string, username?: string): Promise<void> {
+    if (email) {
+      await this.emailExist(email)
+    }
+    if (username) {
+      await this.usernameExist(username)
+    }
+  }
+
+  /**
+   * Generate verify token
+   * @param id number
+   */
   async generateVerifyToken(id: number): Promise<boolean> {
     const item = await this.update(id, {
       verifyToken: `${this.hashService.md5(
@@ -43,6 +69,10 @@ export class UserService extends BaseService {
     return item
   }
 
+  /**
+   * Verify identifier
+   * @param id number
+   */
   async verify(id: number): Promise<UserEntity> {
     const item = await this.update(id, {
       verifyToken: '',
@@ -53,14 +83,28 @@ export class UserService extends BaseService {
     return item
   }
 
+  /**
+   * Sanitize email
+   * @param email string
+   */
   sanitizeEmail(email: string): string {
     return email.toLowerCase().trim()
   }
 
+  /**
+   * Hash password
+   * @param password string
+   */
   hashPassword(password: string): string {
     return this.hashService.hash(password)
   }
 
+  /**
+   * Check password by bcrypt
+   *
+   * @param password string
+   * @param hashed string
+   */
   checkPassword(password: string, hashed: string): boolean {
     return this.hashService.check(password, hashed)
   }
@@ -75,6 +119,12 @@ export class UserService extends BaseService {
     return await this.update(id, { password: this.hashService.hash(password) })
   }
 
+  /**
+   * Attach user and role
+   *
+   * @param params.userId userId
+   * @param params.roleId roleId
+   */
   async attachRole(params: { userId: number; roleId: number }): Promise<void> {
     const { userId, roleId } = params
     const role = await this.roleService.findOneOrFail(roleId)
@@ -94,6 +144,12 @@ export class UserService extends BaseService {
     }
   }
 
+  /**
+   * Detach user and role
+   *
+   * @param params.userId userId
+   * @param params.roleId roleId
+   */
   async detachRole(params: { userId: number; roleId: number }): Promise<void> {
     const { userId, roleId } = params
     const role = await this.roleService.findOneOrFail(roleId)
@@ -125,13 +181,7 @@ export class UserService extends BaseService {
     let { data } = params
     const { email, username, password } = data
 
-    if (await this.emailExist(email)) {
-      throw new ConflictException('Email already exist')
-    }
-
-    if (await this.usernameExist(username)) {
-      throw new ConflictException('Username already exist')
-    }
+    this.checkIdentifier(email, username)
 
     const userStatus = data.status ?? DEFAULT_USER_STATUS
 
@@ -187,13 +237,10 @@ export class UserService extends BaseService {
 
     const existingUser = await this.findOneOrFail(id)
 
-    if (await this.emailExist(email)) {
-      throw new ConflictException('Email already exist')
-    }
-
-    if (await this.usernameExist(username)) {
-      throw new ConflictException('Username already exist')
-    }
+    this.checkIdentifier(
+      email ? email : undefined,
+      username ? username : undefined,
+    )
 
     const updateUser = await this.update(existingUser.id, {
       ...pick(data, [

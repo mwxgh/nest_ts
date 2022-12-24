@@ -21,6 +21,6 @@ export class UserTransformer extends Transformer {
   }
 
   includeRoles(model: UserEntity): any {
-    return this.collection(model.roles, new RoleTransformer())
+    return this.collectionWithoutDataObj(model.roles, new RoleTransformer())
   }
 }

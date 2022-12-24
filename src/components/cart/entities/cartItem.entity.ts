@@ -5,7 +5,7 @@ import { CartEntity } from './cart.entity'
 import { BaseTimeStampEntity } from '../../base.entity'
 
 @Notifiable()
-@Entity({ name: 'cartItems' })
+@Entity({ name: 'cartItem' })
 export class CartItemEntity extends BaseTimeStampEntity {
   @Column({ name: 'productId', type: 'int' })
   public productId: number

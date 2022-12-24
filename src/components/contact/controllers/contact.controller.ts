@@ -54,7 +54,7 @@ export class ContactController {
     private commonService: CommonService,
   ) {}
 
-  private entity = 'contacts'
+  private entity = 'contact'
 
   private fields = ['email', 'phone', 'address']
 

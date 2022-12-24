@@ -52,7 +52,7 @@ export class PostController {
     private commonService: CommonService,
   ) {}
 
-  private entity = 'posts'
+  private entity = 'post'
   private fields = ['title', 'summary', 'releaseDate']
 
   @Post()

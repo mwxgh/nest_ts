@@ -19,7 +19,7 @@ export class UserPasswordChangedNotification extends Notification {
     return new Mailable()
       .to(this.notifiable.email)
       .greeting('Hello')
-      .subject('Your Blog Account Password is changed')
+      .subject('Your Account Password is changed')
       .line(`Your password: <b>${this.password}</b>`)
       .line(
         'If you did not make this request, contact to admin for more information.',

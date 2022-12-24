@@ -16,12 +16,12 @@ export type ResponseEntity = Entity
  * Length aware meta
  */
 export interface LengthAwareMeta {
-  pagination: {
-    total: number
-    perPage: number
-    currentPage: number
-    totalPages: number
-  }
+  total: number
+  perPage: number
+  currentPage: number
+  totalPages: number
+  nextPage: number | null
+  prevPage: number | null
 }
 
 /**
@@ -40,6 +40,4 @@ export interface QueryParams {
   sortType?: SortType
   /** include with relation table */
   includes?: string[]
-  /** filter some field with exact value */
-  filter?: { [key: string]: string }
 }

@@ -1,10 +1,11 @@
 import { MigrationInterface, QueryRunner, Table, TableIndex } from 'typeorm'
+import { baseTimeColumn } from './baseColumn'
 
 export class CreateTagAblesTable1650206036149 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.createTable(
       new Table({
-        name: 'tagAbles',
+        name: 'tagAble',
         columns: [
           {
             name: 'id',
@@ -31,27 +32,13 @@ export class CreateTagAblesTable1650206036149 implements MigrationInterface {
             isNullable: true,
             type: 'datetime',
           },
-          {
-            name: 'deletedAt',
-            isNullable: true,
-            type: 'datetime',
-          },
-          {
-            name: 'createdAt',
-            type: 'timestamp',
-            default: 'NOW()',
-          },
-          {
-            name: 'updatedAt',
-            type: 'timestamp',
-            default: 'NOW()',
-          },
+          ...baseTimeColumn,
         ],
       }),
       true,
     )
     await queryRunner.createIndex(
-      'tagAbles',
+      'tagAble',
       new TableIndex({
         name: 'IDX_TAG_ID',
         columnNames: ['tagId'],
@@ -60,6 +47,6 @@ export class CreateTagAblesTable1650206036149 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.dropTable('tagAbles')
+    await queryRunner.dropTable('tagAble')
   }
 }

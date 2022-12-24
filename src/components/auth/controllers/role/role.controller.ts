@@ -55,9 +55,9 @@ export class RoleController {
     private commonService: CommonService,
   ) {}
 
-  private entity = 'roles'
+  private entity = 'role'
   private fields = ['name', 'level']
-  private relations = ['permissions']
+  private relations = ['permission']
 
   @Post('')
   @Auth('admin')

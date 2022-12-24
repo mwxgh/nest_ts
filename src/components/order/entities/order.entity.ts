@@ -4,7 +4,7 @@ import { Notifiable } from '../../../shared/services/notification/decorators/not
 import { OrderProductEntity } from './orderProduct.entity'
 
 @Notifiable()
-@Entity({ name: 'orders' })
+@Entity({ name: 'order' })
 export class OrderEntity extends BaseTimeStampEntity {
   @Column({ type: 'varchar', name: 'fullName' })
   fullName: string

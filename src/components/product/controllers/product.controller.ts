@@ -49,9 +49,9 @@ export class ProductController {
     private commonService: CommonService,
   ) {}
 
-  private entity = 'products'
+  private entity = 'product'
   private fields = ['name']
-  private relations: ['images', 'categories', 'tags']
+  private relations: ['image', 'category', 'tag']
 
   @Post()
   @Auth('admin')

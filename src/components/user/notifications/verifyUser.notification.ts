@@ -19,13 +19,13 @@ export class VerifyUserNotification extends Notification {
     return new Mailable()
       .to(this.notifiable.email)
       .greeting('Hello')
-      .subject('Verify your Blog ID email address')
+      .subject('Verify your ID email address')
       .line(
-        'You have selected this email address as your new Blog ID. To verify this email address belongs to you click to the button bellow and follow instruction',
+        'You have selected this email address as your new ID. To verify this email address belongs to you click to the button bellow and follow instruction',
       )
       .action('Verify', this.url)
       .line(
-        'If you did not make this request, you can ignore this email. No Blog ID will be created without verification.',
+        'If you did not make this request, you can ignore this email. No ID will be created without verification.',
       )
   }
 }

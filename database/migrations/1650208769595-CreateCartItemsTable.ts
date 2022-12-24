@@ -1,10 +1,11 @@
 import { MigrationInterface, QueryRunner, Table, TableIndex } from 'typeorm'
+import { baseTimeColumn } from './baseColumn'
 
 export class CreateCartItemsTable1650208769595 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.createTable(
       new Table({
-        name: 'cartItems',
+        name: 'cartItem',
         columns: [
           {
             name: 'id',
@@ -29,29 +30,20 @@ export class CreateCartItemsTable1650208769595 implements MigrationInterface {
             name: 'amount',
             type: 'int',
           },
-          {
-            name: 'createdAt',
-            type: 'timestamp',
-            default: 'now()',
-          },
-          {
-            name: 'updatedAt',
-            type: 'timestamp',
-            default: 'now()',
-          },
+          ...baseTimeColumn,
         ],
       }),
       true,
     )
     await queryRunner.createIndex(
-      'cartItems',
+      'cartItem',
       new TableIndex({
         name: 'IDX_CART_ITEM_PROD',
         columnNames: ['productId'],
       }),
     )
     await queryRunner.createIndex(
-      'cartItems',
+      'cartItem',
       new TableIndex({
         name: 'IDX_CART_ITEM_CART',
         columnNames: ['cartId'],
@@ -60,6 +52,6 @@ export class CreateCartItemsTable1650208769595 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.dropTable('cartItems')
+    await queryRunner.dropTable('cartItem')
   }
 }

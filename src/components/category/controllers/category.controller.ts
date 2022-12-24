@@ -54,7 +54,7 @@ export class CategoryController {
     private categoryAbleService: CategoryAbleService,
   ) {}
 
-  private entity = 'categories'
+  private entity = 'category'
   private fields = ['name', 'categoryType']
 
   @Post()

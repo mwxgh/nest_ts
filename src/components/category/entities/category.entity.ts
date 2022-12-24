@@ -8,7 +8,7 @@ export enum CategoryStatus {
   hide = 'HIDE',
 }
 @Notifiable()
-@Entity({ name: 'categories' })
+@Entity({ name: 'category' })
 export class CategoryEntity extends TimeStampEntity {
   @Column({ type: 'varchar' })
   name: string

@@ -5,7 +5,7 @@ import {
 } from '../../src/components/user/entities/user.entity'
 import { HashService } from '../../src/shared/services/hash/hash.service'
 import { RoleEntity } from '../../src/components/auth/entities/role.entity'
-import * as _ from 'lodash'
+import { filter } from 'lodash'
 
 export default class UsersTableSeeder {
   public hashService: HashService
@@ -38,7 +38,7 @@ export default class UsersTableSeeder {
       user.username = item.username
       user.password = item.password
       user.status = item.status
-      user.roles = _.filter(roles, { slug: item.role })
+      user.roles = filter(roles, { slug: item.role })
 
       return user
     })

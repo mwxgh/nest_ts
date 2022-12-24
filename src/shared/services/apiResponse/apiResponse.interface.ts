@@ -35,16 +35,23 @@ export type GetItemResponse = {
 }
 
 /**
+ * Response for item apis not object
+ */
+export type GetItemResponseNotObject = ResponseEntity
+
+/**
  * Response for list apis
  */
 export type GetListResponse = {
   data: ResponseEntity[]
 }
 
+export type GetListResponseWithoutDataObj = ResponseEntity[]
+
 /**
  * Response for list pagination apis
  */
 export type GetListPaginationResponse = {
   data: ResponseEntity[]
-  meta: LengthAwareMeta
+  pagination: LengthAwareMeta
 }

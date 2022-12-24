@@ -54,7 +54,7 @@ export class PermissionController {
     private commonService: CommonService,
   ) {}
 
-  private entity = 'permissions'
+  private entity = 'permission'
   private fields = ['name']
 
   @Post('')
@@ -73,12 +73,8 @@ export class PermissionController {
 
   @Get()
   @Auth('admin')
-  @ApiOperation({
-    summary: 'Admin get list permissions',
-  })
-  @ApiOkResponse({
-    description: 'List permissions with query param',
-  })
+  @ApiOperation({ summary: 'Admin get list permissions' })
+  @ApiOkResponse({ description: 'List permissions with query param' })
   async readPermissions(
     @Query() query: QueryManyDto,
   ): Promise<GetListResponse | GetListPaginationResponse> {

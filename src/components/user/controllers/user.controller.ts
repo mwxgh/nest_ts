@@ -46,6 +46,7 @@ import {
   GetItemResponse,
   GetListPaginationResponse,
   GetListResponse,
+  GetListResponseWithoutDataObj,
   SuccessfullyOperation,
   UpdateResponse,
 } from 'src/shared/services/apiResponse/apiResponse.interface'
@@ -72,7 +73,7 @@ export class UserController {
     private commonService: CommonService,
   ) {}
 
-  private entity = 'users'
+  private entity = 'use'
   private fields = ['email', 'username', 'firstName', 'lastName']
   private relations = ['roles']
 
@@ -85,7 +86,10 @@ export class UserController {
       data,
     })
 
-    return this.response.item(saveUser, new UserTransformer(this.relations))
+    return this.response.itemWithoutDataObj(
+      saveUser,
+      new UserTransformer(this.relations),
+    )
   }
 
   @Get()
@@ -94,7 +98,7 @@ export class UserController {
   @ApiOkResponse({ description: 'List users with query params' })
   async readUsers(
     @Query() query: QueryManyDto,
-  ): Promise<GetListResponse | GetListPaginationResponse> {
+  ): Promise<GetListResponseWithoutDataObj | GetListPaginationResponse> {
     const { search, includes, sortBy, sortType } = query
 
     let queryBuilder: SelectQueryBuilder<UserEntity> =
@@ -144,7 +148,7 @@ export class UserController {
 
     const users = await queryBuilder.getMany()
 
-    return this.response.collection(
+    return this.response.collectionWithoutDataObj(
       users,
       new UserTransformer(
         joinAndSelects.length > 0 ? joinAndSelects : undefined,
@@ -156,14 +160,15 @@ export class UserController {
   @Auth('admin')
   @ApiOperation({ summary: 'Admin get user by id' })
   @ApiOkResponse({ description: 'User entity' })
-  async readUser(
-    @Param('id', ParseIntPipe) id: number,
-  ): Promise<GetItemResponse> {
+  async readUser(@Param('id', ParseIntPipe) id: number): Promise<any> {
     const user = await this.userService.findOneOrFail(id, {
-      relations: this.relations,
+      relations: ['roles'],
     })
 
-    return this.response.item(user, new UserTransformer(this.relations))
+    return this.response.itemWithoutDataObj(
+      user,
+      new UserTransformer(this.relations),
+    )
   }
 
   @Put(':id')

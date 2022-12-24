@@ -1,4 +1,5 @@
 import { MigrationInterface, QueryRunner, Table, TableIndex } from 'typeorm'
+import { baseTimeColumn } from './baseColumn'
 
 export class CreateOrderProductsTable1650207970052
   implements MigrationInterface
@@ -6,7 +7,7 @@ export class CreateOrderProductsTable1650207970052
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.createTable(
       new Table({
-        name: 'orderProducts',
+        name: 'orderProduct',
         columns: [
           {
             name: 'id',
@@ -31,29 +32,20 @@ export class CreateOrderProductsTable1650207970052
             name: 'amount',
             type: 'int',
           },
-          {
-            name: 'createdAt',
-            type: 'timestamp',
-            default: 'NOW()',
-          },
-          {
-            name: 'updatedAt',
-            type: 'timestamp',
-            default: 'NOW()',
-          },
+          ...baseTimeColumn,
         ],
       }),
       true,
     )
     await queryRunner.createIndex(
-      'orderProducts',
+      'orderProduct',
       new TableIndex({
         name: 'IDX_PRODUCT_ID',
         columnNames: ['productId'],
       }),
     )
     await queryRunner.createIndex(
-      'orderProducts',
+      'orderProduct',
       new TableIndex({
         name: 'IDX_ORDER_ID',
         columnNames: ['orderId'],
@@ -62,6 +54,6 @@ export class CreateOrderProductsTable1650207970052
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.dropTable('orderProducts')
+    await queryRunner.dropTable('orderProduct')
   }
 }

@@ -1,10 +1,11 @@
 import { MigrationInterface, QueryRunner, Table } from 'typeorm'
+import { baseTimeColumn } from './baseColumn'
 
 export class CreateCommentsTable1650207390501 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.createTable(
       new Table({
-        name: 'comments',
+        name: 'comment',
         columns: [
           {
             name: 'id',
@@ -22,7 +23,7 @@ export class CreateCommentsTable1650207390501 implements MigrationInterface {
             type: 'varchar',
           },
           {
-            name: 'contacts',
+            name: 'contact',
             type: 'varchar',
           },
           {
@@ -43,21 +44,7 @@ export class CreateCommentsTable1650207390501 implements MigrationInterface {
             isNullable: true,
             type: 'datetime',
           },
-          {
-            name: 'deletedAt',
-            isNullable: true,
-            type: 'datetime',
-          },
-          {
-            name: 'createdAt',
-            type: 'timestamp',
-            default: 'NOW()',
-          },
-          {
-            name: 'updatedAt',
-            type: 'timestamp',
-            default: 'NOW()',
-          },
+          ...baseTimeColumn,
         ],
       }),
       true,
@@ -65,6 +52,6 @@ export class CreateCommentsTable1650207390501 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.dropTable('comments')
+    await queryRunner.dropTable('comment')
   }
 }

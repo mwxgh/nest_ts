@@ -15,7 +15,7 @@ export enum ProductStatus {
 }
 
 @Notifiable()
-@Entity({ name: 'products' })
+@Entity({ name: 'product' })
 export class ProductEntity extends TimeStampEntity {
   @Column({ type: 'varchar' })
   name: string

@@ -9,7 +9,7 @@ export enum TagStatus {
 }
 
 @Notifiable()
-@Entity({ name: 'tags' })
+@Entity({ name: 'tag' })
 export class TagEntity extends TimeStampEntity {
   @Column({ type: 'varchar' })
   name: string

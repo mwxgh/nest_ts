@@ -45,7 +45,7 @@ export class ProfileController {
     @AuthenticatedUser() currentUser: Me,
   ): Promise<GetItemResponse> {
     const user = await this.userService.findOneOrFail(currentUser.id, {
-      relations: ['roles'],
+      relations: ['role'],
     })
 
     return this.response.item(user, new UserTransformer(['roles']))

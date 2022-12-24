@@ -1,10 +1,11 @@
 import { MigrationInterface, QueryRunner, Table } from 'typeorm'
+import { baseTimeColumn } from './baseColumn'
 
 export class CreateOrdersTable1650207746440 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.createTable(
       new Table({
-        name: 'orders',
+        name: 'order',
         columns: [
           {
             name: 'id',
@@ -46,16 +47,7 @@ export class CreateOrdersTable1650207746440 implements MigrationInterface {
             default: 1,
             type: 'int',
           },
-          {
-            name: 'createdAt',
-            type: 'timestamp',
-            default: 'NOW()',
-          },
-          {
-            name: 'updatedAt',
-            type: 'timestamp',
-            default: 'NOW()',
-          },
+          ...baseTimeColumn,
         ],
       }),
       true,
@@ -63,6 +55,6 @@ export class CreateOrdersTable1650207746440 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.dropTable('orders')
+    await queryRunner.dropTable('order')
   }
 }

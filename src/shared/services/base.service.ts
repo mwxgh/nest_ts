@@ -58,13 +58,18 @@ export class BaseService {
     limit: number,
   ) {
     const totalPages = Math.ceil(totalItems / limit)
+    const nextPage =
+      Math.ceil(totalItems / limit) > currentPage ? currentPage + 1 : null
+    const prevPage = currentPage > 1 ? currentPage - 1 : null
 
     return new Pagination(items, {
       totalItems: totalItems,
       itemCount: items.length,
       itemsPerPage: limit,
-      totalPages: totalPages,
-      currentPage: currentPage,
+      totalPages,
+      currentPage,
+      nextPage,
+      prevPage,
     })
   }
 
@@ -316,6 +321,8 @@ export class BaseService {
     const { entity, fields, keyword } = params
     const orderBy = params.sortBy ?? DEFAULT_SORT_BY
     const orderType = params.sortType ?? DEFAULT_SORT_TYPE
+
+    console.log(entity)
 
     let baseQuery = this.repository.createQueryBuilder(`${entity}`)
 

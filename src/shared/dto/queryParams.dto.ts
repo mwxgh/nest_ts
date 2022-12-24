@@ -55,7 +55,7 @@ export class QueryProperties {
 
   @ApiProperty()
   @IsOptional()
-  filters: { [key: string]: string }
+  filter: { [key: string]: string }
 }
 
 export class QueryPaginateDto extends OmitType(QueryProperties, [] as const) {}
@@ -65,7 +65,7 @@ export class QueryManyDto extends OmitType(QueryProperties, [] as const) {}
 export class QueryListDto extends PickType(QueryProperties, [
   'search',
   'includes',
-  'filters',
+  'filter',
 ] as const) {}
 
 export class QueryOneDto extends PickType(QueryProperties, [

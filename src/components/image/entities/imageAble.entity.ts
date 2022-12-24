@@ -11,7 +11,7 @@ export enum ImageAbleType {
 }
 
 @Notifiable()
-@Entity({ name: 'imageAbles' })
+@Entity({ name: 'imageAble' })
 export class ImageAbleEntity extends TimeStampEntity {
   @Column({ name: 'imageId', type: 'int' })
   public imageId: number

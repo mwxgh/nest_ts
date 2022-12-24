@@ -1,4 +1,5 @@
 import { MigrationInterface, QueryRunner, Table, TableIndex } from 'typeorm'
+import { baseTimeColumn } from './baseColumn'
 
 export class CreatePasswordResetTable1650204687090
   implements MigrationInterface
@@ -6,7 +7,7 @@ export class CreatePasswordResetTable1650204687090
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.createTable(
       new Table({
-        name: 'passwordResets',
+        name: 'passwordReset',
         columns: [
           {
             name: 'id',
@@ -29,22 +30,13 @@ export class CreatePasswordResetTable1650204687090
             type: 'datetime',
             default: '(DATE_ADD(NOW(), INTERVAL 2 DAY))',
           },
-          {
-            name: 'createdAt',
-            type: 'timestamp',
-            default: 'NOW()',
-          },
-          {
-            name: 'updatedAt',
-            type: 'timestamp',
-            default: 'NOW()',
-          },
+          ...baseTimeColumn,
         ],
       }),
       true,
     )
     await queryRunner.createIndex(
-      'passwordResets',
+      'passwordReset',
       new TableIndex({
         name: 'IDX_PWD_RESET_EMAIL',
         columnNames: ['email'],
@@ -53,6 +45,6 @@ export class CreatePasswordResetTable1650204687090
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.dropTable('passwordResets')
+    await queryRunner.dropTable('passwordReset')
   }
 }

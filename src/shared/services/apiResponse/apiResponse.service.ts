@@ -23,6 +23,9 @@ export class ApiResponseService {
   item(entity: Entity, transformer: TransformerInterface): GetItemResponse {
     return { data: transformer.get(entity) }
   }
+  itemWithoutDataObj(entity: Entity, transformer: TransformerInterface): any {
+    return transformer.get(entity)
+  }
 
   /**
    * Bind an item to a object response
@@ -52,6 +55,16 @@ export class ApiResponseService {
         return transformer.get(i)
       }),
     }
+  }
+
+  collectionWithoutDataObj(
+    collection: Entity[],
+    transformer: TransformerInterface,
+  ): any {
+    const resources = collection.map((i) => {
+      return transformer.get(i)
+    })
+    return resources
   }
 
   /**
@@ -103,13 +116,13 @@ export class ApiResponseService {
 
     return {
       data: items,
-      meta: {
-        pagination: {
-          total: paginator.meta.totalItems,
-          perPage: paginator.meta.itemsPerPage,
-          currentPage: paginator.meta.currentPage,
-          totalPages: paginator.meta.totalPages,
-        },
+      pagination: {
+        total: paginator.meta.totalItems,
+        perPage: paginator.meta.itemsPerPage,
+        currentPage: paginator.meta.currentPage,
+        totalPages: paginator.meta.totalPages,
+        nextPage: paginator.meta.nextPage,
+        prevPage: paginator.meta.prevPage,
       },
     }
   }

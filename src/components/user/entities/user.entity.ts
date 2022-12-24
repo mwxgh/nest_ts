@@ -10,7 +10,7 @@ export enum UserStatus {
 }
 
 @Notifiable()
-@Entity({ name: 'users' })
+@Entity({ name: 'user' })
 export class UserEntity extends TimeStampEntity {
   @Column({ type: 'varchar', unique: true })
   email: string

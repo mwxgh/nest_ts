@@ -30,6 +30,10 @@ export interface TransformerInterface {
     transformer: TransformerInterface,
   ): { data: ResponseEntity[] }
 
+  collectionWithoutDataObj(
+    collection: Entity[],
+    transformer: TransformerInterface,
+  ): ResponseEntity[]
   /**
    * Create a new primitive resource object
    *
@@ -66,6 +70,17 @@ export class Transformer implements TransformerInterface {
     }
     const data = map(collection, (i) => transformer.get(i))
     return { data }
+  }
+
+  collectionWithoutDataObj(
+    collection: Entity[],
+    transformer: TransformerInterface,
+  ): ResponseEntity[] {
+    if (!isArray(collection)) {
+      throw new InternalServerErrorException('collection should be an array')
+    }
+    const data = map(collection, (i) => transformer.get(i))
+    return data
   }
 
   primitive(data: { [key: string]: any }): { data: { [key: string]: any } } {

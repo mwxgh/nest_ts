@@ -3,13 +3,16 @@ import { Entity, Column, ManyToMany, JoinTable } from 'typeorm'
 import { UserEntity } from '../../user/entities/user.entity'
 import { PermissionEntity } from './permission.entity'
 
-@Entity({ name: 'roles' })
+@Entity({ name: 'role' })
 export class RoleEntity extends TimeStampEntity {
   @Column({ type: 'varchar', unique: true })
   name: string
 
   @Column({ type: 'varchar', unique: true })
   slug: string
+
+  @Column({ type: 'int' })
+  level: number
 
   @ManyToMany(() => UserEntity)
   users: RoleEntity[]

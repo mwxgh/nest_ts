@@ -34,6 +34,14 @@ export interface IPaginationMeta {
    * the current page this paginator "points" to
    */
   currentPage: number
+  /**
+   * the next page this paginator "points" to
+   */
+  nextPage: number | null
+  /**
+   * the previous page this paginator "points" to
+   */
+  prevPage: number | null
 }
 
 export class Pagination<PaginationObject> {
