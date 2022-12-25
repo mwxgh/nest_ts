@@ -7,25 +7,19 @@ import {
  *  Response for success operations
  */
 export interface SuccessfullyOperation {
-  data: {
-    success: boolean
-    message?: string
-  }
+  success: boolean
+  message?: string
 }
 
 /**
  * Response for create apis
  */
-export type CreateResponse = {
-  data: ResponseEntity
-}
+export type CreateResponse = ResponseEntity
 
 /**
  * Response for update apis
  */
-export type UpdateResponse = {
-  data: ResponseEntity
-}
+export type UpdateResponse = ResponseEntity
 
 /**
  * Response for item apis

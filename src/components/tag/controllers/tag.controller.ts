@@ -97,7 +97,10 @@ export class TagController {
         page: query.page ? query.page : 1,
       }
 
-      const tags = await this.tagService.paginate(queryBuilder, paginateOption)
+      const tags = await this.tagService.paginationCalculate(
+        queryBuilder,
+        paginateOption,
+      )
 
       return this.response.paginate(tags, new TagTransformer())
     }

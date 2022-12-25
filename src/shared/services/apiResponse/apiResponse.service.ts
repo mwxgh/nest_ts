@@ -89,7 +89,7 @@ export class ApiResponseService {
   success(params?: { message: string }): SuccessfullyOperation {
     const message = params?.message ?? Messages.successfullyOperation.general
 
-    return { data: { success: true, message: message } }
+    return { success: true, message: message }
   }
 
   /**

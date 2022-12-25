@@ -129,6 +129,8 @@ export class UserController {
         })
       }
     }
+    const relationTransformer =
+      joinAndSelects.length > 0 ? joinAndSelects : undefined
 
     if (query.perPage || query.page) {
       const paginateOption: IPaginationOptions = {
@@ -136,13 +138,14 @@ export class UserController {
         page: query.page ? query.page : 1,
       }
 
-      const data = await this.userService.paginate(queryBuilder, paginateOption)
+      const data = await this.userService.paginationCalculate(
+        queryBuilder,
+        paginateOption,
+      )
 
       return this.response.paginate(
         data,
-        new UserTransformer(
-          joinAndSelects.length > 0 ? joinAndSelects : undefined,
-        ),
+        new UserTransformer(relationTransformer),
       )
     }
 
@@ -150,9 +153,7 @@ export class UserController {
 
     return this.response.collectionWithoutDataObj(
       users,
-      new UserTransformer(
-        joinAndSelects.length > 0 ? joinAndSelects : undefined,
-      ),
+      new UserTransformer(relationTransformer),
     )
   }
 
@@ -188,7 +189,10 @@ export class UserController {
       )
     }
 
-    return this.response.item(updateUser, new UserTransformer(this.relations))
+    return this.response.itemWithoutDataObj(
+      updateUser,
+      new UserTransformer(this.relations),
+    )
   }
 
   @Put(':id/password')

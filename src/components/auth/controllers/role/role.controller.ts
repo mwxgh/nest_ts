@@ -115,7 +115,7 @@ export class RoleController {
         page: query.page ? query.page : 1,
       }
 
-      const roles = await this.roleService.paginate(
+      const roles = await this.roleService.paginationCalculate(
         queryBuilder,
         paginateOption,
       )

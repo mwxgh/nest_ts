@@ -124,7 +124,7 @@ export class ImageController {
         page: query.page ? query.page : 1,
       }
 
-      const images = await this.imageService.paginate(
+      const images = await this.imageService.paginationCalculate(
         queryBuilder,
         paginateOption,
       )

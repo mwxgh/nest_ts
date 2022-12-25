@@ -79,7 +79,7 @@ export class BaseService {
    * @param queryBuilder Repository | SelectQueryBuilder | null
    * @param options IPaginationOptions
    */
-  async paginate<T>(
+  async paginationCalculate<T>(
     queryBuilder: Repository<T> | SelectQueryBuilder<T> | null,
     options: IPaginationOptions,
   ): Promise<Pagination<T>> {

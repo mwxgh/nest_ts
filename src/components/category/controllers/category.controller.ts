@@ -98,7 +98,7 @@ export class CategoryController {
         page: query.page ? query.page : 1,
       }
 
-      const data = await this.categoryService.paginate(
+      const data = await this.categoryService.paginationCalculate(
         queryBuilder,
         paginateOption,
       )

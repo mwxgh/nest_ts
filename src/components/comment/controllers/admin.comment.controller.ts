@@ -77,7 +77,7 @@ export class AdminCommentController {
         page: query.page ? query.page : 1,
       }
 
-      const contacts = await this.commentService.paginate(
+      const contacts = await this.commentService.paginationCalculate(
         queryBuilder,
         paginateOption,
       )

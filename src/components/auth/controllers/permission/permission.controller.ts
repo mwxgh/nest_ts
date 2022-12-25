@@ -93,7 +93,7 @@ export class PermissionController {
         limit: query.perPage ? query.perPage : 10,
         page: query.page ? query.page : 1,
       }
-      const permissions = await this.permissionService.paginate(
+      const permissions = await this.permissionService.paginationCalculate(
         queryBuilder,
         paginateOption,
       )

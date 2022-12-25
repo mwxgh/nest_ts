@@ -34,7 +34,7 @@ export class AdminOrderController {
 
     const { baseQuery } = await this.orderService.baseQuery()
 
-    const order = await this.orderService.paginate(baseQuery, query)
+    const order = await this.orderService.paginationCalculate(baseQuery, query)
     return this.response.paginate(order, new OrderTransformer())
   }
 

@@ -4,12 +4,13 @@ import * as jwt from 'jsonwebtoken'
 import { UserEntity } from '../../user/entities/user.entity'
 import { UserService } from '../../user/services/user.service'
 import { WsException } from '@nestjs/websockets'
+import { JwtService } from '@nestjs/jwt'
 
 @Injectable()
-export class JwtService {
+export class JwtCustomService {
   constructor(
     private configService: ConfigService,
-    private userService: UserService,
+    private userService: UserService, // private readonly jwtService: JwtService,
   ) {}
 
   async verify(token: string, isWs = false): Promise<UserEntity | null> {

@@ -109,7 +109,7 @@ export class PostController {
         page: query.page ? query.page : 1,
       }
 
-      const posts = await this.postService.paginate(
+      const posts = await this.postService.paginationCalculate(
         queryBuilder,
         paginateOption,
       )

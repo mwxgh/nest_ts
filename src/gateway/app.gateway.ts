@@ -8,7 +8,7 @@ import {
 } from '@nestjs/websockets'
 import { Logger, UseGuards } from '@nestjs/common'
 import { Socket, Server } from 'socket.io'
-import { JwtService } from '../components/auth/services/jwt.service'
+import { JwtCustomService } from '../components/auth/services/jwt.service'
 import { WsAuthGuard } from './guards/wsAuth.guard'
 import { UserEntity } from '../components/user/entities/user.entity'
 import { GatewayRoomNamingStrategy } from './gatewayRoomNaming.strategy'
@@ -19,7 +19,7 @@ export class AppGateway
 {
   public onlineUsers = new Set()
   constructor(
-    private jwtService: JwtService,
+    private jwtCustomService: JwtCustomService,
     private gatewayRoomNamingStrategy: GatewayRoomNamingStrategy,
   ) {}
   @WebSocketServer() server: Server
@@ -67,7 +67,7 @@ export class AppGateway
 
   private async getUser(socket: Socket) {
     const token = socket.handshake.query.token
-    const user: any = await this.jwtService.verify(token)
+    const user: any = await this.jwtCustomService.verify(token)
     return user
   }
 

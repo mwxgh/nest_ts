@@ -75,9 +75,12 @@ export class AuthController {
       })
     }
 
-    return this.response.object({
+    const resource = {
       token: this.jwtService.sign(pick(user, authenticatedUserFields)),
-    })
+      expiresIn: process.env.JWT_TTL,
+    }
+
+    return resource
   }
 
   @Post('/register')
@@ -88,9 +91,12 @@ export class AuthController {
       data,
     })
 
-    return this.response.primitive({
+    const resource = {
       token: this.jwtService.sign(pick(user, authenticatedUserFields)),
-    })
+      expiresIn: process.env.JWT_TTL,
+    }
+
+    return resource
   }
 
   @Post('/login')
@@ -115,8 +121,11 @@ export class AuthController {
       throw new UnauthorizedException('Password does not match')
     }
 
-    return this.response.primitive({
+    const resource = {
       token: this.jwtService.sign(pick(user, authenticatedUserFields)),
-    })
+      expiresIn: process.env.JWT_TTL,
+    }
+
+    return resource
   }
 }

@@ -93,7 +93,7 @@ export class ProductController {
         page: query.page ? query.page : 1,
       }
 
-      const products = await this.productService.paginate(
+      const products = await this.productService.paginationCalculate(
         queryBuilder,
         paginateOption,
       )

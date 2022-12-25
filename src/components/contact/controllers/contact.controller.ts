@@ -108,7 +108,7 @@ export class ContactController {
         page: query.page ? query.page : 1,
       }
 
-      const contacts = await this.contactService.paginate(
+      const contacts = await this.contactService.paginationCalculate(
         queryBuilder,
         paginateOption,
       )
