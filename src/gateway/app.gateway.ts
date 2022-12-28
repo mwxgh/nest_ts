@@ -8,9 +8,9 @@ import {
 } from '@nestjs/websockets'
 import { Logger, UseGuards } from '@nestjs/common'
 import { Socket, Server } from 'socket.io'
-import { JwtCustomService } from '../components/auth/services/jwt.service'
+import { JwtCustomService } from '@authModule/services/jwt.service'
 import { WsAuthGuard } from './guards/wsAuth.guard'
-import { UserEntity } from '../components/user/entities/user.entity'
+import { UserEntity } from '@userModule/entities/user.entity'
 import { GatewayRoomNamingStrategy } from './gatewayRoomNaming.strategy'
 
 @WebSocketGateway()

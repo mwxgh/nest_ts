@@ -10,10 +10,10 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common'
-import { ApiResponseService } from '../../../../shared/services/apiResponse/apiResponse.service'
-import { PermissionService } from '../../services/permission.service'
-import { PermissionTransformer } from '../../transformers/permission.transformer'
-import { IPaginationOptions } from '../../../../shared/services/pagination'
+import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.service'
+import { PermissionService } from '@authModule/services/permission.service'
+import { PermissionTransformer } from '@authModule/transformers/permission.transformer'
+import { IPaginationOptions } from '@sharedServices/pagination'
 import {
   ApiBearerAuth,
   ApiHeader,
@@ -21,23 +21,23 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger'
-import { Auth } from '../../decorators/auth.decorator'
+import { Auth } from '@authModule/decorators/auth.decorator'
 import { assign } from 'lodash'
 import {
   CreatePermissionDto,
   UpdatePermissionDto,
-} from '../../dto/permission.dto'
+} from '@authModule/dto/permission.dto'
 
-import { JwtAuthGuard } from '../../guards/jwtAuth.guard'
-import { QueryManyDto } from 'src/shared/dto/queryParams.dto'
+import { JwtAuthGuard } from '@authModule/guards/jwtAuth.guard'
+import { QueryManyDto } from '@shared/dto/queryParams.dto'
 import {
   GetItemResponse,
   GetListPaginationResponse,
   GetListResponse,
   SuccessfullyOperation,
-} from 'src/shared/services/apiResponse/apiResponse.interface'
-import Messages from 'src/shared/message/message'
-import { CommonService } from 'src/shared/services/common.service'
+} from '@sharedServices/apiResponse/apiResponse.interface'
+import Messages from '@shared/message/message'
+import { CommonService } from '@sharedServices/common.service'
 
 @ApiTags('Permissions')
 @ApiHeader({

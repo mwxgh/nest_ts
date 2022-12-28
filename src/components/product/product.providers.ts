@@ -1,10 +1,10 @@
-import { CommonService } from 'src/shared/services/common.service'
-import { CategoryService } from '../category/services/category.service'
-import { CategoryAbleService } from '../category/services/categoryAble.service'
-import { ImageService } from '../image/services/image.service'
-import { ImageAbleService } from '../image/services/imageAble.service'
-import { TagService } from '../tag/services/tag.service'
-import { TagAbleService } from '../tag/services/tagAble.service'
+import { CommonService } from '@sharedServices/common.service'
+import { CategoryService } from '@categoryModule/services/category.service'
+import { CategoryAbleService } from '@categoryModule/services/categoryAble.service'
+import { ImageService } from '@imageModule/services/image.service'
+import { ImageAbleService } from '@imageModule/services/imageAble.service'
+import { TagService } from '@tagModule/services/tag.service'
+import { TagAbleService } from '@tagModule/services/tagAble.service'
 import { ProductService } from './services/product.service'
 
 export const productProviders = [

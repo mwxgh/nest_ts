@@ -1,4 +1,4 @@
-import { UserEntity } from '../components/user/entities/user.entity'
+import { UserEntity } from '@userModule/entities/user.entity'
 import { Injectable } from '@nestjs/common'
 
 @Injectable()

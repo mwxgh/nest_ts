@@ -12,18 +12,18 @@ import {
   BadRequestException,
   UseGuards,
 } from '@nestjs/common'
-import { ApiResponseService } from '../../../shared/services/apiResponse/apiResponse.service'
+import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.service'
 import { UserTransformer } from '../transformers/user.transformer'
 import { isNil, pick, isBoolean } from 'lodash'
-import { IPaginationOptions } from '../../../shared/services/pagination'
-import { Auth } from '../../auth/decorators/auth.decorator'
-import { NotificationService } from '../../../shared/services/notification/notification.service'
+import { IPaginationOptions } from '@sharedServices/pagination'
+import { Auth } from '@authModule/decorators/auth.decorator'
+import { NotificationService } from '@sharedServices/notification/notification.service'
 import { ConfigService } from '@nestjs/config'
 import { VerifyUserNotification } from '../notifications/verifyUser.notification'
 import { UserPasswordChangedNotification } from '../notifications/userPasswordChanged.notification'
 import { InviteUserService } from '../services/inviteUser.service'
-import { SendInviteUserLinkNotification } from '../../auth/notifications/sendInviteUserLink.notification'
-import { QueryManyDto } from '../../../shared/dto/queryParams.dto'
+import { SendInviteUserLinkNotification } from '@authModule/notifications/sendInviteUserLink.notification'
+import { QueryManyDto } from '@shared/dto/queryParams.dto'
 import { Request } from 'express'
 import { UserSendMailReportNotification } from '../notifications/userSendEmailReport.notification'
 import {
@@ -40,7 +40,7 @@ import {
   UserSendMailReportDto,
 } from '../dto/user.dto'
 import { CreateUserDto, UpdateUserDto } from '../dto/user.dto'
-import { JwtAuthGuard } from 'src/components/auth/guards/jwtAuth.guard'
+import { JwtAuthGuard } from '@authModule/guards/jwtAuth.guard'
 import {
   CreateResponse,
   GetItemResponse,
@@ -49,9 +49,9 @@ import {
   GetListResponseWithoutDataObj,
   SuccessfullyOperation,
   UpdateResponse,
-} from 'src/shared/services/apiResponse/apiResponse.interface'
-import Messages from 'src/shared/message/message'
-import { CommonService } from 'src/shared/services/common.service'
+} from '@sharedServices/apiResponse/apiResponse.interface'
+import Messages from '@shared/message/message'
+import { CommonService } from '@sharedServices/common.service'
 import { UserEntity } from '../entities/user.entity'
 import { SelectQueryBuilder } from 'typeorm'
 

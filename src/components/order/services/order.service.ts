@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common'
-import { BaseService } from 'src/shared/services/base.service'
+import { BaseService } from '@sharedServices/base.service'
 import { Connection, Repository } from 'typeorm'
 import { OrderEntity } from '../entities/order.entity'
 import { OrderRepository } from '../repositories/order.repository'
-import { ImageAbleType } from '../../image/entities/imageAble.entity'
+import { ImageAbleType } from '@imageModule/entities/imageAble.entity'
 
 @Injectable()
 export class OrderService extends BaseService {

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
-import { QueryParams } from 'src/shared/interfaces/interface'
-import { BaseService } from 'src/shared/services/base.service'
+import { QueryParams } from '@shared/interfaces/interface'
+import { BaseService } from '@sharedServices/base.service'
 import { Connection, Repository, SelectQueryBuilder } from 'typeorm'
 import { CategoryEntity } from '../entities/category.entity'
 import { CategoryAbleType } from '../entities/categoryAble.entity'

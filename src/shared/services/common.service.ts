@@ -1,6 +1,6 @@
 import { BadRequestException, ForbiddenException } from '@nestjs/common'
 import { includes, map } from 'lodash'
-import { Me } from 'src/components/user/dto/user.dto'
+import { Me } from '@userModule/dto/user.dto'
 
 export class CommonService {
   /**

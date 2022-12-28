@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
-import { QueryParams } from 'src/shared/interfaces/interface'
-import { BaseService } from 'src/shared/services/base.service'
+import { QueryParams } from '@shared/interfaces/interface'
+import { BaseService } from '@sharedServices/base.service'
 import { Connection, Repository } from 'typeorm'
 import { TagEntity } from '../entities/tag.entity'
 import { TagRepository } from '../repositories/tag.repository'

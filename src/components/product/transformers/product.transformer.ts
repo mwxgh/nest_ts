@@ -1,8 +1,8 @@
-import { Transformer } from '../../../shared/transformers/transformer'
+import { Transformer } from '@shared/transformers/transformer'
 import { ProductEntity } from '../entities/product.entity'
-import { ImageTransformer } from '../../image/transformers/image.transformer'
-import { CategoryAbleTransformer } from 'src/components/category/transformers/categoryAble.transformer'
-import { CommentTransformer } from 'src/components/comment/transformers/comment.transformer'
+import { ImageTransformer } from '@imageModule/transformers/image.transformer'
+import { CategoryAbleTransformer } from '@categoryModule/transformers/categoryAble.transformer'
+import { CommentTransformer } from '@commentModule/transformers/comment.transformer'
 
 export class ProductTransformer extends Transformer {
   transform(model: ProductEntity): any {

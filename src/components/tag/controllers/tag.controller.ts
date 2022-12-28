@@ -17,19 +17,19 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger'
-import { Auth } from 'src/components/auth/decorators/auth.decorator'
-import { JwtAuthGuard } from 'src/components/auth/guards/jwtAuth.guard'
-import { QueryManyDto } from 'src/shared/dto/queryParams.dto'
-import Messages from 'src/shared/message/message'
+import { Auth } from '@authModule/decorators/auth.decorator'
+import { JwtAuthGuard } from '@authModule/guards/jwtAuth.guard'
+import { QueryManyDto } from '@shared/dto/queryParams.dto'
+import Messages from '@shared/message/message'
 import {
   GetItemResponse,
   GetListPaginationResponse,
   GetListResponse,
   SuccessfullyOperation,
-} from 'src/shared/services/apiResponse/apiResponse.interface'
-import { ApiResponseService } from 'src/shared/services/apiResponse/apiResponse.service'
-import { CommonService } from 'src/shared/services/common.service'
-import { IPaginationOptions } from 'src/shared/services/pagination'
+} from '@sharedServices/apiResponse/apiResponse.interface'
+import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.service'
+import { CommonService } from '@sharedServices/common.service'
+import { IPaginationOptions } from '@sharedServices/pagination'
 import { CreateTagDto, UpdateTagDto } from '../dto/tag.dto'
 import { TagService } from '../services/tag.service'
 import { TagAbleService } from '../services/tagAble.service'

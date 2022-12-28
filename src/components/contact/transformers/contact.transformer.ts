@@ -1,4 +1,4 @@
-import { Transformer } from '../../../shared/transformers/transformer'
+import { Transformer } from '@shared/transformers/transformer'
 import { ContactEntity } from '../entities/contact.entity'
 
 export class ContactTransformer extends Transformer {

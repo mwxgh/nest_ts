@@ -1,4 +1,4 @@
-import { Transformer } from '../../../shared/transformers/transformer'
+import { Transformer } from '@shared/transformers/transformer'
 import { CategoryAbleEntity } from '../entities/categoryAble.entity'
 
 export class CategoryAbleTransformer extends Transformer {

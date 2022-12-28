@@ -1,4 +1,4 @@
-import { Transformer } from 'src/shared/transformers/transformer'
+import { Transformer } from '@shared/transformers/transformer'
 import { PostEntity } from '../entities/post.entity'
 
 export class PostTransformer extends Transformer {

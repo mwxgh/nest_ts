@@ -1,5 +1,5 @@
-import { ProductTransformer } from 'src/components/product/transformers/product.transformer'
-import { Transformer } from '../../../shared/transformers/transformer'
+import { ProductTransformer } from '@productModule/transformers/product.transformer'
+import { Transformer } from '@shared/transformers/transformer'
 import { OrderProductEntity } from '../entities/orderProduct.entity'
 
 export class OrderProductTransformer extends Transformer {

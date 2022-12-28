@@ -1,4 +1,4 @@
-import { userProviders } from '../user/user.providers'
+import { userProviders } from '@userModule/user.providers'
 import { PasswordResetService } from './services/passwordReset.service'
 import { PermissionService } from './services/permission.service'
 import { RoleService } from './services/role.service'

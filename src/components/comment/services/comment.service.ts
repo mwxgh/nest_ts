@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common'
-import { BaseService } from 'src/shared/services/base.service'
+import { BaseService } from '@sharedServices/base.service'
 import { Connection, Repository, SelectQueryBuilder } from 'typeorm'
 import { CommentEntity, JoinCommentAble } from '../entities/comment.entity'
 import { CommentRepository } from '../repositories/comment.repository'

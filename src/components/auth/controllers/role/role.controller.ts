@@ -10,11 +10,11 @@ import {
   Body,
   UseGuards,
 } from '@nestjs/common'
-import { ApiResponseService } from 'src/shared/services/apiResponse/apiResponse.service'
-import { RoleService } from '../../services/role.service'
-import { IPaginationOptions } from '../../../../shared/services/pagination'
-import { Auth } from '../../decorators/auth.decorator'
-import { RoleTransformer } from '../../transformers/role.transformer'
+import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.service'
+import { RoleService } from '@authModule/services/role.service'
+import { IPaginationOptions } from '@sharedServices/pagination'
+import { Auth } from '@authModule/decorators/auth.decorator'
+import { RoleTransformer } from '@authModule/transformers/role.transformer'
 import { assign, isNil } from 'lodash'
 import {
   ApiBearerAuth,
@@ -23,20 +23,20 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger'
-import { QueryManyDto } from 'src/shared/dto/queryParams.dto'
-import { JwtAuthGuard } from '../../guards/jwtAuth.guard'
-import { CreateRoleDto, UpdateRoleDto } from '../../dto/role.dto'
-import { RolePermissionService } from '../../services/rolePermission.service'
+import { QueryManyDto } from '@shared/dto/queryParams.dto'
+import { JwtAuthGuard } from '@authModule/guards/jwtAuth.guard'
+import { CreateRoleDto, UpdateRoleDto } from '@authModule/dto/role.dto'
+import { RolePermissionService } from '@authModule/services/rolePermission.service'
 import {
   GetItemResponse,
   GetListPaginationResponse,
   GetListResponse,
   SuccessfullyOperation,
-} from 'src/shared/services/apiResponse/apiResponse.interface'
-import Messages from 'src/shared/message/message'
-import { CommonService } from 'src/shared/services/common.service'
-import { RolePermissionEntity } from '../../entities/rolePermission.entity'
-import { RoleEntity } from '../../entities/role.entity'
+} from '@sharedServices/apiResponse/apiResponse.interface'
+import Messages from '@shared/message/message'
+import { CommonService } from '@sharedServices/common.service'
+import { RolePermissionEntity } from '@authModule/entities/rolePermission.entity'
+import { RoleEntity } from '@authModule/entities/role.entity'
 import { SelectQueryBuilder } from 'typeorm'
 
 @ApiTags('Roles')

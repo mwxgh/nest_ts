@@ -15,9 +15,9 @@ import { CreateCartItemDto, UpdateCartItemDto } from '../dto/cart.dto'
 import { CartItemEntity } from '../entities/cartItem.entity'
 import { CartItemService } from '../services/cartItem.service'
 import { CartItemTransformer } from '../transformers/cartItem.transformer'
-import { ProductService } from 'src/components/product/services/product.service'
+import { ProductService } from '@productModule/services/product.service'
 import { CartService } from '../services/cart.service'
-import { ApiResponseService } from 'src/shared/services/apiResponse/apiResponse.service'
+import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.service'
 
 @ApiTags('Carts')
 @ApiHeader({

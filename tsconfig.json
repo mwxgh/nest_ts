@@ -11,6 +11,22 @@
     "outDir": "./dist",
     "baseUrl": "./",
     "incremental": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "paths": {
+      "@shared/*": ["src/shared/*"],
+      "@sharedServices/*": ["src/shared/services/*"],
+      "@authModule/*": ["src/components/auth/*"],
+      "@cartModule/*": ["src/components/cart/*"],
+      "@categoryModule/*": ["src/components/category/*"],
+      "@commentModule/*": ["src/components/comment/*"],
+      "@contactModule/*": ["src/components/contact/*"],
+      "@imageModule/*": ["src/components/image/*"],
+      "@orderModule/*": ["src/components/order/*"],
+      "@postModule/*": ["src/components/post/*"],
+      "@productModule/*": ["src/components/product/*"],
+      "@profileModule/*": ["src/components/profile/*"],
+      "@tagModule/*": ["src/components/tag/*"],
+      "@userModule/*": ["src/components/user/*"]
+    }
   }
 }

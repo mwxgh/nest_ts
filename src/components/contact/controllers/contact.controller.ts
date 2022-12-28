@@ -18,12 +18,12 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger'
-import { Auth } from 'src/components/auth/decorators/auth.decorator'
-import { AuthenticatedUser } from 'src/components/auth/decorators/authenticatedUser.decorator'
-import { JwtAuthGuard } from 'src/components/auth/guards/jwtAuth.guard'
-import { QueryManyDto } from 'src/shared/dto/queryParams.dto'
-import { ApiResponseService } from 'src/shared/services/apiResponse/apiResponse.service'
-import { IPaginationOptions } from 'src/shared/services/pagination'
+import { Auth } from '@authModule/decorators/auth.decorator'
+import { AuthenticatedUser } from '@authModule/decorators/authenticatedUser.decorator'
+import { JwtAuthGuard } from '@authModule/guards/jwtAuth.guard'
+import { QueryManyDto } from '@shared/dto/queryParams.dto'
+import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.service'
+import { IPaginationOptions } from '@sharedServices/pagination'
 import { CreateContactDto, UpdateContactDto } from '../dto/contact.dto'
 import { ContactService } from '../services/contact.service'
 import { ContactTransformer } from '../transformers/contact.transformer'
@@ -32,12 +32,12 @@ import {
   GetListPaginationResponse,
   GetListResponse,
   SuccessfullyOperation,
-} from 'src/shared/services/apiResponse/apiResponse.interface'
-import { CommonService } from 'src/shared/services/common.service'
-import Messages from 'src/shared/message/message'
+} from '@sharedServices/apiResponse/apiResponse.interface'
+import { CommonService } from '@sharedServices/common.service'
+import Messages from '@shared/message/message'
 import { ContactEntity } from '../entities/contact.entity'
 import { SelectQueryBuilder } from 'typeorm'
-import { Me } from 'src/components/user/dto/user.dto'
+import { Me } from '@userModule/dto/user.dto'
 
 @ApiTags('Contacts')
 @ApiHeader({

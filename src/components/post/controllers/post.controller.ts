@@ -20,22 +20,22 @@ import {
 import { Connection, SelectQueryBuilder } from 'typeorm'
 import { PostService } from '../services/post.service'
 import { CreatePostDto, UpdatePostDto } from '../dto/post.dto'
-import { IPaginationOptions } from 'src/shared/services/pagination'
-import { ApiResponseService } from 'src/shared/services/apiResponse/apiResponse.service'
+import { IPaginationOptions } from '@sharedServices/pagination'
+import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.service'
 import { PostTransformer } from '../transformers/post.transformer'
-import { QueryManyPostDto, QueryOneDto } from 'src/shared/dto/queryParams.dto'
-import { Auth } from 'src/components/auth/decorators/auth.decorator'
+import { QueryManyPostDto, QueryOneDto } from '@shared/dto/queryParams.dto'
+import { Auth } from '@authModule/decorators/auth.decorator'
 
-import { JwtAuthGuard } from 'src/components/auth/guards/jwtAuth.guard'
+import { JwtAuthGuard } from '@authModule/guards/jwtAuth.guard'
 import { PostEntity } from '../entities/post.entity'
 import {
   GetItemResponse,
   GetListPaginationResponse,
   GetListResponse,
   SuccessfullyOperation,
-} from 'src/shared/services/apiResponse/apiResponse.interface'
-import Messages from 'src/shared/message/message'
-import { CommonService } from 'src/shared/services/common.service'
+} from '@sharedServices/apiResponse/apiResponse.interface'
+import Messages from '@shared/message/message'
+import { CommonService } from '@sharedServices/common.service'
 @ApiTags('Posts')
 @ApiHeader({
   name: 'Content-Type',

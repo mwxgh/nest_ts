@@ -7,7 +7,7 @@ import {
   PickType,
 } from '@nestjs/swagger'
 import { SortType } from '../constant/constant'
-import { PostFilterAttributes } from 'src/components/post/dto/post.dto'
+import { PostFilterAttributes } from '@postModule/dto/post.dto'
 
 export class QueryProperties {
   @ApiProperty()

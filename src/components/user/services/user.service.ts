@@ -1,15 +1,15 @@
 import { ConflictException, Injectable } from '@nestjs/common'
 import { UserEntity } from '../entities/user.entity'
-import { BaseService } from '../../../shared/services/base.service'
+import { BaseService } from '@sharedServices/base.service'
 import { UserRepository } from '../repositories/user.repository'
 import { Repository, Connection } from 'typeorm'
-import { HashService } from '../../../shared/services/hash/hash.service'
-import { RoleService } from 'src/components/auth/services/role.service'
-import { UserRoleService } from 'src/components/auth/services/userRole.service'
+import { HashService } from '@sharedServices/hash/hash.service'
+import { RoleService } from '@authModule/services/role.service'
+import { UserRoleService } from '@authModule/services/userRole.service'
 import { difference, pick } from 'lodash'
 import { CreateUserDto, UpdateUserDto } from '../dto/user.dto'
-import { DEFAULT_USER_STATUS } from 'src/shared/defaultValue/defaultValue'
-import { UserRegisterDto } from 'src/components/auth/dto/auth.dto'
+import { DEFAULT_USER_STATUS } from '@shared/defaultValue/defaultValue'
+import { UserRegisterDto } from '@authModule/dto/auth.dto'
 
 @Injectable()
 export class UserService extends BaseService {

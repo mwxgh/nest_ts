@@ -1,5 +1,5 @@
-import { TagStatus } from 'src/components/tag/entities/tag.entity'
-import { UserStatus } from 'src/components/user/entities/user.entity'
+import { TagStatus } from '@tagModule/entities/tag.entity'
+import { UserStatus } from '@userModule/entities/user.entity'
 
 export const DEFAULT_USER_STATUS = UserStatus.active
 

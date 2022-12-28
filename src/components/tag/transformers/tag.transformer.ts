@@ -1,4 +1,4 @@
-import { Transformer } from '../../../shared/transformers/transformer'
+import { Transformer } from '@shared/transformers/transformer'
 import { TagEntity } from '../entities/tag.entity'
 
 export class TagTransformer extends Transformer {

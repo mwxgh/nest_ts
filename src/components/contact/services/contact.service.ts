@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common'
-import { BaseService } from 'src/shared/services/base.service'
+import { BaseService } from '@sharedServices/base.service'
 import { Connection, Repository } from 'typeorm'
 import { ContactEntity } from '../entities/contact.entity'
 import { ContactRepository } from '../repositories/contact.repository'

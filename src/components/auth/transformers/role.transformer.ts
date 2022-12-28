@@ -1,4 +1,4 @@
-import { Transformer } from '../../../shared/transformers/transformer'
+import { Transformer } from '@shared/transformers/transformer'
 import { RoleEntity } from '../entities/role.entity'
 import { PermissionTransformer } from './permission.transformer'
 

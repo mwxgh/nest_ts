@@ -18,22 +18,22 @@ import {
   ApiTags,
 } from '@nestjs/swagger'
 
-import { IPaginationOptions } from 'src/shared/services/pagination'
-import { QueryManyDto } from 'src/shared/dto/queryParams.dto'
+import { IPaginationOptions } from '@sharedServices/pagination'
+import { QueryManyDto } from '@shared/dto/queryParams.dto'
 import { CreateCategoryDto, UpdateCategoryDto } from '../dto/category.dto'
 import { CategoryService } from '../services/category.service'
 import { CategoryTransformer } from '../transformers/category.transformer'
-import { ApiResponseService } from 'src/shared/services/apiResponse/apiResponse.service'
-import { Auth } from 'src/components/auth/decorators/auth.decorator'
-import { JwtAuthGuard } from 'src/components/auth/guards/jwtAuth.guard'
+import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.service'
+import { Auth } from '@authModule/decorators/auth.decorator'
+import { JwtAuthGuard } from '@authModule/guards/jwtAuth.guard'
 import {
   GetItemResponse,
   GetListPaginationResponse,
   GetListResponse,
   SuccessfullyOperation,
-} from 'src/shared/services/apiResponse/apiResponse.interface'
-import Messages from 'src/shared/message/message'
-import { CommonService } from 'src/shared/services/common.service'
+} from '@sharedServices/apiResponse/apiResponse.interface'
+import Messages from '@shared/message/message'
+import { CommonService } from '@sharedServices/common.service'
 import { CategoryEntity } from '../entities/category.entity'
 import { SelectQueryBuilder } from 'typeorm'
 import { CategoryAbleService } from '../services/categoryAble.service'

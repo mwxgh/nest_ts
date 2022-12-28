@@ -17,13 +17,13 @@ import {
   ApiParam,
   ApiTags,
 } from '@nestjs/swagger'
-import { QueryManyDto } from 'src/shared/dto/queryParams.dto'
-import Messages from 'src/shared/message/message'
-import { SuccessfullyOperation } from 'src/shared/services/apiResponse/apiResponse.interface'
-import { ApiResponseService } from 'src/shared/services/apiResponse/apiResponse.service'
-import { CommonService } from 'src/shared/services/common.service'
+import { QueryManyDto } from '@shared/dto/queryParams.dto'
+import Messages from '@shared/message/message'
+import { SuccessfullyOperation } from '@sharedServices/apiResponse/apiResponse.interface'
+import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.service'
+import { CommonService } from '@sharedServices/common.service'
 
-import { IPaginationOptions } from 'src/shared/services/pagination'
+import { IPaginationOptions } from '@sharedServices/pagination'
 
 import { CreateCommentDto, UpdateCommentDto } from '../dto/comment.dto'
 import { CommentAbleType } from '../entities/comment.entity'

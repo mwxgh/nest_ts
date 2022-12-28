@@ -20,19 +20,19 @@ import {
 import { CreateProductDto, UpdateProductDto } from '../dto/product.dto'
 import { ProductService } from '../services/product.service'
 import { ProductTransformer } from '../transformers/product.transformer'
-import { ApiResponseService } from 'src/shared/services/apiResponse/apiResponse.service'
-import { JwtAuthGuard } from 'src/components/auth/guards/jwtAuth.guard'
-import { QueryManyDto } from 'src/shared/dto/queryParams.dto'
-import { IPaginationOptions } from 'src/shared/services/pagination'
-import { Auth } from 'src/components/auth/decorators/auth.decorator'
+import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.service'
+import { JwtAuthGuard } from '@authModule/guards/jwtAuth.guard'
+import { QueryManyDto } from '@shared/dto/queryParams.dto'
+import { IPaginationOptions } from '@sharedServices/pagination'
+import { Auth } from '@authModule/decorators/auth.decorator'
 import {
   GetItemResponse,
   GetListPaginationResponse,
   GetListResponse,
   SuccessfullyOperation,
-} from 'src/shared/services/apiResponse/apiResponse.interface'
-import Messages from 'src/shared/message/message'
-import { CommonService } from 'src/shared/services/common.service'
+} from '@sharedServices/apiResponse/apiResponse.interface'
+import Messages from '@shared/message/message'
+import { CommonService } from '@sharedServices/common.service'
 
 @ApiTags('Products')
 @ApiHeader({

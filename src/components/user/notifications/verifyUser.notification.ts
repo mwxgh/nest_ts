@@ -1,9 +1,9 @@
-import { MAIL } from '../../../shared/services/notification/channels/email/constants'
+import { MAIL } from '@sharedServices/notification/channels/email/constants'
 import {
   Mailable,
   IMailable,
-} from '../../../shared/services/notification/channels/email/mailable'
-import { Notification } from '../../../shared/services/notification/notification'
+} from '@sharedServices/notification/channels/email/mailable'
+import { Notification } from '@sharedServices/notification/notification'
 
 export class VerifyUserNotification extends Notification {
   public url: string

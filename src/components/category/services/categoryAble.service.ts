@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { difference } from 'lodash'
-import { BaseService } from 'src/shared/services/base.service'
+import { BaseService } from '@sharedServices/base.service'
 import { Connection, Repository } from 'typeorm'
 import { CategoryEntity } from '../entities/category.entity'
 import {

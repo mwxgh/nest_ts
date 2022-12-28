@@ -22,23 +22,23 @@ import {
 } from '@nestjs/swagger'
 import { diskStorage } from 'multer'
 import { extname } from 'path'
-import { Auth } from 'src/components/auth/decorators/auth.decorator'
-import { ApiResponseService } from 'src/shared/services/apiResponse/apiResponse.service'
+import { Auth } from '@authModule/decorators/auth.decorator'
+import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.service'
 import { CreateImageDto, UpdateImageDto } from '../dto/image.dto'
 import { ImageService } from '../services/image.service'
 import { ImageTransformer } from '../transformers/image.transformer'
 import { FileFastifyInterceptor } from 'fastify-file-interceptor'
-import { QueryManyDto } from 'src/shared/dto/queryParams.dto'
-import { IPaginationOptions } from 'src/shared/services/pagination'
-import { JwtAuthGuard } from 'src/components/auth/guards/jwtAuth.guard'
+import { QueryManyDto } from '@shared/dto/queryParams.dto'
+import { IPaginationOptions } from '@sharedServices/pagination'
+import { JwtAuthGuard } from '@authModule/guards/jwtAuth.guard'
 import {
   GetItemResponse,
   GetListPaginationResponse,
   GetListResponse,
   SuccessfullyOperation,
-} from 'src/shared/services/apiResponse/apiResponse.interface'
-import Messages from 'src/shared/message/message'
-import { CommonService } from 'src/shared/services/common.service'
+} from '@sharedServices/apiResponse/apiResponse.interface'
+import Messages from '@shared/message/message'
+import { CommonService } from '@sharedServices/common.service'
 
 @ApiTags('Images')
 @ApiHeader({

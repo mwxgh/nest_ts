@@ -1,4 +1,4 @@
-import { Transformer } from '../../../shared/transformers/transformer'
+import { Transformer } from '@shared/transformers/transformer'
 import { OrderEntity } from '../entities/order.entity'
 
 export class OrderTransformer extends Transformer {
