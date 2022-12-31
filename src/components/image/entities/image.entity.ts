@@ -1,4 +1,4 @@
-import { Entity, Column, OneToMany } from 'typeorm'
+import { Column, Entity, OneToMany } from 'typeorm'
 import { Notifiable } from '../../../shared/services/notification/decorators/notifiable.decorator'
 import { TimeStampEntity } from '../../base.entity'
 import { ImageAbleEntity } from './imageAble.entity'

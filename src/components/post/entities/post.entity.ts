@@ -1,10 +1,10 @@
-import { CommentEntity } from '../../comment/entities/comment.entity'
-import { OneToMany, Entity, Column } from 'typeorm'
+import { Column, Entity, OneToMany } from 'typeorm'
 import { Notifiable } from '../../../shared/services/notification/decorators/notifiable.decorator'
-import { CategoryAbleEntity } from '../../category/entities/categoryAble.entity'
-import { TagAbleEntity } from '../../tag/entities/tagAble.entity'
 import { TimeStampEntity } from '../../base.entity'
+import { CategoryAbleEntity } from '../../category/entities/categoryAble.entity'
+import { CommentEntity } from '../../comment/entities/comment.entity'
 import { ImageAbleEntity } from '../../image/entities/imageAble.entity'
+import { TagAbleEntity } from '../../tag/entities/tagAble.entity'
 
 export enum JoinPostAbleType {
   images = 'posts.images',

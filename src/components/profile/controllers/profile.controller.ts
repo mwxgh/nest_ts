@@ -1,17 +1,13 @@
+import { AuthenticatedUser } from '@authModule/decorators/authenticatedUser.decorator'
+import { JwtAuthGuard } from '@authModule/guards/jwtAuth.guard'
 import {
+  BadRequestException,
+  Body,
   Controller,
   Get,
-  UseGuards,
-  Body,
   Put,
-  BadRequestException,
+  UseGuards,
 } from '@nestjs/common'
-import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.service'
-import { UserService } from '@userModule/services/user.service'
-import { UserTransformer } from '@userModule/transformers/user.transformer'
-import { JwtAuthGuard } from '@authModule/guards/jwtAuth.guard'
-import { HashService } from '@sharedServices/hash/hash.service'
-import { UpdateProfileDto, UpdatePasswordDto } from '../dto/updateProfile.dto'
 import {
   ApiBearerAuth,
   ApiHeader,
@@ -19,9 +15,13 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger'
-import { AuthenticatedUser } from '@authModule/decorators/authenticatedUser.decorator'
 import { GetItemResponse } from '@sharedServices/apiResponse/apiResponse.interface'
+import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.service'
+import { HashService } from '@sharedServices/hash/hash.service'
 import { Me } from '@userModule/dto/user.dto'
+import { UserService } from '@userModule/services/user.service'
+import { UserTransformer } from '@userModule/transformers/user.transformer'
+import { UpdatePasswordDto, UpdateProfileDto } from '../dto/updateProfile.dto'
 
 @ApiTags('Profile')
 @ApiBearerAuth()

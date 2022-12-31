@@ -1,10 +1,10 @@
 import { ApiProperty, PickType } from '@nestjs/swagger'
 import {
-  IsString,
+  IsEmail,
   IsNotEmpty,
+  IsString,
   MaxLength,
   MinLength,
-  IsEmail,
 } from 'class-validator'
 
 export class ForgotPasswordProperties {

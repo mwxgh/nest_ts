@@ -1,4 +1,4 @@
-import { applyDecorators, SetMetadata, UseGuards } from '@nestjs/common'
+import { SetMetadata, UseGuards, applyDecorators } from '@nestjs/common'
 import { JwtAuthGuard } from '../guards/jwtAuth.guard'
 import { RoleGuard } from '../guards/role.guard'
 

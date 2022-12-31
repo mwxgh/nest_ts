@@ -1,14 +1,10 @@
-import { Controller, Post, Body, BadRequestException } from '@nestjs/common'
 import {
-  SendResetLinkDto,
   ResetPasswordDto,
+  SendResetLinkDto,
 } from '@authModule/dto/forgotPassword.dto'
-import { UserService } from '@userModule/services/user.service'
-import { NotificationService } from '@sharedServices/notification/notification.service'
 import { SendResetLinkNotification } from '@authModule/notifications/sendResetLink.notification'
-import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.service'
 import { PasswordResetService } from '@authModule/services/passwordReset.service'
-import { UserTransformer } from '@userModule/transformers/user.transformer'
+import { BadRequestException, Body, Controller, Post } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import {
   ApiBadRequestResponse,
@@ -21,6 +17,10 @@ import {
   GetItemResponse,
   SuccessfullyOperation,
 } from '@sharedServices/apiResponse/apiResponse.interface'
+import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.service'
+import { NotificationService } from '@sharedServices/notification/notification.service'
+import { UserService } from '@userModule/services/user.service'
+import { UserTransformer } from '@userModule/transformers/user.transformer'
 
 @ApiTags('Auth')
 @ApiHeader({

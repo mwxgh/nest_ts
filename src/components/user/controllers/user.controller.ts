@@ -1,31 +1,20 @@
-import { UserService } from '../services/user.service'
+import { Auth } from '@authModule/decorators/auth.decorator'
+import { JwtAuthGuard } from '@authModule/guards/jwtAuth.guard'
+import { SendInviteUserLinkNotification } from '@authModule/notifications/sendInviteUserLink.notification'
 import {
+  BadRequestException,
+  Body,
   Controller,
   Get,
   Param,
   ParseIntPipe,
-  Query,
   Post,
-  Body,
   Put,
+  Query,
   Req,
-  BadRequestException,
   UseGuards,
 } from '@nestjs/common'
-import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.service'
-import { UserTransformer } from '../transformers/user.transformer'
-import { isNil, pick, isBoolean } from 'lodash'
-import { IPaginationOptions } from '@sharedServices/pagination'
-import { Auth } from '@authModule/decorators/auth.decorator'
-import { NotificationService } from '@sharedServices/notification/notification.service'
 import { ConfigService } from '@nestjs/config'
-import { VerifyUserNotification } from '../notifications/verifyUser.notification'
-import { UserPasswordChangedNotification } from '../notifications/userPasswordChanged.notification'
-import { InviteUserService } from '../services/inviteUser.service'
-import { SendInviteUserLinkNotification } from '@authModule/notifications/sendInviteUserLink.notification'
-import { QueryManyDto } from '@shared/dto/queryParams.dto'
-import { Request } from 'express'
-import { UserSendMailReportNotification } from '../notifications/userSendEmailReport.notification'
 import {
   ApiBearerAuth,
   ApiHeader,
@@ -33,27 +22,37 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger'
+import { QueryManyDto } from '@shared/dto/queryParams.dto'
+import Messages from '@shared/message/message'
 import {
+  CreateResponse,
+  GetListPaginationResponse,
+  GetListResponseWithoutDataObj,
+  SuccessfullyOperation,
+  UpdateResponse,
+} from '@sharedServices/apiResponse/apiResponse.interface'
+import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.service'
+import { CommonService } from '@sharedServices/common.service'
+import { NotificationService } from '@sharedServices/notification/notification.service'
+import { IPaginationOptions } from '@sharedServices/pagination'
+import { Request } from 'express'
+import { isBoolean, isNil, pick } from 'lodash'
+import { SelectQueryBuilder } from 'typeorm'
+import {
+  CreateUserDto,
+  UpdateUserDto,
   UpdateUserPasswordDto,
   UserAttachRoleDto,
   UserDetachRoleDto,
   UserSendMailReportDto,
 } from '../dto/user.dto'
-import { CreateUserDto, UpdateUserDto } from '../dto/user.dto'
-import { JwtAuthGuard } from '@authModule/guards/jwtAuth.guard'
-import {
-  CreateResponse,
-  GetItemResponse,
-  GetListPaginationResponse,
-  GetListResponse,
-  GetListResponseWithoutDataObj,
-  SuccessfullyOperation,
-  UpdateResponse,
-} from '@sharedServices/apiResponse/apiResponse.interface'
-import Messages from '@shared/message/message'
-import { CommonService } from '@sharedServices/common.service'
 import { UserEntity } from '../entities/user.entity'
-import { SelectQueryBuilder } from 'typeorm'
+import { UserPasswordChangedNotification } from '../notifications/userPasswordChanged.notification'
+import { UserSendMailReportNotification } from '../notifications/userSendEmailReport.notification'
+import { VerifyUserNotification } from '../notifications/verifyUser.notification'
+import { InviteUserService } from '../services/inviteUser.service'
+import { UserService } from '../services/user.service'
+import { UserTransformer } from '../transformers/user.transformer'
 
 @ApiTags('Users')
 @ApiHeader({

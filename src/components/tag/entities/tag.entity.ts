@@ -1,7 +1,7 @@
-import { Notifiable } from '../../../../src/shared/services/notification/decorators/notifiable.decorator'
 import { Column, Entity, OneToMany } from 'typeorm'
-import { TagAbleEntity } from './tagAble.entity'
+import { Notifiable } from '../../../../src/shared/services/notification/decorators/notifiable.decorator'
 import { TimeStampEntity } from '../../base.entity'
+import { TagAbleEntity } from './tagAble.entity'
 
 export enum TagStatus {
   publish = 'PUBLISH',

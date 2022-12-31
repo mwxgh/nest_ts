@@ -1,3 +1,5 @@
+import { Auth } from '@authModule/decorators/auth.decorator'
+import { JwtAuthGuard } from '@authModule/guards/jwtAuth.guard'
 import {
   Body,
   Controller,
@@ -17,8 +19,6 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger'
-import { Auth } from '@authModule/decorators/auth.decorator'
-import { JwtAuthGuard } from '@authModule/guards/jwtAuth.guard'
 import { QueryManyDto } from '@shared/dto/queryParams.dto'
 import Messages from '@shared/message/message'
 import {

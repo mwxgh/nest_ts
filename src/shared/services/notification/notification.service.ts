@@ -1,7 +1,7 @@
-import { Injectable, Inject } from '@nestjs/common'
+import { Inject, Injectable } from '@nestjs/common'
+import { find } from 'lodash'
 import { NOTIFICATION_OPTIONS } from './constants'
 import { INotification } from './interfaces'
-import { find } from 'lodash'
 
 interface Entity {
   [key: string]: any

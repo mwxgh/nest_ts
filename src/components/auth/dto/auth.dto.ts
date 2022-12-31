@@ -1,6 +1,6 @@
 import { ApiProperty, OmitType, PickType } from '@nestjs/swagger'
-import { IsNotEmpty, IsString } from 'class-validator'
 import { BaseUserProperties } from '@userModule/dto/user.dto'
+import { IsNotEmpty, IsString } from 'class-validator'
 
 export class UserLoginDto extends PickType(BaseUserProperties, [
   'email',

@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-import { IChannel } from '../../interfaces/channel.interface'
-import { MAIL } from './constants'
-import { INotification } from '../../interfaces'
-import * as nodemailer from 'nodemailer'
 import { Injectable } from '@nestjs/common'
 import { get } from 'lodash'
+import * as nodemailer from 'nodemailer'
+import { INotification } from '../../interfaces'
+import { IChannel } from '../../interfaces/channel.interface'
+import { MAIL } from './constants'
 
 export function getEmail(field: string): string {
   return get(this, field)

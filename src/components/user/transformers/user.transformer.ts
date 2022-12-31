@@ -1,5 +1,5 @@
-import { Transformer } from '@shared/transformers/transformer'
 import { RoleTransformer } from '@authModule/transformers/role.transformer'
+import { Transformer } from '@shared/transformers/transformer'
 import { UserEntity } from '../entities/user.entity'
 
 export class UserTransformer extends Transformer {

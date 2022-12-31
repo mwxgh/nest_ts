@@ -1,11 +1,11 @@
+import { filter } from 'lodash'
 import { Connection } from 'typeorm'
+import { RoleEntity } from '../../src/components/auth/entities/role.entity'
 import {
   UserEntity,
   UserStatus,
 } from '../../src/components/user/entities/user.entity'
 import { HashService } from '../../src/shared/services/hash/hash.service'
-import { RoleEntity } from '../../src/components/auth/entities/role.entity'
-import { filter } from 'lodash'
 
 export default class UsersTableSeeder {
   public hashService: HashService

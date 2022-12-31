@@ -1,9 +1,9 @@
+import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm'
 import { ProductEntity } from '../../../../src/components/product/entities/product.entity'
 import { Notifiable } from '../../../../src/shared/services/notification/decorators/notifiable.decorator'
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm'
-import { TagEntity } from './tag.entity'
-import { PostEntity } from '../../post/entities/post.entity'
 import { TimeStampEntity } from '../../base.entity'
+import { PostEntity } from '../../post/entities/post.entity'
+import { TagEntity } from './tag.entity'
 
 export enum TagAbleType {
   post = 'POST',

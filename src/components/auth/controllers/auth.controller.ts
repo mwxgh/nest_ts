@@ -1,24 +1,24 @@
-import { UserService } from '@userModule/services/user.service'
-import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.service'
-import { JwtService } from '@nestjs/jwt'
-import { pick, isNil } from 'lodash'
 import {
+  BadRequestException,
+  Body,
   Controller,
   Post,
-  Body,
   UnauthorizedException,
-  BadRequestException,
 } from '@nestjs/common'
+import { ConfigService } from '@nestjs/config'
+import { JwtService } from '@nestjs/jwt'
 import {
   ApiHeader,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger'
-import { UserLoginDto, UserRegisterDto, LoginGoogleDto } from '../dto/auth.dto'
-import { OAuth2Client } from 'google-auth-library'
-import { ConfigService } from '@nestjs/config'
 import { ResponseEntity } from '@shared/interfaces/interface'
+import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.service'
+import { UserService } from '@userModule/services/user.service'
+import { OAuth2Client } from 'google-auth-library'
+import { isNil, pick } from 'lodash'
+import { LoginGoogleDto, UserLoginDto, UserRegisterDto } from '../dto/auth.dto'
 
 const authenticatedUserFields = ['id', 'email']
 @ApiTags('Auth')

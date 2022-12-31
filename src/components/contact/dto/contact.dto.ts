@@ -5,13 +5,7 @@ import {
   PartialType,
 } from '@nestjs/swagger'
 import { Type } from 'class-transformer'
-import {
-  IsEmail,
-  IsEnum,
-  IsNotEmpty,
-  IsOptional,
-  // IsPhoneNumber,
-} from 'class-validator'
+import { IsEmail, IsEnum, IsNotEmpty, IsOptional } from 'class-validator'
 import { ContactStatus } from '../entities/contact.entity'
 
 export class ContactProperties {

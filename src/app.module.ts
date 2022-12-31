@@ -1,15 +1,15 @@
 import { Module } from '@nestjs/common'
+import { ConfigModule, ConfigService } from '@nestjs/config'
+import { EventEmitterModule } from '@nestjs/event-emitter'
+import { ScheduleModule } from '@nestjs/schedule'
+import { TypeOrmModule } from '@nestjs/typeorm'
+import configuration from '../config/configuration'
+import validationSchema from '../config/validationSchema'
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
-import { TypeOrmModule } from '@nestjs/typeorm'
-import { ConfigModule, ConfigService } from '@nestjs/config'
 import { ComponentsModule } from './components/components.module'
-import validationSchema from '../config/validationSchema'
-import configuration from '../config/configuration'
-import { SharedModule } from './shared/shared.module'
 import { GatewayModule } from './gateway/gateway.module'
-import { ScheduleModule } from '@nestjs/schedule'
-import { EventEmitterModule } from '@nestjs/event-emitter'
+import { SharedModule } from './shared/shared.module'
 
 @Module({
   imports: [

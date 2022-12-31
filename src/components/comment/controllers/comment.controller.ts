@@ -13,9 +13,9 @@ import { ProductEntity } from '@productModule/entities/product.entity'
 import { ProductTransformer } from '@productModule/transformers/product.transformer'
 import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.service'
 import { getRepository } from 'typeorm'
-import { CommentService } from '../services/comment.service'
 import { CreateCommentDto } from '../dto/comment.dto'
 import { CommentAbleType } from '../entities/comment.entity'
+import { CommentService } from '../services/comment.service'
 import { CommentTransformer } from '../transformers/comment.transformer'
 
 @ApiTags('Comments')

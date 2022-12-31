@@ -1,9 +1,9 @@
-import { Notifiable } from '../../../shared/services/notification/decorators/notifiable.decorator'
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm'
 import { ProductEntity } from '../../../components/product/entities/product.entity'
-import { CategoryEntity } from './category.entity'
-import { PostEntity } from '../../post/entities/post.entity'
+import { Notifiable } from '../../../shared/services/notification/decorators/notifiable.decorator'
 import { TimeStampEntity } from '../../base.entity'
+import { PostEntity } from '../../post/entities/post.entity'
+import { CategoryEntity } from './category.entity'
 
 export enum CategoryAbleType {
   product = 'PRODUCT',

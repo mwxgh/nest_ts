@@ -1,10 +1,10 @@
-import { Command, IOption, Warning } from './Command'
-import * as fs from 'fs'
-import * as path from 'path'
-import * as _ from 'lodash'
-import * as dotenv from 'dotenv'
-import { File } from '../File'
 import * as crypto from 'crypto'
+import * as dotenv from 'dotenv'
+import * as fs from 'fs'
+import * as _ from 'lodash'
+import * as path from 'path'
+import { File } from '../File'
+import { Command, IOption, Warning } from './Command'
 
 export class KeyGenerateCommand extends Command {
   private file: File

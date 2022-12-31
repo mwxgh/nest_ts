@@ -7,10 +7,10 @@ import {
 } from '@nestjs/swagger'
 import { IsArray, IsDate, IsEnum, IsOptional, MinLength } from 'class-validator'
 import {
-  PostStatus,
-  PostType,
   PostPriority,
   PostPrivacy,
+  PostStatus,
+  PostType,
 } from '../entities/post.entity'
 
 export class PostBaseAttributes {

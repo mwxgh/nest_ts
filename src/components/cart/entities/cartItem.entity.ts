@@ -1,8 +1,8 @@
+import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm'
 import { ProductEntity } from '../../../components/product/entities/product.entity'
-import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm'
 import { Notifiable } from '../../../shared/services/notification/decorators/notifiable.decorator'
-import { CartEntity } from './cart.entity'
 import { BaseTimeStampEntity } from '../../base.entity'
+import { CartEntity } from './cart.entity'
 
 @Notifiable()
 @Entity({ name: 'cartItem' })

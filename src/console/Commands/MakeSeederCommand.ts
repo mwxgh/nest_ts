@@ -1,9 +1,9 @@
-import { Command, Error, Info, IOption } from './Command'
-import * as fse from 'fs-extra'
 import * as fs from 'fs'
-import * as path from 'path'
+import * as fse from 'fs-extra'
 import * as _ from 'lodash'
 import * as moment from 'moment'
+import * as path from 'path'
+import { Command, Error, IOption, Info } from './Command'
 
 export class MakeSeederCommand extends Command {
   signature(): string {

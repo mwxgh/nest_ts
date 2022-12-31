@@ -1,5 +1,5 @@
-import { UserEntity } from '@userModule/entities/user.entity'
 import { Injectable } from '@nestjs/common'
+import { UserEntity } from '@userModule/entities/user.entity'
 
 @Injectable()
 export class GatewayRoomNamingStrategy {

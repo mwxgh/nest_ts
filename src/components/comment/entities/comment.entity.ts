@@ -1,8 +1,8 @@
-import { PostEntity } from '../../post/entities/post.entity'
-import { JoinColumn, ManyToOne, Entity, Column } from 'typeorm'
+import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm'
 import { Notifiable } from '../../../shared/services/notification/decorators/notifiable.decorator'
-import { ProductEntity } from '../../product/entities/product.entity'
 import { TimeStampEntity } from '../../base.entity'
+import { PostEntity } from '../../post/entities/post.entity'
+import { ProductEntity } from '../../product/entities/product.entity'
 
 export enum CommentAbleType {
   product = 'PRODUCT',

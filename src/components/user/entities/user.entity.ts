@@ -1,6 +1,6 @@
-import { Entity, Column, ManyToMany, JoinTable, OneToMany } from 'typeorm'
-import { RoleEntity } from '../../auth/entities/role.entity'
+import { Column, Entity, JoinTable, ManyToMany, OneToMany } from 'typeorm'
 import { Notifiable } from '../../../shared/services/notification/decorators/notifiable.decorator'
+import { RoleEntity } from '../../auth/entities/role.entity'
 import { TimeStampEntity } from '../../base.entity'
 import { ContactEntity } from '../../contact/entities/contact.entity'
 

@@ -1,17 +1,17 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
+import { JwtCustomService } from '@authModule/services/jwt.service'
+import { Logger, UseGuards } from '@nestjs/common'
 import {
-  WebSocketGateway,
-  OnGatewayInit,
-  WebSocketServer,
   OnGatewayConnection,
   OnGatewayDisconnect,
+  OnGatewayInit,
+  WebSocketGateway,
+  WebSocketServer,
 } from '@nestjs/websockets'
-import { Logger, UseGuards } from '@nestjs/common'
-import { Socket, Server } from 'socket.io'
-import { JwtCustomService } from '@authModule/services/jwt.service'
-import { WsAuthGuard } from './guards/wsAuth.guard'
 import { UserEntity } from '@userModule/entities/user.entity'
+import { Server, Socket } from 'socket.io'
 import { GatewayRoomNamingStrategy } from './gatewayRoomNaming.strategy'
+import { WsAuthGuard } from './guards/wsAuth.guard'
 
 @WebSocketGateway()
 export class AppGateway

@@ -1,7 +1,7 @@
-import { MakeCommandCommand } from './Commands/MakeCommandCommand'
 import { KeyGenerateCommand } from './Commands/KeyGenerateCommand'
-import { SeedCommand } from './Commands/SeedCommand'
+import { MakeCommandCommand } from './Commands/MakeCommandCommand'
 import { MakeSeederCommand } from './Commands/MakeSeederCommand'
+import { SeedCommand } from './Commands/SeedCommand'
 
 interface ICommand {
   'make:command': any

@@ -1,6 +1,6 @@
-import { TimeStampEntity } from '../../base.entity'
-import { Entity, Column, OneToMany, JoinColumn } from 'typeorm'
+import { Column, Entity, JoinColumn, OneToMany } from 'typeorm'
 import { Notifiable } from '../../../shared/services/notification/decorators/notifiable.decorator'
+import { TimeStampEntity } from '../../base.entity'
 import { CategoryAbleEntity } from './categoryAble.entity'
 
 export enum CategoryStatus {

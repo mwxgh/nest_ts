@@ -1,13 +1,13 @@
-import { IsString, IsOptional, Min, IsNumber, IsEnum } from 'class-validator'
-import { Type } from 'class-transformer'
 import {
   ApiProperty,
   IntersectionType,
   OmitType,
   PickType,
 } from '@nestjs/swagger'
-import { SortType } from '../constant/constant'
 import { PostFilterAttributes } from '@postModule/dto/post.dto'
+import { Type } from 'class-transformer'
+import { IsEnum, IsNumber, IsOptional, IsString, Min } from 'class-validator'
+import { SortType } from '../constant/constant'
 
 export class QueryProperties {
   @ApiProperty()

@@ -1,9 +1,9 @@
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm'
 import { Notifiable } from '../../../shared/services/notification/decorators/notifiable.decorator'
 import { TimeStampEntity } from '../../base.entity'
-import { ImageEntity } from './image.entity'
-import { ProductEntity } from '../../product/entities/product.entity'
 import { PostEntity } from '../../post/entities/post.entity'
+import { ProductEntity } from '../../product/entities/product.entity'
+import { ImageEntity } from './image.entity'
 
 export enum ImageAbleType {
   product = 'PRODUCT',

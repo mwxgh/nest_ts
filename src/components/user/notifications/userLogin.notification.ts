@@ -1,7 +1,7 @@
 import { MAIL } from '@sharedServices/notification/channels/email/constants'
 import {
-  Mailable,
   IMailable,
+  Mailable,
 } from '@sharedServices/notification/channels/email/mailable'
 import { Notification } from '@sharedServices/notification/notification'
 

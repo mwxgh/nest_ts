@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { BaseService } from '@sharedServices/base.service'
-import { Repository, Connection } from 'typeorm'
+import { Connection, Repository } from 'typeorm'
 import { UserRoleEntity } from '../entities/userRole.entity'
 import { UserRoleRepository } from '../repositories/userRole.repository'
 

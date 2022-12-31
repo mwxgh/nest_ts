@@ -1,10 +1,10 @@
-import { NotificationService } from './notification.service'
+import { DynamicModule, Global, Module, Provider } from '@nestjs/common'
+import { NOTIFICATION_CHANNELS, NOTIFICATION_OPTIONS } from './constants'
 import {
-  NotificationAsyncOptions,
   INotificationChannelFactory,
+  NotificationAsyncOptions,
 } from './interfaces'
-import { Global, Module, DynamicModule, Provider } from '@nestjs/common'
-import { NOTIFICATION_OPTIONS, NOTIFICATION_CHANNELS } from './constants'
+import { NotificationService } from './notification.service'
 
 export const channelFactory = {
   provide: NOTIFICATION_CHANNELS,

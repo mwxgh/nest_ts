@@ -1,7 +1,7 @@
 import {
-  Injectable,
   CanActivate,
   ExecutionContext,
+  Injectable,
   Logger,
 } from '@nestjs/common'
 import { AuthGuard } from '@nestjs/passport'

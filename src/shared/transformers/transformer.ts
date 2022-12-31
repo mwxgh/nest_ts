@@ -1,5 +1,5 @@
 import { InternalServerErrorException } from '@nestjs/common'
-import { isNil, isArray, forEach, camelCase, isFunction, map } from 'lodash'
+import { camelCase, forEach, isArray, isFunction, isNil, map } from 'lodash'
 import { Entity, ResponseEntity } from '../interfaces/interface'
 
 export interface TransformerInterface {

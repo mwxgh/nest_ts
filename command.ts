@@ -1,8 +1,8 @@
 #!/usr/bin/env node
-import * as _ from 'lodash'
 import * as program from 'commander'
-import * as path from 'path'
 import * as fs from 'fs'
+import * as _ from 'lodash'
+import * as path from 'path'
 import { Kernel } from './src/console/Kernel'
 
 if (fs.existsSync(path.resolve(process.cwd(), '.env'))) {

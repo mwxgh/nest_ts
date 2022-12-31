@@ -1,6 +1,6 @@
 import {
-  ResponseEntity,
   LengthAwareMeta,
+  ResponseEntity,
 } from 'src/shared/interfaces/interface'
 
 /**

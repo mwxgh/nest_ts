@@ -1,8 +1,8 @@
-import { ProductEntity } from '../../product/entities/product.entity'
-import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm'
+import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm'
 import { Notifiable } from '../../../shared/services/notification/decorators/notifiable.decorator'
-import { OrderEntity } from './order.entity'
 import { BaseTimeStampEntity } from '../../base.entity'
+import { ProductEntity } from '../../product/entities/product.entity'
+import { OrderEntity } from './order.entity'
 
 @Notifiable()
 @Entity({ name: 'orderProduct' })

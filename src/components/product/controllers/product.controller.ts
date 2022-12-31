@@ -1,3 +1,5 @@
+import { Auth } from '@authModule/decorators/auth.decorator'
+import { JwtAuthGuard } from '@authModule/guards/jwtAuth.guard'
 import {
   Body,
   Controller,
@@ -17,22 +19,20 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger'
-import { CreateProductDto, UpdateProductDto } from '../dto/product.dto'
-import { ProductService } from '../services/product.service'
-import { ProductTransformer } from '../transformers/product.transformer'
-import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.service'
-import { JwtAuthGuard } from '@authModule/guards/jwtAuth.guard'
 import { QueryManyDto } from '@shared/dto/queryParams.dto'
-import { IPaginationOptions } from '@sharedServices/pagination'
-import { Auth } from '@authModule/decorators/auth.decorator'
+import Messages from '@shared/message/message'
 import {
   GetItemResponse,
   GetListPaginationResponse,
   GetListResponse,
   SuccessfullyOperation,
 } from '@sharedServices/apiResponse/apiResponse.interface'
-import Messages from '@shared/message/message'
+import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.service'
 import { CommonService } from '@sharedServices/common.service'
+import { IPaginationOptions } from '@sharedServices/pagination'
+import { CreateProductDto, UpdateProductDto } from '../dto/product.dto'
+import { ProductService } from '../services/product.service'
+import { ProductTransformer } from '../transformers/product.transformer'
 
 @ApiTags('Products')
 @ApiHeader({

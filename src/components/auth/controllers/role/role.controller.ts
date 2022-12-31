@@ -1,21 +1,23 @@
+import { Auth } from '@authModule/decorators/auth.decorator'
+import { CreateRoleDto, UpdateRoleDto } from '@authModule/dto/role.dto'
+import { RoleEntity } from '@authModule/entities/role.entity'
+import { RolePermissionEntity } from '@authModule/entities/rolePermission.entity'
+import { JwtAuthGuard } from '@authModule/guards/jwtAuth.guard'
+import { RoleService } from '@authModule/services/role.service'
+import { RolePermissionService } from '@authModule/services/rolePermission.service'
+import { RoleTransformer } from '@authModule/transformers/role.transformer'
 import {
+  Body,
   Controller,
+  Delete,
   Get,
-  Query,
-  Post,
   Param,
   ParseIntPipe,
+  Post,
   Put,
-  Delete,
-  Body,
+  Query,
   UseGuards,
 } from '@nestjs/common'
-import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.service'
-import { RoleService } from '@authModule/services/role.service'
-import { IPaginationOptions } from '@sharedServices/pagination'
-import { Auth } from '@authModule/decorators/auth.decorator'
-import { RoleTransformer } from '@authModule/transformers/role.transformer'
-import { assign, isNil } from 'lodash'
 import {
   ApiBearerAuth,
   ApiHeader,
@@ -24,19 +26,17 @@ import {
   ApiTags,
 } from '@nestjs/swagger'
 import { QueryManyDto } from '@shared/dto/queryParams.dto'
-import { JwtAuthGuard } from '@authModule/guards/jwtAuth.guard'
-import { CreateRoleDto, UpdateRoleDto } from '@authModule/dto/role.dto'
-import { RolePermissionService } from '@authModule/services/rolePermission.service'
+import Messages from '@shared/message/message'
 import {
   GetItemResponse,
   GetListPaginationResponse,
   GetListResponse,
   SuccessfullyOperation,
 } from '@sharedServices/apiResponse/apiResponse.interface'
-import Messages from '@shared/message/message'
+import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.service'
 import { CommonService } from '@sharedServices/common.service'
-import { RolePermissionEntity } from '@authModule/entities/rolePermission.entity'
-import { RoleEntity } from '@authModule/entities/role.entity'
+import { IPaginationOptions } from '@sharedServices/pagination'
+import { assign, isNil } from 'lodash'
 import { SelectQueryBuilder } from 'typeorm'
 
 @ApiTags('Roles')

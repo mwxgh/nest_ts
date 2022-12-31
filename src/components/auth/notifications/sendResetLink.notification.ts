@@ -1,9 +1,9 @@
 import { MAIL } from '@sharedServices/notification/channels/email/constants'
-import { Notification } from '@sharedServices/notification/notification'
 import {
   IMailable,
   Mailable,
 } from '@sharedServices/notification/channels/email/mailable'
+import { Notification } from '@sharedServices/notification/notification'
 import { PasswordResetEntity } from '../entities/passwordReset.entity'
 
 export class SendResetLinkNotification extends Notification {

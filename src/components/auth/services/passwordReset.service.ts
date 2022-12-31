@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common'
 import { BaseService } from '@sharedServices/base.service'
-import { Repository, Connection } from 'typeorm'
+import { HashService } from '@sharedServices/hash/hash.service'
+import { Connection, Repository } from 'typeorm'
 import { PasswordResetEntity } from '../entities/passwordReset.entity'
 import { PasswordResetRepository } from '../repositories/passwordReset.repository'
-import { HashService } from '@sharedServices/hash/hash.service'
 
 @Injectable()
 export class PasswordResetService extends BaseService {

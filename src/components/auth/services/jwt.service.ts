@@ -1,9 +1,9 @@
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common'
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
-import * as jwt from 'jsonwebtoken'
+import { WsException } from '@nestjs/websockets'
 import { UserEntity } from '@userModule/entities/user.entity'
 import { UserService } from '@userModule/services/user.service'
-import { WsException } from '@nestjs/websockets'
+import * as jwt from 'jsonwebtoken'
 
 @Injectable()
 export class JwtCustomService {

@@ -1,16 +1,16 @@
-import { Command, IOption } from './Command'
-import { NestFactory } from '@nestjs/core'
-import { Module, Injectable } from '@nestjs/common'
-import { TypeOrmModule } from '@nestjs/typeorm'
+import { Injectable, Module } from '@nestjs/common'
 import { ConfigModule, ConfigService } from '@nestjs/config'
-import validationSchema from '../../../config/validationSchema'
-import configuration from '../../../config/configuration'
-import * as path from 'path'
+import { NestFactory } from '@nestjs/core'
+import { TypeOrmModule } from '@nestjs/typeorm'
 import * as fs from 'fs'
 import * as _ from 'lodash'
+import * as path from 'path'
 import { Connection } from 'typeorm'
+import configuration from '../../../config/configuration'
+import validationSchema from '../../../config/validationSchema'
 import { Info } from '../../console/Commands/Command'
 import { SharedModule } from '../../shared/shared.module'
+import { Command, IOption } from './Command'
 
 @Injectable()
 export class SeedService {

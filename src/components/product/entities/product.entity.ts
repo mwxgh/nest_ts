@@ -1,12 +1,12 @@
-import { Entity, Column, OneToMany } from 'typeorm'
-import { Notifiable } from '../../../shared/services/notification/decorators/notifiable.decorator'
+import { Column, Entity, OneToMany } from 'typeorm'
 import { CartItemEntity } from '../../../components/cart/entities/cartItem.entity'
 import { CommentEntity } from '../../../components/comment/entities/comment.entity'
-import { CategoryAbleEntity } from '../../category/entities/categoryAble.entity'
-import { TagAbleEntity } from '../../tag/entities/tagAble.entity'
-import { OrderProductEntity } from '../../order/entities/orderProduct.entity'
+import { Notifiable } from '../../../shared/services/notification/decorators/notifiable.decorator'
 import { TimeStampEntity } from '../../base.entity'
+import { CategoryAbleEntity } from '../../category/entities/categoryAble.entity'
 import { ImageAbleEntity } from '../../image/entities/imageAble.entity'
+import { OrderProductEntity } from '../../order/entities/orderProduct.entity'
+import { TagAbleEntity } from '../../tag/entities/tagAble.entity'
 
 export enum ProductStatus {
   inventory = 'INVENTORY',
