@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 export { IChannel } from './channel.interface'
 export { INotifiable } from './notifiable.interface'
 export { NotificationAsyncOptions } from './notification-async-option.interface'
