@@ -1,10 +1,4 @@
-import {
-  BadRequestException,
-  Body,
-  Controller,
-  Post,
-  UnauthorizedException,
-} from '@nestjs/common'
+import { BadRequestException, Body, Controller, Post } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { JwtService } from '@nestjs/jwt'
 import {
@@ -13,12 +7,12 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger'
-import { ResponseEntity } from '@shared/interfaces/interface'
-import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.service'
 import { UserService } from '@userModule/services/user.service'
 import { OAuth2Client } from 'google-auth-library'
 import { isNil, pick } from 'lodash'
 import { LoginGoogleDto, UserLoginDto, UserRegisterDto } from '../dto/auth.dto'
+import { AuthService } from '@authModule/services/auth.service'
+import { AttributeAuthentication } from '@authModule/interfaces/auth.interface'
 
 const authenticatedUserFields = ['id', 'email']
 @ApiTags('Auth')
@@ -30,9 +24,9 @@ const authenticatedUserFields = ['id', 'email']
 export class AuthController {
   constructor(
     private userService: UserService,
-    private response: ApiResponseService,
     private jwtService: JwtService,
     private config: ConfigService,
+    private authService: AuthService,
   ) {}
 
   @Post('loginGoogle')
@@ -40,7 +34,7 @@ export class AuthController {
   @ApiOkResponse({ description: 'Token for access system' })
   async googleAuthCallback(
     @Body() body: LoginGoogleDto,
-  ): Promise<ResponseEntity> {
+  ): Promise<AttributeAuthentication> {
     const client = new OAuth2Client(this.config.get('GOOGLE_CONSUMER_KEY'))
 
     let ticket
@@ -86,46 +80,17 @@ export class AuthController {
   @Post('/register')
   @ApiOperation({ summary: 'Register user with email' })
   @ApiOkResponse({ description: 'Token for access system' })
-  async userRegister(@Body() data: UserRegisterDto): Promise<ResponseEntity> {
-    const user = await this.userService.saveUser({
-      data,
-    })
-
-    const resource = {
-      token: this.jwtService.sign(pick(user, authenticatedUserFields)),
-      expiresIn: process.env.JWT_TTL,
-    }
-
-    return resource
+  async userRegister(
+    @Body() data: UserRegisterDto,
+  ): Promise<AttributeAuthentication> {
+    // check user exist
+    return await this.authService.register(data)
   }
 
   @Post('/login')
   @ApiOperation({ summary: 'Login with email & password' })
   @ApiOkResponse({ description: 'Token for access system' })
-  async userLogin(@Body() data: UserLoginDto): Promise<ResponseEntity> {
-    const { email, password } = data
-
-    const user = await this.userService.firstOrFail({
-      where: {
-        email: this.userService.sanitizeEmail(email),
-      },
-      select: [...authenticatedUserFields, 'password'],
-    })
-
-    const isValidPassword = this.userService.checkPassword(
-      password,
-      user.password,
-    )
-
-    if (!isValidPassword) {
-      throw new UnauthorizedException('Password does not match')
-    }
-
-    const resource = {
-      token: this.jwtService.sign(pick(user, authenticatedUserFields)),
-      expiresIn: process.env.JWT_TTL,
-    }
-
-    return resource
+  async userLogin(@Body() data: UserLoginDto): Promise<any> {
+    return this.authService.login(data)
   }
 }
