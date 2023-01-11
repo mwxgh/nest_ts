@@ -6,12 +6,12 @@ import * as crypto from 'crypto'
 export class HashService {
   public saltRounds = 10
 
-  hash(password: string): string {
-    return bcrypt.hashSync(password, bcrypt.genSaltSync(this.saltRounds), null)
+  hash(data: string): string {
+    return bcrypt.hashSync(data, bcrypt.genSaltSync(this.saltRounds), null)
   }
 
-  check(password: string, hash: string): boolean {
-    return bcrypt.compareSync(password, hash)
+  compare(data: string, hash: string): boolean {
+    return bcrypt.compareSync(data, hash)
   }
 
   md5(data: any): string {

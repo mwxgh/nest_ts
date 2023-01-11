@@ -1,7 +1,9 @@
 import {
   BadRequestException,
   Injectable,
+  NotFoundException,
   UnauthorizedException,
+  UnprocessableEntityException,
 } from '@nestjs/common'
 import { BaseService } from '@sharedServices/base.service'
 import { UserService } from '@userModule/services/user.service'
@@ -12,6 +14,7 @@ import { UserEntity } from '@userModule/entities/user.entity'
 import { AttributeAuthentication } from '@authModule/interfaces/auth.interface'
 import { OAuth2Client } from 'google-auth-library'
 import { ConfigService } from '@nestjs/config'
+import { HashService } from '@shared/services/hash/hash.service'
 
 @Injectable()
 export class AuthService extends BaseService {
@@ -20,6 +23,7 @@ export class AuthService extends BaseService {
     private userService: UserService,
     private jwtService: JwtService,
     private config: ConfigService,
+    private hashService: HashService,
   ) {
     super()
   }
@@ -29,17 +33,39 @@ export class AuthService extends BaseService {
    * @param params Partial UserEntity
    * @returns AttributeAuthentication
    */
-  private _generateToken(params: Partial<UserEntity>): AttributeAuthentication {
-    const token = this.jwtService.sign(params)
+  private async _generateToken(params: {
+    user: Partial<UserEntity>
+    refresh: boolean
+  }): Promise<AttributeAuthentication> {
+    const { user, refresh } = params
 
-    const refreshToken = this.jwtService.sign(params, {
-      secret: process.env.APP_REFRESH_KEY,
-      expiresIn: process.env.JWT_REFRESH_TTL,
-    })
+    const partialUserProperties: Partial<UserEntity> = pick(
+      user,
+      this.authenticatedUserFields,
+    )
+    const token = this.jwtService.sign(partialUserProperties)
 
-    return {
-      token,
-      expiresIn: process.env.JWT_TTL,
+    if (refresh === false) {
+      const refreshToken = this.jwtService.sign(partialUserProperties, {
+        secret: process.env.APP_REFRESH_KEY,
+        expiresIn: process.env.JWT_REFRESH_TTL,
+      })
+
+      await this.userService.update(partialUserProperties.id, {
+        refreshToken: this.hashService.hash(refreshToken),
+      })
+
+      return {
+        token,
+        expiresIn: process.env.JWT_TTL,
+        refreshToken,
+        expiresRefreshIn: process.env.JWT_REFRESH_TTL,
+      }
+    } else {
+      return {
+        token,
+        expiresIn: process.env.JWT_TTL,
+      }
     }
   }
 
@@ -53,12 +79,7 @@ export class AuthService extends BaseService {
       data: params,
     })
 
-    const partialUserProperties: Partial<UserEntity> = pick(
-      user,
-      this.authenticatedUserFields,
-    )
-
-    return this._generateToken(partialUserProperties)
+    return this._generateToken({ user, refresh: false })
   }
 
   /**
@@ -71,7 +92,7 @@ export class AuthService extends BaseService {
 
     const user: Partial<UserEntity> = await this.userService.firstOrFail({
       where: {
-        email: this.userService.sanitizeEmail(email),
+        email: this.userService.sanitize(email),
       },
       select: [...this.authenticatedUserFields, 'password'],
     })
@@ -85,12 +106,7 @@ export class AuthService extends BaseService {
       throw new UnauthorizedException('Password does not match')
     }
 
-    const partialUserProperties: Partial<UserEntity> = pick(
-      user,
-      this.authenticatedUserFields,
-    )
-
-    return this._generateToken(partialUserProperties)
+    return this._generateToken({ user, refresh: false })
   }
 
   /**
@@ -125,19 +141,52 @@ export class AuthService extends BaseService {
     }
 
     const user = await this.userService.firstOrCreate(
-      { where: email },
+      { where: { email } },
       {
-        email: this.userService.sanitizeEmail(email),
+        email: this.userService.sanitize(email),
         firstName: familyName,
         lastName: givenName,
       },
     )
 
-    const partialUserProperties: Partial<UserEntity> = pick(
-      user,
-      this.authenticatedUserFields,
-    )
+    return this._generateToken(user)
+  }
 
-    return this._generateToken(partialUserProperties)
+  async getUserByRefreshToken(params: {
+    email: string
+    refreshToken: string
+  }): Promise<UserEntity> {
+    const { email, refreshToken } = params
+
+    const user: UserEntity = await this.userService.first({ where: { email } })
+    if (!user) {
+      throw new NotFoundException('Email not exist')
+    }
+
+    const isEqual = this.hashService.compare(refreshToken, user.refreshToken)
+    if (isEqual == false) {
+      throw new UnauthorizedException('Invalid credentials')
+    }
+
+    return user
+  }
+
+  async refresh(param: { refreshToken: string }) {
+    const { refreshToken } = param
+
+    try {
+      const payload = await this.jwtService.verifyAsync(refreshToken, {
+        secret: process.env.APP_REFRESH_KEY,
+      })
+
+      const user: UserEntity = await this.getUserByRefreshToken({
+        email: payload.email,
+        refreshToken,
+      })
+
+      return this._generateToken({ user, refresh: true })
+    } catch (error) {
+      throw new UnprocessableEntityException('Can not refresh token')
+    }
   }
 }

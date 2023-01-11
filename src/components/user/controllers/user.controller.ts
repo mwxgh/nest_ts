@@ -205,7 +205,7 @@ export class UserController {
     const user = await this.userService.findOneOrFail(id)
 
     await this.userService.update(user.id, {
-      password: this.userService.hashPassword(data.password),
+      password: this.userService.hash(data.password),
     })
 
     if (isBoolean(data.notifyUser) && data.notifyUser === true) {

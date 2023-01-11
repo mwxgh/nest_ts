@@ -5,7 +5,12 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger'
-import { LoginGoogleDto, UserLoginDto, UserRegisterDto } from '../dto/auth.dto'
+import {
+  LoginGoogleDto,
+  RefreshDto,
+  UserLoginDto,
+  UserRegisterDto,
+} from '../dto/auth.dto'
 import { AuthService } from '@authModule/services/auth.service'
 import { AttributeAuthentication } from '@authModule/interfaces/auth.interface'
 
@@ -42,5 +47,12 @@ export class AuthController {
   @ApiOkResponse({ description: 'Token for access system' })
   async userLogin(@Body() data: UserLoginDto): Promise<any> {
     return this.authService.login(data)
+  }
+
+  @Post('/refresh')
+  @ApiOperation({ summary: 'Login with email & password' })
+  @ApiOkResponse({ description: 'Token for access system' })
+  async refresh(@Body() data: RefreshDto): Promise<any> {
+    return this.authService.refresh(data)
   }
 }

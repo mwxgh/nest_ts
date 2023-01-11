@@ -33,6 +33,9 @@ export class UserEntity extends TimeStampEntity {
   @Column({ type: 'varchar' })
   socketId: string
 
+  @Column({ type: 'varchar' })
+  refreshToken: string
+
   @Column({ type: 'varchar', default: '' })
   verifyToken: string
 

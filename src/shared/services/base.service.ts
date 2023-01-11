@@ -199,7 +199,7 @@ export class BaseService {
    *
    * @param options FindOneOptions
    */
-  async first(options: FindOneOptions): Promise<any> {
+  async first<T>(options: FindOneOptions): Promise<T> {
     const items = await this.repository.find({ ...options, ...{ take: 1 } })
 
     if (Array.isArray(items) && items.length !== 0) {

@@ -82,17 +82,15 @@ export class ProfileController {
   ): Promise<GetItemResponseNotObject> {
     const { password, oldPassword } = body
 
-    if (!this.hashService.check(oldPassword, currentUser.password)) {
+    if (!this.hashService.compare(oldPassword, currentUser.password)) {
       throw new BadRequestException('Old password is not correct')
     }
 
-    const hashed = this.hashService.hash(password)
-
-    const result = await this.userService.update(currentUser.id, {
-      password: hashed,
+    const user = await this.userService.update(currentUser.id, {
+      password: this.hashService.hash(password),
     })
 
     // create updateProfile to transformer with relations
-    return this.response.itemWithoutDataObj(result, new UserTransformer())
+    return this.response.itemWithoutDataObj(user, new UserTransformer())
   }
 }

@@ -19,6 +19,7 @@ import {
 } from '@sharedServices/apiResponse/apiResponse.interface'
 import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.service'
 import { NotificationService } from '@sharedServices/notification/notification.service'
+import { UserEntity } from '@userModule/entities/user.entity'
 import { UserService } from '@userModule/services/user.service'
 import { UserTransformer } from '@userModule/transformers/user.transformer'
 
@@ -46,7 +47,7 @@ export class ForgotPasswordController {
     const { email } = data
 
     const user = await this.userService.firstOrFail({
-      where: { email: this.userService.sanitizeEmail(email) },
+      where: { email: this.userService.sanitize(email) },
     })
 
     await this.passwordResetService.expireAllToken(user.email)
@@ -83,7 +84,7 @@ export class ForgotPasswordController {
 
     await this.passwordResetService.expire(token)
 
-    const user = await this.userService.first({
+    const user: UserEntity = await this.userService.first({
       where: { email: passwordReset.email },
     })
 

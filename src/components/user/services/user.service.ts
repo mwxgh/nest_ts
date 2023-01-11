@@ -84,19 +84,19 @@ export class UserService extends BaseService {
   }
 
   /**
-   * Sanitize email
-   * @param email string
+   * Sanitize data
+   * @param data string
    */
-  sanitizeEmail(email: string): string {
-    return email.toLowerCase().trim()
+  sanitize(data: string): string {
+    return data.toLowerCase().trim()
   }
 
   /**
-   * Hash password
-   * @param password string
+   * Hash data
+   * @param data string
    */
-  hashPassword(password: string): string {
-    return this.hashService.hash(password)
+  hash(data: string): string {
+    return this.hashService.hash(data)
   }
 
   /**
@@ -106,7 +106,7 @@ export class UserService extends BaseService {
    * @param hashed string
    */
   checkPassword(password: string, hashed: string): boolean {
-    return this.hashService.check(password, hashed)
+    return this.hashService.compare(password, hashed)
   }
 
   /**
@@ -208,8 +208,8 @@ export class UserService extends BaseService {
         'status',
       ]),
       ...{
-        password: this.hashPassword(password),
-        email: this.sanitizeEmail(email),
+        password: this.hash(password),
+        email: this.sanitize(email),
       },
     })
 
@@ -252,8 +252,8 @@ export class UserService extends BaseService {
         'status',
       ]),
       ...{
-        password: this.hashPassword(password),
-        email: this.sanitizeEmail(email),
+        password: this.hash(password),
+        email: this.sanitize(email),
       },
     })
 

@@ -49,6 +49,11 @@ export class CreateUsersTable1650203158607 implements MigrationInterface {
             isNullable: true,
           },
           {
+            name: 'refreshToken',
+            isNullable: true,
+            type: 'varchar',
+          },
+          {
             name: 'verifyToken',
             default: "''",
             type: 'varchar',
@@ -63,6 +68,7 @@ export class CreateUsersTable1650203158607 implements MigrationInterface {
             isNullable: true,
             type: 'datetime',
           },
+
           ...baseTimeColumn,
         ],
       }),
