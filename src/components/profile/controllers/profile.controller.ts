@@ -15,13 +15,14 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger'
-import { GetItemResponse } from '@sharedServices/apiResponse/apiResponse.interface'
+import { GetItemResponseNotObject } from '@sharedServices/apiResponse/apiResponse.interface'
 import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.service'
 import { HashService } from '@sharedServices/hash/hash.service'
 import { Me } from '@userModule/dto/user.dto'
 import { UserService } from '@userModule/services/user.service'
 import { UserTransformer } from '@userModule/transformers/user.transformer'
 import { UpdatePasswordDto, UpdateProfileDto } from '../dto/updateProfile.dto'
+import { identity, pickBy } from 'lodash'
 
 @ApiTags('Profile')
 @ApiBearerAuth()
@@ -38,17 +39,18 @@ export class ProfileController {
     private hashService: HashService,
   ) {}
 
+  private relations = ['roles']
+
   @Get()
   @ApiOperation({ summary: 'Get profile current user' })
   @ApiOkResponse({ description: 'Profile current user' })
   async profile(
     @AuthenticatedUser() currentUser: Me,
-  ): Promise<GetItemResponse> {
-    const user = await this.userService.findOneOrFail(currentUser.id, {
-      relations: ['role'],
-    })
-
-    return this.response.item(user, new UserTransformer(['roles']))
+  ): Promise<GetItemResponseNotObject> {
+    return this.response.itemWithoutDataObj(
+      currentUser,
+      new UserTransformer(this.relations),
+    )
   }
 
   @Put()
@@ -57,22 +59,18 @@ export class ProfileController {
   async updateProfile(
     @AuthenticatedUser() currentUser: Me,
     @Body() body: UpdateProfileDto,
-  ): Promise<any> {
-    const data: any = {}
-
-    if (body.username) {
-      data.username = body.username
-    }
-    if (body.firstName) {
-      data.firstName = body.firstName
-    }
-    if (body.lastName) {
-      data.lastName = body.lastName
+  ): Promise<GetItemResponseNotObject> {
+    const data: UpdateProfileDto = {
+      username: body.username ? body.username : null,
+      firstName: body.firstName ? body.firstName : null,
+      lastName: body.lastName ? body.lastName : null,
     }
 
-    const user = await this.userService.update(currentUser.id, data)
+    const existingData = pickBy(data, identity)
 
-    return this.response.item(user, new UserTransformer())
+    const user = await this.userService.update(currentUser.id, existingData)
+    // create updateProfile to transformer with relations
+    return this.response.itemWithoutDataObj(user, new UserTransformer())
   }
 
   @Put('password')
@@ -81,7 +79,7 @@ export class ProfileController {
   async changePassword(
     @AuthenticatedUser() currentUser: Me,
     @Body() body: UpdatePasswordDto,
-  ): Promise<any> {
+  ): Promise<GetItemResponseNotObject> {
     const { password, oldPassword } = body
 
     if (!this.hashService.check(oldPassword, currentUser.password)) {
@@ -94,6 +92,7 @@ export class ProfileController {
       password: hashed,
     })
 
-    return this.response.item(result, new UserTransformer())
+    // create updateProfile to transformer with relations
+    return this.response.itemWithoutDataObj(result, new UserTransformer())
   }
 }

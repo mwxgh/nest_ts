@@ -23,7 +23,9 @@ export class SendInviteUserLinkNotification extends Notification {
   toMail(): IMailable | Promise<IMailable> {
     return new Mailable()
       .to(this.notifiable.email)
-      .subject('Invite user requested for your Blog Account')
+      .subject(
+        'Invite user requested for your Multiple Service Platform Account',
+      )
       .greeting('Hi!')
       .line(
         `An invitation has been sent to your email: <a href="mailto:${this.notifiable.email}">${this.notifiable.email}</a>`,

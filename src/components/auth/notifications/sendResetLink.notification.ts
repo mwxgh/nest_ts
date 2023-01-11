@@ -23,10 +23,12 @@ export class SendResetLinkNotification extends Notification {
   toMail(): IMailable | Promise<IMailable> {
     return new Mailable()
       .to(this.notifiable.email)
-      .subject('Password reset requested for your Blog Account')
+      .subject(
+        'Password reset requested for your Multiple Service Platform Account',
+      )
       .greeting('Hi!')
       .line(
-        `We recently received a request to recover the Blog Account <a href="mailto:${this.notifiable.email}">${this.notifiable.email}</a>`,
+        `We recently received a request to recover the Multiple Service Platform Account <a href="mailto:${this.notifiable.email}">${this.notifiable.email}</a>`,
       )
       .line(
         'If you follow the link below you will be able to personally reset your password.',

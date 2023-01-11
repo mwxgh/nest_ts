@@ -31,6 +31,12 @@ export class AuthService extends BaseService {
    */
   private _generateToken(params: Partial<UserEntity>): AttributeAuthentication {
     const token = this.jwtService.sign(params)
+
+    const refreshToken = this.jwtService.sign(params, {
+      secret: process.env.APP_REFRESH_KEY,
+      expiresIn: process.env.JWT_REFRESH_TTL,
+    })
+
     return {
       token,
       expiresIn: process.env.JWT_TTL,

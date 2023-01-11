@@ -1,6 +1,6 @@
 export const environment = {
   production: true,
-  appUrl: 'http://blog.local',
+  appUrl: 'http://multiple_service.local',
   appKey: 'secret',
   jwtTtl: '3600000000',
   appEnv: 'local',
@@ -9,7 +9,7 @@ export const environment = {
   dbConnection: 'mysql',
   dbHost: 'localhost',
   dbPort: '3306',
-  dbName: 'blog',
+  dbName: 'multiple_service',
   dbUser: 'mwx',
   dbPass: '0111mvtT',
 }

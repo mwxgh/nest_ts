@@ -5,6 +5,7 @@ import { TransformerInterface } from '../../transformers/transformer'
 import { Pagination } from '../pagination'
 import {
   GetItemResponse,
+  GetItemResponseNotObject,
   GetListPaginationResponse,
   GetListResponse,
   SuccessfullyOperation,
@@ -23,7 +24,11 @@ export class ApiResponseService {
   item(entity: Entity, transformer: TransformerInterface): GetItemResponse {
     return { data: transformer.get(entity) }
   }
-  itemWithoutDataObj(entity: Entity, transformer: TransformerInterface): any {
+
+  itemWithoutDataObj(
+    entity: Entity,
+    transformer: TransformerInterface,
+  ): GetItemResponseNotObject {
     return transformer.get(entity)
   }
 
