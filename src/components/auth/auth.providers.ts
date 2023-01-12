@@ -6,6 +6,7 @@ import { RolePermissionService } from './services/rolePermission.service'
 import { UserRoleService } from './services/userRole.service'
 import { JwtStrategy } from './strategies/jwt.strategy'
 import { AuthService } from './services/auth.service'
+import { JwtCustomService } from './services/jwt.service'
 
 export const authProviders = [
   ...userProviders,
@@ -16,4 +17,5 @@ export const authProviders = [
   RolePermissionService,
   UserRoleService,
   AuthService,
+  JwtCustomService,
 ]

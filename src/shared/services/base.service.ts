@@ -214,11 +214,11 @@ export class BaseService {
    *
    * @param options FindOneOptions
    */
-  async firstOrFail(options: FindOneOptions): Promise<any> {
+  async firstOrFail<T>(options: FindOneOptions): Promise<T> {
     const items = await this.repository.find({ ...options, ...{ take: 1 } })
 
     if (!Array.isArray(items) || items.length === 0) {
-      throw new NotFoundException('Resource')
+      throw new NotFoundException('Resource not found')
     }
 
     return items[0]

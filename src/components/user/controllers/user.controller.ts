@@ -248,7 +248,7 @@ export class UserController {
   @ApiOperation({ summary: 'Verify token' })
   @ApiOkResponse({ description: 'User verified successfully' })
   async verify(@Query('token') token: string): Promise<any> {
-    const user = await this.userService.firstOrFail({
+    const user: UserEntity = await this.userService.firstOrFail({
       where: { verifyToken: token, verified: false, verifiedAt: null },
     })
 

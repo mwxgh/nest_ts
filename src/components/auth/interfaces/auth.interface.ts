@@ -1,5 +1,5 @@
 /**
- *  Response for authentication
+ *  Attribute authentication
  */
 export interface AttributeAuthentication {
   token: string

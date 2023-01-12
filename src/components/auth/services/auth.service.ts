@@ -15,6 +15,7 @@ import { AttributeAuthentication } from '@authModule/interfaces/auth.interface'
 import { OAuth2Client } from 'google-auth-library'
 import { ConfigService } from '@nestjs/config'
 import { HashService } from '@shared/services/hash/hash.service'
+import { JwtCustomService } from './jwt.service'
 
 @Injectable()
 export class AuthService extends BaseService {
@@ -22,6 +23,7 @@ export class AuthService extends BaseService {
   constructor(
     private userService: UserService,
     private jwtService: JwtService,
+    private jwtCustomService: JwtCustomService,
     private config: ConfigService,
     private hashService: HashService,
   ) {
@@ -30,7 +32,8 @@ export class AuthService extends BaseService {
 
   /**
    * Generate token
-   * @param params Partial UserEntity
+   * @param params.user UserEntity
+   * @param params.refresh refresh flag
    * @returns AttributeAuthentication
    */
   private async _generateToken(params: {
@@ -97,6 +100,8 @@ export class AuthService extends BaseService {
       select: [...this.authenticatedUserFields, 'password'],
     })
 
+    console.log(user)
+
     const isValidPassword = this.userService.checkPassword(
       password,
       user.password,
@@ -158,10 +163,9 @@ export class AuthService extends BaseService {
   }): Promise<UserEntity> {
     const { email, refreshToken } = params
 
-    const user: UserEntity = await this.userService.first({ where: { email } })
-    if (!user) {
-      throw new NotFoundException('Email not exist')
-    }
+    const user: UserEntity = await this.userService.firstOrFail({
+      where: { email },
+    })
 
     const isEqual = this.hashService.compare(refreshToken, user.refreshToken)
     if (isEqual == false) {

@@ -10,6 +10,7 @@ import { Connection, Repository } from 'typeorm'
 import { CreateUserDto, UpdateUserDto } from '../dto/user.dto'
 import { UserEntity } from '../entities/user.entity'
 import { UserRepository } from '../repositories/user.repository'
+import { UserRoleEntity } from '@authModule/entities/userRole.entity'
 
 @Injectable()
 export class UserService extends BaseService {
@@ -157,12 +158,13 @@ export class UserService extends BaseService {
     const user = await this.repository.findOneOrFail(userId)
 
     if (role && user) {
-      const userRole = await this.userRoleService.firstOrFail({
+      const userRole: UserRoleEntity = await this.userRoleService.firstOrFail({
         where: {
           userId: user.id,
           roleId: role.id,
         },
       })
+
       if (userRole) {
         await this.userRoleService.destroy(userRole.id)
       }

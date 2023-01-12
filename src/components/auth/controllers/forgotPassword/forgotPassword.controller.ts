@@ -2,6 +2,7 @@ import {
   ResetPasswordDto,
   SendResetLinkDto,
 } from '@authModule/dto/forgotPassword.dto'
+import { PasswordResetEntity } from '@authModule/entities/passwordReset.entity'
 import { SendResetLinkNotification } from '@authModule/notifications/sendResetLink.notification'
 import { PasswordResetService } from '@authModule/services/passwordReset.service'
 import { BadRequestException, Body, Controller, Post } from '@nestjs/common'
@@ -46,7 +47,7 @@ export class ForgotPasswordController {
   ): Promise<SuccessfullyOperation> {
     const { email } = data
 
-    const user = await this.userService.firstOrFail({
+    const user: UserEntity = await this.userService.firstOrFail({
       where: { email: this.userService.sanitize(email) },
     })
 
@@ -74,9 +75,10 @@ export class ForgotPasswordController {
   ): Promise<GetItemResponse> {
     const { token, password } = data
 
-    const passwordReset = await this.passwordResetService.firstOrFail({
-      where: { token },
-    })
+    const passwordReset: PasswordResetEntity =
+      await this.passwordResetService.firstOrFail({
+        where: { token },
+      })
 
     if (this.passwordResetService.isExpired(passwordReset)) {
       throw new BadRequestException('Token is expired')
@@ -84,7 +86,7 @@ export class ForgotPasswordController {
 
     await this.passwordResetService.expire(token)
 
-    const user: UserEntity = await this.userService.first({
+    const user: UserEntity = await this.userService.firstOrFail({
       where: { email: passwordReset.email },
     })
 
