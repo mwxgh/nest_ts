@@ -1,21 +1,19 @@
+import { AttributeAuthentication } from '@authModule/interfaces/auth.interface'
 import {
   BadRequestException,
   Injectable,
-  NotFoundException,
   UnauthorizedException,
   UnprocessableEntityException,
 } from '@nestjs/common'
-import { BaseService } from '@sharedServices/base.service'
-import { UserService } from '@userModule/services/user.service'
-import { LoginGoogleDto, UserLoginDto, UserRegisterDto } from '../dto/auth.dto'
-import { isNil, pick } from 'lodash'
-import { JwtService } from '@nestjs/jwt'
-import { UserEntity } from '@userModule/entities/user.entity'
-import { AttributeAuthentication } from '@authModule/interfaces/auth.interface'
-import { OAuth2Client } from 'google-auth-library'
 import { ConfigService } from '@nestjs/config'
+import { JwtService } from '@nestjs/jwt'
+import { BaseService } from '@shared/services/base.service'
 import { HashService } from '@shared/services/hash/hash.service'
-import { JwtCustomService } from './jwt.service'
+import { UserEntity } from '@userModule/entities/user.entity'
+import { UserService } from '@userModule/services/user.service'
+import { OAuth2Client } from 'google-auth-library'
+import { isNil, pick } from 'lodash'
+import { LoginGoogleDto, UserLoginDto, UserRegisterDto } from '../dto/auth.dto'
 
 @Injectable()
 export class AuthService extends BaseService {
@@ -23,7 +21,6 @@ export class AuthService extends BaseService {
   constructor(
     private userService: UserService,
     private jwtService: JwtService,
-    private jwtCustomService: JwtCustomService,
     private config: ConfigService,
     private hashService: HashService,
   ) {
@@ -55,7 +52,9 @@ export class AuthService extends BaseService {
       })
 
       await this.userService.update(partialUserProperties.id, {
-        refreshToken: this.hashService.hash(refreshToken),
+        refreshToken: this.hashService.hash(
+          refreshToken.split('').reverse().join(''),
+        ),
       })
 
       return {
@@ -99,8 +98,6 @@ export class AuthService extends BaseService {
       },
       select: [...this.authenticatedUserFields, 'password'],
     })
-
-    console.log(user)
 
     const isValidPassword = this.userService.checkPassword(
       password,
@@ -157,6 +154,12 @@ export class AuthService extends BaseService {
     return this._generateToken(user)
   }
 
+  /**
+   * Get user by refresh token
+   * @param params.email
+   * @param params.refreshToken
+   * @returns UserEntity
+   */
   async getUserByRefreshToken(params: {
     email: string
     refreshToken: string
@@ -167,7 +170,10 @@ export class AuthService extends BaseService {
       where: { email },
     })
 
-    const isEqual = this.hashService.compare(refreshToken, user.refreshToken)
+    const isEqual = this.hashService.compare(
+      refreshToken.split('').reverse().join(''),
+      user.refreshToken,
+    )
     if (isEqual == false) {
       throw new UnauthorizedException('Invalid credentials')
     }
@@ -175,7 +181,14 @@ export class AuthService extends BaseService {
     return user
   }
 
-  async refresh(param: { refreshToken: string }) {
+  /**
+   * Refresh login with refresh token
+   * @param param.refreshToken
+   * @returns AttributeAuthentication
+   */
+  async refresh(param: {
+    refreshToken: string
+  }): Promise<AttributeAuthentication> {
     const { refreshToken } = param
 
     try {
@@ -192,5 +205,9 @@ export class AuthService extends BaseService {
     } catch (error) {
       throw new UnprocessableEntityException('Can not refresh token')
     }
+  }
+
+  async logout(user: UserEntity) {
+    await this.userService.update(user.id, { refreshToken: null })
   }
 }

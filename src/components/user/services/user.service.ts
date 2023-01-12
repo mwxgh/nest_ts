@@ -1,4 +1,5 @@
 import { UserRegisterDto } from '@authModule/dto/auth.dto'
+import { UserRoleEntity } from '@authModule/entities/userRole.entity'
 import { RoleService } from '@authModule/services/role.service'
 import { UserRoleService } from '@authModule/services/userRole.service'
 import { Injectable } from '@nestjs/common'
@@ -10,7 +11,6 @@ import { Connection, Repository } from 'typeorm'
 import { CreateUserDto, UpdateUserDto } from '../dto/user.dto'
 import { UserEntity } from '../entities/user.entity'
 import { UserRepository } from '../repositories/user.repository'
-import { UserRoleEntity } from '@authModule/entities/userRole.entity'
 
 @Injectable()
 export class UserService extends BaseService {

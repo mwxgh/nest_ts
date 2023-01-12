@@ -322,8 +322,6 @@ export class BaseService {
     const orderBy = params.sortBy ?? DEFAULT_SORT_BY
     const orderType = params.sortType ?? DEFAULT_SORT_TYPE
 
-    console.log(entity)
-
     let baseQuery = this.repository.createQueryBuilder(`${entity}`)
 
     if (keyword && keyword !== '' && fields) {
