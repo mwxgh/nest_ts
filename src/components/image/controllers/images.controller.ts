@@ -24,6 +24,7 @@ import {
 } from '@nestjs/swagger'
 import { QueryManyDto } from '@shared/dto/queryParams.dto'
 import Messages from '@shared/message/message'
+import { PrimitiveService } from '@shared/services/primitive.service'
 import {
   GetItemResponse,
   GetListPaginationResponse,
@@ -31,7 +32,6 @@ import {
   SuccessfullyOperation,
 } from '@sharedServices/apiResponse/apiResponse.interface'
 import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.service'
-import { CommonService } from '@sharedServices/common.service'
 import { IPaginationOptions } from '@sharedServices/pagination'
 import { FileFastifyInterceptor } from 'fastify-file-interceptor'
 import { diskStorage } from 'multer'
@@ -52,7 +52,7 @@ export class ImageController {
   constructor(
     private response: ApiResponseService,
     private imageService: ImageService,
-    private commonService: CommonService,
+    private primitiveService: PrimitiveService,
   ) {}
 
   private entity = 'image'
@@ -94,7 +94,7 @@ export class ImageController {
     await this.imageService.saveImage({ file, data })
 
     return this.response.success({
-      message: this.commonService.getMessage({
+      message: this.primitiveService.getMessage({
         message: Messages.successfullyOperation.create,
         keywords: [this.entity],
       }),
@@ -160,7 +160,7 @@ export class ImageController {
     await this.imageService.updateImage({ id, data })
 
     return this.response.success({
-      message: this.commonService.getMessage({
+      message: this.primitiveService.getMessage({
         message: Messages.successfullyOperation.update,
         keywords: [this.entity],
       }),
@@ -177,7 +177,7 @@ export class ImageController {
     await this.imageService.deleteImage({ id })
 
     return this.response.success({
-      message: this.commonService.getMessage({
+      message: this.primitiveService.getMessage({
         message: Messages.successfullyOperation.delete,
         keywords: [this.entity],
       }),

@@ -23,8 +23,8 @@ import { CartTransformer } from '../transformers/cart.transformer'
 
 import { ImageAbleType } from '@imageModule/entities/imageAble.entity'
 import Messages from '@shared/message/message'
+import { PrimitiveService } from '@shared/services/primitive.service'
 import { SuccessfullyOperation } from '@sharedServices/apiResponse/apiResponse.interface'
-import { CommonService } from '@sharedServices/common.service'
 import { CreateCartItemDto } from '../dto/cart.dto'
 
 @ApiTags('Carts')
@@ -37,7 +37,7 @@ export class CartController {
   constructor(
     private response: ApiResponseService,
     private cartService: CartService,
-    private commonService: CommonService,
+    private primitiveService: PrimitiveService,
   ) {}
 
   @Post()
@@ -79,7 +79,7 @@ export class CartController {
     await this.cartService.destroy(Number(id))
 
     return this.response.success({
-      message: this.commonService.getMessage({
+      message: this.primitiveService.getMessage({
         message: Messages.successfullyOperation.delete,
         keywords: ['tag'],
       }),

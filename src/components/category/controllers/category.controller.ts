@@ -22,6 +22,7 @@ import { Auth } from '@authModule/decorators/auth.decorator'
 import { JwtAuthGuard } from '@authModule/guards/jwtAuth.guard'
 import { QueryManyDto } from '@shared/dto/queryParams.dto'
 import Messages from '@shared/message/message'
+import { PrimitiveService } from '@shared/services/primitive.service'
 import {
   GetItemResponse,
   GetListPaginationResponse,
@@ -29,7 +30,6 @@ import {
   SuccessfullyOperation,
 } from '@sharedServices/apiResponse/apiResponse.interface'
 import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.service'
-import { CommonService } from '@sharedServices/common.service'
 import { IPaginationOptions } from '@sharedServices/pagination'
 import { SelectQueryBuilder } from 'typeorm'
 import { CreateCategoryDto, UpdateCategoryDto } from '../dto/category.dto'
@@ -50,7 +50,7 @@ export class CategoryController {
   constructor(
     private categoryService: CategoryService,
     private response: ApiResponseService,
-    private commonService: CommonService,
+    private primitiveService: PrimitiveService,
     private categoryAbleService: CategoryAbleService,
   ) {}
 
@@ -67,7 +67,7 @@ export class CategoryController {
     await this.categoryService.create(data)
 
     return this.response.success({
-      message: this.commonService.getMessage({
+      message: this.primitiveService.getMessage({
         message: Messages.successfullyOperation.create,
         keywords: ['category'],
       }),
@@ -136,7 +136,7 @@ export class CategoryController {
     await this.categoryService.update(id, data)
 
     return this.response.success({
-      message: this.commonService.getMessage({
+      message: this.primitiveService.getMessage({
         message: Messages.successfullyOperation.update,
         keywords: ['category'],
       }),
@@ -157,7 +157,7 @@ export class CategoryController {
     await this.categoryAbleService.detachCategoryAble([{ categoryId: id }])
 
     return this.response.success({
-      message: this.commonService.getMessage({
+      message: this.primitiveService.getMessage({
         message: Messages.successfullyOperation.delete,
         keywords: ['category'],
       }),

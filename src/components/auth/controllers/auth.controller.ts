@@ -12,7 +12,7 @@ import {
 } from '@nestjs/swagger'
 import Messages from '@shared/message/message'
 import { ApiResponseService } from '@shared/services/apiResponse/apiResponse.service'
-import { CommonService } from '@shared/services/common.service'
+import { PrimitiveService } from '@shared/services/primitive.service'
 import { Me } from '@userModule/dto/user.dto'
 import {
   LoginGoogleDto,
@@ -31,7 +31,7 @@ export class AuthController {
   constructor(
     private authService: AuthService,
     private response: ApiResponseService,
-    private commonService: CommonService,
+    private primitiveService: PrimitiveService,
   ) {}
 
   @Post('loginGoogle')
@@ -77,7 +77,7 @@ export class AuthController {
   async logout(@AuthenticatedUser() currentUser: Me): Promise<any> {
     await this.authService.logout(currentUser)
     return this.response.success({
-      message: this.commonService.getMessage({
+      message: this.primitiveService.getMessage({
         message: Messages.successfullyOperation.logout,
         keywords: [],
       }),

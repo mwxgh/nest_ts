@@ -21,6 +21,7 @@ import {
 } from '@nestjs/swagger'
 import { QueryManyDto } from '@shared/dto/queryParams.dto'
 import Messages from '@shared/message/message'
+import { PrimitiveService } from '@shared/services/primitive.service'
 import {
   GetItemResponse,
   GetListPaginationResponse,
@@ -28,7 +29,6 @@ import {
   SuccessfullyOperation,
 } from '@sharedServices/apiResponse/apiResponse.interface'
 import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.service'
-import { CommonService } from '@sharedServices/common.service'
 import { IPaginationOptions } from '@sharedServices/pagination'
 import { CreateTagDto, UpdateTagDto } from '../dto/tag.dto'
 import { TagService } from '../services/tag.service'
@@ -48,7 +48,7 @@ export class TagController {
     private tagService: TagService,
     private tagAbleService: TagAbleService,
     private response: ApiResponseService,
-    private commonService: CommonService,
+    private primitiveService: PrimitiveService,
   ) {}
 
   private entity = 'tag'
@@ -68,7 +68,7 @@ export class TagController {
     await this.tagService.save(data)
 
     return this.response.success({
-      message: this.commonService.getMessage({
+      message: this.primitiveService.getMessage({
         message: Messages.successfullyOperation.create,
         keywords: [this.entity],
       }),
@@ -135,7 +135,7 @@ export class TagController {
     await this.tagService.update(id, { ...data, updatedAt: new Date() })
 
     return this.response.success({
-      message: this.commonService.getMessage({
+      message: this.primitiveService.getMessage({
         message: Messages.successfullyOperation.update,
         keywords: [this.entity],
       }),
@@ -156,7 +156,7 @@ export class TagController {
     await this.tagService.destroy(id)
 
     return this.response.success({
-      message: this.commonService.getMessage({
+      message: this.primitiveService.getMessage({
         message: Messages.successfullyOperation.delete,
         keywords: [this.entity],
       }),

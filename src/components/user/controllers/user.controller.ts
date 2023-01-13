@@ -24,6 +24,7 @@ import {
 } from '@nestjs/swagger'
 import { QueryManyDto } from '@shared/dto/queryParams.dto'
 import Messages from '@shared/message/message'
+import { PrimitiveService } from '@shared/services/primitive.service'
 import {
   CreateResponse,
   GetListPaginationResponse,
@@ -32,7 +33,6 @@ import {
   UpdateResponse,
 } from '@sharedServices/apiResponse/apiResponse.interface'
 import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.service'
-import { CommonService } from '@sharedServices/common.service'
 import { NotificationService } from '@sharedServices/notification/notification.service'
 import { IPaginationOptions } from '@sharedServices/pagination'
 import { Request } from 'express'
@@ -69,7 +69,7 @@ export class UserController {
     private notificationService: NotificationService,
     private configService: ConfigService,
     private inviteUserService: InviteUserService,
-    private commonService: CommonService,
+    private primitiveService: PrimitiveService,
   ) {}
 
   private entity = 'use'
@@ -114,7 +114,7 @@ export class UserController {
     if (!isNil(includes)) {
       const includesParams = Array.isArray(includes) ? includes : [includes]
 
-      joinAndSelects = this.commonService.includesParamToJoinAndSelects({
+      joinAndSelects = this.primitiveService.includesParamToJoinAndSelects({
         includesParams,
         relations: this.relations,
       })
@@ -216,7 +216,7 @@ export class UserController {
     }
 
     return this.response.success({
-      message: this.commonService.getMessage({
+      message: this.primitiveService.getMessage({
         message: Messages.successfullyOperation.updatePassword,
         keywords: ['password', 'user'],
       }),

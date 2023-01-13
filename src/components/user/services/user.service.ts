@@ -2,7 +2,7 @@ import { UserRegisterDto } from '@authModule/dto/auth.dto'
 import { UserRoleEntity } from '@authModule/entities/userRole.entity'
 import { RoleService } from '@authModule/services/role.service'
 import { UserRoleService } from '@authModule/services/userRole.service'
-import { Injectable } from '@nestjs/common'
+import { ConflictException, Injectable } from '@nestjs/common'
 import { DEFAULT_USER_STATUS } from '@shared/defaultValue/defaultValue'
 import { BaseService } from '@sharedServices/base.service'
 import { HashService } from '@sharedServices/hash/hash.service'
@@ -50,10 +50,16 @@ export class UserService extends BaseService {
    */
   async checkIdentifier(email?: string, username?: string): Promise<void> {
     if (email) {
-      await this.emailExist(email)
+      const count = await this.emailExist(email)
+      if (count) {
+        throw new ConflictException('Email already in use')
+      }
     }
     if (username) {
-      await this.usernameExist(username)
+      const count = await this.usernameExist(username)
+      if (count) {
+        throw new ConflictException('Username already in use')
+      }
     }
   }
 
@@ -183,7 +189,7 @@ export class UserService extends BaseService {
     let { data } = params
     const { email, username, password } = data
 
-    this.checkIdentifier(email, username)
+    await this.checkIdentifier(email, username)
 
     const userStatus = data.status ?? DEFAULT_USER_STATUS
 
@@ -239,7 +245,7 @@ export class UserService extends BaseService {
 
     const existingUser = await this.findOneOrFail(id)
 
-    this.checkIdentifier(
+    await this.checkIdentifier(
       email ? email : undefined,
       username ? username : undefined,
     )

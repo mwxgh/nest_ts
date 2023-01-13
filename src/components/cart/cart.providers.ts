@@ -3,7 +3,7 @@ import { CategoryAbleService } from '@categoryModule/services/categoryAble.servi
 import { ImageService } from '@imageModule/services/image.service'
 import { ImageAbleService } from '@imageModule/services/imageAble.service'
 import { ProductService } from '@productModule/services/product.service'
-import { CommonService } from '@sharedServices/common.service'
+import { PrimitiveService } from '@shared/services/primitive.service'
 import { TagService } from '@tagModule/services/tag.service'
 import { TagAbleService } from '@tagModule/services/tagAble.service'
 import { CartService } from './services/cart.service'
@@ -16,7 +16,7 @@ export const cartProviders = [
   ImageService,
   ImageAbleService,
   CategoryAbleService,
-  CommonService,
+  PrimitiveService,
   TagAbleService,
   TagService,
   CategoryService,

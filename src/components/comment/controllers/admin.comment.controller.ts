@@ -21,10 +21,10 @@ import { QueryManyDto } from '@shared/dto/queryParams.dto'
 import Messages from '@shared/message/message'
 import { SuccessfullyOperation } from '@sharedServices/apiResponse/apiResponse.interface'
 import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.service'
-import { CommonService } from '@sharedServices/common.service'
 
 import { IPaginationOptions } from '@sharedServices/pagination'
 
+import { PrimitiveService } from '@shared/services/primitive.service'
 import { CreateCommentDto, UpdateCommentDto } from '../dto/comment.dto'
 import { CommentAbleType } from '../entities/comment.entity'
 import { CommentService } from '../services/comment.service'
@@ -40,7 +40,7 @@ export class AdminCommentController {
   constructor(
     private commentService: CommentService,
     private response: ApiResponseService,
-    private commonService: CommonService,
+    private primitiveService: PrimitiveService,
   ) {}
 
   @Post()
@@ -60,7 +60,7 @@ export class AdminCommentController {
     await this.commentService.create(body)
 
     return this.response.success({
-      message: this.commonService.getMessage({
+      message: this.primitiveService.getMessage({
         message: Messages.successfullyOperation.create,
         keywords: ['comment'],
       }),
@@ -117,7 +117,7 @@ export class AdminCommentController {
     await this.commentService.update(id, body)
 
     return this.response.success({
-      message: this.commonService.getMessage({
+      message: this.primitiveService.getMessage({
         message: Messages.successfullyOperation.update,
         keywords: ['comment'],
       }),
@@ -134,7 +134,7 @@ export class AdminCommentController {
     await this.commentService.destroy(id)
 
     return this.response.success({
-      message: this.commonService.getMessage({
+      message: this.primitiveService.getMessage({
         message: Messages.successfullyOperation.delete,
         keywords: ['comment'],
       }),

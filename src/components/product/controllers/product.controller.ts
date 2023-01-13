@@ -21,6 +21,7 @@ import {
 } from '@nestjs/swagger'
 import { QueryManyDto } from '@shared/dto/queryParams.dto'
 import Messages from '@shared/message/message'
+import { PrimitiveService } from '@shared/services/primitive.service'
 import {
   GetItemResponse,
   GetListPaginationResponse,
@@ -28,7 +29,6 @@ import {
   SuccessfullyOperation,
 } from '@sharedServices/apiResponse/apiResponse.interface'
 import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.service'
-import { CommonService } from '@sharedServices/common.service'
 import { IPaginationOptions } from '@sharedServices/pagination'
 import { CreateProductDto, UpdateProductDto } from '../dto/product.dto'
 import { ProductService } from '../services/product.service'
@@ -46,7 +46,7 @@ export class ProductController {
   constructor(
     private response: ApiResponseService,
     private productService: ProductService,
-    private commonService: CommonService,
+    private primitiveService: PrimitiveService,
   ) {}
 
   private entity = 'product'
@@ -63,7 +63,7 @@ export class ProductController {
     await this.productService.createProduct(data)
 
     return this.response.success({
-      message: this.commonService.getMessage({
+      message: this.primitiveService.getMessage({
         message: Messages.successfullyOperation.create,
         keywords: [this.entity],
       }),
@@ -130,7 +130,7 @@ export class ProductController {
     await this.productService.updateProduct({ id, data })
 
     return this.response.success({
-      message: this.commonService.getMessage({
+      message: this.primitiveService.getMessage({
         message: Messages.successfullyOperation.update,
         keywords: [this.entity],
       }),
@@ -147,7 +147,7 @@ export class ProductController {
     await this.productService.deleteProduct({ id })
 
     return this.response.success({
-      message: this.commonService.getMessage({
+      message: this.primitiveService.getMessage({
         message: Messages.successfullyOperation.delete,
         keywords: [this.entity],
       }),

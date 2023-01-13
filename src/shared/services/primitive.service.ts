@@ -2,7 +2,10 @@ import { BadRequestException, ForbiddenException } from '@nestjs/common'
 import { Me } from '@userModule/dto/user.dto'
 import { includes, map } from 'lodash'
 
-export class CommonService {
+/**
+ * Handling basic data types
+ */
+export class PrimitiveService {
   /**
    * Check user permission operation with userId
    *

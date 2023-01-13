@@ -28,13 +28,13 @@ import { PostTransformer } from '../transformers/post.transformer'
 
 import { JwtAuthGuard } from '@authModule/guards/jwtAuth.guard'
 import Messages from '@shared/message/message'
+import { PrimitiveService } from '@shared/services/primitive.service'
 import {
   GetItemResponse,
   GetListPaginationResponse,
   GetListResponse,
   SuccessfullyOperation,
 } from '@sharedServices/apiResponse/apiResponse.interface'
-import { CommonService } from '@sharedServices/common.service'
 import { PostEntity } from '../entities/post.entity'
 @ApiTags('Posts')
 @ApiHeader({
@@ -49,7 +49,7 @@ export class PostController {
     private connection: Connection,
     private postService: PostService,
     private response: ApiResponseService,
-    private commonService: CommonService,
+    private primitiveService: PrimitiveService,
   ) {}
 
   private entity = 'post'
@@ -65,7 +65,7 @@ export class PostController {
     await this.postService.savePost({ data })
 
     return this.response.success({
-      message: this.commonService.getMessage({
+      message: this.primitiveService.getMessage({
         message: Messages.successfullyOperation.create,
         keywords: [this.entity],
       }),
@@ -150,7 +150,7 @@ export class PostController {
     await this.postService.updatePost({ id, data })
 
     return this.response.success({
-      message: this.commonService.getMessage({
+      message: this.primitiveService.getMessage({
         message: Messages.successfullyOperation.update,
         keywords: [this.entity],
       }),
@@ -167,7 +167,7 @@ export class PostController {
     await this.postService.deletePost({ id })
 
     return this.response.success({
-      message: this.commonService.getMessage({
+      message: this.primitiveService.getMessage({
         message: Messages.successfullyOperation.delete,
         keywords: [this.entity],
       }),

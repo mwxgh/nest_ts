@@ -15,13 +15,14 @@ import {
 import { DEFAULT_SORT_BY, DEFAULT_SORT_TYPE } from '../constant/constant'
 import { Entity, QueryParams, ResponseEntity } from '../interfaces/interface'
 import { IPaginationOptions, Pagination } from './pagination'
+import { PrimitiveService } from './primitive.service'
 
 const defaultPaginationOption: IPaginationOptions = {
   limit: 10,
   page: 1,
 }
 
-export class BaseService {
+export class BaseService extends PrimitiveService {
   public repository: Repository<any>
   public entity: any
   public alias = 'alias'
