@@ -1,7 +1,7 @@
 import {
   LengthAwareMeta,
   ResponseEntity,
-} from 'src/shared/interfaces/interface'
+} from 'src/shared/interfaces/response.interface'
 
 /**
  *  Response for success operations

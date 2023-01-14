@@ -1,6 +1,6 @@
 import { InternalServerErrorException } from '@nestjs/common'
+import { Entity, ResponseEntity } from '@shared/interfaces/response.interface'
 import { camelCase, forEach, isArray, isFunction, isNil, map } from 'lodash'
-import { Entity, ResponseEntity } from '../interfaces/interface'
 
 export interface TransformerInterface {
   get(entity: Entity): Entity

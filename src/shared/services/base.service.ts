@@ -3,6 +3,7 @@ import {
   ConflictException,
   NotFoundException,
 } from '@nestjs/common'
+import { QueryParams } from '@shared/interfaces/request.interface'
 import { filter, isArray, isUndefined, keys, omit } from 'lodash'
 import { default as slugify } from 'slugify'
 import {
@@ -13,7 +14,7 @@ import {
   getManager,
 } from 'typeorm'
 import { DEFAULT_SORT_BY, DEFAULT_SORT_TYPE } from '../constant/constant'
-import { Entity, QueryParams, ResponseEntity } from '../interfaces/interface'
+import { Entity, ResponseEntity } from '../interfaces/response.interface'
 import { IPaginationOptions, Pagination } from './pagination'
 import { PrimitiveService } from './primitive.service'
 

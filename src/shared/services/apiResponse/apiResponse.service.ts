@@ -1,5 +1,8 @@
 import { BadRequestException, Injectable } from '@nestjs/common'
-import { Entity, ResponseEntity } from 'src/shared/interfaces/interface'
+import {
+  Entity,
+  ResponseEntity,
+} from 'src/shared/interfaces/response.interface'
 import Messages from '../../message/message'
 import { TransformerInterface } from '../../transformers/transformer'
 import { Pagination } from '../pagination'
