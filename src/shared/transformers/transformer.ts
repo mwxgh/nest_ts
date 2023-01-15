@@ -3,46 +3,34 @@ import { Entity, ResponseEntity } from '@shared/interfaces/response.interface'
 import { camelCase, forEach, isArray, isFunction, isNil, map } from 'lodash'
 
 export interface TransformerInterface {
-  get(entity: Entity): Entity
   /**
-   * Create a new item resource object
+   * Get entity
    *
-   * @param entity mixed
-   * @param transformer Transformer
-   *
+   * @param entity Entity
    * @return Entity
    */
-  item(
-    entity: Entity,
-    transformer: TransformerInterface,
-  ): { data: ResponseEntity }
+  get(entity: Entity): Entity
 
   /**
-   * Create a new collection resource object
+   * Create a new item resource
    *
-   * @param collection
-   * @param transformer
+   * @param entity Entity
+   * @param transformer TransformerInterface
+   * @return Entity
+   */
+  item(entity: Entity, transformer: TransformerInterface): ResponseEntity
+
+  /**
+   * Create a new collection resource\
    *
-   * @return Collection
+   * @param collection Entity[]
+   * @param transformer TransformerInterface
+   * @return Collection array entity
    */
   collection(
     collection: Entity[],
     transformer: TransformerInterface,
-  ): { data: ResponseEntity[] }
-
-  collectionWithoutDataObj(
-    collection: Entity[],
-    transformer: TransformerInterface,
   ): ResponseEntity[]
-  /**
-   * Create a new primitive resource object
-   *
-   * @param collection
-   * @param transformer
-   *
-   * @return object
-   */
-  primitive(data: { [key: string]: any }): { data: { [key: string]: any } }
 }
 
 export class Transformer implements TransformerInterface {
@@ -51,53 +39,41 @@ export class Transformer implements TransformerInterface {
     this.includes = includes
   }
 
-  item(
-    entity: Entity,
-    transformer: TransformerInterface,
-  ): { data: ResponseEntity } {
+  item(entity: Entity, transformer: TransformerInterface): ResponseEntity {
     if (isNil(entity)) {
       return null
     }
-    return { data: transformer.get(entity) }
+
+    return transformer.get(entity)
   }
 
   collection(
     collection: Entity[],
     transformer: TransformerInterface,
-  ): { data: ResponseEntity[] } {
-    if (!isArray(collection)) {
-      throw new InternalServerErrorException('collection should be an array')
-    }
-    const data = map(collection, (i) => transformer.get(i))
-    return { data }
-  }
-
-  collectionWithoutDataObj(
-    collection: Entity[],
-    transformer: TransformerInterface,
   ): ResponseEntity[] {
     if (!isArray(collection)) {
-      throw new InternalServerErrorException('collection should be an array')
+      throw new InternalServerErrorException('Collection should be an array')
     }
+
     const data = map(collection, (i) => transformer.get(i))
     return data
   }
 
-  primitive(data: { [key: string]: any }): { data: { [key: string]: any } } {
-    return { data }
-  }
-
   get(entity: Entity): Entity {
     const data = (this as any).transform(entity)
+
     if (Array.isArray(this.includes) && this.includes.length > 0) {
       forEach(this.includes, (include) => {
         const f = camelCase(`include_${include}`)
+
         if (!isFunction(this[f])) {
           throw new Error(`${f} function is missing`)
         }
+
         data[include] = this[f](entity)
       })
     }
+
     return data
   }
 

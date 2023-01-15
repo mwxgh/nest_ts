@@ -23,18 +23,18 @@ import {
   ApiTags,
 } from '@nestjs/swagger'
 import { QueryManyDto } from '@shared/dto/queryParams.dto'
-import Messages from '@shared/message/message'
-import { PrimitiveService } from '@shared/services/primitive.service'
+import { IPaginationOptions } from '@shared/interfaces/request.interface'
 import {
   CreateResponse,
   GetListPaginationResponse,
-  GetListResponseWithoutDataObj,
+  GetListResponse,
   SuccessfullyOperation,
   UpdateResponse,
-} from '@sharedServices/apiResponse/apiResponse.interface'
+} from '@shared/interfaces/response.interface'
+import Messages from '@shared/message/message'
+import { PrimitiveService } from '@shared/services/primitive.service'
 import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.service'
 import { NotificationService } from '@sharedServices/notification/notification.service'
-import { IPaginationOptions } from '@sharedServices/pagination'
 import { Request } from 'express'
 import { isBoolean, isNil, pick } from 'lodash'
 import { SelectQueryBuilder } from 'typeorm'
@@ -85,10 +85,7 @@ export class UserController {
       data,
     })
 
-    return this.response.itemWithoutDataObj(
-      saveUser,
-      new UserTransformer(this.relations),
-    )
+    return this.response.item(saveUser, new UserTransformer(this.relations))
   }
 
   @Get()
@@ -97,7 +94,7 @@ export class UserController {
   @ApiOkResponse({ description: 'List users with query params' })
   async readUsers(
     @Query() query: QueryManyDto,
-  ): Promise<GetListResponseWithoutDataObj | GetListPaginationResponse> {
+  ): Promise<GetListResponse | GetListPaginationResponse> {
     const { search, includes, sortBy, sortType } = query
 
     let queryBuilder: SelectQueryBuilder<UserEntity> =
@@ -150,7 +147,7 @@ export class UserController {
 
     const users = await queryBuilder.getMany()
 
-    return this.response.collectionWithoutDataObj(
+    return this.response.collection(
       users,
       new UserTransformer(relationTransformer),
     )
@@ -165,10 +162,7 @@ export class UserController {
       relations: ['roles'],
     })
 
-    return this.response.itemWithoutDataObj(
-      user,
-      new UserTransformer(this.relations),
-    )
+    return this.response.item(user, new UserTransformer(this.relations))
   }
 
   @Put(':id')
@@ -188,10 +182,7 @@ export class UserController {
       )
     }
 
-    return this.response.itemWithoutDataObj(
-      updateUser,
-      new UserTransformer(this.relations),
-    )
+    return this.response.item(updateUser, new UserTransformer(this.relations))
   }
 
   @Put(':id/password')
@@ -247,7 +238,7 @@ export class UserController {
   @Post(':id/verify')
   @ApiOperation({ summary: 'Verify token' })
   @ApiOkResponse({ description: 'User verified successfully' })
-  async verify(@Query('token') token: string): Promise<any> {
+  async verify(@Query('token') token: string): Promise<UpdateResponse> {
     const user: UserEntity = await this.userService.firstOrFail({
       where: { verifyToken: token, verified: false, verifiedAt: null },
     })

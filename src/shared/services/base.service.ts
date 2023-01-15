@@ -3,7 +3,10 @@ import {
   ConflictException,
   NotFoundException,
 } from '@nestjs/common'
-import { QueryParams } from '@shared/interfaces/request.interface'
+import {
+  IPaginationOptions,
+  QueryParams,
+} from '@shared/interfaces/request.interface'
 import { filter, isArray, isUndefined, keys, omit } from 'lodash'
 import { default as slugify } from 'slugify'
 import {
@@ -14,8 +17,12 @@ import {
   getManager,
 } from 'typeorm'
 import { DEFAULT_SORT_BY, DEFAULT_SORT_TYPE } from '../constant/constant'
-import { Entity, ResponseEntity } from '../interfaces/response.interface'
-import { IPaginationOptions, Pagination } from './pagination'
+import {
+  Entity,
+  Pagination,
+  ResponseEntity,
+} from '../interfaces/response.interface'
+
 import { PrimitiveService } from './primitive.service'
 
 const defaultPaginationOption: IPaginationOptions = {
@@ -23,83 +30,112 @@ const defaultPaginationOption: IPaginationOptions = {
   page: 1,
 }
 
+/**
+ * Base service
+ * Handling database
+ */
 export class BaseService extends PrimitiveService {
   public repository: Repository<any>
   public entity: any
   public alias = 'alias'
 
+  /**
+   * Save a new model and return the instance.
+   *
+   * @param data
+   * @returns data save to entity
+   */
+  async create(data: Entity): Promise<any> {
+    const item = await this.repository.create(data)
+
+    await getManager().save(this.entity, item)
+
+    return item
+  }
+
+  /**
+   * Saves a given entity in the database.
+   *
+   * @param data
+   * @returns save data
+   */
+  async save(data: Entity): Promise<void> {
+    await this.repository.save(data)
+  }
+
+  /**
+   * Get the first record matching the attributes or create it
+   *
+   * @param options FindOneOptions
+   * @param values
+   */
+  async firstOrCreate(options: FindOneOptions, values: Entity): Promise<any> {
+    let item: any
+
+    const items = await this.repository.find({ ...options, ...{ take: 1 } })
+
+    if (!isArray(items) || items.length === 0) {
+      item = await this.create(values)
+    } else {
+      item = items[0]
+    }
+
+    return item
+  }
+
+  /**
+   * Find data of repository.
+   *
+   * @param none
+   * @returns save data
+   */
   async get<T>(): Promise<T[]> {
     return this.repository.find()
   }
 
-  private resolveOptions(options: IPaginationOptions): [number, number] {
-    const page = options.page
-    const limit = options.limit
+  /**
+   * Get all items record or throw error if not any
+   * @returns entity | error
+   */
+  async findAllOrFail(): Promise<ResponseEntity> {
+    const items = await this.repository.find()
 
-    return [page, limit]
-  }
+    if (!items) {
+      throw new BadRequestException('Resource not found')
+    }
 
-  private async paginateQueryBuilder<T>(
-    queryBuilder: SelectQueryBuilder<T>,
-    options: IPaginationOptions,
-  ): Promise<Pagination<T>> {
-    const [page, limit] = this.resolveOptions(options)
-
-    const [items, total] = await queryBuilder
-      .take(limit)
-      .skip((page - 1) * limit)
-      .getManyAndCount()
-
-    return this.createPaginationObject<T>(items, total, page, limit)
-  }
-
-  private createPaginationObject<T>(
-    items: T[],
-    totalItems: number,
-    currentPage: number,
-    limit: number,
-  ) {
-    const totalPages = Math.ceil(totalItems / limit)
-    const nextPage =
-      Math.ceil(totalItems / limit) > currentPage ? currentPage + 1 : null
-    const prevPage = currentPage > 1 ? currentPage - 1 : null
-
-    return new Pagination(items, {
-      totalItems: totalItems,
-      itemCount: items.length,
-      itemsPerPage: limit,
-      totalPages,
-      currentPage,
-      nextPage,
-      prevPage,
-    })
+    return items
   }
 
   /**
-   * Get the pagination record matching the attributes
+   * Execute the query and get the first result
    *
-   * @param queryBuilder Repository | SelectQueryBuilder | null
-   * @param options IPaginationOptions
+   * @param options FindOneOptions
+   * @returns Entity
    */
-  async paginationCalculate<T>(
-    queryBuilder: Repository<T> | SelectQueryBuilder<T> | null,
-    options: IPaginationOptions,
-  ): Promise<Pagination<T>> {
-    const query =
-      queryBuilder instanceof SelectQueryBuilder
-        ? queryBuilder
-        : this.repository.createQueryBuilder(this.alias)
+  async first<T>(options: FindOneOptions): Promise<T> {
+    const items = await this.repository.find({ ...options, ...{ take: 1 } })
 
-    options = omit(
-      options,
-      filter(keys(options), function (key) {
-        return isUndefined(options[key])
-      }),
-    )
+    if (Array.isArray(items) && items.length !== 0) {
+      return items[0]
+    } else {
+      return null
+    }
+  }
 
-    options = { ...defaultPaginationOption, ...options }
+  /**
+   * Execute the query and get the first result or throw an exception
+   *
+   * @param options FindOneOptions
+   */
+  async firstOrFail<T>(options: FindOneOptions): Promise<T> {
+    const items = await this.repository.find({ ...options, ...{ take: 1 } })
 
-    return this.paginateQueryBuilder(query, options)
+    if (!Array.isArray(items) || items.length === 0) {
+      throw new NotFoundException('Resource not found')
+    }
+
+    return items[0]
   }
 
   /**
@@ -137,93 +173,30 @@ export class BaseService extends PrimitiveService {
   }
 
   /**
-   * Get all items record or throw error if not any
-   * @returns entity | error
+   * Get list of record matching the attributes condition
+   *
+   * @param condition FindManyOptions
+   * @param columns string[] | null
+   *
+   * @returns entity
    */
-  async findAllOrFail(): Promise<ResponseEntity> {
-    const items = await this.repository.find()
-
-    if (!items) {
-      throw new BadRequestException('Resource not found')
-    }
-
-    return items
+  async findWhere<T>(
+    condition: { [key: string]: any },
+    columns?: string[],
+  ): Promise<T[]> {
+    return this.repository.find({
+      where: condition,
+      select: columns,
+    })
   }
 
   /**
-   * Save a new model and return the instance.
+   * Return number of record that match criteria
    *
-   * @param data
-   *
-   * @returns data save to entity
+   * @param options
    */
-  async create(data: Entity): Promise<any> {
-    const item = await this.repository.create(data)
-
-    await getManager().save(this.entity, item)
-
-    return item
-  }
-
-  /**
-   * Saves a given entity in the database.
-   *
-   * @param data
-   *
-   * @returns save data
-   */
-  async save(data: Entity): Promise<void> {
-    await this.repository.save(data)
-  }
-
-  /**
-   * Get the first record matching the attributes or create it
-   *
-   * @param options FindOneOptions
-   * @param values
-   */
-  async firstOrCreate(options: FindOneOptions, values: Entity): Promise<any> {
-    let item: any
-
-    const items = await this.repository.find({ ...options, ...{ take: 1 } })
-
-    if (!isArray(items) || items.length === 0) {
-      item = await this.create(values)
-    } else {
-      item = items[0]
-    }
-
-    return item
-  }
-
-  /**
-   * Execute the query and get the first result
-   *
-   * @param options FindOneOptions
-   */
-  async first<T>(options: FindOneOptions): Promise<T> {
-    const items = await this.repository.find({ ...options, ...{ take: 1 } })
-
-    if (Array.isArray(items) && items.length !== 0) {
-      return items[0]
-    } else {
-      return null
-    }
-  }
-
-  /**
-   * Execute the query and get the first result or throw an exception
-   *
-   * @param options FindOneOptions
-   */
-  async firstOrFail<T>(options: FindOneOptions): Promise<T> {
-    const items = await this.repository.find({ ...options, ...{ take: 1 } })
-
-    if (!Array.isArray(items) || items.length === 0) {
-      throw new NotFoundException('Resource not found')
-    }
-
-    return items[0]
+  async count(options: FindManyOptions): Promise<number> {
+    return await this.repository.count(options)
   }
 
   /**
@@ -237,6 +210,69 @@ export class BaseService extends PrimitiveService {
     if (Array.isArray(items) && items.length !== 0) {
       throw new ConflictException('Data existing')
     }
+  }
+
+  private async paginateQueryBuilder<T>(
+    queryBuilder: SelectQueryBuilder<T>,
+    options: IPaginationOptions,
+  ): Promise<Pagination<T>> {
+    const { page, limit } = options
+
+    const [items, total] = await queryBuilder
+      .take(limit)
+      .skip((page - 1) * limit)
+      .getManyAndCount()
+
+    return this.createPaginationObject<T>(items, total, page, limit)
+  }
+
+  private createPaginationObject<T>(
+    items: T[],
+    totalItems: number,
+    currentPage: number,
+    limit: number,
+  ) {
+    const totalPages = Math.ceil(totalItems / limit)
+    const nextPage =
+      Math.ceil(totalItems / limit) > currentPage ? currentPage + 1 : null
+    const prevPage: number = currentPage > 1 ? currentPage - 1 : null
+
+    return new Pagination(items, {
+      totalItems: totalItems,
+      itemCount: items.length,
+      itemsPerPage: limit,
+      totalPages,
+      currentPage,
+      nextPage,
+      prevPage,
+    })
+  }
+
+  /**
+   * Get the pagination record matching the attributes
+   *
+   * @param queryBuilder Repository | SelectQueryBuilder | null
+   * @param options IPaginationOptions
+   */
+  async paginationCalculate<T>(
+    queryBuilder: Repository<T> | SelectQueryBuilder<T> | null,
+    options: IPaginationOptions,
+  ): Promise<Pagination<T>> {
+    const query =
+      queryBuilder instanceof SelectQueryBuilder
+        ? queryBuilder
+        : this.repository.createQueryBuilder(this.alias)
+
+    options = omit(
+      options,
+      filter(keys(options), function (key) {
+        return isUndefined(options[key])
+      }),
+    )
+
+    options = { ...defaultPaginationOption, ...options }
+
+    return this.paginateQueryBuilder(query, options)
   }
 
   /**
@@ -279,45 +315,11 @@ export class BaseService extends PrimitiveService {
   }
 
   /**
-   * Get list of record matching the attributes condition
-   *
-   * @param condition FindManyOptions
-   * @param columns string[] | null
-   *
-   * @returns entity
-   */
-  async findWhere<T>(
-    condition: { [key: string]: any },
-    columns?: string[],
-  ): Promise<T[]> {
-    return this.repository.find({
-      where: condition,
-      select: columns,
-    })
-  }
-
-  /**
-   * Return number of record that match criteria
-   *
-   * @param options
-   */
-  async count(options: FindManyOptions): Promise<number> {
-    return await this.repository.count(options)
-  }
-
-  /**
-   * Destroy the models for the given criteria
-   *
-   * @param criteria string | string[] | number | number[]
-   */
-  async destroy(
-    criteria: string | string[] | number | number[],
-  ): Promise<void> {
-    await this.repository.delete(criteria)
-  }
-
-  /**
    * Create query builder with search field in entity
+   *
+   * @param params QueryParams
+   *
+   * @returns SelectQueryBuilder
    */
   async queryBuilder<T>(params: QueryParams): Promise<SelectQueryBuilder<T>> {
     const { entity, fields, keyword } = params
@@ -383,7 +385,9 @@ export class BaseService extends PrimitiveService {
     while (true) {
       i++
       if (i == 100) break
+
       const count = await this.count({ where: { slug: s } })
+
       if (count === 0) {
         slug = s
         break
@@ -396,22 +400,13 @@ export class BaseService extends PrimitiveService {
   }
 
   /**
-   * Get character from ASCII match criteria
-   * ASCII table : https://www.asciitable.com/
-   * - ...rest: { from: number; range: number }[] to accept element params instead of array
-   * - Eg : getCharFromASCII({ from: 97, range: 26 },
-   *                         { from: 48, range: 10 })
-   * - params: { from: number; range: number }[] to accept array instead of element params
-   * - Eg : getCharFromASCII([{ from: 97, range: 26 },
-   *                          { from: 48, range: 10 }])
+   * Destroy the models for the given criteria
+   *
+   * @param criteria string | string[] | number | number[]
    */
-  getCharFromASCII(params: { from: number; range: number }[]): string {
-    const arrayCharsFromASCII = params.map((o) => {
-      const charFromASCII = Array.from(Array(o.range)).map((e, i) => i + o.from)
-
-      return charFromASCII.map((x) => String.fromCharCode(x)).join('')
-    })
-
-    return arrayCharsFromASCII.join('')
+  async destroy(
+    criteria: string | string[] | number | number[],
+  ): Promise<void> {
+    await this.repository.delete(criteria)
   }
 }

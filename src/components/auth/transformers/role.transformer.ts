@@ -15,9 +15,6 @@ export class RoleTransformer extends Transformer {
     }
   }
   includePermissions(model: RoleEntity): any {
-    return this.collectionWithoutDataObj(
-      model.permissions,
-      new PermissionTransformer(),
-    )
+    return this.collection(model.permissions, new PermissionTransformer())
   }
 }

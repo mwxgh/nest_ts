@@ -18,11 +18,11 @@ import {
   ApiTags,
 } from '@nestjs/swagger'
 import { QueryManyDto } from '@shared/dto/queryParams.dto'
+import { SuccessfullyOperation } from '@shared/interfaces/response.interface'
 import Messages from '@shared/message/message'
-import { SuccessfullyOperation } from '@sharedServices/apiResponse/apiResponse.interface'
 import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.service'
 
-import { IPaginationOptions } from '@sharedServices/pagination'
+import { IPaginationOptions } from '@shared/interfaces/request.interface'
 
 import { PrimitiveService } from '@shared/services/primitive.service'
 import { CreateCommentDto, UpdateCommentDto } from '../dto/comment.dto'

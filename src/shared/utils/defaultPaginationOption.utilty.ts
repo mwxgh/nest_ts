@@ -1,5 +1,5 @@
 import { QueryPaginateDto } from '../dto/queryParams.dto'
-import { IPaginationOptions } from '../services/pagination'
+import { IPaginationOptions } from '../interfaces/request.interface'
 
 export const defaultPaginationOption = (
   option: QueryPaginateDto,

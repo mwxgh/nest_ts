@@ -22,9 +22,13 @@ import { CartService } from '../services/cart.service'
 import { CartTransformer } from '../transformers/cart.transformer'
 
 import { ImageAbleType } from '@imageModule/entities/imageAble.entity'
+import {
+  CreateResponse,
+  GetItemResponse,
+  SuccessfullyOperation,
+} from '@shared/interfaces/response.interface'
 import Messages from '@shared/message/message'
 import { PrimitiveService } from '@shared/services/primitive.service'
-import { SuccessfullyOperation } from '@sharedServices/apiResponse/apiResponse.interface'
 import { CreateCartItemDto } from '../dto/cart.dto'
 
 @ApiTags('Carts')
@@ -42,14 +46,14 @@ export class CartController {
 
   @Post()
   @ApiResponse({ status: 201, description: 'Cart created' })
-  async create(@Body() data: CreateCartItemDto): Promise<any> {
+  async create(@Body() data: CreateCartItemDto): Promise<CreateResponse> {
     const cart = await this.cartService.create(data)
 
     return this.response.item(cart, new CartTransformer())
   }
 
   @Get(':id')
-  async show(@Param('id') id: string): Promise<any> {
+  async show(@Param('id') id: string): Promise<GetItemResponse> {
     const data = await getManager()
       .createQueryBuilder(CartEntity, 'carts')
       .leftJoinAndSelect('carts.items', 'cartItems')

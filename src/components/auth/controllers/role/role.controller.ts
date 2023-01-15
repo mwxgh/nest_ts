@@ -26,18 +26,18 @@ import {
   ApiTags,
 } from '@nestjs/swagger'
 import { QueryManyDto } from '@shared/dto/queryParams.dto'
-import Messages from '@shared/message/message'
-import { PrimitiveService } from '@shared/services/primitive.service'
+import { IPaginationOptions } from '@shared/interfaces/request.interface'
 import {
   CreateResponse,
-  GetItemResponseNotObject,
+  GetItemResponse,
   GetListPaginationResponse,
-  GetListResponseWithoutDataObj,
+  GetListResponse,
   SuccessfullyOperation,
   UpdateResponse,
-} from '@sharedServices/apiResponse/apiResponse.interface'
+} from '@shared/interfaces/response.interface'
+import Messages from '@shared/message/message'
+import { PrimitiveService } from '@shared/services/primitive.service'
 import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.service'
-import { IPaginationOptions } from '@sharedServices/pagination'
 import { assign, isNil } from 'lodash'
 import { SelectQueryBuilder } from 'typeorm'
 
@@ -70,7 +70,7 @@ export class RoleController {
 
     const role = await this.roleService.create(assign(data, { slug: slug }))
 
-    return this.response.itemWithoutDataObj(role, new RoleTransformer())
+    return this.response.item(role, new RoleTransformer())
   }
 
   @Get()
@@ -79,7 +79,7 @@ export class RoleController {
   @ApiOkResponse({ description: 'List roles with query param' })
   async readRoles(
     @Query() query: QueryManyDto,
-  ): Promise<GetListResponseWithoutDataObj | GetListPaginationResponse> {
+  ): Promise<GetListResponse | GetListPaginationResponse> {
     const { search, includes, sortBy, sortType } = query
 
     let queryBuilder: SelectQueryBuilder<RoleEntity> =
@@ -130,7 +130,7 @@ export class RoleController {
       )
     }
 
-    return this.response.collectionWithoutDataObj(
+    return this.response.collection(
       await queryBuilder.getMany(),
       new RoleTransformer(
         joinAndSelects.length > 0 ? joinAndSelects : undefined,
@@ -144,15 +144,12 @@ export class RoleController {
   @ApiOkResponse({ description: 'Role entity' })
   async readRole(
     @Param('id', ParseIntPipe) id: number,
-  ): Promise<GetItemResponseNotObject> {
+  ): Promise<GetItemResponse> {
     const role = await this.roleService.findOneOrFail(id, {
       relations: this.relations,
     })
 
-    return this.response.itemWithoutDataObj(
-      role,
-      new RoleTransformer(this.relations),
-    )
+    return this.response.item(role, new RoleTransformer(this.relations))
   }
 
   @Put(':id')
@@ -167,7 +164,7 @@ export class RoleController {
 
     const role = await this.roleService.update(id, assign(data, { slug: slug }))
 
-    return this.response.itemWithoutDataObj(role, new RoleTransformer())
+    return this.response.item(role, new RoleTransformer())
   }
 
   @Delete(':id')

@@ -1,49 +1,27 @@
 import { BadRequestException, Injectable } from '@nestjs/common'
 import {
   Entity,
-  ResponseEntity,
-} from 'src/shared/interfaces/response.interface'
-import Messages from '../../message/message'
-import { TransformerInterface } from '../../transformers/transformer'
-import { Pagination } from '../pagination'
-import {
   GetItemResponse,
-  GetItemResponseNotObject,
   GetListPaginationResponse,
   GetListResponse,
+  Pagination,
   SuccessfullyOperation,
-} from './apiResponse.interface'
+} from '../../interfaces/response.interface'
+import Messages from '../../message/message'
+import { TransformerInterface } from '../../transformers/transformer'
 
 @Injectable()
 export class ApiResponseService {
   /**
    * Bind an item to a transformer and start building a response
    *
-   * @param {*} Object
-   * @param {*} Transformer
+   * @param {*} entity
+   * @param {*} transformer
    *
-   * @return Object
+   * @return Entity
    */
   item(entity: Entity, transformer: TransformerInterface): GetItemResponse {
-    return { data: transformer.get(entity) }
-  }
-
-  itemWithoutDataObj(
-    entity: Entity,
-    transformer: TransformerInterface,
-  ): GetItemResponseNotObject {
     return transformer.get(entity)
-  }
-
-  /**
-   * Bind an item to a object response
-   *
-   * @param {*} data
-   *
-   * @return Object data
-   */
-  object(data: any) {
-    return { data }
   }
 
   /**
@@ -52,39 +30,16 @@ export class ApiResponseService {
    * @param {*} collection
    * @param {*} transformer
    *
-   * @return Object
+   * @return array data
    */
   collection(
     collection: Entity[],
     transformer: TransformerInterface,
   ): GetListResponse {
-    return {
-      data: collection.map((i) => {
-        return transformer.get(i)
-      }),
-    }
-  }
-
-  collectionWithoutDataObj(
-    collection: Entity[],
-    transformer: TransformerInterface,
-  ): any {
     const resources = collection.map((i) => {
       return transformer.get(i)
     })
     return resources
-  }
-
-  /**
-   * Create a new primitive resource object
-   *
-   * @param collection
-   * @param transformer
-   *
-   * @return object
-   */
-  primitive(data: Entity): { data: ResponseEntity } {
-    return { data }
   }
 
   /**
@@ -118,15 +73,14 @@ export class ApiResponseService {
       )
     }
 
-    const items = paginator.items.map((i) => {
-      return transformer.get(i)
-    })
+    const items = paginator.items.map((i) => transformer.get(i))
 
     return {
       data: items,
       pagination: {
-        total: paginator.meta.totalItems,
-        perPage: paginator.meta.itemsPerPage,
+        totalItems: paginator.meta.totalItems,
+        itemCount: paginator.meta.itemCount,
+        itemsPerPage: paginator.meta.itemsPerPage,
         currentPage: paginator.meta.currentPage,
         totalPages: paginator.meta.totalPages,
         nextPage: paginator.meta.nextPage,

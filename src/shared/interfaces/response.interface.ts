@@ -14,34 +14,38 @@ export interface Entity {
 export type ResponseEntity = Entity
 
 /**
- * Length aware meta in list pagination
+ *  Response for success operations
  */
-export interface LengthAwareMeta {
+export interface SuccessfullyOperation {
   /**
-   * the total amount of items
+   * Status operation
    */
-  total: number
+  success: boolean
   /**
-   * the per page amount of items
+   * Message operation
    */
-  perPage: number
-  /**
-   * the current page this paginator "points" to
-   */
-  currentPage: number
-  /**
-   * the total amount of pages in this paginator
-   */
-  totalPages: number
-  /**
-   * the next page this paginator "points" to
-   */
-  nextPage: number | null
-  /**
-   * the previous page this paginator "points" to
-   */
-  prevPage: number | null
+  message?: string
 }
+
+/**
+ * Response for create apis
+ */
+export type CreateResponse = ResponseEntity
+
+/**
+ * Response for update apis
+ */
+export type UpdateResponse = ResponseEntity
+
+/**
+ * Response for item apis
+ */
+export type GetItemResponse = ResponseEntity
+
+/**
+ * Response for list apis
+ */
+export type GetListResponse = ResponseEntity[]
 
 /**
  * Pagination meta
@@ -91,4 +95,18 @@ export class Pagination<PaginationObject> {
      */
     public readonly meta: IPaginationMeta,
   ) {}
+}
+
+/**
+ * Response for list pagination apis
+ */
+export interface GetListPaginationResponse {
+  /**
+   * Data for response
+   */
+  data: ResponseEntity[]
+  /**
+   * Paginator meta
+   */
+  pagination: IPaginationMeta
 }

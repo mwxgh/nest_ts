@@ -3,6 +3,7 @@ import { Me } from '@userModule/dto/user.dto'
 import { includes, map } from 'lodash'
 
 /**
+ * Primitive service
  * Handling basic data types
  */
 export class PrimitiveService {
@@ -72,5 +73,27 @@ export class PrimitiveService {
     })
 
     return message
+  }
+
+  /**
+   * Get character from ASCII match criteria
+   * ASCII table : https://www.asciitable.com/
+   * - ...rest: { from: number; range: number }[] to accept element params instead of array
+   * - Eg : getCharFromASCII({ from: 97, range: 26 },
+   *                         { from: 48, range: 10 })
+   * - params: { from: number; range: number }[] to accept array instead of element params
+   * - Eg : getCharFromASCII([{ from: 97, range: 26 },
+   *                          { from: 48, range: 10 }])
+   */
+  protected getCharFromASCII(
+    params: { from: number; range: number }[],
+  ): string {
+    const arrayCharsFromASCII = params.map((o) => {
+      const charFromASCII = Array.from(Array(o.range)).map((e, i) => i + o.from)
+
+      return charFromASCII.map((x) => String.fromCharCode(x)).join('')
+    })
+
+    return arrayCharsFromASCII.join('')
   }
 }

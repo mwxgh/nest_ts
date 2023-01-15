@@ -21,16 +21,16 @@ import {
 import { Auth } from '@authModule/decorators/auth.decorator'
 import { JwtAuthGuard } from '@authModule/guards/jwtAuth.guard'
 import { QueryManyDto } from '@shared/dto/queryParams.dto'
-import Messages from '@shared/message/message'
-import { PrimitiveService } from '@shared/services/primitive.service'
+import { IPaginationOptions } from '@shared/interfaces/request.interface'
 import {
   GetItemResponse,
   GetListPaginationResponse,
   GetListResponse,
   SuccessfullyOperation,
-} from '@sharedServices/apiResponse/apiResponse.interface'
+} from '@shared/interfaces/response.interface'
+import Messages from '@shared/message/message'
+import { PrimitiveService } from '@shared/services/primitive.service'
 import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.service'
-import { IPaginationOptions } from '@sharedServices/pagination'
 import { SelectQueryBuilder } from 'typeorm'
 import { CreateCategoryDto, UpdateCategoryDto } from '../dto/category.dto'
 import { CategoryEntity } from '../entities/category.entity'

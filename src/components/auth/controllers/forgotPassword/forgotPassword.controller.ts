@@ -17,7 +17,7 @@ import {
 import {
   GetItemResponse,
   SuccessfullyOperation,
-} from '@sharedServices/apiResponse/apiResponse.interface'
+} from '@shared/interfaces/response.interface'
 import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.service'
 import { NotificationService } from '@sharedServices/notification/notification.service'
 import { UserEntity } from '@userModule/entities/user.entity'

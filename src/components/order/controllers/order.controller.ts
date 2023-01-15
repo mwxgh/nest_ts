@@ -1,5 +1,6 @@
 import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common'
 import { ApiHeader, ApiParam, ApiTags } from '@nestjs/swagger'
+import { CreateResponse } from '@shared/interfaces/response.interface'
 import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.service'
 import { CreateOrderDto, UpdateOrderDto } from '../dto/order.dto'
 import { OrderService } from '../services/order.service'
@@ -23,7 +24,7 @@ export class OrderController {
   }
 
   @Post()
-  async create(@Body() data: CreateOrderDto): Promise<any> {
+  async create(@Body() data: CreateOrderDto): Promise<CreateResponse> {
     data.status = data.status || 1
     const order = await this.orderService.create(data)
     return this.response.item(order, new OrderTransformer())

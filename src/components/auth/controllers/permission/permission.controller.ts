@@ -26,16 +26,18 @@ import {
   ApiTags,
 } from '@nestjs/swagger'
 import { QueryManyDto } from '@shared/dto/queryParams.dto'
-import Messages from '@shared/message/message'
-import { PrimitiveService } from '@shared/services/primitive.service'
+import { IPaginationOptions } from '@shared/interfaces/request.interface'
 import {
+  CreateResponse,
   GetItemResponse,
   GetListPaginationResponse,
   GetListResponse,
   SuccessfullyOperation,
-} from '@sharedServices/apiResponse/apiResponse.interface'
+  UpdateResponse,
+} from '@shared/interfaces/response.interface'
+import Messages from '@shared/message/message'
+import { PrimitiveService } from '@shared/services/primitive.service'
 import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.service'
-import { IPaginationOptions } from '@sharedServices/pagination'
 import { assign } from 'lodash'
 
 @ApiTags('Permissions')
@@ -60,7 +62,9 @@ export class PermissionController {
   @Auth('admin')
   @ApiOperation({ summary: 'Admin create new permission' })
   @ApiOkResponse({ description: 'New permission entity' })
-  async createPermission(@Body() data: CreatePermissionDto): Promise<any> {
+  async createPermission(
+    @Body() data: CreatePermissionDto,
+  ): Promise<CreateResponse> {
     const slug = await this.permissionService.generateSlug(data.name)
 
     const permission = await this.permissionService.create(
@@ -125,7 +129,7 @@ export class PermissionController {
   async updatePermission(
     @Param('id', ParseIntPipe) id: number,
     @Body() data: UpdatePermissionDto,
-  ): Promise<any> {
+  ): Promise<UpdateResponse> {
     await this.permissionService.findOneOrFail(id)
 
     const slug = await this.permissionService.generateSlug(data.name)

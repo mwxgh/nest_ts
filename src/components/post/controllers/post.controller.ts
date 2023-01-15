@@ -19,22 +19,22 @@ import {
   ApiTags,
 } from '@nestjs/swagger'
 import { QueryManyPostDto, QueryOneDto } from '@shared/dto/queryParams.dto'
+import { IPaginationOptions } from '@shared/interfaces/request.interface'
 import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.service'
-import { IPaginationOptions } from '@sharedServices/pagination'
 import { Connection, SelectQueryBuilder } from 'typeorm'
 import { CreatePostDto, UpdatePostDto } from '../dto/post.dto'
 import { PostService } from '../services/post.service'
 import { PostTransformer } from '../transformers/post.transformer'
 
 import { JwtAuthGuard } from '@authModule/guards/jwtAuth.guard'
-import Messages from '@shared/message/message'
-import { PrimitiveService } from '@shared/services/primitive.service'
 import {
   GetItemResponse,
   GetListPaginationResponse,
   GetListResponse,
   SuccessfullyOperation,
-} from '@sharedServices/apiResponse/apiResponse.interface'
+} from '@shared/interfaces/response.interface'
+import Messages from '@shared/message/message'
+import { PrimitiveService } from '@shared/services/primitive.service'
 import { PostEntity } from '../entities/post.entity'
 @ApiTags('Posts')
 @ApiHeader({

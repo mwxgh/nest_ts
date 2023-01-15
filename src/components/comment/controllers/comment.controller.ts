@@ -11,6 +11,7 @@ import { PostEntity } from '@postModule/entities/post.entity'
 import { PostTransformer } from '@postModule/transformers/post.transformer'
 import { ProductEntity } from '@productModule/entities/product.entity'
 import { ProductTransformer } from '@productModule/transformers/product.transformer'
+import { CreateResponse } from '@shared/interfaces/response.interface'
 import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.service'
 import { getRepository } from 'typeorm'
 import { CreateCommentDto } from '../dto/comment.dto'
@@ -60,7 +61,7 @@ export class UserCommentController {
   }
 
   @Post()
-  async store(@Body() body: CreateCommentDto): Promise<any> {
+  async store(@Body() body: CreateCommentDto): Promise<CreateResponse> {
     const value = Object.values(CommentAbleType)
 
     const arr = []
