@@ -52,7 +52,7 @@ export class ImageService extends BaseService {
     data: UpdateImageDto
   }): Promise<void> {
     const { id, data } = params
-    const currentImage = await this.findOneOrFail(id)
+    const currentImage: ImageEntity = await this.findOneOrFail(id)
 
     const countImages = await this.count({
       where: { title: data.title },

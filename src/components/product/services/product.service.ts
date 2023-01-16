@@ -149,7 +149,7 @@ export class ProductService extends BaseService {
   }): Promise<void> {
     const { id, data } = params
 
-    const currentProduct = await this.findOneOrFail(id)
+    const currentProduct: ProductEntity = await this.findOneOrFail(id)
 
     // tagAble
     if (data.tagIds && data.tagIds.length > 0) {
@@ -203,7 +203,7 @@ export class ProductService extends BaseService {
   async deleteProduct(params: { id: number }): Promise<void> {
     const { id } = params
 
-    const currentProduct = await this.findOneOrFail(id)
+    const currentProduct: ProductEntity = await this.findOneOrFail(id)
 
     await this.tagAbleService.detachTagAble([
       {

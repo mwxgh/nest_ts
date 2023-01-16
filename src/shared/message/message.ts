@@ -8,7 +8,7 @@ const Messages = {
     logout: 'Logout successfully',
   },
   errorsOperation: {
-    conflict: '${keyword} already exists',
+    conflict: '${keyword} ${keyword} already exists',
   },
 }
 

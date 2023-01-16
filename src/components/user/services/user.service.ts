@@ -1,9 +1,11 @@
 import { UserRegisterDto } from '@authModule/dto/auth.dto'
+import { RoleEntity } from '@authModule/entities/role.entity'
 import { UserRoleEntity } from '@authModule/entities/userRole.entity'
 import { RoleService } from '@authModule/services/role.service'
 import { UserRoleService } from '@authModule/services/userRole.service'
 import { ConflictException, Injectable } from '@nestjs/common'
 import { DEFAULT_USER_STATUS } from '@shared/defaultValue/defaultValue'
+import Messages from '@shared/message/message'
 import { BaseService } from '@sharedServices/base.service'
 import { HashService } from '@sharedServices/hash/hash.service'
 import { difference, pick } from 'lodash'
@@ -45,6 +47,7 @@ export class UserService extends BaseService {
 
   /**
    * Check identifier
+   *
    * @param email string
    * @param username string
    */
@@ -52,13 +55,23 @@ export class UserService extends BaseService {
     if (email) {
       const count = await this.emailExist(email)
       if (count) {
-        throw new ConflictException('Email already in use')
+        throw new ConflictException(
+          this.getMessage({
+            message: Messages.errorsOperation.conflict,
+            keywords: ['Email', `${email}`],
+          }),
+        )
       }
     }
     if (username) {
       const count = await this.usernameExist(username)
       if (count) {
-        throw new ConflictException('Username already in use')
+        throw new ConflictException(
+          this.getMessage({
+            message: Messages.errorsOperation.conflict,
+            keywords: ['Username', `${username}`],
+          }),
+        )
       }
     }
   }
@@ -134,9 +147,9 @@ export class UserService extends BaseService {
    */
   async attachRole(params: { userId: number; roleId: number }): Promise<void> {
     const { userId, roleId } = params
-    const role = await this.roleService.findOneOrFail(roleId)
+    const role: RoleEntity = await this.roleService.findOneOrFail(roleId)
 
-    const user = await this.repository.findOneOrFail(userId)
+    const user: UserEntity = await this.repository.findOneOrFail(userId)
 
     if (role && user) {
       await this.userRoleService.firstOrCreate(
@@ -159,9 +172,9 @@ export class UserService extends BaseService {
    */
   async detachRole(params: { userId: number; roleId: number }): Promise<void> {
     const { userId, roleId } = params
-    const role = await this.roleService.findOneOrFail(roleId)
+    const role: RoleEntity = await this.roleService.findOneOrFail(roleId)
 
-    const user = await this.repository.findOneOrFail(userId)
+    const user: UserEntity = await this.repository.findOneOrFail(userId)
 
     if (role && user) {
       const userRole: UserRoleEntity = await this.userRoleService.firstOrFail({
@@ -243,7 +256,7 @@ export class UserService extends BaseService {
     const { id, data } = params
     const { email, username, password, roleIds } = data
 
-    const existingUser = await this.findOneOrFail(id)
+    const existingUser: UserEntity = await this.findOneOrFail(id)
 
     await this.checkIdentifier(
       email ? email : undefined,

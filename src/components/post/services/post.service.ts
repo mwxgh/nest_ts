@@ -195,7 +195,7 @@ export class PostService extends BaseService {
   async updatePost(params: { id: number; data: UpdatePostDto }): Promise<void> {
     const { id, data } = params
 
-    const currentPost = await this.findOneOrFail(id)
+    const currentPost: PostEntity = await this.findOneOrFail(id)
 
     // imageAble
     if (data.imageIds && data.imageIds.length > 0) {
@@ -251,7 +251,7 @@ export class PostService extends BaseService {
   async deletePost(params: { id: number }): Promise<void> {
     const { id } = params
 
-    const currentPost = await this.findOneOrFail(id)
+    const currentPost: PostEntity = await this.findOneOrFail(id)
 
     await this.tagAbleService.detachTagAble([
       {

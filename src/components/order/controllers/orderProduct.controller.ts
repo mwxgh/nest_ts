@@ -1,5 +1,8 @@
 import { Body, Controller, Delete, Param, Post, Put } from '@nestjs/common'
 import { ApiHeader, ApiParam, ApiTags } from '@nestjs/swagger'
+import { OrderEntity } from '@orderModule/entities/order.entity'
+import { OrderProductEntity } from '@orderModule/entities/orderProduct.entity'
+import { ProductEntity } from '@productModule/entities/product.entity'
 import { ProductService } from '@productModule/services/product.service'
 import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.service'
 import { getCustomRepository } from 'typeorm'
@@ -29,7 +32,10 @@ export class OrderProductController {
     let total = 0
 
     data.products.forEach(async (item) => {
-      const result = await this.productService.findOneOrFail(item.productId)
+      const result: ProductEntity = await this.productService.findOneOrFail(
+        item.productId,
+      )
+
       if (result && item.quantity > 0) {
         const amount = Number(item.quantity) * Number(result.price)
         total += amount
@@ -64,7 +70,9 @@ export class OrderProductController {
     let total = 0
 
     data.products.forEach(async (item) => {
-      const result = await this.productService.findOneOrFail(item.productId)
+      const result: ProductEntity = await this.productService.findOneOrFail(
+        item.productId,
+      )
 
       if (result && item.quantity > 0) {
         const amount = Number(item.quantity) * Number(result.price)
@@ -87,9 +95,12 @@ export class OrderProductController {
   @Delete(':id')
   @ApiParam({ name: 'id' })
   async destroy(@Param() params: any): Promise<any> {
-    const record = await this.orderProductService.findOneOrFail(params.id)
+    const record: OrderProductEntity =
+      await this.orderProductService.findOneOrFail(params.id)
 
-    const order = await this.orderService.findOneOrFail(record.orderId)
+    const order: OrderEntity = await this.orderService.findOneOrFail(
+      record.orderId,
+    )
 
     await this.orderService.update(order.id, {
       amount: order.amount - record.amount,

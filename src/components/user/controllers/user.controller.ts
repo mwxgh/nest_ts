@@ -111,10 +111,11 @@ export class UserController {
     if (!isNil(includes)) {
       const includesParams = Array.isArray(includes) ? includes : [includes]
 
-      joinAndSelects = this.primitiveService.includesParamToJoinAndSelects({
-        includesParams,
-        relations: this.relations,
-      })
+      joinAndSelects =
+        this.primitiveService.convertIncludesParamToJoinAndSelects({
+          includesParams,
+          relations: this.relations,
+        })
 
       if (joinAndSelects.length > 0) {
         joinAndSelects.forEach((joinAndSelect) => {
@@ -193,7 +194,7 @@ export class UserController {
     @Param('id', ParseIntPipe) id: number,
     @Body() data: UpdateUserPasswordDto,
   ): Promise<SuccessfullyOperation> {
-    const user = await this.userService.findOneOrFail(id)
+    const user: UserEntity = await this.userService.findOneOrFail(id)
 
     await this.userService.update(user.id, {
       password: this.userService.hash(data.password),
@@ -221,7 +222,7 @@ export class UserController {
   async sendVerifyLink(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<SuccessfullyOperation> {
-    const user = await this.userService.findOneOrFail(id)
+    const user: UserEntity = await this.userService.findOneOrFail(id)
 
     await this.userService.generateVerifyToken(user.id)
 

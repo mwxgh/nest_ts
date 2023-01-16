@@ -10,6 +10,8 @@ import {
 } from '@nestjs/common'
 import { ApiHeader, ApiTags } from '@nestjs/swagger'
 
+import { CartEntity } from '@cartModule/entities/cart.entity'
+import { ProductEntity } from '@productModule/entities/product.entity'
 import { ProductService } from '@productModule/services/product.service'
 import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.service'
 import { getManager } from 'typeorm'
@@ -46,7 +48,9 @@ export class CartItemController {
 
     await this.cartItemService.findOneOrFail(id)
 
-    const product = await this.productService.findOneOrFail(body.productId)
+    const product: ProductEntity = await this.productService.findOneOrFail(
+      body.productId,
+    )
 
     const update_data = {
       quantity: `${body.quantity}`,
@@ -69,9 +73,13 @@ export class CartItemController {
 
   @Post()
   async store(@Body() body: CreateCartItemDto): Promise<any> {
-    const productExist = await this.productService.findOneOrFail(body.productId)
+    const productExist: ProductEntity = await this.productService.findOneOrFail(
+      body.productId,
+    )
 
-    const cartExist = await this.cartService.findOneOrFail(body.cartId)
+    const cartExist: CartEntity = await this.cartService.findOneOrFail(
+      body.cartId,
+    )
 
     const data_check_cart_item = {
       productId: productExist.id,

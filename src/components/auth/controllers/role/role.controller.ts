@@ -96,10 +96,11 @@ export class RoleController {
     if (!isNil(includes)) {
       const includesParams = Array.isArray(includes) ? includes : [includes]
 
-      joinAndSelects = this.primitiveService.includesParamToJoinAndSelects({
-        includesParams,
-        relations: this.relations,
-      })
+      joinAndSelects =
+        this.primitiveService.convertIncludesParamToJoinAndSelects({
+          includesParams,
+          relations: this.relations,
+        })
 
       if (joinAndSelects.length > 0) {
         joinAndSelects.forEach((joinAndSelect) => {
@@ -145,7 +146,7 @@ export class RoleController {
   async readRole(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<GetItemResponse> {
-    const role = await this.roleService.findOneOrFail(id, {
+    const role: RoleEntity = await this.roleService.findOneOrFail(id, {
       relations: this.relations,
     })
 

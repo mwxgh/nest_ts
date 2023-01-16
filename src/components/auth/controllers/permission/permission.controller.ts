@@ -3,6 +3,7 @@ import {
   CreatePermissionDto,
   UpdatePermissionDto,
 } from '@authModule/dto/permission.dto'
+import { PermissionEntity } from '@authModule/entities/permission.entity'
 import { JwtAuthGuard } from '@authModule/guards/jwtAuth.guard'
 import { PermissionService } from '@authModule/services/permission.service'
 import { PermissionTransformer } from '@authModule/transformers/permission.transformer'
@@ -117,7 +118,8 @@ export class PermissionController {
   async readPermission(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<GetItemResponse> {
-    const permission = await this.permissionService.findOneOrFail(id)
+    const permission: PermissionEntity =
+      await this.permissionService.findOneOrFail(id)
 
     return this.response.item(permission, new PermissionTransformer())
   }

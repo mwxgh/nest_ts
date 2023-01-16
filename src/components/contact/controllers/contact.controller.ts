@@ -180,7 +180,7 @@ export class ContactController {
     @Param('id', ParseIntPipe) id: number,
     @Body() data: UpdateContactDto,
   ): Promise<SuccessfullyOperation> {
-    const contact = await this.contactService.findOneOrFail(id)
+    const contact: ContactEntity = await this.contactService.findOneOrFail(id)
 
     this.primitiveService.checkUserPermissionOperation({
       currentUser,
@@ -206,7 +206,7 @@ export class ContactController {
     @AuthenticatedUser() currentUser: Me,
     @Param('id', ParseIntPipe) id: number,
   ): Promise<SuccessfullyOperation> {
-    const contact = await this.contactService.findOneOrFail(id)
+    const contact: ContactEntity = await this.contactService.findOneOrFail(id)
 
     this.primitiveService.checkUserPermissionOperation({
       currentUser,

@@ -16,7 +16,7 @@ export class JwtCustomService {
     try {
       const payload = <any>jwt.verify(token, this.configService.get('APP_KEY'))
 
-      const user = await this.userService.findOneOrFail(payload.id)
+      const user: UserEntity = await this.userService.findOneOrFail(payload.id)
 
       if (!user) {
         if (isWs) {

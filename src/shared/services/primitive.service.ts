@@ -1,4 +1,5 @@
 import { BadRequestException, ForbiddenException } from '@nestjs/common'
+import { Pagination } from '@shared/interfaces/response.interface'
 import { Me } from '@userModule/dto/user.dto'
 import { includes, map } from 'lodash'
 
@@ -8,12 +9,42 @@ import { includes, map } from 'lodash'
  */
 export class PrimitiveService {
   /**
+   * Create pagination object
+   *
+   * @param items Entities for paginate
+   * @param totalItems Count of entities
+   * @param currentPage current page
+   * @param limit limit record page
+   *
+   * @return Pagination
+   */
+  protected createPaginationObject<T>(
+    items: T[],
+    totalItems: number,
+    currentPage: number,
+    limit: number,
+  ): Pagination<T> {
+    const totalPages = Math.ceil(totalItems / limit)
+    const nextPage =
+      Math.ceil(totalItems / limit) > currentPage ? currentPage + 1 : null
+    const prevPage: number = currentPage > 1 ? currentPage - 1 : null
+
+    return new Pagination(items, {
+      totalItems: totalItems,
+      itemCount: items.length,
+      itemsPerPage: limit,
+      totalPages,
+      currentPage,
+      nextPage,
+      prevPage,
+    })
+  }
+
+  /**
    * Check user permission operation with userId
    *
    * @param currentUser User
-   * @param userId User
-   *
-   * @return void
+   * @param userId userId
    */
   checkUserPermissionOperation(params: {
     currentUser: Me
@@ -40,7 +71,7 @@ export class PrimitiveService {
    *
    * @return join and select table
    */
-  includesParamToJoinAndSelects(params: {
+  convertIncludesParamToJoinAndSelects(params: {
     includesParams: string[]
     relations: string[]
   }): string[] {
@@ -63,7 +94,7 @@ export class PrimitiveService {
    * @param message message form
    * @param keywords keyword for each properties
    *
-   * @return string
+   * @return message
    */
   getMessage(params: { message: string; keywords: string[] }): string {
     let { message } = params

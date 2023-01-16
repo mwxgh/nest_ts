@@ -87,7 +87,7 @@ export class BaseService extends PrimitiveService {
    * Find data of repository.
    *
    * @param none
-   * @returns save data
+   * @returns data
    */
   async get<T>(): Promise<T[]> {
     return this.repository.find()
@@ -95,6 +95,7 @@ export class BaseService extends PrimitiveService {
 
   /**
    * Get all items record or throw error if not any
+   *
    * @returns entity | error
    */
   async findAllOrFail(): Promise<ResponseEntity> {
@@ -111,6 +112,7 @@ export class BaseService extends PrimitiveService {
    * Execute the query and get the first result
    *
    * @param options FindOneOptions
+   *
    * @returns Entity
    */
   async first<T>(options: FindOneOptions): Promise<T> {
@@ -127,6 +129,8 @@ export class BaseService extends PrimitiveService {
    * Execute the query and get the first result or throw an exception
    *
    * @param options FindOneOptions
+   *
+   * @returns Entity
    */
   async firstOrFail<T>(options: FindOneOptions): Promise<T> {
     const items = await this.repository.find({ ...options, ...{ take: 1 } })
@@ -142,13 +146,10 @@ export class BaseService extends PrimitiveService {
    * Get the item record with relation matching the attributes
    *
    * @param id number
-   * @param options relations
+   * @param options FindOneOptions
    */
-  async findOneOrFail(
-    id: number,
-    options?: { relations: string[] },
-  ): Promise<any> {
-    const item = await this.repository.findOne(id, options)
+  async findOneOrFail<T>(id: number, options?: FindOneOptions): Promise<T> {
+    const item = await this.repository.findOne(id, { ...options })
 
     if (!item) {
       throw new BadRequestException(`Resource not found`)
@@ -194,6 +195,8 @@ export class BaseService extends PrimitiveService {
    * Return number of record that match criteria
    *
    * @param options
+   *
+   * @returns number record by option
    */
   async count(options: FindManyOptions): Promise<number> {
     return await this.repository.count(options)
@@ -210,108 +213,6 @@ export class BaseService extends PrimitiveService {
     if (Array.isArray(items) && items.length !== 0) {
       throw new ConflictException('Data existing')
     }
-  }
-
-  private async paginateQueryBuilder<T>(
-    queryBuilder: SelectQueryBuilder<T>,
-    options: IPaginationOptions,
-  ): Promise<Pagination<T>> {
-    const { page, limit } = options
-
-    const [items, total] = await queryBuilder
-      .take(limit)
-      .skip((page - 1) * limit)
-      .getManyAndCount()
-
-    return this.createPaginationObject<T>(items, total, page, limit)
-  }
-
-  private createPaginationObject<T>(
-    items: T[],
-    totalItems: number,
-    currentPage: number,
-    limit: number,
-  ) {
-    const totalPages = Math.ceil(totalItems / limit)
-    const nextPage =
-      Math.ceil(totalItems / limit) > currentPage ? currentPage + 1 : null
-    const prevPage: number = currentPage > 1 ? currentPage - 1 : null
-
-    return new Pagination(items, {
-      totalItems: totalItems,
-      itemCount: items.length,
-      itemsPerPage: limit,
-      totalPages,
-      currentPage,
-      nextPage,
-      prevPage,
-    })
-  }
-
-  /**
-   * Get the pagination record matching the attributes
-   *
-   * @param queryBuilder Repository | SelectQueryBuilder | null
-   * @param options IPaginationOptions
-   */
-  async paginationCalculate<T>(
-    queryBuilder: Repository<T> | SelectQueryBuilder<T> | null,
-    options: IPaginationOptions,
-  ): Promise<Pagination<T>> {
-    const query =
-      queryBuilder instanceof SelectQueryBuilder
-        ? queryBuilder
-        : this.repository.createQueryBuilder(this.alias)
-
-    options = omit(
-      options,
-      filter(keys(options), function (key) {
-        return isUndefined(options[key])
-      }),
-    )
-
-    options = { ...defaultPaginationOption, ...options }
-
-    return this.paginateQueryBuilder(query, options)
-  }
-
-  /**
-   * Update an entity in repository by id
-   *
-   * @param id number
-   * @param data object
-   */
-  async update(id: number, data: Entity): Promise<any> {
-    const item = await this.repository.findOne(id)
-
-    const result = await getManager().save(this.entity, { ...item, ...data })
-
-    return result
-  }
-
-  /**
-   * Create or update a related record matching the attributes, and fill it with values.
-   *
-   * @param attributes object
-   * @param values object
-   *
-   * @return entity
-   */
-  async updateOrCreate(
-    attributes: { [key: string]: any },
-    values: { [key: string]: any },
-  ): Promise<any> {
-    let item: any
-
-    const items = await this.repository.find({ where: attributes, take: 1 })
-
-    if (!isArray(items) || items.length === 0) {
-      item = await this.create(values)
-    } else {
-      item = await this.update(items[0].id, values)
-    }
-
-    return item
   }
 
   /**
@@ -346,6 +247,55 @@ export class BaseService extends PrimitiveService {
     }
 
     return baseQuery
+  }
+
+  /**
+   * Build paginate query with option
+   *
+   * @param queryBuilder  SelectQueryBuilder
+   * @param options IPaginationOptions
+   *
+   * @returns Pagination
+   */
+  private async paginateQueryBuilder<T>(
+    queryBuilder: SelectQueryBuilder<T>,
+    options: IPaginationOptions,
+  ): Promise<Pagination<T>> {
+    const { page, limit } = options
+
+    const [items, total] = await queryBuilder
+      .take(limit)
+      .skip((page - 1) * limit)
+      .getManyAndCount()
+
+    return this.createPaginationObject<T>(items, total, page, limit)
+  }
+
+  /**
+   * Get the pagination record matching the attributes
+   *
+   * @param queryBuilder Repository | SelectQueryBuilder | null
+   * @param options IPaginationOptions
+   */
+  async paginationCalculate<T>(
+    queryBuilder: Repository<T> | SelectQueryBuilder<T> | null,
+    options: IPaginationOptions,
+  ): Promise<Pagination<T>> {
+    const query =
+      queryBuilder instanceof SelectQueryBuilder
+        ? queryBuilder
+        : this.repository.createQueryBuilder(this.alias)
+
+    options = omit(
+      options,
+      filter(keys(options), function (key) {
+        return isUndefined(options[key])
+      }),
+    )
+
+    options = { ...defaultPaginationOption, ...options }
+
+    return this.paginateQueryBuilder(query, options)
   }
 
   /**
@@ -397,6 +347,45 @@ export class BaseService extends PrimitiveService {
     }
 
     return slug
+  }
+
+  /**
+   * Update an entity in repository by id
+   *
+   * @param id number
+   * @param data object
+   */
+  async update(id: number, data: Entity): Promise<any> {
+    const item = await this.repository.findOne(id)
+
+    const result = await getManager().save(this.entity, { ...item, ...data })
+
+    return result
+  }
+
+  /**
+   * Create or update a related record matching the attributes, and fill it with values.
+   *
+   * @param attributes object
+   * @param values object
+   *
+   * @return entity
+   */
+  async updateOrCreate(
+    attributes: { [key: string]: any },
+    values: { [key: string]: any },
+  ): Promise<any> {
+    let item: any
+
+    const items = await this.repository.find({ where: attributes, take: 1 })
+
+    if (!isArray(items) || items.length === 0) {
+      item = await this.create(values)
+    } else {
+      item = await this.update(items[0].id, values)
+    }
+
+    return item
   }
 
   /**
