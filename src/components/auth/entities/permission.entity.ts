@@ -1,5 +1,5 @@
 import { Column, Entity, JoinTable, ManyToMany } from 'typeorm'
-import { TimeStampEntity } from '../../base.entity'
+import { TimeStampEntity } from '../../../shared/entities/base.entity'
 import { RoleEntity } from './role.entity'
 
 @Entity({ name: 'permission' })

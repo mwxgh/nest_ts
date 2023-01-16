@@ -1,6 +1,6 @@
 import { Column, Entity, OneToMany } from 'typeorm'
+import { BaseTimeStampEntity } from '../../../shared/entities/base.entity'
 import { Notifiable } from '../../../shared/services/notification/decorators/notifiable.decorator'
-import { BaseTimeStampEntity } from '../../base.entity'
 import { OrderProductEntity } from './orderProduct.entity'
 
 @Notifiable()

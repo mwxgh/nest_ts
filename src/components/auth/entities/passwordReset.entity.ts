@@ -1,5 +1,5 @@
 import { Column, Entity } from 'typeorm'
-import { BaseTimeStampEntity } from '../../base.entity'
+import { BaseTimeStampEntity } from '../../../shared/entities/base.entity'
 
 @Entity({ name: 'passwordReset' })
 export class PasswordResetEntity extends BaseTimeStampEntity {

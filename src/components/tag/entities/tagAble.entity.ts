@@ -1,7 +1,7 @@
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm'
 import { ProductEntity } from '../../../../src/components/product/entities/product.entity'
 import { Notifiable } from '../../../../src/shared/services/notification/decorators/notifiable.decorator'
-import { TimeStampEntity } from '../../base.entity'
+import { TimeStampEntity } from '../../../shared/entities/base.entity'
 import { PostEntity } from '../../post/entities/post.entity'
 import { TagEntity } from './tag.entity'
 

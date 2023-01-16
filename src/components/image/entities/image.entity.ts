@@ -1,6 +1,6 @@
 import { Column, Entity, OneToMany } from 'typeorm'
+import { TimeStampEntity } from '../../../shared/entities/base.entity'
 import { Notifiable } from '../../../shared/services/notification/decorators/notifiable.decorator'
-import { TimeStampEntity } from '../../base.entity'
 import { ImageAbleEntity } from './imageAble.entity'
 
 export enum ImageStatus {

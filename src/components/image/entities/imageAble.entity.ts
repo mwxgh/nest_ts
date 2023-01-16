@@ -1,6 +1,6 @@
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm'
+import { TimeStampEntity } from '../../../shared/entities/base.entity'
 import { Notifiable } from '../../../shared/services/notification/decorators/notifiable.decorator'
-import { TimeStampEntity } from '../../base.entity'
 import { PostEntity } from '../../post/entities/post.entity'
 import { ProductEntity } from '../../product/entities/product.entity'
 import { ImageEntity } from './image.entity'

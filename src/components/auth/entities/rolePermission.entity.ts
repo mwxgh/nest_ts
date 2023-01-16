@@ -1,5 +1,5 @@
 import { Column, Entity } from 'typeorm'
-import { IdEntity } from '../../base.entity'
+import { IdEntity } from '../../../shared/entities/base.entity'
 
 @Entity({ name: 'rolePermission' })
 export class RolePermissionEntity extends IdEntity {
