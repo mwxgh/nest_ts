@@ -29,8 +29,10 @@ export class AuthService extends BaseService {
 
   /**
    * Generate token
+   *
    * @param params.user UserEntity
    * @param params.refresh refresh flag
+   *
    * @returns AttributeAuthentication
    */
   private async _generateToken(params: {
@@ -73,7 +75,9 @@ export class AuthService extends BaseService {
 
   /**
    * Register native user
+   *
    * @param params UserRegisterDto
+   *
    * @returns AttributeAuthentication
    */
   async register(params: UserRegisterDto): Promise<AttributeAuthentication> {
@@ -86,7 +90,9 @@ export class AuthService extends BaseService {
 
   /**
    * Login native user
+   *
    * @param params UserLoginDto
+   *
    * @returns AttributeAuthentication
    */
   async login(params: UserLoginDto): Promise<AttributeAuthentication> {
@@ -113,7 +119,9 @@ export class AuthService extends BaseService {
 
   /**
    * Login via google
+   *
    * @param params UserLoginDto
+   *
    * @returns AttributeAuthentication
    */
   async googleLogin(params: LoginGoogleDto) {
@@ -156,8 +164,10 @@ export class AuthService extends BaseService {
 
   /**
    * Get user by refresh token
+   *
    * @param params.email
    * @param params.refreshToken
+   *
    * @returns UserEntity
    */
   async getUserByRefreshToken(params: {
@@ -183,7 +193,9 @@ export class AuthService extends BaseService {
 
   /**
    * Refresh login with refresh token
+   *
    * @param param.refreshToken
+   *
    * @returns AttributeAuthentication
    */
   async refresh(param: {

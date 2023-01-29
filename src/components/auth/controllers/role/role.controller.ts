@@ -38,7 +38,7 @@ import {
 import Messages from '@shared/message/message'
 import { PrimitiveService } from '@shared/services/primitive.service'
 import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.service'
-import { assign, isNil } from 'lodash'
+import { isNil } from 'lodash'
 import { SelectQueryBuilder } from 'typeorm'
 
 @ApiTags('Roles')
@@ -61,16 +61,14 @@ export class RoleController {
   private fields = ['name', 'level']
   private relations = ['permissions']
 
-  @Post('')
+  @Post()
   @Auth('admin')
   @ApiOperation({ summary: 'Admin create new role' })
   @ApiOkResponse({ description: 'New role entity' })
   async createRole(@Body() data: CreateRoleDto): Promise<CreateResponse> {
-    const slug = await this.roleService.generateSlug(data.name)
+    const saveRole = await this.roleService.saveRole({ data })
 
-    const role = await this.roleService.create(assign(data, { slug: slug }))
-
-    return this.response.item(role, new RoleTransformer())
+    return this.response.item(saveRole, new RoleTransformer(this.relations))
   }
 
   @Get()
@@ -161,11 +159,9 @@ export class RoleController {
     @Param('id', ParseIntPipe) id: number,
     @Body() data: UpdateRoleDto,
   ): Promise<UpdateResponse> {
-    const slug = await this.roleService.generateSlug(data.name)
+    const updateRole = await this.roleService.updateRole({ id, data })
 
-    const role = await this.roleService.update(id, assign(data, { slug: slug }))
-
-    return this.response.item(role, new RoleTransformer())
+    return this.response.item(updateRole, new RoleTransformer(this.relations))
   }
 
   @Delete(':id')
@@ -191,7 +187,7 @@ export class RoleController {
     return this.response.success({
       message: this.primitiveService.getMessage({
         message: Messages.successfullyOperation.delete,
-        keywords: ['role'],
+        keywords: [this.entity],
       }),
     })
   }

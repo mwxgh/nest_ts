@@ -96,12 +96,14 @@ export class PrimitiveService {
    *
    * @return message
    */
-  getMessage(params: { message: string; keywords: string[] }): string {
+  getMessage(params: { message: string; keywords?: string[] }): string {
     let { message } = params
 
-    params.keywords.forEach((keyword) => {
-      message = message.replace('${keyword}', keyword)
-    })
+    if (params.keywords && params.keywords.length > 0) {
+      params.keywords.forEach((keyword) => {
+        message = message.replace('${keyword}', keyword)
+      })
+    }
 
     return message
   }

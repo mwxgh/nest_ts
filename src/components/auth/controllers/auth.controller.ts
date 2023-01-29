@@ -20,6 +20,7 @@ import {
   UserLoginDto,
   UserRegisterDto,
 } from '../dto/auth.dto'
+import { SuccessfullyOperation } from '@shared/interfaces/response.interface'
 
 @ApiTags('Auth')
 @ApiHeader({
@@ -49,7 +50,6 @@ export class AuthController {
   async userRegister(
     @Body() data: UserRegisterDto,
   ): Promise<AttributeAuthentication> {
-    // check user exist
     return this.authService.register(data)
   }
 
@@ -74,12 +74,14 @@ export class AuthController {
   @Post('/logout')
   @ApiOperation({ summary: 'Logout' })
   @ApiOkResponse({ description: 'Logout successfully' })
-  async logout(@AuthenticatedUser() currentUser: Me): Promise<any> {
+  async logout(
+    @AuthenticatedUser() currentUser: Me,
+  ): Promise<SuccessfullyOperation> {
     await this.authService.logout(currentUser)
+
     return this.response.success({
       message: this.primitiveService.getMessage({
         message: Messages.successfullyOperation.logout,
-        keywords: [],
       }),
     })
   }

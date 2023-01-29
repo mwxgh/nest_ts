@@ -1,6 +1,8 @@
 {
     "cSpell.words": [
         "nestjs",
-        "typeorm"
+        "ormconfig",
+        "typeorm",
+        "websockets"
     ]
 }

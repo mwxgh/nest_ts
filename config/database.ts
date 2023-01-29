@@ -68,4 +68,7 @@ export default (): any => ({
     // to be compiled into dist/ folder.
     migrationsDir: 'database/migrations',
   },
+  extra: {
+    charset: 'utf8mb4_unicode_ci',
+  },
 })
