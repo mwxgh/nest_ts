@@ -23,10 +23,12 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "command": "node --require ts-node/register command.ts",
+    "prepare": "husky install",
     "prepush": "npm run lint"
   },
   "husky": {
     "hooks": {
+      "prepare": "npm run prepare",
       "pre-push": "npm run prepush"
     }
   },
@@ -34,11 +36,12 @@
     "@hapi/joi": "^17.1.1",
     "@nestjs/common": "^8.0.6",
     "@nestjs/config": "^0.6.3",
-    "@nestjs/core": "^7.6.13",
+    "@nestjs/core": "8.0.7",
     "@nestjs/event-emitter": "^1.1.0",
     "@nestjs/jwt": "^7.2.0",
     "@nestjs/passport": "^7.1.5",
     "@nestjs/platform-express": "^7.6.13",
+    "@nestjs/platform-fastify": "^9.3.7",
     "@nestjs/platform-socket.io": "^7.4.2",
     "@nestjs/schedule": "^1.1.0",
     "@nestjs/swagger": "^4.8.0",
@@ -97,7 +100,7 @@
     "ts-loader": "^8.0.17",
     "ts-node": "^9.1.1",
     "tsconfig-paths": "^3.9.0",
-    "typescript": "^4.9.4",
+    "typescript": "^4.6.4",
     "webpack-node-externals": "^2.5.2"
   },
   "jest": {

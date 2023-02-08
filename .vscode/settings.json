@@ -1,7 +1,9 @@
 {
     "cSpell.words": [
+        "fastify",
         "nestjs",
         "ormconfig",
+        "prepush",
         "typeorm",
         "websockets"
     ]

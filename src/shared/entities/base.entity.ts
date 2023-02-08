@@ -5,12 +5,12 @@ import {
   UpdateDateColumn,
 } from 'typeorm'
 
-export class IdEntity {
+export abstract class IdEntity {
   @PrimaryGeneratedColumn()
   id: number
 }
 
-export class BaseTimeStampEntity extends IdEntity {
+export abstract class BaseTimeStampEntity extends IdEntity {
   @CreateDateColumn({
     type: 'timestamp',
     precision: null,
@@ -25,7 +25,7 @@ export class BaseTimeStampEntity extends IdEntity {
   })
   public updatedAt: Date
 }
-export class TimeStampEntity extends BaseTimeStampEntity {
-  @DeleteDateColumn({ type: 'timestamp' })
+export abstract class TimeStampEntity extends BaseTimeStampEntity {
+  @DeleteDateColumn({ type: 'timestamp', precision: null })
   public deletedAt: Date
 }

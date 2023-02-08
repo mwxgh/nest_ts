@@ -10,6 +10,7 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger'
+import { SuccessfullyOperation } from '@shared/interfaces/response.interface'
 import Messages from '@shared/message/message'
 import { ApiResponseService } from '@shared/services/apiResponse/apiResponse.service'
 import { PrimitiveService } from '@shared/services/primitive.service'
@@ -20,7 +21,6 @@ import {
   UserLoginDto,
   UserRegisterDto,
 } from '../dto/auth.dto'
-import { SuccessfullyOperation } from '@shared/interfaces/response.interface'
 
 @ApiTags('Auth')
 @ApiHeader({
@@ -44,7 +44,7 @@ export class AuthController {
     return this.authService.googleLogin(data)
   }
 
-  @Post('/register')
+  @Post('register')
   @ApiOperation({ summary: 'Register user with email' })
   @ApiOkResponse({ description: 'Token for access system' })
   async userRegister(
@@ -53,7 +53,7 @@ export class AuthController {
     return this.authService.register(data)
   }
 
-  @Post('/login')
+  @Post('login')
   @ApiOperation({ summary: 'Login with email & password' })
   @ApiOkResponse({ description: 'Token for access system' })
   async userLogin(
@@ -62,7 +62,7 @@ export class AuthController {
     return this.authService.login(data)
   }
 
-  @Post('/refresh')
+  @Post('refresh')
   @ApiOperation({ summary: 'Refresh login with refresh' })
   @ApiOkResponse({ description: 'Token for access system' })
   async refresh(@Body() data: RefreshDto): Promise<AttributeAuthentication> {
@@ -71,7 +71,7 @@ export class AuthController {
 
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
-  @Post('/logout')
+  @Post('logout')
   @ApiOperation({ summary: 'Logout' })
   @ApiOkResponse({ description: 'Logout successfully' })
   async logout(
