@@ -18,7 +18,7 @@ export class OrderProperties {
 
   @ApiProperty({
     type: String,
-    default: 'example@mwx.com',
+    default: 'example@gmail.com',
   })
   @IsOptional()
   @IsEmail()

@@ -13,7 +13,7 @@ export class UserLoginNotification extends Notification {
   toMail(): IMailable | Promise<IMailable> {
     return new Mailable()
       .to('mwx6996@gmail.com')
-      .from('mwx6996@gmail.com', 'MWX')
+      .from('mwx6996@gmail.com', 'mei wen xing')
       .greeting('Hello')
       .subject('The first email from Nest Framework')
       .line('This is a line of text')

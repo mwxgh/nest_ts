@@ -9,7 +9,7 @@ async function bootstrap() {
   if (process.env.APP_ENV !== 'production') {
     const config = new DocumentBuilder()
       .addBearerAuth()
-      .setTitle('MWX NestJS API')
+      .setTitle('NEST_TS')
       .setVersion('1.0')
       .build()
     const document = SwaggerModule.createDocument(app, config)

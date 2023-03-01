@@ -1,5 +1,5 @@
 {
-  "name": "multiple_service_nest_ts",
+  "name": "nest_ts",
   "version": "0.0.1",
   "license": "UNLICENSED",
   "scripts": {
@@ -98,9 +98,9 @@
     "supertest": "^6.1.3",
     "ts-jest": "^26.5.2",
     "ts-loader": "^8.0.17",
-    "ts-node": "^9.1.1",
+    "ts-node": "^10.6.0",
     "tsconfig-paths": "^3.9.0",
-    "typescript": "^4.6.4",
+    "typescript": "^4.9.5",
     "webpack-node-externals": "^2.5.2"
   },
   "jest": {

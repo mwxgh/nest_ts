@@ -1,6 +1,6 @@
 export const environment = {
   production: true,
-  appUrl: 'http://multiple_service.local',
+  appUrl: 'http://nest_ts.local',
   appKey: 'secret',
   jwtTtl: '3600000000',
   appEnv: 'local',
@@ -9,7 +9,7 @@ export const environment = {
   dbConnection: 'mysql',
   dbHost: 'localhost',
   dbPort: '3306',
-  dbName: 'multiple_service',
-  dbUser: 'mwx',
-  dbPass: '0111mvtT',
+  dbName: 'nest_ts',
+  dbUser: 'root',
+  dbPass: 'password',
 }

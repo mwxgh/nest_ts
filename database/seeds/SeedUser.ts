@@ -17,14 +17,14 @@ export default class UsersTableSeeder {
 
     const seed = [
       {
-        email: 'admin@mwx.com',
+        email: 'admin@gmail.com',
         username: 'admin',
         password: this.hashService.hash('secret'),
         status: UserStatus.active,
         role: 'admin',
       },
       {
-        email: 'user@mwx.com',
+        email: 'user@gmail.com',
         username: 'user',
         password: this.hashService.hash('secret'),
         status: UserStatus.active,

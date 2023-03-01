@@ -21,7 +21,7 @@ export class PasswordResetService extends BaseService {
   /**
    * Expire given token
    *
-   * @param email string
+   * @param token string
    */
   async expire(token: string): Promise<any> {
     await this.repository
@@ -35,7 +35,7 @@ export class PasswordResetService extends BaseService {
   /**
    * Expire all token of an email
    *
-   * @param email string
+   * @param token string
    */
   async expireAllToken(email: string): Promise<any> {
     await this.repository
