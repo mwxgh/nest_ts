@@ -2,26 +2,38 @@ import { HttpException, HttpStatus } from '@nestjs/common'
 import { existsSync, mkdirSync } from 'fs'
 import { diskStorage } from 'multer'
 import { extname } from 'path'
-import { v4 as uuid } from 'uuid'
 
-// Multer configuration
 export const multerConfig = {
-  dest: './uploads',
+  dest:
+    process.env.APP_ENV === 'local' ? 'public/uploads' : 'dist/public/uploads',
 }
 
-// Multer upload options
+const storage = diskStorage({
+  destination: (req: any, file: any, cb: any) => {
+    const uploadPath = multerConfig.dest
+    if (!existsSync(uploadPath)) {
+      mkdirSync(uploadPath)
+    }
+    cb(null, uploadPath)
+  },
+  filename: (req, file: Express.Multer.File, cb) => {
+    const randomName = Array(32)
+      .fill(null)
+      .map(() => Math.round(Math.random() * 16).toString(16))
+      .join('')
+    cb(null, `${randomName}${extname(file.originalname)}`)
+  },
+})
+
 export const multerOptions = {
-  // Enable file size limits
   limits: {
     fileSize: +process.env.MAX_FILE_SIZE || 10 * 10 * 10 * 1024,
   },
-  // Check the mimetypes to allow for upload
+
   fileFilter: (req: any, file: any, cb: any) => {
     if (file.mimetype.match(/\/(jpg|jpeg|png|gif)$/)) {
-      // Allow storage of file
       cb(null, true)
     } else {
-      // Reject file
       cb(
         new HttpException(
           `Unsupported file type ${extname(file.originalname)}`,
@@ -31,21 +43,8 @@ export const multerOptions = {
       )
     }
   },
-  // Storage properties
-  storage: diskStorage({
-    // Destination storage path details
-    destination: (req: any, file: any, cb: any) => {
-      const uploadPath = multerConfig.dest
-      // Create folder if doesn't exist
-      if (!existsSync(uploadPath)) {
-        mkdirSync(uploadPath)
-      }
-      cb(null, uploadPath)
-    },
-    // File modification details
-    filename: (req: any, file: any, cb: any) => {
-      // Calling the callback passing the random name generated with the original extension name
-      cb(null, `${uuid()}${extname(file.originalname)}`)
-    },
-  }),
+
+  storage,
 }
+
+export default multerOptions

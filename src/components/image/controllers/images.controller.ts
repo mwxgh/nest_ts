@@ -33,12 +33,12 @@ import {
 import Messages from '@shared/message/message'
 import { PrimitiveService } from '@shared/services/primitive.service'
 import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.service'
-import { FileFastifyInterceptor } from 'fastify-file-interceptor'
-import { diskStorage } from 'multer'
-import { extname } from 'path'
+
 import { CreateImageDto, UpdateImageDto } from '../dto/image.dto'
 import { ImageService } from '../services/image.service'
 import { ImageTransformer } from '../transformers/image.transformer'
+import { FileInterceptor } from '@nestjs/platform-express'
+import multerOptions from '@shared/uploads'
 
 @ApiTags('Images')
 @ApiHeader({
@@ -65,26 +65,9 @@ export class ImageController {
   @ApiOperation({ summary: 'Admin upload new image' })
   @ApiOkResponse({ description: 'Save image and return image entity' })
   @UseInterceptors(
-    FileFastifyInterceptor('file', {
-      storage: diskStorage({
-        destination:
-          process.env.APP_ENV === 'local'
-            ? 'public/uploads'
-            : 'dist/public/uploads',
-        filename: (req, file: Express.Multer.File, cb) => {
-          const randomName = Array(32)
-            .fill(null)
-            .map(() => Math.round(Math.random() * 16).toString(16))
-            .join('')
-          cb(null, `${randomName}${extname(file.originalname)}`)
-        },
-      }),
-      fileFilter: (req, file: Express.Multer.File, cb) => {
-        if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
-          return new Error('Only image files are allowed!')
-        }
-        cb(null, true)
-      },
+    FileInterceptor('file', {
+      storage: multerOptions.storage,
+      fileFilter: multerOptions.fileFilter,
     }),
   )
   async uploadImage(
