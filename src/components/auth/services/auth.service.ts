@@ -49,7 +49,7 @@ export class AuthService extends BaseService {
 
     if (refresh === false) {
       const refreshToken = this.jwtService.sign(partialUserProperties, {
-        secret: process.env.APP_REFRESH_KEY,
+        secret: process.env.APP_KEY,
         expiresIn: process.env.JWT_REFRESH_TTL,
       })
 
@@ -205,7 +205,7 @@ export class AuthService extends BaseService {
 
     try {
       const payload = await this.jwtService.verifyAsync(refreshToken, {
-        secret: process.env.APP_REFRESH_KEY,
+        secret: process.env.APP_KEY,
       })
 
       const user: UserEntity = await this.getUserByRefreshToken({

@@ -11,47 +11,52 @@ import { ConfigService } from '@nestjs/config'
 import { MulterOptions } from '@nestjs/platform-express/multer/interfaces/multer-options.interface'
 import { diskStorage } from 'multer'
 import { existsSync, mkdirSync } from 'fs'
-import { extname } from 'path'
+import * as path from 'path'
 
-interface LocalFilesInterceptorOptions {
+interface CustomFilesInterceptorOptions {
   fieldName: string
   path?: string
 }
 
-function LocalFilesInterceptor(
-  options: LocalFilesInterceptorOptions,
+function CustomFilesInterceptor(
+  options: CustomFilesInterceptorOptions,
 ): Type<NestInterceptor> {
   @Injectable()
   class Interceptor implements NestInterceptor {
     fileInterceptor: NestInterceptor
-    constructor(configService: ConfigService) {
-      const filesDestination = configService.get('UPLOADED_FILES_DESTINATION')
 
-      const storage = diskStorage({
-        destination: (req: any, file: any, cb: any) => {
-          if (!existsSync(filesDestination)) {
-            mkdirSync(filesDestination)
-          }
-          cb(null, filesDestination)
-        },
-        filename: (req, file: Express.Multer.File, cb) => {
-          const randomName = Array(32)
-            .fill(null)
-            .map(() => Math.round(Math.random() * 16).toString(16))
-            .join('')
-          cb(null, `${randomName}${extname(file.originalname)}`)
-        },
-      })
+    constructor(configService: ConfigService) {
+      const filesDestination = configService.get('FILE_UPLOAD_DESTINATION')
+      const absoluteFileDestination = path.resolve(
+        process.cwd(),
+        filesDestination,
+      )
 
       const multerOptions: MulterOptions = {
-        storage,
-        fileFilter: (req: any, file: any, cb: any) => {
+        storage: diskStorage({
+          destination: (req: any, file: any, cb: any) => {
+            if (!existsSync(absoluteFileDestination)) {
+              mkdirSync(absoluteFileDestination)
+            }
+            cb(null, absoluteFileDestination)
+          },
+
+          filename: (req, file: Express.Multer.File, cb) => {
+            const randomName = Array(32)
+              .fill(null)
+              .map(() => Math.round(Math.random() * 16).toString(16))
+              .join('')
+            cb(null, `${randomName}${path.extname(file.originalname)}`)
+          },
+        }),
+
+        fileFilter: (req, file: Express.Multer.File, cb) => {
           if (file.mimetype.match(/\/(jpg|jpeg|png|gif)$/)) {
             cb(null, true)
           } else {
             cb(
               new HttpException(
-                `Unsupported file type ${extname(file.originalname)}`,
+                `Unsupported file type ${path.extname(file.originalname)}`,
                 HttpStatus.BAD_REQUEST,
               ),
               false,
@@ -59,7 +64,8 @@ function LocalFilesInterceptor(
           }
         },
         limits: {
-          fileSize: +process.env.MAX_FILE_SIZE || 10 * 10 * 10 * 1024,
+          fileSize:
+            Number(process.env.FILE_UPLOAD_MAX_SIZE) ?? 50 * 1024 * 1024,
         },
       }
 
@@ -76,4 +82,4 @@ function LocalFilesInterceptor(
   return mixin(Interceptor)
 }
 
-export default LocalFilesInterceptor
+export default CustomFilesInterceptor

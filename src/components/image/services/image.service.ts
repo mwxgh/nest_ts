@@ -32,19 +32,9 @@ export class ImageService extends BaseService {
     })
 
     if (countImages) assignSlug.slug = `${assignSlug.slug}-${countImages}`
+    Object.assign(data, { url: file.path })
 
-    const newFile = assign({}, file, {
-      key: file.filename,
-      location: process.env.APP_URL + '/public/uploads/' + file.filename,
-    })
-
-    const assignUrlFile = assign(assignSlug, {
-      url: newFile.location,
-    })
-
-    const image = { ...assignUrlFile }
-
-    await this.save(image)
+    await this.save(data)
   }
 
   async updateImage(params: {

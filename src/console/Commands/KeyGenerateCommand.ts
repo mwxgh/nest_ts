@@ -31,7 +31,6 @@ export class KeyGenerateCommand extends Command {
       .update(new Date().toISOString())
       .digest('hex')
     const val = fs.readFileSync(path.resolve(process.cwd(), '.env'))
-    console.log(path.resolve(process.cwd(), '.env'))
     if (val) {
       const is_declared = val.indexOf(variable) > -1
       if (!is_declared) {

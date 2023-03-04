@@ -37,8 +37,7 @@ import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.serv
 import { CreateImageDto, UpdateImageDto } from '../dto/image.dto'
 import { ImageService } from '../services/image.service'
 import { ImageTransformer } from '../transformers/image.transformer'
-import { FileInterceptor } from '@nestjs/platform-express'
-import multerOptions from '@shared/uploads'
+import CustomFilesInterceptor from '@shared/uploads/customInterceptor'
 
 @ApiTags('Images')
 @ApiHeader({
@@ -65,9 +64,8 @@ export class ImageController {
   @ApiOperation({ summary: 'Admin upload new image' })
   @ApiOkResponse({ description: 'Save image and return image entity' })
   @UseInterceptors(
-    FileInterceptor('file', {
-      storage: multerOptions.storage,
-      fileFilter: multerOptions.fileFilter,
+    CustomFilesInterceptor({
+      fieldName: 'file',
     }),
   )
   async uploadImage(
