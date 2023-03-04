@@ -27,16 +27,6 @@ export class CreateImagesTable1650207084687 implements MigrationInterface {
             name: 'url',
             type: 'varchar',
           },
-          {
-            name: 'status',
-            type: 'enum',
-            enum: ['PUBLISH', 'HIDE'],
-          },
-          {
-            name: 'verifiedAt',
-            isNullable: true,
-            type: 'datetime',
-          },
           ...baseTimeColumn,
         ],
       }),

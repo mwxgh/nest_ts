@@ -219,7 +219,7 @@ export class UserService extends BaseService {
 
     data.status = userStatus
 
-    const saveUser = await this.create({
+    const saveUser: UserEntity = await this.create({
       ...pick(data, [
         'email',
         'username',
@@ -320,7 +320,7 @@ export class UserService extends BaseService {
     // attach new role
     const newAttachRoleIds: number[] = difference(roleIds, currentRoleIds)
 
-    const existingRoles = await this.roleService.findIdInOrFail(
+    const existingRoles: RoleEntity[] = await this.roleService.findIdInOrFail(
       newAttachRoleIds,
     )
 

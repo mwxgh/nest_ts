@@ -38,6 +38,7 @@ import { CreateImageDto, UpdateImageDto } from '../dto/image.dto'
 import { ImageService } from '../services/image.service'
 import { ImageTransformer } from '../transformers/image.transformer'
 import CustomFilesInterceptor from '@shared/uploads/customInterceptor'
+import { ImageEntity } from '@imageModule/entities/image.entity'
 
 @ApiTags('Images')
 @ApiHeader({
@@ -71,15 +72,8 @@ export class ImageController {
   async uploadImage(
     @UploadedFile() file: Express.Multer.File,
     @Body() data: CreateImageDto,
-  ): Promise<SuccessfullyOperation> {
-    await this.imageService.saveImage({ file, data })
-
-    return this.response.success({
-      message: this.primitiveService.getMessage({
-        message: Messages.successfullyOperation.create,
-        keywords: [this.entity],
-      }),
-    })
+  ): Promise<ImageEntity> {
+    return this.imageService.saveImage({ file, data })
   }
 
   @Get()
@@ -137,15 +131,10 @@ export class ImageController {
   async updateImage(
     @Param('id', ParseIntPipe) id: number,
     @Body() data: UpdateImageDto,
-  ): Promise<SuccessfullyOperation> {
-    await this.imageService.updateImage({ id, data })
+  ): Promise<ImageEntity> {
+    console.log('controller_____')
 
-    return this.response.success({
-      message: this.primitiveService.getMessage({
-        message: Messages.successfullyOperation.update,
-        keywords: [this.entity],
-      }),
-    })
+    return this.imageService.updateImage({ id, data })
   }
 
   @Delete(':id')

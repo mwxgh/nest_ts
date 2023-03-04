@@ -28,14 +28,14 @@ export class CreateImageAbleTable1650813488415 implements MigrationInterface {
             enum: ['PRODUCT', 'POST'],
           },
           {
+            name: 'status',
+            type: 'enum',
+            enum: ['PUBLISH', 'HIDE'],
+          },
+          {
             name: 'isThumbnail',
             default: false,
             type: 'boolean',
-          },
-          {
-            name: 'verifiedAt',
-            isNullable: true,
-            type: 'datetime',
           },
           ...baseTimeColumn,
         ],

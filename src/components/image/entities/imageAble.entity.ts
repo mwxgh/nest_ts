@@ -10,20 +10,28 @@ export enum ImageAbleType {
   post = 'POST',
 }
 
+export enum ImageAbleStatus {
+  publish = 'PUBLISH',
+  hide = 'HIDE',
+}
+
 @Notifiable()
 @Entity({ name: 'imageAble' })
 export class ImageAbleEntity extends TimeStampEntity {
-  @Column({ name: 'imageId', type: 'int' })
+  @Column({ type: 'int' })
   public imageId: number
 
-  @Column({ name: 'imageAbleId', type: 'int' })
+  @Column({ type: 'int' })
   public imageAbleId: number
 
-  @Column({ name: 'imageAbleType', type: 'enum', enum: ImageAbleType })
+  @Column({ type: 'enum', enum: ImageAbleType })
   public imageAbleType: ImageAbleType
 
   @Column({ type: 'int', default: 0 })
   public isThumbnail: number
+
+  @Column({ type: 'enum', enum: ImageAbleStatus })
+  public status: ImageAbleStatus
 
   @ManyToOne(() => ImageEntity, (image) => image.imageAbles)
   @JoinColumn({

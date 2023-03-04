@@ -17,48 +17,48 @@ export class ImageService extends BaseService {
     this.repository = this.connection.getCustomRepository(ImageRepository)
   }
 
-  async saveImage(params: {
-    file: Express.Multer.File
-    data: CreateImageDto
-  }): Promise<void> {
-    const { file, data } = params
+  async assignSlug(params: {
+    data: CreateImageDto | UpdateImageDto
+    currentImage?: ImageEntity
+  }) {
+    const { data, currentImage } = params
 
-    const countImages = await this.count({
-      where: { title: data.title },
-    })
+    console.log(currentImage)
 
     const assignSlug = assign(data, {
       slug: slugify(data.title),
     })
 
+    const countImages = await this.count({
+      where: { title: data.title },
+    })
+
     if (countImages) assignSlug.slug = `${assignSlug.slug}-${countImages}`
+  }
+
+  async saveImage(params: {
+    file: Express.Multer.File
+    data: CreateImageDto
+  }): Promise<ImageEntity> {
+    const { file, data } = params
+
+    await this.assignSlug({ data })
+
     Object.assign(data, { url: file.path })
 
-    await this.save(data)
+    return this.create(data)
   }
 
   async updateImage(params: {
     id: number
     data: UpdateImageDto
-  }): Promise<void> {
+  }): Promise<any> {
     const { id, data } = params
     const currentImage: ImageEntity = await this.findOneOrFail(id)
 
-    const countImages = await this.count({
-      where: { title: data.title },
-    })
+    await this.assignSlug({ data, currentImage })
 
-    if (data.title !== currentImage.title) {
-      const assignSlug = assign(data, { slug: slugify(data.title) })
-
-      if (countImages) assignSlug.slug = `${assignSlug.slug}-${countImages}`
-
-      const imageUpdate = { ...assignSlug }
-
-      await this.update(id, imageUpdate)
-    } else {
-      await this.update(id, data)
-    }
+    // return this.update(id, data)
   }
 
   async deleteImage(params: { id: number }): Promise<void> {

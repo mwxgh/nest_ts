@@ -1,8 +1,8 @@
 import { AuthenticatedUser } from '@authModule/decorators/authenticatedUser.decorator'
 import { JwtAuthGuard } from '@authModule/guards/jwtAuth.guard'
-import { AttributeAuthentication } from '@authModule/interfaces/auth.interface'
+import { AuthenticationAttribute } from '@authModule/interfaces/auth.interface'
 import { AuthService } from '@authModule/services/auth.service'
-import { Body, Controller, Post, UseGuards } from '@nestjs/common'
+import { Body, Controller, Delete, Post, UseGuards } from '@nestjs/common'
 import {
   ApiBearerAuth,
   ApiHeader,
@@ -40,7 +40,7 @@ export class AuthController {
   @ApiOkResponse({ description: 'Token for access system' })
   async googleAuthCallback(
     @Body() data: LoginGoogleDto,
-  ): Promise<AttributeAuthentication> {
+  ): Promise<AuthenticationAttribute> {
     return this.authService.googleLogin(data)
   }
 
@@ -49,7 +49,7 @@ export class AuthController {
   @ApiOkResponse({ description: 'Token for access system' })
   async userRegister(
     @Body() data: UserRegisterDto,
-  ): Promise<AttributeAuthentication> {
+  ): Promise<AuthenticationAttribute> {
     return this.authService.register(data)
   }
 
@@ -58,20 +58,20 @@ export class AuthController {
   @ApiOkResponse({ description: 'Token for access system' })
   async userLogin(
     @Body() data: UserLoginDto,
-  ): Promise<AttributeAuthentication> {
+  ): Promise<AuthenticationAttribute> {
     return this.authService.login(data)
   }
 
   @Post('refresh')
   @ApiOperation({ summary: 'Refresh login with refresh' })
   @ApiOkResponse({ description: 'Token for access system' })
-  async refresh(@Body() data: RefreshDto): Promise<AttributeAuthentication> {
+  async refresh(@Body() data: RefreshDto): Promise<AuthenticationAttribute> {
     return this.authService.refresh(data)
   }
 
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
-  @Post('logout')
+  @Delete('logout')
   @ApiOperation({ summary: 'Logout' })
   @ApiOkResponse({ description: 'Logout successfully' })
   async logout(

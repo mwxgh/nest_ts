@@ -1,7 +1,7 @@
 /**
- *  Attribute authentication
+ *  Authentication attribute
  */
-export interface AttributeAuthentication {
+export interface AuthenticationAttribute {
   token: string
   expiresIn: string
   refreshToken?: string

@@ -4,31 +4,26 @@ import {
   NotFoundException,
 } from '@nestjs/common'
 import {
-  IPaginationOptions,
-  QueryParams,
-} from '@shared/interfaces/request.interface'
-import { filter, isArray, isUndefined, keys, omit } from 'lodash'
-import { default as slugify } from 'slugify'
-import {
   FindManyOptions,
   FindOneOptions,
   Repository,
   SelectQueryBuilder,
   getManager,
 } from 'typeorm'
+import {
+  IPaginationOptions,
+  QueryParams,
+} from '@shared/interfaces/request.interface'
+import { filter, isArray, isUndefined, keys, omit } from 'lodash'
+import { default as slugify } from 'slugify'
 import { DEFAULT_SORT_BY, DEFAULT_SORT_TYPE } from '../constant/constant'
 import {
   Entity,
   Pagination,
   ResponseEntity,
 } from '../interfaces/response.interface'
-
 import { PrimitiveService } from './primitive.service'
-
-const defaultPaginationOption: IPaginationOptions = {
-  limit: 10,
-  page: 1,
-}
+import { defaultPaginationOption } from '@shared/utils/defaultPaginationOption.util'
 
 /**
  * Base service
@@ -45,7 +40,7 @@ export class BaseService extends PrimitiveService {
    * @param data
    * @returns data save to entity
    */
-  async create(data: Entity): Promise<any> {
+  async create<T>(data: Entity): Promise<T> {
     const item = await this.repository.create(data)
 
     await getManager().save(this.entity, item)
@@ -163,7 +158,7 @@ export class BaseService extends PrimitiveService {
    *
    * @param ids number[]
    */
-  async findIdInOrFail(ids: number[]): Promise<ResponseEntity[]> {
+  async findIdInOrFail<T>(ids: number[]): Promise<T[]> {
     const items = await this.repository.findByIds(ids)
 
     if (!items) {
@@ -371,10 +366,10 @@ export class BaseService extends PrimitiveService {
    *
    * @return entity
    */
-  async updateOrCreate(
+  async updateOrCreate<T>(
     attributes: { [key: string]: any },
     values: { [key: string]: any },
-  ): Promise<any> {
+  ): Promise<T> {
     let item: any
 
     const items = await this.repository.find({ where: attributes, take: 1 })

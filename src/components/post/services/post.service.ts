@@ -160,7 +160,7 @@ export class PostService extends BaseService {
 
     if (countPosts) dataToSave.slug = `${dataToSave.slug}-${countPosts}`
 
-    const newPost = await this.create(dataToSave)
+    const newPost: PostEntity = await this.create(dataToSave)
 
     // tagAble
     const tagsAbleData = tagsAvailable.map((tag: any) => ({

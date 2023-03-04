@@ -1,3 +1,4 @@
+import { ApiHeader, ApiQuery, ApiTags } from '@nestjs/swagger'
 import {
   Body,
   Controller,
@@ -6,14 +7,13 @@ import {
   Post,
   Query,
 } from '@nestjs/common'
-import { ApiHeader, ApiQuery, ApiTags } from '@nestjs/swagger'
-import { PostEntity } from '@postModule/entities/post.entity'
-import { PostTransformer } from '@postModule/transformers/post.transformer'
-import { ProductEntity } from '@productModule/entities/product.entity'
-import { ProductTransformer } from '@productModule/transformers/product.transformer'
-import { CreateResponse } from '@shared/interfaces/response.interface'
-import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.service'
 import { getRepository } from 'typeorm'
+import { CreateResponse } from '@shared/interfaces/response.interface'
+import { PostEntity } from '../../post/entities/post.entity'
+import { ProductEntity } from '../../product/entities/product.entity'
+import { PostTransformer } from '@postModule/transformers/post.transformer'
+import { ProductTransformer } from '@productModule/transformers/product.transformer'
+import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.service'
 import { CreateCommentDto } from '../dto/comment.dto'
 import { CommentAbleType } from '../entities/comment.entity'
 import { CommentService } from '../services/comment.service'

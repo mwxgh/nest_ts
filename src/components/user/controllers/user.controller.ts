@@ -262,14 +262,16 @@ export class UserController {
       throw new BadRequestException('User is exist in system')
     }
 
-    const item = await this.userService.create(pick(data, ['email']))
+    const user: UserEntity = await this.userService.create(
+      pick(data, ['email']),
+    )
 
-    await this.inviteUserService.expireAllToken(item.email)
+    await this.inviteUserService.expireAllToken(user.email)
 
-    const passwordReset = await this.inviteUserService.generate(item.email)
+    const passwordReset = await this.inviteUserService.generate(user.email)
 
     await this.notificationService.send(
-      item,
+      user,
       new SendInviteUserLinkNotification(
         passwordReset,
         this.configService.get('FRONTEND_URL'),

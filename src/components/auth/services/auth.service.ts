@@ -1,4 +1,4 @@
-import { AttributeAuthentication } from '@authModule/interfaces/auth.interface'
+import { AuthenticationAttribute } from '@authModule/interfaces/auth.interface'
 import {
   BadRequestException,
   Injectable,
@@ -14,6 +14,7 @@ import { UserService } from '@userModule/services/user.service'
 import { OAuth2Client } from 'google-auth-library'
 import { isNil, pick } from 'lodash'
 import { LoginGoogleDto, UserLoginDto, UserRegisterDto } from '../dto/auth.dto'
+import * as moment from 'moment'
 
 @Injectable()
 export class AuthService extends BaseService {
@@ -33,13 +34,19 @@ export class AuthService extends BaseService {
    * @param params.user UserEntity
    * @param params.refresh refresh flag
    *
-   * @returns AttributeAuthentication
+   * @returns AuthenticationAttribute
    */
   private async _generateToken(params: {
     user: Partial<UserEntity>
     refresh: boolean
-  }): Promise<AttributeAuthentication> {
+  }): Promise<AuthenticationAttribute> {
     const { user, refresh } = params
+    const expiresIn = moment()
+      .add(process.env.JWT_TTL, 'milliseconds')
+      .toISOString()
+    const expiresRefreshIn = moment()
+      .add(process.env.JWT_REFRESH_TTL, 'milliseconds')
+      .toISOString()
 
     const partialUserProperties: Partial<UserEntity> = pick(
       user,
@@ -47,7 +54,7 @@ export class AuthService extends BaseService {
     )
     const token = this.jwtService.sign(partialUserProperties)
 
-    if (refresh === false) {
+    if (refresh === true) {
       const refreshToken = this.jwtService.sign(partialUserProperties, {
         secret: process.env.APP_KEY,
         expiresIn: process.env.JWT_REFRESH_TTL,
@@ -61,14 +68,14 @@ export class AuthService extends BaseService {
 
       return {
         token,
-        expiresIn: process.env.JWT_TTL,
+        expiresIn,
         refreshToken,
-        expiresRefreshIn: process.env.JWT_REFRESH_TTL,
+        expiresRefreshIn,
       }
     } else {
       return {
         token,
-        expiresIn: process.env.JWT_TTL,
+        expiresIn,
       }
     }
   }
@@ -78,9 +85,9 @@ export class AuthService extends BaseService {
    *
    * @param params UserRegisterDto
    *
-   * @returns AttributeAuthentication
+   * @returns AuthenticationAttribute
    */
-  async register(params: UserRegisterDto): Promise<AttributeAuthentication> {
+  async register(params: UserRegisterDto): Promise<AuthenticationAttribute> {
     const user = await this.userService.saveUser({
       data: params,
     })
@@ -93,9 +100,9 @@ export class AuthService extends BaseService {
    *
    * @param params UserLoginDto
    *
-   * @returns AttributeAuthentication
+   * @returns AuthenticationAttribute
    */
-  async login(params: UserLoginDto): Promise<AttributeAuthentication> {
+  async login(params: UserLoginDto): Promise<AuthenticationAttribute> {
     const { email, password } = params
 
     const user: Partial<UserEntity> = await this.userService.firstOrFail({
@@ -122,7 +129,7 @@ export class AuthService extends BaseService {
    *
    * @param params UserLoginDto
    *
-   * @returns AttributeAuthentication
+   * @returns AuthenticationAttribute
    */
   async googleLogin(params: LoginGoogleDto) {
     const { idToken } = params
@@ -196,11 +203,11 @@ export class AuthService extends BaseService {
    *
    * @param param.refreshToken
    *
-   * @returns AttributeAuthentication
+   * @returns AuthenticationAttribute
    */
   async refresh(param: {
     refreshToken: string
-  }): Promise<AttributeAuthentication> {
+  }): Promise<AuthenticationAttribute> {
     const { refreshToken } = param
 
     try {
