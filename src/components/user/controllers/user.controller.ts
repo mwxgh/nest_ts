@@ -2,7 +2,6 @@ import { Auth } from '@authModule/decorators/auth.decorator'
 import { JwtAuthGuard } from '@authModule/guards/jwtAuth.guard'
 import { SendInviteUserLinkNotification } from '@authModule/notifications/sendInviteUserLink.notification'
 import {
-  BadRequestException,
   Body,
   Controller,
   Get,
