@@ -24,6 +24,7 @@ import {
 } from '../interfaces/response.interface'
 import { PrimitiveService } from './primitive.service'
 import { defaultPaginationOption } from '@shared/utils/defaultPaginationOption.util'
+import Messages from '@shared/message/message'
 
 /**
  * Base service
@@ -205,8 +206,16 @@ export class BaseService extends PrimitiveService {
   async checkExisting(options: FindOneOptions): Promise<void> {
     const items = await this.repository.find({ ...options, ...{ take: 1 } })
 
+    const properties = Object.keys(options.where)
+    const data = properties.length > 0 ? properties.join('or') : 'data'
+
     if (Array.isArray(items) && items.length !== 0) {
-      throw new ConflictException('Data existing')
+      throw new ConflictException(
+        this.getMessage({
+          message: Messages.errorsOperation.conflict,
+          keywords: [data],
+        }),
+      )
     }
   }
 

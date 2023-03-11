@@ -59,11 +59,7 @@ export class TagController {
   @ApiOperation({ summary: 'Admin create new tag' })
   @ApiOkResponse({ description: 'New tag entity' })
   async createTag(@Body() data: CreateTagDto): Promise<SuccessfullyOperation> {
-    await this.tagService.checkExisting({
-      where: {
-        name: data.name,
-      },
-    })
+    await this.tagService.checkExisting({ where: { name: data.name } })
 
     await this.tagService.save(data)
 

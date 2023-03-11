@@ -30,22 +30,6 @@ export class UserService extends BaseService {
   }
 
   /**
-   * Check email exist
-   * @param email string
-   */
-  async emailExist(email: string): Promise<boolean> {
-    return (await this.repository.count({ where: { email } })) > 0
-  }
-
-  /**
-   * Check username exist
-   * @param username string
-   */
-  async usernameExist(username: string): Promise<boolean> {
-    return (await this.repository.count({ where: { username } })) > 0
-  }
-
-  /**
    * Check identifier
    *
    * @param email string
@@ -53,26 +37,10 @@ export class UserService extends BaseService {
    */
   async checkIdentifier(email?: string, username?: string): Promise<void> {
     if (email) {
-      const count = await this.emailExist(email)
-      if (count) {
-        throw new ConflictException(
-          this.getMessage({
-            message: Messages.errorsOperation.conflict,
-            keywords: ['Email', `${email}`],
-          }),
-        )
-      }
+      await this.checkExisting({ where: { email } })
     }
     if (username) {
-      const count = await this.usernameExist(username)
-      if (count) {
-        throw new ConflictException(
-          this.getMessage({
-            message: Messages.errorsOperation.conflict,
-            keywords: ['Username', `${username}`],
-          }),
-        )
-      }
+      await this.checkExisting({ where: { username } })
     }
   }
 

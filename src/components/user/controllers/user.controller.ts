@@ -209,8 +209,8 @@ export class UserController {
 
     return this.response.success({
       message: this.primitiveService.getMessage({
-        message: Messages.successfullyOperation.updatePassword,
-        keywords: ['password', 'user'],
+        message: Messages.successfullyOperation.update,
+        keywords: ['password'],
       }),
     })
   }
@@ -256,11 +256,7 @@ export class UserController {
   async inviteUser(@Req() request: Request): Promise<SuccessfullyOperation> {
     const data = (request as any).body
 
-    const check = await this.userService.emailExist(data.email)
-
-    if (check) {
-      throw new BadRequestException('User is exist in system')
-    }
+    await this.userService.checkExisting({ where: { email: data.email } })
 
     const user: UserEntity = await this.userService.create(
       pick(data, ['email']),
