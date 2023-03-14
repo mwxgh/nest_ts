@@ -25,6 +25,7 @@ export abstract class BaseTimeStampEntity extends IdEntity {
   })
   public updatedAt: Date
 }
+
 export abstract class TimeStampEntity extends BaseTimeStampEntity {
   @DeleteDateColumn({ type: 'timestamp', precision: null })
   public deletedAt: Date

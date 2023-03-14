@@ -9,11 +9,12 @@ import {
 } from '../entities/categoryAble.entity'
 import { CategoryAbleRepository } from '../repositories/categoryAble.repository'
 import { CategoryService } from './category.service'
+import { Entity } from '@shared/interfaces/response.interface'
 
 @Injectable()
 export class CategoryAbleService extends BaseService {
-  public categoryAbleRepository: Repository<any>
-  public entity: any = CategoryAbleEntity
+  public categoryAbleRepository: Repository<CategoryAbleEntity>
+  public entity: Entity = CategoryAbleEntity
   constructor(
     private connection: Connection,
     private categoryService: CategoryService,

@@ -5,11 +5,12 @@ import { Connection, Repository, SelectQueryBuilder } from 'typeorm'
 import { CategoryEntity } from '../entities/category.entity'
 import { CategoryAbleType } from '../entities/categoryAble.entity'
 import { CategoryRepository } from '../repositories/category.repository'
+import { Entity } from '@shared/interfaces/response.interface'
 
 @Injectable()
 export class CategoryService extends BaseService {
-  public repository: Repository<any>
-  public entity: any = CategoryEntity
+  public repository: Repository<CategoryEntity>
+  public entity: Entity = CategoryEntity
 
   constructor(private connection: Connection) {
     super()

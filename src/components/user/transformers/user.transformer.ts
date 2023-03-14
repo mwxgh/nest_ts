@@ -1,9 +1,10 @@
 import { RoleTransformer } from '@authModule/transformers/role.transformer'
 import { Transformer } from '@shared/transformers/transformer'
 import { UserEntity } from '../entities/user.entity'
+import { Entity, ResponseEntity } from '@shared/interfaces/response.interface'
 
 export class UserTransformer extends Transformer {
-  transform(model: UserEntity): any {
+  transform(model: UserEntity): ResponseEntity {
     return {
       id: model.id,
       email: model.email,
@@ -21,7 +22,7 @@ export class UserTransformer extends Transformer {
     }
   }
 
-  includeRoles(model: UserEntity): any {
+  includeRoles(model: UserEntity): Entity[] {
     return this.collection(model.roles, new RoleTransformer())
   }
 }

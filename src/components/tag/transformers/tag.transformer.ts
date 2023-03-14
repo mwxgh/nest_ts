@@ -1,8 +1,9 @@
 import { Transformer } from '@shared/transformers/transformer'
 import { TagEntity } from '../entities/tag.entity'
+import { ResponseEntity } from '@shared/interfaces/response.interface'
 
 export class TagTransformer extends Transformer {
-  transform(model: TagEntity): any {
+  transform(model: TagEntity): ResponseEntity {
     if (!model.tagAbles) {
       return model
     } else {

@@ -1,9 +1,10 @@
 import { Transformer } from '@shared/transformers/transformer'
 import { RoleEntity } from '../entities/role.entity'
 import { PermissionTransformer } from './permission.transformer'
+import { Entity, ResponseEntity } from '@shared/interfaces/response.interface'
 
 export class RoleTransformer extends Transformer {
-  transform(model) {
+  transform(model: RoleEntity): ResponseEntity {
     return {
       id: model.id,
       name: model.name,
@@ -14,7 +15,7 @@ export class RoleTransformer extends Transformer {
       deletedAt: model.deletedAt,
     }
   }
-  includePermissions(model: RoleEntity): any {
+  includePermissions(model: RoleEntity): Entity[] {
     return this.collection(model.permissions, new PermissionTransformer())
   }
 }

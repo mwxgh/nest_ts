@@ -104,7 +104,7 @@ export interface GetListPaginationResponse {
   /**
    * Data for response
    */
-  data: ResponseEntity[]
+  data: GetListResponse
   /**
    * Paginator meta
    */

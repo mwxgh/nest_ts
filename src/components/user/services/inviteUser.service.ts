@@ -1,14 +1,15 @@
 import { PasswordResetEntity } from '@authModule/entities/passwordReset.entity'
 import { PasswordResetRepository } from '@authModule/repositories/passwordReset.repository'
 import { Injectable } from '@nestjs/common'
+import { Entity } from '@shared/interfaces/response.interface'
 import { BaseService } from '@sharedServices/base.service'
 import { HashService } from '@sharedServices/hash/hash.service'
 import { Connection, Repository } from 'typeorm'
 
 @Injectable()
 export class InviteUserService extends BaseService {
-  public repository: Repository<any>
-  public entity: any = PasswordResetEntity
+  public repository: Repository<PasswordResetEntity>
+  public entity: Entity = PasswordResetEntity
 
   constructor(
     private connection: Connection,
@@ -23,7 +24,7 @@ export class InviteUserService extends BaseService {
    *
    * @param email string
    */
-  async expire(token: string): Promise<any> {
+  async expire(token: string): Promise<void> {
     await this.repository
       .createQueryBuilder('passwordReset')
       .update(this.entity)
@@ -37,7 +38,7 @@ export class InviteUserService extends BaseService {
    *
    * @param email string
    */
-  async expireAllToken(email: string): Promise<any> {
+  async expireAllToken(email: string): Promise<void> {
     await this.repository
       .createQueryBuilder('passwordReset')
       .update(this.entity)

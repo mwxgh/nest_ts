@@ -1,8 +1,9 @@
 import { Transformer } from '@shared/transformers/transformer'
 import { ContactEntity } from '../entities/contact.entity'
+import { ResponseEntity } from '@shared/interfaces/response.interface'
 
 export class ContactTransformer extends Transformer {
-  transform(contact: ContactEntity): any {
+  transform(contact: ContactEntity): ResponseEntity {
     return {
       id: contact.id,
       name: contact.name,

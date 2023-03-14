@@ -8,10 +8,10 @@ export enum BaseAbleType {
   post = 'POST',
 }
 
-export const SortByProperties = {
-  UPDATED_AT: 'updatedAt',
-  CREATED_AT: 'createdAt',
-} as const
+export enum SortByProperties {
+  UPDATED_AT = 'updatedAt',
+  CREATED_AT = 'createdAt',
+}
 
 export const DEFAULT_SORT_BY = SortByProperties.UPDATED_AT
 

@@ -16,11 +16,12 @@ import { Connection, Repository, SelectQueryBuilder } from 'typeorm'
 import { CreatePostDto, UpdatePostDto } from '../dto/post.dto'
 import { JoinPostAbleType, PostEntity } from '../entities/post.entity'
 import { PostRepository } from '../repositories/post.repository'
+import { Entity } from '@shared/interfaces/response.interface'
 
 @Injectable()
 export class PostService extends BaseService {
-  public repository: Repository<any>
-  public entity: any = PostEntity
+  public repository: Repository<PostEntity>
+  public entity: Entity = PostEntity
 
   constructor(
     private connection: Connection,

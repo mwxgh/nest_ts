@@ -3,11 +3,12 @@ import { BaseService } from '@sharedServices/base.service'
 import { Connection, Repository, SelectQueryBuilder } from 'typeorm'
 import { CommentEntity, JoinCommentAble } from '../entities/comment.entity'
 import { CommentRepository } from '../repositories/comment.repository'
+import { Entity } from '@shared/interfaces/response.interface'
 
 @Injectable()
 export class CommentService extends BaseService {
-  public repository: Repository<any>
-  public entity: any = CommentEntity
+  public repository: Repository<CommentEntity>
+  public entity: Entity = CommentEntity
   constructor(private connection: Connection, private post: Connection) {
     super()
     this.repository = this.connection.getCustomRepository(CommentRepository)

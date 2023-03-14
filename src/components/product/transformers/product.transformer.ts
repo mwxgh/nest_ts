@@ -3,9 +3,10 @@ import { CommentTransformer } from '@commentModule/transformers/comment.transfor
 import { ImageTransformer } from '@imageModule/transformers/image.transformer'
 import { Transformer } from '@shared/transformers/transformer'
 import { ProductEntity } from '../entities/product.entity'
+import { Entity, ResponseEntity } from '@shared/interfaces/response.interface'
 
 export class ProductTransformer extends Transformer {
-  transform(model: ProductEntity): any {
+  transform(model: ProductEntity): ResponseEntity {
     return {
       id: model.id,
       name: model.name,
@@ -18,15 +19,15 @@ export class ProductTransformer extends Transformer {
     }
   }
 
-  includeImages(model): any {
+  includeImages(model: ProductEntity): Entity[] {
     return this.collection(model.images, new ImageTransformer())
   }
 
-  includeCategories(model): any {
+  includeCategories(model: ProductEntity): Entity[] {
     return this.collection(model.categories, new CategoryAbleTransformer())
   }
 
-  includeComments(model): any {
+  includeComments(model: ProductEntity): Entity[] {
     return this.collection(model.comments, new CommentTransformer())
   }
 }

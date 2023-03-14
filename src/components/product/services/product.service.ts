@@ -15,11 +15,12 @@ import { Connection, Repository, SelectQueryBuilder } from 'typeorm'
 import { CreateProductDto, UpdateProductDto } from '../dto/product.dto'
 import { ProductEntity } from '../entities/product.entity'
 import { ProductRepository } from '../repositories/product.repository'
+import { Entity } from '@shared/interfaces/response.interface'
 
 @Injectable()
 export class ProductService extends BaseService {
-  public repository: Repository<any>
-  public entity: any = ProductEntity
+  public repository: Repository<ProductEntity>
+  public entity: Entity = ProductEntity
 
   constructor(
     private connection: Connection,

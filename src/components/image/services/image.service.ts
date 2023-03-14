@@ -6,11 +6,12 @@ import { Connection, Repository } from 'typeorm'
 import { CreateImageDto, UpdateImageDto } from '../dto/image.dto'
 import { ImageEntity } from '../entities/image.entity'
 import { ImageRepository } from '../repositories/image.repository'
+import { Entity } from '@shared/interfaces/response.interface'
 
 @Injectable()
 export class ImageService extends BaseService {
-  public repository: Repository<any>
-  public entity: any = ImageEntity
+  public repository: Repository<ImageEntity>
+  public entity: Entity = ImageEntity
 
   constructor(private connection: Connection) {
     super()

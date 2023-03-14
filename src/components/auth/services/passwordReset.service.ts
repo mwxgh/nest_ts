@@ -4,11 +4,12 @@ import { HashService } from '@sharedServices/hash/hash.service'
 import { Connection, Repository } from 'typeorm'
 import { PasswordResetEntity } from '../entities/passwordReset.entity'
 import { PasswordResetRepository } from '../repositories/passwordReset.repository'
+import { Entity } from '@shared/interfaces/response.interface'
 
 @Injectable()
 export class PasswordResetService extends BaseService {
-  public repository: Repository<any>
-  public entity: any = PasswordResetEntity
+  public repository: Repository<PasswordResetEntity>
+  public entity: Entity = PasswordResetEntity
 
   constructor(
     private connection: Connection,
@@ -23,7 +24,7 @@ export class PasswordResetService extends BaseService {
    *
    * @param token string
    */
-  async expire(token: string): Promise<any> {
+  async expire(token: string): Promise<void> {
     await this.repository
       .createQueryBuilder('passwordReset')
       .update(this.entity)
@@ -37,7 +38,7 @@ export class PasswordResetService extends BaseService {
    *
    * @param token string
    */
-  async expireAllToken(email: string): Promise<any> {
+  async expireAllToken(email: string): Promise<void> {
     await this.repository
       .createQueryBuilder('passwordReset')
       .update(this.entity)
@@ -65,7 +66,7 @@ export class PasswordResetService extends BaseService {
    * @param entity
    */
   isExpired(entity: PasswordResetEntity): boolean {
-    const current_time = new Date()
-    return current_time > new Date(entity.expire)
+    const currentTime = new Date()
+    return currentTime > new Date(entity.expire)
   }
 }

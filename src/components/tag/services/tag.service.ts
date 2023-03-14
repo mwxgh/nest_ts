@@ -4,11 +4,12 @@ import { BaseService } from '@sharedServices/base.service'
 import { Connection, Repository } from 'typeorm'
 import { TagEntity } from '../entities/tag.entity'
 import { TagRepository } from '../repositories/tag.repository'
+import { Entity } from '@shared/interfaces/response.interface'
 
 @Injectable()
 export class TagService extends BaseService {
-  public repository: Repository<any>
-  public entity: any = TagEntity
+  public repository: Repository<TagEntity>
+  public entity: Entity = TagEntity
   constructor(private connection: Connection) {
     super()
     this.repository = this.connection.getCustomRepository(TagRepository)

@@ -6,11 +6,12 @@ import { TagEntity } from '../entities/tag.entity'
 import { TagAbleEntity, TagAbleType } from '../entities/tagAble.entity'
 import { TagAbleRepository } from '../repositories/tagAble.repository'
 import { TagService } from './tag.service'
+import { Entity } from '@shared/interfaces/response.interface'
 
 @Injectable()
 export class TagAbleService extends BaseService {
-  public tagAbleRepository: Repository<any>
-  public entity: any = TagAbleEntity
+  public tagAbleRepository: Repository<TagAbleEntity>
+  public entity: Entity = TagAbleEntity
   constructor(private connection: Connection, private tagService: TagService) {
     super()
     this.tagAbleRepository =

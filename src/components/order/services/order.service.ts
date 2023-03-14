@@ -4,11 +4,12 @@ import { BaseService } from '@sharedServices/base.service'
 import { Connection, Repository } from 'typeorm'
 import { OrderEntity } from '../entities/order.entity'
 import { OrderRepository } from '../repositories/order.repository'
+import { Entity } from '@shared/interfaces/response.interface'
 
 @Injectable()
 export class OrderService extends BaseService {
-  public repository: Repository<any>
-  public entity: any = OrderEntity
+  public repository: Repository<OrderEntity>
+  public entity: Entity = OrderEntity
 
   constructor(private connection: Connection) {
     super()

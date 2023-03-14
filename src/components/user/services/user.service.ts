@@ -12,11 +12,12 @@ import { Connection, Repository } from 'typeorm'
 import { CreateUserDto, UpdateUserDto } from '../dto/user.dto'
 import { UserEntity } from '../entities/user.entity'
 import { UserRepository } from '../repositories/user.repository'
+import { Entity } from '@shared/interfaces/response.interface'
 
 @Injectable()
 export class UserService extends BaseService {
-  public repository: Repository<any>
-  public entity: any = UserEntity
+  public repository: Repository<UserEntity>
+  public entity: Entity = UserEntity
 
   constructor(
     private connection: Connection,

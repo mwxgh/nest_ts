@@ -14,34 +14,34 @@ export enum UserStatus {
 @Entity({ name: 'user' })
 export class UserEntity extends TimeStampEntity {
   @Column({ type: 'varchar', unique: true })
-  email: string
+  public email: string
 
   @Column({ type: 'varchar', unique: true })
-  username: string
+  public username: string
 
   @Column({ type: 'varchar' })
-  password: string
+  public password: string
 
   @Column({ type: 'varchar', default: '' })
-  firstName: string
+  public firstName: string
 
   @Column({ type: 'varchar', default: '' })
-  lastName: string
+  public lastName: string
 
   @Column({ type: 'enum', enum: UserStatus, default: UserStatus.active })
-  status: UserStatus
+  public status: UserStatus
 
   @Column({ type: 'varchar' })
-  socketId: string
+  public socketId: string
 
   @Column({ type: 'varchar' })
-  refreshToken: string
+  public refreshToken: string
 
   @Column({ type: 'varchar', default: '' })
-  verifyToken: string
+  public verifyToken: string
 
   @Column({ type: 'boolean', default: false })
-  verified: boolean
+  public verified: boolean
 
   @Column({ type: 'timestamp' })
   public verifiedAt: Date
@@ -65,6 +65,10 @@ export class UserEntity extends TimeStampEntity {
 
   getEmail(): string {
     return this.email
+  }
+
+  getUsername(): string {
+    return this.username
   }
 
   generateVerifyEmailLink(baseUrl: string): string {

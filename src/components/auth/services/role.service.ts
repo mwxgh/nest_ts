@@ -5,11 +5,12 @@ import { RoleEntity } from '../entities/role.entity'
 import { RoleRepository } from '../repositories/role.repository'
 import { CreateRoleDto, UpdateRoleDto } from '@authModule/dto/role.dto'
 import { pick } from 'lodash'
+import { Entity } from '@shared/interfaces/response.interface'
 
 @Injectable()
 export class RoleService extends BaseService {
-  public repository: Repository<any>
-  public entity: any = RoleEntity
+  public repository: Repository<RoleEntity>
+  public entity: Entity = RoleEntity
 
   constructor(private connection: Connection) {
     super()

@@ -34,7 +34,7 @@ function CustomFilesInterceptor(
 
       const multerOptions: MulterOptions = {
         storage: diskStorage({
-          destination: (req: any, file: any, cb: any) => {
+          destination: (req, file: Express.Multer.File, cb) => {
             if (!existsSync(absoluteFileDestination)) {
               mkdirSync(absoluteFileDestination)
             }

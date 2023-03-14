@@ -6,11 +6,12 @@ import { ImageEntity } from '../entities/image.entity'
 import { ImageAbleEntity, ImageAbleType } from '../entities/imageAble.entity'
 import { ImageAbleRepository } from '../repositories/imageAble.repository'
 import { ImageService } from './image.service'
+import { Entity } from '@shared/interfaces/response.interface'
 
 @Injectable()
 export class ImageAbleService extends BaseService {
-  public imageAbleRepository: Repository<any>
-  public entity: any = ImageAbleEntity
+  public imageAbleRepository: Repository<ImageAbleEntity>
+  public entity: Entity = ImageAbleEntity
 
   constructor(
     private connection: Connection,

@@ -25,6 +25,7 @@ import { QueryManyDto } from '@shared/dto/queryParams.dto'
 import { IPaginationOptions } from '@shared/interfaces/request.interface'
 import {
   CreateResponse,
+  GetItemResponse,
   GetListPaginationResponse,
   GetListResponse,
   SuccessfullyOperation,
@@ -157,7 +158,9 @@ export class UserController {
   @Auth('admin')
   @ApiOperation({ summary: 'Admin get user by id' })
   @ApiOkResponse({ description: 'User entity' })
-  async readUser(@Param('id', ParseIntPipe) id: number): Promise<any> {
+  async readUser(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<GetItemResponse> {
     const user = await this.userService.findOneOrFail(id, {
       relations: ['roles'],
     })
@@ -253,7 +256,7 @@ export class UserController {
   @ApiOperation({ summary: 'Invite new user using system' })
   @ApiOkResponse({ description: 'Mail notification user' })
   async inviteUser(@Req() request: Request): Promise<SuccessfullyOperation> {
-    const data = (request as any).body
+    const { data } = request.body
 
     await this.userService.checkExisting({ where: { email: data.email } })
 

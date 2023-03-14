@@ -12,7 +12,7 @@ export default class UsersTableSeeder {
   constructor() {
     this.hashService = new HashService()
   }
-  async up(connection: Connection): Promise<any> {
+  async up(connection: Connection): Promise<void> {
     const roles = await connection.getRepository(RoleEntity).find()
 
     const seed = [
