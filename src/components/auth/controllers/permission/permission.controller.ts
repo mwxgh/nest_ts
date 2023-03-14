@@ -37,7 +37,6 @@ import {
   UpdateResponse,
 } from '@shared/interfaces/response.interface'
 import Messages from '@shared/message/message'
-import { PrimitiveService } from '@shared/services/primitive.service'
 import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.service'
 import { assign } from 'lodash'
 
@@ -53,7 +52,6 @@ export class PermissionController {
   constructor(
     private response: ApiResponseService,
     private permissionService: PermissionService,
-    private primitiveService: PrimitiveService,
   ) {}
 
   private entity = 'permission'
@@ -156,7 +154,7 @@ export class PermissionController {
     await this.permissionService.destroy(id)
 
     return this.response.success({
-      message: this.primitiveService.getMessage({
+      message: this.permissionService.getMessage({
         message: Messages.successfullyOperation.delete,
         keywords: [this.entity],
       }),

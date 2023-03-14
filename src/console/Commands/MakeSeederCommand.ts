@@ -39,7 +39,7 @@ export class MakeSeederCommand extends Command {
 // import { User } from '../../entities/user.entity'
 
 export default class ${seeder} {
-  async up(connection: Connection): Promise<any> {
+  async up(connection: Connection): Promise<void> {
     // const repository = connection.getCustomRepository(CustomRepository)
     // let items = [
     //   { name: 'Custom', slug: 'custom', type: 1 },
