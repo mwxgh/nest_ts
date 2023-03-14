@@ -2,7 +2,7 @@ import { AuthenticatedUser } from '@authModule/decorators/authenticatedUser.deco
 import { JwtAuthGuard } from '@authModule/guards/jwtAuth.guard'
 import { AuthenticationAttribute } from '@authModule/interfaces/auth.interface'
 import { AuthService } from '@authModule/services/auth.service'
-import { Body, Controller, Delete, Post, UseGuards } from '@nestjs/common'
+import { Body, Controller, Delete, Post, Req, UseGuards } from '@nestjs/common'
 import {
   ApiBearerAuth,
   ApiHeader,
@@ -13,7 +13,6 @@ import {
 import { SuccessfullyOperation } from '@shared/interfaces/response.interface'
 import Messages from '@shared/message/message'
 import { ApiResponseService } from '@shared/services/apiResponse/apiResponse.service'
-import { PrimitiveService } from '@shared/services/primitive.service'
 import { Me } from '@userModule/dto/user.dto'
 import {
   LoginGoogleDto,
@@ -21,6 +20,7 @@ import {
   UserLoginDto,
   UserRegisterDto,
 } from '../dto/auth.dto'
+import { Request } from 'express'
 
 @ApiTags('Auth')
 @ApiHeader({
@@ -32,7 +32,6 @@ export class AuthController {
   constructor(
     private authService: AuthService,
     private response: ApiResponseService,
-    private primitiveService: PrimitiveService,
   ) {}
 
   @Post('loginGoogle')
@@ -75,12 +74,13 @@ export class AuthController {
   @ApiOperation({ summary: 'Logout' })
   @ApiOkResponse({ description: 'Logout successfully' })
   async logout(
+    @Req() request: Request,
     @AuthenticatedUser() currentUser: Me,
   ): Promise<SuccessfullyOperation> {
-    await this.authService.logout(currentUser)
+    await this.authService.logout({ currentUser })
 
     return this.response.success({
-      message: this.primitiveService.getMessage({
+      message: this.authService.getMessage({
         message: Messages.successfullyOperation.logout,
       }),
     })

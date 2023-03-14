@@ -226,7 +226,7 @@ export class AuthService extends BaseService {
     }
   }
 
-  async logout(user: UserEntity) {
-    await this.userService.update(user.id, { refreshToken: null })
+  async logout({ currentUser }: { currentUser: UserEntity }) {
+    await this.userService.update(currentUser.id, { refreshToken: null })
   }
 }
