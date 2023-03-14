@@ -28,8 +28,27 @@
 
 ## Installation
 
+### Localize installation
+- Install package
 ```bash
 $ yarn
+```
+- Configuration environment
+```bash
+$ cp .env.example .env
+```
+- Configuration database
+```bash
+# make seeder
+$ yarn command make:seeder -n
+
+# make migration
+$ yarn migration:generate -n
+$ yarn migration:create -n
+
+# migrate
+$ yarn db:migrate
+$ yarn db:seed
 ```
 
 ## Running the app
