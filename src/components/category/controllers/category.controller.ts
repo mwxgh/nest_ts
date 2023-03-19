@@ -69,7 +69,7 @@ export class CategoryController {
     return this.response.success({
       message: this.primitiveService.getMessage({
         message: Messages.successfullyOperation.create,
-        keywords: ['category'],
+        keywords: [this.entity],
       }),
     })
   }
@@ -131,14 +131,14 @@ export class CategoryController {
     @Param('id', ParseIntPipe) id: number,
     @Body() data: UpdateCategoryDto,
   ): Promise<SuccessfullyOperation> {
-    await this.categoryService.findOneOrFail(id)
+    await this.categoryService.checkExisting({ where: id })
 
     await this.categoryService.update(id, data)
 
     return this.response.success({
       message: this.primitiveService.getMessage({
         message: Messages.successfullyOperation.update,
-        keywords: ['category'],
+        keywords: [this.entity],
       }),
     })
   }
@@ -150,7 +150,7 @@ export class CategoryController {
   async deleteCategory(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<SuccessfullyOperation> {
-    await this.categoryService.findOneOrFail(id)
+    await this.categoryService.checkExisting({ where: { id } })
 
     await this.categoryService.destroy(id)
 
@@ -159,7 +159,7 @@ export class CategoryController {
     return this.response.success({
       message: this.primitiveService.getMessage({
         message: Messages.successfullyOperation.delete,
-        keywords: ['category'],
+        keywords: [this.entity],
       }),
     })
   }

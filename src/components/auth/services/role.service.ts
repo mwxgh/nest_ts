@@ -29,9 +29,7 @@ export class RoleService extends BaseService {
    *
    * @return Role
    */
-  async saveRole(params: { data: CreateRoleDto }): Promise<RoleEntity> {
-    const { data } = params
-
+  async saveRole({ data }: { data: CreateRoleDto }): Promise<RoleEntity> {
     const saveRole: RoleEntity = await this.create({
       ...pick(data, ['name', 'level']),
       ...{
@@ -57,9 +55,9 @@ export class RoleService extends BaseService {
     id: number
     data: UpdateRoleDto
   }): Promise<RoleEntity> {
-    const existingRole: RoleEntity = await this.findOneOrFail(id)
+    await this.checkExisting({ where: { id } })
 
-    const updateRole = await this.update(existingRole.id, {
+    const updateRole = await this.update(id, {
       ...pick(data, ['name', 'level']),
       ...{
         slug: await this.generateSlug(data.name),

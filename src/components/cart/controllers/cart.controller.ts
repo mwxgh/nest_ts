@@ -78,7 +78,7 @@ export class CartController {
   async deleteCart(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<SuccessfullyOperation> {
-    await this.cartService.findOneOrFail(id)
+    await this.cartService.checkExisting({ where: { id } })
 
     await this.cartService.destroy(Number(id))
 

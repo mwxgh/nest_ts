@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Post,
   Put,
   Query,
@@ -65,20 +66,23 @@ export class AdminOrderController {
 
   @Put(':id')
   @ApiParam({ name: 'id' })
-  async update(@Param() params, @Body() data: UpdateOrderDto): Promise<any> {
-    await this.orderService.findOneOrFail(params.id)
+  async update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() data: UpdateOrderDto,
+  ): Promise<any> {
+    await this.orderService.checkExisting({ where: { id } })
 
-    await this.orderService.update(params.id, data)
+    await this.orderService.update(id, data)
 
     return this.response.success()
   }
 
   @Delete(':id')
   @ApiParam({ name: 'id' })
-  async remove(@Param() params): Promise<any> {
-    await this.orderService.findOneOrFail(params.id)
+  async remove(@Param('id', ParseIntPipe) id: number): Promise<any> {
+    await this.orderService.checkExisting({ where: { id } })
 
-    await this.orderService.destroy(params.id)
+    await this.orderService.destroy(id)
 
     return this.response.success()
   }

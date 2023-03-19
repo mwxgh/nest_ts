@@ -46,7 +46,7 @@ export class CartItemController {
       return this.response.success()
     }
 
-    await this.cartItemService.findOneOrFail(id)
+    await this.cartItemService.checkExisting({ where: { id } })
 
     const product: ProductEntity = await this.productService.findOneOrFail(
       body.productId,
@@ -64,7 +64,7 @@ export class CartItemController {
 
   @Delete(':id')
   async destroy(@Param('id', ParseIntPipe) id: number): Promise<any> {
-    await this.cartItemService.findOneOrFail(id)
+    await this.cartItemService.checkExisting({ where: { id } })
 
     await this.cartItemService.destroy(Number(id))
 

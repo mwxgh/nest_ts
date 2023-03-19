@@ -107,8 +107,13 @@ export class UserService extends BaseService {
    * @param params.userId userId
    * @param params.roleId roleId
    */
-  async attachRole(params: { userId: number; roleId: number }): Promise<void> {
-    const { userId, roleId } = params
+  async attachRole({
+    userId,
+    roleId,
+  }: {
+    userId: number
+    roleId: number
+  }): Promise<void> {
     const role: RoleEntity = await this.roleService.findOneOrFail(roleId)
 
     const user: UserEntity = await this.repository.findOneOrFail(userId)

@@ -126,7 +126,7 @@ export class TagController {
     @Param('id', ParseIntPipe) id: number,
     @Body() data: UpdateTagDto,
   ): Promise<SuccessfullyOperation> {
-    await this.tagService.findOneOrFail(id)
+    await this.tagService.checkExisting({ where: { id } })
 
     await this.tagService.update(id, { ...data, updatedAt: new Date() })
 
@@ -145,7 +145,7 @@ export class TagController {
   async deleteTag(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<SuccessfullyOperation> {
-    await this.tagService.findOneOrFail(id)
+    await this.tagService.checkExisting({ where: { id } })
 
     await this.tagAbleService.detachTagAble([{ tagId: id }])
 

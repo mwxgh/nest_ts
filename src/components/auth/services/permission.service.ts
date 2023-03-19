@@ -55,7 +55,7 @@ export class PermissionService extends BaseService {
     id: number
     data: UpdatePermissionDto
   }): Promise<PermissionEntity> {
-    await this.findOneOrFail(id)
+    await this.checkExisting({ where: { id } })
 
     const slug = await this.generateSlug(data.name)
 
@@ -70,7 +70,7 @@ export class PermissionService extends BaseService {
    * @return void
    */
   async deletePermission({ id }: { id: number }): Promise<void> {
-    await this.findOneOrFail(id)
+    await this.checkExisting({ where: { id } })
 
     await this.rolePermissionService.destroy({ permissionId: id })
 

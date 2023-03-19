@@ -56,7 +56,7 @@ export class OrderProductController {
 
   @Put()
   async update(@Body() data: UpdateOrderProductDto): Promise<any> {
-    await this.orderService.findOneOrFail(data.orderId)
+    await this.orderService.checkExisting({ where: { id: data.orderId } })
 
     const list_order = await getCustomRepository(OrderProductRepository)
       .createQueryBuilder('orderProducts')

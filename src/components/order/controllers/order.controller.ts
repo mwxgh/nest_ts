@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common'
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+  Put,
+} from '@nestjs/common'
 import { ApiHeader, ApiParam, ApiTags } from '@nestjs/swagger'
 import { CreateResponse } from '@shared/interfaces/response.interface'
 import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.service'
@@ -32,11 +40,14 @@ export class OrderController {
 
   @Put(':id')
   @ApiParam({ name: 'id' })
-  async update(@Param() params, @Body() data: UpdateOrderDto): Promise<any> {
-    await this.orderService.findOneOrFail(params.id)
+  async update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() data: UpdateOrderDto,
+  ): Promise<any> {
+    await this.orderService.checkExisting({ where: { id } })
 
-    await this.orderService.update(params.id, data)
+    await this.orderService.update(id, data)
 
-    return await this.response.success()
+    return this.response.success()
   }
 }

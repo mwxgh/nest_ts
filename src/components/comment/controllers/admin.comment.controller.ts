@@ -112,7 +112,7 @@ export class AdminCommentController {
     @Param('id', ParseIntPipe) id: number,
     @Body() body: UpdateCommentDto,
   ): Promise<SuccessfullyOperation> {
-    await this.commentService.findOneOrFail(id)
+    await this.commentService.checkExisting({ where: { id } })
 
     await this.commentService.update(id, body)
 
