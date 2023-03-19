@@ -2,10 +2,9 @@ import {
   ResetPasswordDto,
   SendResetLinkDto,
 } from '@authModule/dto/forgotPassword.dto'
-import { PasswordResetEntity } from '@authModule/entities/passwordReset.entity'
 import { SendResetLinkNotification } from '@authModule/notifications/sendResetLink.notification'
 import { PasswordResetService } from '@authModule/services/passwordReset.service'
-import { BadRequestException, Body, Controller, Post } from '@nestjs/common'
+import { Body, Controller, Post } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import {
   ApiBadRequestResponse,
@@ -15,12 +14,12 @@ import {
   ApiTags,
 } from '@nestjs/swagger'
 import {
-  GetItemResponse,
+  ResponseEntity,
   SuccessfullyOperation,
 } from '@shared/interfaces/response.interface'
+import Messages from '@shared/message/message'
 import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.service'
 import { NotificationService } from '@sharedServices/notification/notification.service'
-import { UserEntity } from '@userModule/entities/user.entity'
 import { UserService } from '@userModule/services/user.service'
 import { UserTransformer } from '@userModule/transformers/user.transformer'
 
@@ -45,52 +44,36 @@ export class ForgotPasswordController {
   async sendResetLinkEmail(
     @Body() data: SendResetLinkDto,
   ): Promise<SuccessfullyOperation> {
-    const { email } = data
-
-    const user: UserEntity = await this.userService.firstOrFail({
-      where: { email: this.userService.sanitize(email) },
-    })
-
-    await this.passwordResetService.expireAllToken(user.email)
-
-    const password_reset = await this.passwordResetService.generate(user.email)
+    const [user, passwordReset] =
+      await this.passwordResetService.requestResetPassword({
+        email: data.email,
+      })
 
     await this.notificationService.send(
       user,
       new SendResetLinkNotification(
-        password_reset,
+        passwordReset,
         this.configService.get('FRONTEND_URL'),
       ),
     )
 
-    return this.response.success()
+    return this.response.success({
+      message: this.passwordResetService.getMessage({
+        message: Messages.successfullyOperation.sent,
+        keywords: ['reset password'],
+      }),
+    })
   }
 
   @Post('resetPassword')
   @ApiOperation({ summary: 'Reset password' })
   @ApiOkResponse({ description: 'Reset password successfully' })
   @ApiBadRequestResponse({ description: 'Token is expired' })
-  async resetPassword(
-    @Body() data: ResetPasswordDto,
-  ): Promise<GetItemResponse> {
-    const { token, password } = data
-
-    const passwordReset: PasswordResetEntity =
-      await this.passwordResetService.firstOrFail({
-        where: { token },
-      })
-
-    if (this.passwordResetService.isExpired(passwordReset)) {
-      throw new BadRequestException('Token is expired')
-    }
-
-    await this.passwordResetService.expire(token)
-
-    const user: UserEntity = await this.userService.firstOrFail({
-      where: { email: passwordReset.email },
+  async resetPassword(@Body() data: ResetPasswordDto): Promise<ResponseEntity> {
+    const user = await this.passwordResetService.resetPassword({
+      token: data.token,
+      password: data.password,
     })
-
-    await this.userService.changePassword(user.id, password)
 
     return this.response.item(user, new UserTransformer())
   }

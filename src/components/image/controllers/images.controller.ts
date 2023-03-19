@@ -132,8 +132,6 @@ export class ImageController {
     @Param('id', ParseIntPipe) id: number,
     @Body() data: UpdateImageDto,
   ): Promise<ImageEntity> {
-    console.log('controller_____')
-
     return this.imageService.updateImage({ id, data })
   }
 

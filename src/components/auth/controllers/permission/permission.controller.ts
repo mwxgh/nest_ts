@@ -38,7 +38,6 @@ import {
 } from '@shared/interfaces/response.interface'
 import Messages from '@shared/message/message'
 import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.service'
-import { assign } from 'lodash'
 
 @ApiTags('Permissions')
 @ApiHeader({
@@ -61,14 +60,10 @@ export class PermissionController {
   @Auth('admin')
   @ApiOperation({ summary: 'Admin create new permission' })
   @ApiOkResponse({ description: 'New permission entity' })
-  async createPermission(
+  async savePermission(
     @Body() data: CreatePermissionDto,
   ): Promise<CreateResponse> {
-    const slug = await this.permissionService.generateSlug(data.name)
-
-    const permission = await this.permissionService.create(
-      assign(data, { slug: slug }),
-    )
+    const permission = await this.permissionService.savePermission({ data })
 
     return this.response.item(permission, new PermissionTransformer())
   }
@@ -130,14 +125,10 @@ export class PermissionController {
     @Param('id', ParseIntPipe) id: number,
     @Body() data: UpdatePermissionDto,
   ): Promise<UpdateResponse> {
-    await this.permissionService.findOneOrFail(id)
-
-    const slug = await this.permissionService.generateSlug(data.name)
-
-    const permission = await this.permissionService.update(
+    const permission = await this.permissionService.updatePermission({
       id,
-      assign(data, { slug: slug }),
-    )
+      data,
+    })
 
     return this.response.item(permission, new PermissionTransformer())
   }
@@ -149,9 +140,7 @@ export class PermissionController {
   async delete(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<SuccessfullyOperation> {
-    await this.permissionService.findOneOrFail(id)
-
-    await this.permissionService.destroy(id)
+    await this.permissionService.deletePermission({ id })
 
     return this.response.success({
       message: this.permissionService.getMessage({

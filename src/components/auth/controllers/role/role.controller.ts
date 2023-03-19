@@ -1,10 +1,9 @@
 import { Auth } from '@authModule/decorators/auth.decorator'
+import { AuthenticatedUser } from '@authModule/decorators/authenticatedUser.decorator'
 import { CreateRoleDto, UpdateRoleDto } from '@authModule/dto/role.dto'
 import { RoleEntity } from '@authModule/entities/role.entity'
-import { RolePermissionEntity } from '@authModule/entities/rolePermission.entity'
 import { JwtAuthGuard } from '@authModule/guards/jwtAuth.guard'
 import { RoleService } from '@authModule/services/role.service'
-import { RolePermissionService } from '@authModule/services/rolePermission.service'
 import { RoleTransformer } from '@authModule/transformers/role.transformer'
 import {
   Body,
@@ -36,8 +35,8 @@ import {
   UpdateResponse,
 } from '@shared/interfaces/response.interface'
 import Messages from '@shared/message/message'
-import { PrimitiveService } from '@shared/services/primitive.service'
 import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.service'
+import { Me } from '@userModule/dto/user.dto'
 import { isNil } from 'lodash'
 import { SelectQueryBuilder } from 'typeorm'
 
@@ -53,8 +52,6 @@ export class RoleController {
   constructor(
     private response: ApiResponseService,
     private roleService: RoleService,
-    private rolePermissionService: RolePermissionService,
-    private primitiveService: PrimitiveService,
   ) {}
 
   private entity = 'role'
@@ -94,11 +91,10 @@ export class RoleController {
     if (!isNil(includes)) {
       const includesParams = Array.isArray(includes) ? includes : [includes]
 
-      joinAndSelects =
-        this.primitiveService.convertIncludesParamToJoinAndSelects({
-          includesParams,
-          relations: this.relations,
-        })
+      joinAndSelects = this.roleService.convertIncludesParamToJoinAndSelects({
+        includesParams,
+        relations: this.relations,
+      })
 
       if (joinAndSelects.length > 0) {
         joinAndSelects.forEach((joinAndSelect) => {
@@ -169,23 +165,13 @@ export class RoleController {
   @ApiOperation({ summary: 'Admin delete role by id' })
   @ApiOkResponse({ description: 'Delete role successfully' })
   async deleteRole(
+    @AuthenticatedUser() currentUser: Me,
     @Param('id', ParseIntPipe) id: number,
   ): Promise<SuccessfullyOperation> {
-    await this.roleService.findOneOrFail(id)
-
-    await this.roleService.destroy(id)
-
-    const rolePermissions: RolePermissionEntity[] =
-      await this.rolePermissionService.findWhere({ roleId: id })
-
-    const rolePermissionIds: number[] = rolePermissions.map(
-      (rolePermission) => rolePermission.id,
-    )
-
-    await this.rolePermissionService.destroy(rolePermissionIds)
+    await this.roleService.deleteRole({ id, currentUser })
 
     return this.response.success({
-      message: this.primitiveService.getMessage({
+      message: this.roleService.getMessage({
         message: Messages.successfullyOperation.delete,
         keywords: [this.entity],
       }),

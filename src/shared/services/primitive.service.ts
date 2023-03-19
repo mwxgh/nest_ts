@@ -109,6 +109,14 @@ export class PrimitiveService {
   }
 
   /**
+   * Sanitize data
+   * @param data string
+   */
+  sanitize(data: string): string {
+    return data.toLowerCase().trim()
+  }
+
+  /**
    * Get character from ASCII match criteria
    * ASCII table : https://www.asciitable.com/
    * - ...rest: { from: number; range: number }[] to accept element params instead of array

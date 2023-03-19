@@ -1,11 +1,11 @@
-import { Column, Entity } from 'typeorm'
+import { Entity, PrimaryColumn } from 'typeorm'
 import { IdEntity } from '../../../shared/entities/base.entity'
 
 @Entity({ name: 'rolePermission' })
-export class RolePermissionEntity extends IdEntity {
-  @Column()
+export class RolePermissionEntity {
+  @PrimaryColumn()
   roleId: number
 
-  @Column()
+  @PrimaryColumn()
   permissionId: number
 }

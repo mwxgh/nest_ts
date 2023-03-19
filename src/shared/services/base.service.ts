@@ -4,8 +4,10 @@ import {
   NotFoundException,
 } from '@nestjs/common'
 import {
+  FindConditions,
   FindManyOptions,
   FindOneOptions,
+  ObjectID,
   Repository,
   SelectQueryBuilder,
   getManager,
@@ -398,7 +400,16 @@ export class BaseService extends PrimitiveService {
    * @param criteria string | string[] | number | number[]
    */
   async destroy(
-    criteria: string | string[] | number | number[],
+    criteria:
+      | string
+      | string[]
+      | number
+      | number[]
+      | Date
+      | Date[]
+      | ObjectID
+      | ObjectID[]
+      | FindConditions<Entity>,
   ): Promise<void> {
     await this.repository.delete(criteria)
   }

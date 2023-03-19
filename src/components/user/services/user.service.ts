@@ -46,6 +46,7 @@ export class UserService extends BaseService {
 
   /**
    * Generate verify token
+   *
    * @param id number
    */
   async generateVerifyToken(id: number): Promise<boolean> {
@@ -59,6 +60,7 @@ export class UserService extends BaseService {
 
   /**
    * Verify identifier
+   *
    * @param id number
    */
   async verify(id: number): Promise<UserEntity> {
@@ -69,14 +71,6 @@ export class UserService extends BaseService {
     })
 
     return item
-  }
-
-  /**
-   * Sanitize data
-   * @param data string
-   */
-  sanitize(data: string): string {
-    return data.toLowerCase().trim()
   }
 
   /**
@@ -145,16 +139,10 @@ export class UserService extends BaseService {
     const user: UserEntity = await this.repository.findOneOrFail(userId)
 
     if (role && user) {
-      const userRole: UserRoleEntity = await this.userRoleService.firstOrFail({
-        where: {
-          userId: user.id,
-          roleId: role.id,
-        },
+      await this.userRoleService.destroy({
+        userId: user.id,
+        roleId: role.id,
       })
-
-      if (userRole) {
-        await this.userRoleService.destroy(userRole.id)
-      }
     }
   }
 
