@@ -201,11 +201,31 @@ export class BaseService extends PrimitiveService {
   }
 
   /**
-   * Execute the query and get the first result and throw a conflict exception
+   * Return number of record that match criteria
+   *
+   * @param options
+   *
+   * @returns number record by option
+   */
+  async checkExisting(options: FindManyOptions): Promise<void> {
+    const count = await this.count(options)
+
+    if (count === 0) {
+      throw new NotFoundException(
+        this.getMessage({
+          message: Messages.errorsOperation.notExist,
+          keywords: [this.repository.metadata.tableName],
+        }),
+      )
+    }
+  }
+
+  /**
+   * Check conflict data get the first result and throw a conflict exception
    *
    * @param options FindOneOptions
    */
-  async checkExisting(options: FindOneOptions): Promise<void> {
+  async checkConflict(options: FindOneOptions): Promise<void> {
     const items = await this.repository.find({ ...options, ...{ take: 1 } })
 
     const properties = Object.keys(options.where)
@@ -356,13 +376,16 @@ export class BaseService extends PrimitiveService {
   }
 
   /**
-   * Update an entity in repository by id
+   * Update an entity in repository by option
    *
-   * @param id number
+   * @param option: string | number | Date | ObjectID | FindOneOptions<Entity>,
    * @param data object
    */
-  async update(id: number, data: Entity): Promise<any> {
-    const item = await this.repository.findOne(id)
+  async update(
+    option: string | number | Date | ObjectID | FindOneOptions<Entity>,
+    data: Entity,
+  ): Promise<any> {
+    const item = await this.repository.findOne(option)
 
     const result = await getManager().save(this.entity, { ...item, ...data })
 

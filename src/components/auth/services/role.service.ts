@@ -86,13 +86,12 @@ export class RoleService extends BaseService {
     id: number
     currentUser: Me
   }): Promise<void> {
-    const currentRole = map(currentUser.roles, (r) => r.id)
+    await this.checkExisting({ where: { id } })
 
+    const currentRole = map(currentUser.roles, (r) => r.id)
     if (includes(currentRole, id) && currentRole.length === 1) {
       throw new ForbiddenException('Your only role cannot be deleted')
     }
-
-    await this.findOneOrFail(id)
 
     await this.userRoleService.destroy({ roleId: id })
 

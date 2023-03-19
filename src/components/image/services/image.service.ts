@@ -1,7 +1,5 @@
 import { Injectable } from '@nestjs/common'
 import { BaseService } from '@sharedServices/base.service'
-import { assign } from 'lodash'
-import slugify from 'slugify'
 import { Connection, Repository } from 'typeorm'
 import { CreateImageDto, UpdateImageDto } from '../dto/image.dto'
 import { ImageEntity } from '../entities/image.entity'
@@ -13,59 +11,66 @@ export class ImageService extends BaseService {
   public repository: Repository<ImageEntity>
   public entity: Entity = ImageEntity
 
-  constructor(private connection: Connection) {
+  constructor(
+    private connection: Connection, // private imageAbleService: ImageAbleService,
+  ) {
     super()
     this.repository = this.connection.getCustomRepository(ImageRepository)
   }
 
-  async assignSlug(params: {
-    data: CreateImageDto | UpdateImageDto
-    currentImage?: ImageEntity
-  }) {
-    const { data, currentImage } = params
-
-    console.log(currentImage)
-
-    const assignSlug = assign(data, {
-      slug: slugify(data.title),
-    })
-
-    const countImages = await this.count({
-      where: { title: data.title },
-    })
-
-    if (countImages) assignSlug.slug = `${assignSlug.slug}-${countImages}`
-  }
-
-  async saveImage(params: {
+  /**
+   * Save image
+   *
+   * @param file Express.Multer.File
+   * @param data CreateImageDto
+   *
+   * @returns ImageEntity
+   */
+  async saveImage({
+    file,
+    data,
+  }: {
     file: Express.Multer.File
     data: CreateImageDto
   }): Promise<ImageEntity> {
-    const { file, data } = params
-
-    await this.assignSlug({ data })
+    Object.assign(data, { slug: await this.generateSlug(data.title) })
 
     Object.assign(data, { url: file.path })
 
     return this.create(data)
   }
 
-  async updateImage(params: {
+  /**
+   * Update image
+   *
+   * @param id number
+   * @param data UpdateImageDto
+   *
+   * @returns ImageEntity
+   */
+  async updateImage({
+    id,
+    data,
+  }: {
     id: number
     data: UpdateImageDto
-  }): Promise<any> {
-    const { id, data } = params
-    const currentImage: ImageEntity = await this.findOneOrFail(id)
+  }): Promise<ImageEntity> {
+    await this.checkExisting({ where: { id } })
 
-    await this.assignSlug({ data, currentImage })
+    Object.assign(data, { slug: await this.generateSlug(data.title) })
 
-    // return this.update(id, data)
+    return this.update(id, data)
   }
 
-  async deleteImage(params: { id: number }): Promise<void> {
-    const { id } = params
+  /**
+   * Delete image
+   *
+   * @param id number
+   */
+  async deleteImage({ id }: { id: number }): Promise<void> {
+    await this.checkExisting({ where: { id } })
 
-    await this.findOneOrFail(id)
+    // await this.imageAbleService.detachImageAble([{ imageId: id }])
 
     await this.destroy(id)
   }

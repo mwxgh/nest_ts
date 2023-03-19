@@ -28,12 +28,7 @@ export class PasswordResetService extends BaseService {
    * @param token string
    */
   async expire(token: string): Promise<void> {
-    await this.repository
-      .createQueryBuilder('passwordReset')
-      .update(this.entity)
-      .set({ expire: () => 'NOW()' })
-      .where('token = :token', { token })
-      .execute()
+    await this.update({ where: { token } }, { expired: new Date() })
   }
 
   /**
@@ -42,13 +37,10 @@ export class PasswordResetService extends BaseService {
    * @param token string
    */
   async expireAllToken(email: string): Promise<void> {
-    await this.repository
-      .createQueryBuilder('passwordReset')
-      .update(this.entity)
-      .set({ expire: () => 'NOW()' })
-      .where('email = :email', { email })
-      .andWhere('expire >= NOW()')
-      .execute()
+    await this.update(
+      { where: { email, expire: new Date() } },
+      { expire: new Date() },
+    )
   }
 
   /**

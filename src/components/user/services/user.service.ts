@@ -37,10 +37,10 @@ export class UserService extends BaseService {
    */
   async checkIdentifier(email?: string, username?: string): Promise<void> {
     if (email) {
-      await this.checkExisting({ where: { email } })
+      await this.checkConflict({ where: { email } })
     }
     if (username) {
-      await this.checkExisting({ where: { username } })
+      await this.checkConflict({ where: { username } })
     }
   }
 

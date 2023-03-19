@@ -9,6 +9,7 @@ const Messages = {
   },
   errorsOperation: {
     conflict: '${keyword} already exists',
+    notExist: '${keyword} not exists',
   },
 }
 
