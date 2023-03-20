@@ -10,7 +10,6 @@ import {
   Post,
   Put,
   Query,
-  Req,
   UseGuards,
 } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
@@ -35,11 +34,11 @@ import Messages from '@shared/message/message'
 import { PrimitiveService } from '@shared/services/primitive.service'
 import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.service'
 import { NotificationService } from '@sharedServices/notification/notification.service'
-import { Request } from 'express'
 import { isBoolean, isNil, pick } from 'lodash'
 import { SelectQueryBuilder } from 'typeorm'
 import {
   CreateUserDto,
+  InviteUserDto,
   UpdateUserDto,
   UpdateUserPasswordDto,
   UserAttachRoleDto,
@@ -255,9 +254,9 @@ export class UserController {
   @Auth('admin')
   @ApiOperation({ summary: 'Invite new user using system' })
   @ApiOkResponse({ description: 'Mail notification user' })
-  async inviteUser(@Req() request: Request): Promise<SuccessfullyOperation> {
-    const { data } = request.body
-
+  async inviteUser(
+    @Body() data: InviteUserDto,
+  ): Promise<SuccessfullyOperation> {
     await this.userService.checkExisting({ where: { email: data.email } })
 
     const user: UserEntity = await this.userService.create(

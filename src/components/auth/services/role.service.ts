@@ -29,7 +29,7 @@ export class RoleService extends BaseService {
    *
    * @return Role
    */
-  async saveRole({ data }: { data: CreateRoleDto }): Promise<RoleEntity> {
+  async saveRole(data: CreateRoleDto): Promise<RoleEntity> {
     const saveRole: RoleEntity = await this.create({
       ...pick(data, ['name', 'level']),
       ...{

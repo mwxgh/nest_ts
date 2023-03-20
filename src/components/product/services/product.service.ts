@@ -201,9 +201,7 @@ export class ProductService extends BaseService {
    * Delete product and detach foreign key
    * @param params.id
    */
-  async deleteProduct(params: { id: number }): Promise<void> {
-    const { id } = params
-
+  async deleteProduct(id: number): Promise<void> {
     const currentProduct: ProductEntity = await this.findOneOrFail(id)
 
     await this.tagAbleService.detachTagAble([

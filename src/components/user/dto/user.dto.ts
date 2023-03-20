@@ -82,6 +82,10 @@ export class UpdateUserPasswordDto extends PickType(UserProperties, [
   notifyUser: boolean
 }
 
+export class InviteUserDto extends PickType(BaseUserProperties, [
+  'email',
+] as const) {}
+
 export class UserSendMailReportDto {
   @ApiProperty()
   @IsEmail()

@@ -62,7 +62,7 @@ export class PostController {
   async createPost(
     @Body() data: CreatePostDto,
   ): Promise<SuccessfullyOperation> {
-    await this.postService.savePost({ data })
+    await this.postService.savePost(data)
 
     return this.response.success({
       message: this.primitiveService.getMessage({
@@ -164,7 +164,7 @@ export class PostController {
   async deletePost(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<SuccessfullyOperation> {
-    await this.postService.deletePost({ id })
+    await this.postService.deletePost(id)
 
     return this.response.success({
       message: this.primitiveService.getMessage({

@@ -63,7 +63,7 @@ export class PermissionController {
   async savePermission(
     @Body() data: CreatePermissionDto,
   ): Promise<CreateResponse> {
-    const permission = await this.permissionService.savePermission({ data })
+    const permission = await this.permissionService.savePermission(data)
 
     return this.response.item(permission, new PermissionTransformer())
   }
@@ -140,7 +140,7 @@ export class PermissionController {
   async delete(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<SuccessfullyOperation> {
-    await this.permissionService.deletePermission({ id })
+    await this.permissionService.deletePermission(id)
 
     return this.response.success({
       message: this.permissionService.getMessage({

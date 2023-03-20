@@ -30,11 +30,7 @@ export class PermissionService extends BaseService {
    * @param data  CreatePermissionDto
    * @return Permission
    */
-  async savePermission({
-    data,
-  }: {
-    data: CreatePermissionDto
-  }): Promise<PermissionEntity> {
+  async savePermission(data: CreatePermissionDto): Promise<PermissionEntity> {
     const slug = await this.generateSlug(data.name)
 
     return this.create(assign(data, { slug: slug }))
@@ -69,7 +65,7 @@ export class PermissionService extends BaseService {
    *
    * @return void
    */
-  async deletePermission({ id }: { id: number }): Promise<void> {
+  async deletePermission(id: number): Promise<void> {
     await this.checkExisting({ where: { id } })
 
     await this.rolePermissionService.destroy({ permissionId: id })

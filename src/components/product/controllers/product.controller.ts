@@ -144,7 +144,7 @@ export class ProductController {
   async deleteProduct(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<SuccessfullyOperation> {
-    await this.productService.deleteProduct({ id })
+    await this.productService.deleteProduct(id)
 
     return this.response.success({
       message: this.primitiveService.getMessage({

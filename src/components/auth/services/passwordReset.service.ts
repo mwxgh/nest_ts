@@ -7,6 +7,10 @@ import { PasswordResetRepository } from '../repositories/passwordReset.repositor
 import { Entity } from '@shared/interfaces/response.interface'
 import { UserEntity } from '@userModule/entities/user.entity'
 import { UserService } from '@userModule/services/user.service'
+import {
+  ResetPasswordDto,
+  SendResetLinkDto,
+} from '@authModule/dto/forgotPassword.dto'
 
 @Injectable()
 export class PasswordResetService extends BaseService {
@@ -73,11 +77,10 @@ export class PasswordResetService extends BaseService {
    * @returns UserEntity
    * @returns PasswordResetEntity
    */
-  async requestResetPassword({
-    email,
-  }: {
-    email: string
-  }): Promise<[UserEntity, PasswordResetEntity]> {
+  async requestResetPassword(
+    data: SendResetLinkDto,
+  ): Promise<[UserEntity, PasswordResetEntity]> {
+    const { email } = data
     const user: UserEntity = await this.userService.firstOrFail({
       where: { email: this.sanitize(email) },
     })
@@ -98,13 +101,8 @@ export class PasswordResetService extends BaseService {
    * @returns UserEntity
    */
 
-  async resetPassword({
-    token,
-    password,
-  }: {
-    token: string
-    password: string
-  }): Promise<UserEntity> {
+  async resetPassword(data: ResetPasswordDto): Promise<UserEntity> {
+    const { token, password } = data
     const passwordReset: PasswordResetEntity = await this.firstOrFail({
       where: { token },
     })

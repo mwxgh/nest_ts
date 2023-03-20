@@ -67,7 +67,7 @@ export class ImageService extends BaseService {
    *
    * @param id number
    */
-  async deleteImage({ id }: { id: number }): Promise<void> {
+  async deleteImage(id: number): Promise<void> {
     await this.checkExisting({ where: { id } })
 
     // await this.imageAbleService.detachImageAble([{ imageId: id }])

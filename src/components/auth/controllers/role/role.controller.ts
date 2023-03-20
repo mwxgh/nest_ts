@@ -63,7 +63,7 @@ export class RoleController {
   @ApiOperation({ summary: 'Admin create new role' })
   @ApiOkResponse({ description: 'New role entity' })
   async createRole(@Body() data: CreateRoleDto): Promise<CreateResponse> {
-    const saveRole = await this.roleService.saveRole({ data })
+    const saveRole = await this.roleService.saveRole(data)
 
     return this.response.item(saveRole, new RoleTransformer(this.relations))
   }

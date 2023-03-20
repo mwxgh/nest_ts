@@ -20,7 +20,6 @@ import {
 import Messages from '@shared/message/message'
 import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.service'
 import { NotificationService } from '@sharedServices/notification/notification.service'
-import { UserService } from '@userModule/services/user.service'
 import { UserTransformer } from '@userModule/transformers/user.transformer'
 
 @ApiTags('Auth')
@@ -31,7 +30,6 @@ import { UserTransformer } from '@userModule/transformers/user.transformer'
 @Controller('api/auth')
 export class ForgotPasswordController {
   constructor(
-    private userService: UserService,
     private notificationService: NotificationService,
     private passwordResetService: PasswordResetService,
     private configService: ConfigService,
@@ -45,9 +43,7 @@ export class ForgotPasswordController {
     @Body() data: SendResetLinkDto,
   ): Promise<SuccessfullyOperation> {
     const [user, passwordReset] =
-      await this.passwordResetService.requestResetPassword({
-        email: data.email,
-      })
+      await this.passwordResetService.requestResetPassword(data)
 
     await this.notificationService.send(
       user,
@@ -60,7 +56,7 @@ export class ForgotPasswordController {
     return this.response.success({
       message: this.passwordResetService.getMessage({
         message: Messages.successfullyOperation.sent,
-        keywords: ['reset password'],
+        keywords: ['request reset password'],
       }),
     })
   }
@@ -70,10 +66,7 @@ export class ForgotPasswordController {
   @ApiOkResponse({ description: 'Reset password successfully' })
   @ApiBadRequestResponse({ description: 'Token is expired' })
   async resetPassword(@Body() data: ResetPasswordDto): Promise<ResponseEntity> {
-    const user = await this.passwordResetService.resetPassword({
-      token: data.token,
-      password: data.password,
-    })
+    const user = await this.passwordResetService.resetPassword(data)
 
     return this.response.item(user, new UserTransformer())
   }

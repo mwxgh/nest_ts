@@ -140,9 +140,7 @@ export class PostService extends BaseService {
    * Save post and attach foreign key
    * @param params.data CreatePostDto
    */
-  async savePost(params: { data: CreatePostDto }): Promise<void> {
-    const { data } = params
-
+  async savePost(data: CreatePostDto): Promise<void> {
     const tagsAvailable = await this.tagService.findIdInOrFail(data.tagIds)
 
     const categoriesAvailable = await this.categoryService.findIdInOrFail(
@@ -249,9 +247,7 @@ export class PostService extends BaseService {
    * Delete post and detach foreign key
    * @param params.id
    */
-  async deletePost(params: { id: number }): Promise<void> {
-    const { id } = params
-
+  async deletePost(id: number): Promise<void> {
     const currentPost: PostEntity = await this.findOneOrFail(id)
 
     await this.tagAbleService.detachTagAble([

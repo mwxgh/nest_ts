@@ -142,7 +142,7 @@ export class ImageController {
   async deleteImage(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<SuccessfullyOperation> {
-    await this.imageService.deleteImage({ id })
+    await this.imageService.deleteImage(id)
 
     return this.response.success({
       message: this.primitiveService.getMessage({
