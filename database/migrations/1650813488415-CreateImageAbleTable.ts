@@ -8,36 +8,25 @@ export class CreateImageAbleTable1650813488415 implements MigrationInterface {
         name: 'imageAble',
         columns: [
           {
-            name: 'id',
-            type: 'int',
-            isPrimary: true,
-            isGenerated: true,
-            generationStrategy: 'increment',
-          },
-          {
             name: 'imageId',
             type: 'int',
+            isPrimary: true,
           },
           {
-            name: 'imageAbleId',
+            name: 'ableId',
             type: 'int',
+            isPrimary: true,
           },
           {
-            name: 'imageAbleType',
+            name: 'ableType',
             type: 'enum',
             enum: ['PRODUCT', 'POST'],
-          },
-          {
-            name: 'status',
-            type: 'enum',
-            enum: ['PUBLISH', 'HIDE'],
           },
           {
             name: 'isThumbnail',
             default: false,
             type: 'boolean',
           },
-          ...baseTimeColumn,
         ],
       }),
       true,
@@ -45,8 +34,15 @@ export class CreateImageAbleTable1650813488415 implements MigrationInterface {
     await queryRunner.createIndex(
       'imageAble',
       new TableIndex({
-        name: 'FK_IMAGE_ABLE_ID',
-        columnNames: ['imageAbleId'],
+        name: 'IDX_IMAGE_ID',
+        columnNames: ['imageId'],
+      }),
+    )
+    await queryRunner.createIndex(
+      'imageAble',
+      new TableIndex({
+        name: 'IDX_ABLE_ID',
+        columnNames: ['ableId'],
       }),
     )
   }

@@ -1,6 +1,5 @@
 import { UserRegisterDto } from '@authModule/dto/auth.dto'
 import { RoleEntity } from '@authModule/entities/role.entity'
-import { UserRoleEntity } from '@authModule/entities/userRole.entity'
 import { RoleService } from '@authModule/services/role.service'
 import { UserRoleService } from '@authModule/services/userRole.service'
 import { Injectable } from '@nestjs/common'
@@ -224,7 +223,7 @@ export class UserService extends BaseService {
       username ? username : undefined,
     )
 
-    const updateUser = await this.update(existingUser.id, {
+    const updateUser: UserEntity = await this.update(existingUser.id, {
       ...pick(data, [
         'email',
         'username',

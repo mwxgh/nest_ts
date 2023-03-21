@@ -1,10 +1,10 @@
-import { ImageAbleType } from '@imageModule/entities/imageAble.entity'
 import { Injectable } from '@nestjs/common'
 import { BaseService } from '@sharedServices/base.service'
 import { Connection, Repository } from 'typeorm'
 import { OrderEntity } from '../entities/order.entity'
 import { OrderRepository } from '../repositories/order.repository'
 import { Entity } from '@shared/interfaces/response.interface'
+import { AbleType } from '@shared/entities/base.entity'
 
 @Injectable()
 export class OrderService extends BaseService {
@@ -31,7 +31,7 @@ export class OrderService extends BaseService {
           'products.images',
           'images',
           'imageAbleType = :imageAbleType',
-          { imageAbleType: ImageAbleType.product },
+          { imageAbleType: AbleType.product },
         )
     }
 

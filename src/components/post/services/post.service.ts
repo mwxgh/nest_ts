@@ -1,13 +1,11 @@
-import { CategoryAbleType } from '@categoryModule/entities/categoryAble.entity'
 import { CategoryService } from '@categoryModule/services/category.service'
 import { CategoryAbleService } from '@categoryModule/services/categoryAble.service'
-import { ImageAbleType } from '@imageModule/entities/imageAble.entity'
+
 import { ImageService } from '@imageModule/services/image.service'
 import { ImageAbleService } from '@imageModule/services/imageAble.service'
 import { Injectable } from '@nestjs/common'
 import { QueryParams } from '@shared/interfaces/request.interface'
 import { BaseService } from '@sharedServices/base.service'
-import { TagAbleType } from '@tagModule/entities/tagAble.entity'
 import { TagService } from '@tagModule/services/tag.service'
 import { TagAbleService } from '@tagModule/services/tagAble.service'
 import { assign } from 'lodash'
@@ -17,6 +15,7 @@ import { CreatePostDto, UpdatePostDto } from '../dto/post.dto'
 import { JoinPostAbleType, PostEntity } from '../entities/post.entity'
 import { PostRepository } from '../repositories/post.repository'
 import { Entity } from '@shared/interfaces/response.interface'
+import { AbleType } from '@shared/entities/base.entity'
 
 @Injectable()
 export class PostService extends BaseService {
@@ -118,8 +117,8 @@ export class PostService extends BaseService {
         baseQuery = baseQuery.leftJoinAndSelect(
           `categories.category`,
           `category`,
-          'categories.categoryAbleType = :categoryAbleType',
-          { categoryAbleType: CategoryAbleType.post },
+          'categories.ableType = :ableType',
+          { ableType: AbleType.post },
         )
 
       // query tag detail
@@ -127,9 +126,9 @@ export class PostService extends BaseService {
         baseQuery = baseQuery.leftJoinAndSelect(
           `tags.tag`,
           `tag`,
-          'tags.tagAbleType = :tagAbleType',
+          'tags.ableType = :ableType',
           {
-            tagAbleType: TagAbleType.post,
+            ableType: AbleType.post,
           },
         )
     }
@@ -140,7 +139,7 @@ export class PostService extends BaseService {
    * Save post and attach foreign key
    * @param params.data CreatePostDto
    */
-  async savePost(data: CreatePostDto): Promise<void> {
+  async savePost(data: CreatePostDto): Promise<PostEntity> {
     const tagsAvailable = await this.tagService.findIdInOrFail(data.tagIds)
 
     const categoriesAvailable = await this.categoryService.findIdInOrFail(
@@ -150,7 +149,6 @@ export class PostService extends BaseService {
     const imagesAvailable = await this.imageService.findIdInOrFail(
       data.imageIds,
     )
-
     const countPosts = await this.count({
       where: { title: data.title, type: data.type },
     })
@@ -164,26 +162,29 @@ export class PostService extends BaseService {
     // tagAble
     const tagsAbleData = tagsAvailable.map((tag: any) => ({
       tagId: tag.id,
-      tagAbleId: newPost.id,
-      tagAbleType: TagAbleType.post,
+      ableId: newPost.id,
+      ableType: AbleType.post,
     }))
     await this.tagAbleService.attachTagAble(tagsAbleData)
 
     // categoryAble
     const categoryAbleData = categoriesAvailable.map((category: any) => ({
       categoryId: category.id,
-      categoryAbleId: newPost.id,
-      categoryAbleType: CategoryAbleType.post,
+      ableId: newPost.id,
+      ableType: AbleType.post,
     }))
     await this.categoryAbleService.attachCategoryAble(categoryAbleData)
 
     // imageAble
     const imageAbleData = imagesAvailable.map((image: any) => ({
       imageId: image.id,
-      imageAbleId: newPost.id,
-      imageAbleType: ImageAbleType.post,
+      ableId: newPost.id,
+      ableType: AbleType.post,
     }))
-    await this.imageAbleService.save(imageAbleData)
+    await this.imageAbleService.attachImageAble(imageAbleData)
+
+    //return category tag image
+    return newPost
   }
 
   /**
@@ -199,8 +200,8 @@ export class PostService extends BaseService {
     // imageAble
     if (data.imageIds && data.imageIds.length > 0) {
       await this.imageAbleService.updateRelationImageAble({
-        imageAbleId: currentPost.id,
-        imageAbleType: ImageAbleType.post,
+        ableId: currentPost.id,
+        ableType: AbleType.post,
         imageIds: data.imageIds,
       })
     }
@@ -208,8 +209,8 @@ export class PostService extends BaseService {
     // tagAble
     if (data.tagIds && data.tagIds.length > 0) {
       await this.tagAbleService.updateRelationTagAble({
-        tagAbleId: currentPost.id,
-        tagAbleType: TagAbleType.post,
+        ableId: currentPost.id,
+        ableType: AbleType.post,
         tagIds: data.tagIds,
       })
     }
@@ -217,8 +218,8 @@ export class PostService extends BaseService {
     // categoryAble
     if (data.categoryIds && data.categoryIds.length > 0) {
       await this.categoryAbleService.updateRelationCategoryAble({
-        categoryAbleId: currentPost.id,
-        categoryAbleType: CategoryAbleType.post,
+        ableId: currentPost.id,
+        ableType: AbleType.post,
         categoryIds: data.categoryIds,
       })
     }
@@ -252,22 +253,22 @@ export class PostService extends BaseService {
 
     await this.tagAbleService.detachTagAble([
       {
-        tagAbleId: currentPost.id,
-        tagAbleType: TagAbleType.post,
+        ableId: currentPost.id,
+        ableType: AbleType.post,
       },
     ])
 
     await this.categoryAbleService.detachCategoryAble([
       {
-        categoryAbleId: currentPost.id,
-        categoryAbleType: CategoryAbleType.post,
+        ableId: currentPost.id,
+        ableType: AbleType.post,
       },
     ])
 
     await this.imageAbleService.detachImageAble([
       {
-        imageAbleId: currentPost.id,
-        imageAbleType: ImageAbleType.post,
+        ableId: currentPost.id,
+        ableType: AbleType.post,
       },
     ])
 

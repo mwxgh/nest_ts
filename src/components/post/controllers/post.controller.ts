@@ -28,6 +28,7 @@ import { PostTransformer } from '../transformers/post.transformer'
 
 import { JwtAuthGuard } from '@authModule/guards/jwtAuth.guard'
 import {
+  CreateResponse,
   GetItemResponse,
   GetListPaginationResponse,
   GetListResponse,
@@ -59,17 +60,10 @@ export class PostController {
   @Auth('admin')
   @ApiOperation({ summary: 'Admin create new post' })
   @ApiOkResponse({ description: 'New post entity' })
-  async createPost(
-    @Body() data: CreatePostDto,
-  ): Promise<SuccessfullyOperation> {
-    await this.postService.savePost(data)
+  async createPost(@Body() data: CreatePostDto): Promise<CreateResponse> {
+    const post = await this.postService.savePost(data)
 
-    return this.response.success({
-      message: this.primitiveService.getMessage({
-        message: Messages.successfullyOperation.create,
-        keywords: [this.entity],
-      }),
-    })
+    return this.response.item(post, new PostTransformer())
   }
 
   @Get()

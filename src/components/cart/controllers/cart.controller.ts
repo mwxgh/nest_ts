@@ -21,7 +21,6 @@ import { CartEntity } from '../entities/cart.entity'
 import { CartService } from '../services/cart.service'
 import { CartTransformer } from '../transformers/cart.transformer'
 
-import { ImageAbleType } from '@imageModule/entities/imageAble.entity'
 import {
   CreateResponse,
   GetItemResponse,
@@ -30,6 +29,7 @@ import {
 import Messages from '@shared/message/message'
 import { PrimitiveService } from '@shared/services/primitive.service'
 import { CreateCartItemDto } from '../dto/cart.dto'
+import { AbleType } from '@shared/entities/base.entity'
 
 @ApiTags('Carts')
 @ApiHeader({
@@ -62,7 +62,7 @@ export class CartController {
         'products.images',
         'images',
         'images.imageAbleType = :imageAbleType',
-        { imageAbleType: ImageAbleType.product },
+        { imageAbleType: AbleType.product },
       )
       .where('carts.id = :id', { id: Number(id) })
       .getOne()

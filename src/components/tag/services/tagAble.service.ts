@@ -3,10 +3,11 @@ import { BaseService } from '@sharedServices/base.service'
 import { difference } from 'lodash'
 import { Connection, Repository } from 'typeorm'
 import { TagEntity } from '../entities/tag.entity'
-import { TagAbleEntity, TagAbleType } from '../entities/tagAble.entity'
+import { TagAbleEntity } from '../entities/tagAble.entity'
 import { TagAbleRepository } from '../repositories/tagAble.repository'
 import { TagService } from './tag.service'
 import { Entity } from '@shared/interfaces/response.interface'
+import { AbleType } from '@shared/entities/base.entity'
 
 @Injectable()
 export class TagAbleService extends BaseService {
@@ -21,26 +22,18 @@ export class TagAbleService extends BaseService {
   /**
    * Attach tagAble
    * @param params.tagId
-   * @param params.tagAbleId
-   * @param params.tagAbleType
+   * @param params.ableId
+   * @param params.ableType
    */
   async attachTagAble(
     params: {
       tagId: number
-      tagAbleId: number
-      tagAbleType: TagAbleType
+      ableId: number
+      ableType: AbleType
     }[],
   ): Promise<void> {
     params.forEach(async (param: any) => {
-      const { tagId, tagAbleId, tagAbleType } = param
-
-      const tagAble = new TagAbleEntity()
-
-      tagAble.tagId = tagId
-      tagAble.tagAbleId = tagAbleId
-      tagAble.tagAbleType = tagAbleType
-
-      await this.tagAbleRepository.save(tagAble)
+      await this.tagAbleRepository.save(param)
     })
   }
 
@@ -54,22 +47,22 @@ export class TagAbleService extends BaseService {
   /**
    * Detach tagAble when delete product, post, ...
    * Some tag need to remove foreign key to this product, post
-   * @param params.tagAbleId
-   * @param params.tagAbleType
+   * @param params.ableId
+   * @param params.ableType
    */
-  async detachTagAble(params: { tagAbleId: number; tagAbleType: string }[])
+  async detachTagAble(params: { ableId: number; ableType: string }[])
 
   /**
    * Detach tagAble
    * @param params.tagId
-   * @param params.tagAbleId
-   * @param params.tagAbleType
+   * @param params.ableId
+   * @param params.ableType
    */
   async detachTagAble(
     params: {
       tagId?: number
-      tagAbleId?: number
-      tagAbleType?: string
+      ableId?: number
+      ableType?: string
     }[],
   ): Promise<void> {
     const tagAbleIdsExisting: number[] = await this.findWhere(params, ['id'])
@@ -82,20 +75,20 @@ export class TagAbleService extends BaseService {
   /**
    * Update relation tagAble when update product, post, ...
    * @param params.tagId
-   * @param params.tagAbleId
-   * @param params.tagAbleType
+   * @param params.ableId
+   * @param params.ableType
    */
   async updateRelationTagAble(params: {
     tagIds: number[]
-    tagAbleId: number
-    tagAbleType: TagAbleType
+    ableId: number
+    ableType: AbleType
   }): Promise<void> {
-    const { tagIds, tagAbleId, tagAbleType } = params
+    const { tagIds, ableId, ableType } = params
 
     const currentTagIds: number[] = await this.findWhere(
       {
-        tagAbleId,
-        tagAbleType,
+        ableId,
+        ableType,
       },
       ['tagId'],
     )
@@ -107,9 +100,9 @@ export class TagAbleService extends BaseService {
     // detach tagAble
     const detachTagIds: number[] = difference(currentTagIds, tagIds)
 
-    const tagAbles = detachTagIds.map((tagAbleId) => ({
-      tagAbleId,
-      tagAbleType,
+    const tagAbles = detachTagIds.map((ableId) => ({
+      ableId,
+      ableType,
     }))
 
     await this.detachTagAble(tagAbles)
@@ -121,8 +114,8 @@ export class TagAbleService extends BaseService {
 
     const tagsAbleData = existingTags.map((tag: TagEntity) => ({
       tagId: tag.id,
-      tagAbleId,
-      tagAbleType,
+      ableId,
+      ableType,
     }))
 
     await this.attachTagAble(tagsAbleData)

@@ -1,5 +1,4 @@
 import { MigrationInterface, QueryRunner, Table, TableIndex } from 'typeorm'
-import { baseTimeColumn } from './baseColumn'
 
 export class CreateCategoryAblesTable1650206464855
   implements MigrationInterface
@@ -10,31 +9,20 @@ export class CreateCategoryAblesTable1650206464855
         name: 'categoryAble',
         columns: [
           {
-            name: 'id',
-            type: 'int',
-            isPrimary: true,
-            isGenerated: true,
-            generationStrategy: 'increment',
-          },
-          {
             name: 'categoryId',
             type: 'int',
+            isPrimary: true,
           },
           {
-            name: 'categoryAbleId',
+            name: 'ableId',
             type: 'int',
+            isPrimary: true,
           },
           {
-            name: 'categoryAbleType',
+            name: 'ableType',
             type: 'enum',
             enum: ['PRODUCT', 'POST'],
           },
-          {
-            name: 'verifiedAt',
-            isNullable: true,
-            type: 'datetime',
-          },
-          ...baseTimeColumn,
         ],
       }),
       true,
@@ -42,8 +30,15 @@ export class CreateCategoryAblesTable1650206464855
     await queryRunner.createIndex(
       'categoryAble',
       new TableIndex({
-        name: 'IDX_CATEGORIABLE_ID',
+        name: 'IDX_CATEGORY_ID',
         columnNames: ['categoryId'],
+      }),
+    )
+    await queryRunner.createIndex(
+      'categoryAble',
+      new TableIndex({
+        name: 'IDX_ABLE_ID',
+        columnNames: ['ableId'],
       }),
     )
   }

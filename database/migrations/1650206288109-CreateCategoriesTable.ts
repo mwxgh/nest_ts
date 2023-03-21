@@ -19,10 +19,6 @@ export class CreateCategoriesTable1650206288109 implements MigrationInterface {
             type: 'varchar',
           },
           {
-            name: 'categoryType',
-            type: 'varchar',
-          },
-          {
             name: 'parentId',
             type: 'int',
           },
@@ -30,11 +26,6 @@ export class CreateCategoriesTable1650206288109 implements MigrationInterface {
             name: 'status',
             type: 'enum',
             enum: ['PUBLISH', 'HIDE'],
-          },
-          {
-            name: 'verifiedAt',
-            isNullable: true,
-            type: 'datetime',
           },
           ...baseTimeColumn,
         ],

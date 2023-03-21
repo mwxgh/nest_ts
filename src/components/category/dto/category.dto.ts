@@ -1,17 +1,6 @@
-import {
-  ApiProperty,
-  ApiPropertyOptional,
-  OmitType,
-  PartialType,
-} from '@nestjs/swagger'
+import { ApiProperty, OmitType, PartialType } from '@nestjs/swagger'
 import { Type } from 'class-transformer'
-import {
-  IsEnum,
-  IsNotEmpty,
-  IsNumber,
-  IsOptional,
-  IsString,
-} from 'class-validator'
+import { IsEnum, IsNotEmpty, IsNumber, IsString } from 'class-validator'
 import { Index } from 'typeorm'
 import { CategoryStatus } from '../entities/category.entity'
 
@@ -21,13 +10,8 @@ export class CategoryProperties {
   @IsString()
   name: string
 
-  @ApiProperty()
+  @ApiProperty({ name: 'parentId', type: Number })
   @IsNotEmpty()
-  @IsString()
-  categoryType: string
-
-  @ApiPropertyOptional({ name: 'parentId', type: Number })
-  @IsOptional()
   @IsNumber()
   @Index('parentId')
   @Type(() => Number)
@@ -35,7 +19,7 @@ export class CategoryProperties {
 
   @ApiProperty()
   @IsEnum(CategoryStatus)
-  @IsOptional()
+  @IsNotEmpty()
   status: CategoryStatus
 }
 

@@ -1,37 +1,18 @@
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm'
-import { TimeStampEntity } from '../../../shared/entities/base.entity'
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm'
+import { AbleEntity } from '../../../shared/entities/base.entity'
 import { Notifiable } from '../../../shared/services/notification/decorators/notifiable.decorator'
 import { PostEntity } from '../../post/entities/post.entity'
 import { ProductEntity } from '../../product/entities/product.entity'
 import { ImageEntity } from './image.entity'
 
-export enum ImageAbleType {
-  product = 'PRODUCT',
-  post = 'POST',
-}
-
-export enum ImageAbleStatus {
-  publish = 'PUBLISH',
-  hide = 'HIDE',
-}
-
 @Notifiable()
 @Entity({ name: 'imageAble' })
-export class ImageAbleEntity extends TimeStampEntity {
-  @Column({ type: 'int' })
+export class ImageAbleEntity extends AbleEntity {
+  @PrimaryColumn({ type: 'int' })
   public imageId: number
 
-  @Column({ type: 'int' })
-  public imageAbleId: number
-
-  @Column({ type: 'enum', enum: ImageAbleType })
-  public imageAbleType: ImageAbleType
-
-  @Column({ type: 'int', default: 0 })
+  @Column({ type: 'boolean', default: false })
   public isThumbnail: number
-
-  @Column({ type: 'enum', enum: ImageAbleStatus })
-  public status: ImageAbleStatus
 
   @ManyToOne(() => ImageEntity, (image) => image.imageAbles)
   @JoinColumn({
@@ -42,14 +23,14 @@ export class ImageAbleEntity extends TimeStampEntity {
 
   @ManyToOne(() => ProductEntity, (product) => product.images)
   @JoinColumn({
-    name: 'imageAbleId',
+    name: 'ableId',
     referencedColumnName: 'id',
   })
   product: ProductEntity
 
   @ManyToOne(() => PostEntity, (post) => post.images)
   @JoinColumn({
-    name: 'imageAbleId',
+    name: 'ableId',
     referencedColumnName: 'id',
   })
   post: PostEntity

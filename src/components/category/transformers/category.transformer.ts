@@ -9,7 +9,9 @@ export class CategoryTransformer extends Transformer {
       name: model.name,
       parentId: model.parentId,
       status: model.status,
-      categoryType: model.categoryType,
+      createdAt: model.createdAt,
+      updatedAt: model.updatedAt,
+      deletedAt: model.deletedAt,
     }
   }
 }

@@ -3,9 +3,10 @@ import { QueryParams } from '@shared/interfaces/request.interface'
 import { BaseService } from '@sharedServices/base.service'
 import { Connection, Repository, SelectQueryBuilder } from 'typeorm'
 import { CategoryEntity } from '../entities/category.entity'
-import { CategoryAbleType } from '../entities/categoryAble.entity'
 import { CategoryRepository } from '../repositories/category.repository'
 import { Entity } from '@shared/interfaces/response.interface'
+import { AbleType } from '@shared/entities/base.entity'
+import { CreateCategoryDto } from '@categoryModule/dto/category.dto'
 
 @Injectable()
 export class CategoryService extends BaseService {
@@ -15,6 +16,11 @@ export class CategoryService extends BaseService {
   constructor(private connection: Connection) {
     super()
     this.repository = this.connection.getCustomRepository(CategoryRepository)
+  }
+
+  async createCategory(data: CreateCategoryDto): Promise<CategoryEntity> {
+    await this.checkConflict({ where: { name: data.name } })
+    return this.create(data)
   }
 
   async queryCategory(
@@ -44,13 +50,13 @@ export class CategoryService extends BaseService {
 
     if (include.includes('products')) {
       baseQuery = baseQuery.where(`${entity}.categoryType = :type`, {
-        type: CategoryAbleType.product,
+        type: AbleType.product,
       })
     }
 
     if (include.includes('posts')) {
       baseQuery = baseQuery.where(`${entity}.categoryType = :type`, {
-        type: CategoryAbleType.post,
+        type: AbleType.post,
       })
     }
     return baseQuery

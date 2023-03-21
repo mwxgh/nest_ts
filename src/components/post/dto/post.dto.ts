@@ -5,7 +5,14 @@ import {
   OmitType,
   PartialType,
 } from '@nestjs/swagger'
-import { IsArray, IsDate, IsEnum, IsOptional, MinLength } from 'class-validator'
+import {
+  IsArray,
+  IsDate,
+  IsEnum,
+  IsNotEmpty,
+  IsOptional,
+  MinLength,
+} from 'class-validator'
 import {
   PostPriority,
   PostPrivacy,
@@ -15,18 +22,22 @@ import {
 
 export class PostBaseAttributes {
   @ApiProperty()
+  @IsNotEmpty()
   @MinLength(5)
   title: string
 
   @ApiProperty()
+  @IsNotEmpty()
   @MinLength(10)
   summary: string
 
   @ApiProperty()
+  @IsNotEmpty()
   @MinLength(10)
   description: string
 
   @ApiProperty()
+  @IsNotEmpty()
   @MinLength(10)
   content: string
 
@@ -68,7 +79,7 @@ export class PostProperties extends IntersectionType(
       type: 'int',
     },
   })
-  @IsOptional()
+  @IsNotEmpty()
   @IsArray()
   tagIds: []
 
@@ -78,7 +89,7 @@ export class PostProperties extends IntersectionType(
       type: 'int',
     },
   })
-  @IsOptional()
+  @IsNotEmpty()
   @IsArray()
   categoryIds: []
 
@@ -88,7 +99,7 @@ export class PostProperties extends IntersectionType(
       type: 'int',
     },
   })
-  @IsOptional()
+  @IsNotEmpty()
   @IsArray()
   imageIds: []
 }

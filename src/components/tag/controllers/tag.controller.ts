@@ -22,6 +22,7 @@ import {
 import { QueryManyDto } from '@shared/dto/queryParams.dto'
 import { IPaginationOptions } from '@shared/interfaces/request.interface'
 import {
+  CreateResponse,
   GetItemResponse,
   GetListPaginationResponse,
   GetListResponse,
@@ -58,17 +59,10 @@ export class TagController {
   @Auth('admin')
   @ApiOperation({ summary: 'Admin create new tag' })
   @ApiOkResponse({ description: 'New tag entity' })
-  async createTag(@Body() data: CreateTagDto): Promise<SuccessfullyOperation> {
-    await this.tagService.checkConflict({ where: { name: data.name } })
+  async createTag(@Body() data: CreateTagDto): Promise<CreateResponse> {
+    const tag = await this.tagService.createTag(data)
 
-    await this.tagService.save(data)
-
-    return this.response.success({
-      message: this.primitiveService.getMessage({
-        message: Messages.successfullyOperation.create,
-        keywords: [this.entity],
-      }),
-    })
+    return this.response.item(tag, new TagTransformer())
   }
 
   @Get()

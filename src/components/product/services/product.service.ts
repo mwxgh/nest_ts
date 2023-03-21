@@ -1,12 +1,10 @@
-import { CategoryAbleType } from '@categoryModule/entities/categoryAble.entity'
 import { CategoryAbleService } from '@categoryModule/services/categoryAble.service'
-import { ImageAbleType } from '@imageModule/entities/imageAble.entity'
 import { ImageService } from '@imageModule/services/image.service'
 import { ImageAbleService } from '@imageModule/services/imageAble.service'
 import { Injectable } from '@nestjs/common'
 import { QueryParams } from '@shared/interfaces/request.interface'
 import { BaseService } from '@sharedServices/base.service'
-import { TagAbleType } from '@tagModule/entities/tagAble.entity'
+
 import { TagService } from '@tagModule/services/tag.service'
 import { TagAbleService } from '@tagModule/services/tagAble.service'
 import { assign } from 'lodash'
@@ -16,6 +14,7 @@ import { CreateProductDto, UpdateProductDto } from '../dto/product.dto'
 import { ProductEntity } from '../entities/product.entity'
 import { ProductRepository } from '../repositories/product.repository'
 import { Entity } from '@shared/interfaces/response.interface'
+import { AbleType } from '@shared/entities/base.entity'
 
 @Injectable()
 export class ProductService extends BaseService {
@@ -57,24 +56,24 @@ export class ProductService extends BaseService {
         queryBuilder = queryBuilder.leftJoinAndSelect(
           'products.images',
           'images',
-          'images.imageAbleType = :imageAbleType',
-          { imageAbleType: ImageAbleType.product },
+          'images.AbleType = :AbleType',
+          { AbleType: AbleType.product },
         )
       }
       if (includes.includes('categories')) {
         queryBuilder = queryBuilder.leftJoinAndSelect(
           'products.categories',
           'categories',
-          'categories.categoryAbleType = :categoryAbleType',
-          { categoryAbleType: CategoryAbleType.product },
+          'categories.ableType = :ableType',
+          { ableType: AbleType.product },
         )
       }
       if (includes.includes('tags')) {
         queryBuilder = queryBuilder.leftJoinAndSelect(
           'products.tags',
           'tags',
-          'tags.tagAbleType = :tagAbleType',
-          { tagAbleType: TagAbleType.product },
+          'tags.ableType = :ableType',
+          { ableType: AbleType.product },
         )
       }
     }
@@ -114,16 +113,16 @@ export class ProductService extends BaseService {
     // imageAble
     const imageAbleData = imagesAvailable.map((image: any) => ({
       imageId: image.id,
-      imageAbleId: product.id,
-      imageAbleType: ImageAbleType.product,
+      ableId: product.id,
+      ableType: AbleType.product,
     }))
     await this.imageAbleService.attachImageAble(imageAbleData)
 
     // categoryAble
     const categoryAbleData = categoriesAvailable.map((category: any) => ({
       categoryId: category.id,
-      categoryAbleId: product.id,
-      categoryAbleType: CategoryAbleType.product,
+      ableId: product.id,
+      ableType: AbleType.product,
     }))
 
     await this.categoryAbleService.attachCategoryAble(categoryAbleData)
@@ -131,8 +130,8 @@ export class ProductService extends BaseService {
     // tagAble
     const tagsAbleData = tagsAvailable.map((tag: any) => ({
       tagId: tag.id,
-      tagAbleId: product.id,
-      tagAbleType: TagAbleType.product,
+      ableId: product.id,
+      ableType: AbleType.product,
     }))
     await this.tagAbleService.attachTagAble(tagsAbleData)
 
@@ -155,8 +154,8 @@ export class ProductService extends BaseService {
     // tagAble
     if (data.tagIds && data.tagIds.length > 0) {
       await this.tagAbleService.updateRelationTagAble({
-        tagAbleId: currentProduct.id,
-        tagAbleType: TagAbleType.product,
+        ableId: currentProduct.id,
+        ableType: AbleType.product,
         tagIds: data.tagIds,
       })
     }
@@ -164,8 +163,8 @@ export class ProductService extends BaseService {
     // categoryAble
     if (data.categoryIds && data.categoryIds.length > 0) {
       await this.categoryAbleService.updateRelationCategoryAble({
-        categoryAbleId: currentProduct.id,
-        categoryAbleType: CategoryAbleType.product,
+        ableId: currentProduct.id,
+        ableType: AbleType.product,
         categoryIds: data.categoryIds,
       })
     }
@@ -173,8 +172,8 @@ export class ProductService extends BaseService {
     // imageAble
     if (data.imageIds && data.imageIds.length > 0) {
       await this.imageAbleService.updateRelationImageAble({
-        imageAbleId: currentProduct.id,
-        imageAbleType: ImageAbleType.product,
+        ableId: currentProduct.id,
+        ableType: AbleType.product,
         imageIds: data.categoryIds,
       })
     }
@@ -206,22 +205,22 @@ export class ProductService extends BaseService {
 
     await this.tagAbleService.detachTagAble([
       {
-        tagAbleId: currentProduct.id,
-        tagAbleType: TagAbleType.product,
+        ableId: currentProduct.id,
+        ableType: AbleType.product,
       },
     ])
 
     await this.categoryAbleService.detachCategoryAble([
       {
-        categoryAbleId: currentProduct.id,
-        categoryAbleType: CategoryAbleType.product,
+        ableId: currentProduct.id,
+        ableType: AbleType.product,
       },
     ])
 
     await this.imageAbleService.detachImageAble([
       {
-        imageAbleId: currentProduct.id,
-        imageAbleType: ImageAbleType.product,
+        ableId: currentProduct.id,
+        ableType: AbleType.product,
       },
     ])
 

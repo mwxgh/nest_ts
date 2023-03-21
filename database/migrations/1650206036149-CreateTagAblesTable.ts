@@ -1,5 +1,4 @@
 import { MigrationInterface, QueryRunner, Table, TableIndex } from 'typeorm'
-import { baseTimeColumn } from './baseColumn'
 
 export class CreateTagAblesTable1650206036149 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
@@ -8,31 +7,20 @@ export class CreateTagAblesTable1650206036149 implements MigrationInterface {
         name: 'tagAble',
         columns: [
           {
-            name: 'id',
-            type: 'int',
-            isPrimary: true,
-            isGenerated: true,
-            generationStrategy: 'increment',
-          },
-          {
             name: 'tagId',
             type: 'int',
+            isPrimary: true,
           },
           {
-            name: 'tagAbleId',
+            name: 'ableId',
             type: 'int',
+            isPrimary: true,
           },
           {
-            name: 'tagAbleType',
+            name: 'ableType',
             type: 'enum',
             enum: ['POST', 'PRODUCT'],
           },
-          {
-            name: 'verifiedAt',
-            isNullable: true,
-            type: 'datetime',
-          },
-          ...baseTimeColumn,
         ],
       }),
       true,
@@ -42,6 +30,13 @@ export class CreateTagAblesTable1650206036149 implements MigrationInterface {
       new TableIndex({
         name: 'IDX_TAG_ID',
         columnNames: ['tagId'],
+      }),
+    )
+    await queryRunner.createIndex(
+      'tagAble',
+      new TableIndex({
+        name: 'IDX_ABLE_ID',
+        columnNames: ['ableId'],
       }),
     )
   }

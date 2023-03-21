@@ -13,17 +13,11 @@ export class CategoryEntity extends TimeStampEntity {
   @Column({ type: 'varchar' })
   name: string
 
-  @Column({ type: 'varchar' })
-  categoryType: string
-
   @Column({ name: 'parentId', type: 'int' })
   public parentId: number
 
   @Column({ type: 'enum', enum: CategoryStatus })
   status: CategoryStatus
-
-  @Column({ type: 'timestamp' })
-  public verifiedAt: Date
 
   @OneToMany(() => CategoryEntity, (cate) => cate.children)
   @JoinColumn({

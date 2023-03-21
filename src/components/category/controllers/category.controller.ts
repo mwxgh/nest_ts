@@ -23,13 +23,14 @@ import { JwtAuthGuard } from '@authModule/guards/jwtAuth.guard'
 import { QueryManyDto } from '@shared/dto/queryParams.dto'
 import { IPaginationOptions } from '@shared/interfaces/request.interface'
 import {
+  CreateResponse,
   GetItemResponse,
   GetListPaginationResponse,
   GetListResponse,
   SuccessfullyOperation,
+  UpdateResponse,
 } from '@shared/interfaces/response.interface'
 import Messages from '@shared/message/message'
-import { PrimitiveService } from '@shared/services/primitive.service'
 import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.service'
 import { SelectQueryBuilder } from 'typeorm'
 import { CreateCategoryDto, UpdateCategoryDto } from '../dto/category.dto'
@@ -50,7 +51,6 @@ export class CategoryController {
   constructor(
     private categoryService: CategoryService,
     private response: ApiResponseService,
-    private primitiveService: PrimitiveService,
     private categoryAbleService: CategoryAbleService,
   ) {}
 
@@ -63,15 +63,10 @@ export class CategoryController {
   @ApiOkResponse({ description: 'New category entity' })
   async createCategory(
     @Body() data: CreateCategoryDto,
-  ): Promise<SuccessfullyOperation> {
-    await this.categoryService.create(data)
+  ): Promise<CreateResponse> {
+    const category = await this.categoryService.createCategory(data)
 
-    return this.response.success({
-      message: this.primitiveService.getMessage({
-        message: Messages.successfullyOperation.create,
-        keywords: [this.entity],
-      }),
-    })
+    return this.response.item(category, new CategoryTransformer())
   }
 
   @Get()
@@ -130,17 +125,12 @@ export class CategoryController {
   async updateCategory(
     @Param('id', ParseIntPipe) id: number,
     @Body() data: UpdateCategoryDto,
-  ): Promise<SuccessfullyOperation> {
+  ): Promise<UpdateResponse> {
     await this.categoryService.checkExisting({ where: id })
 
-    await this.categoryService.update(id, data)
+    const category = await this.categoryService.update(id, data)
 
-    return this.response.success({
-      message: this.primitiveService.getMessage({
-        message: Messages.successfullyOperation.update,
-        keywords: [this.entity],
-      }),
-    })
+    return this.response.item(category, new CategoryTransformer())
   }
 
   @Delete(':id')
@@ -157,7 +147,7 @@ export class CategoryController {
     await this.categoryAbleService.detachCategoryAble([{ categoryId: id }])
 
     return this.response.success({
-      message: this.primitiveService.getMessage({
+      message: this.categoryService.getMessage({
         message: Messages.successfullyOperation.delete,
         keywords: [this.entity],
       }),

@@ -3,10 +3,11 @@ import { BaseService } from '@sharedServices/base.service'
 import { difference } from 'lodash'
 import { Connection, Repository } from 'typeorm'
 import { ImageEntity } from '../entities/image.entity'
-import { ImageAbleEntity, ImageAbleType } from '../entities/imageAble.entity'
+import { ImageAbleEntity } from '../entities/imageAble.entity'
 import { ImageAbleRepository } from '../repositories/imageAble.repository'
 import { ImageService } from './image.service'
 import { Entity } from '@shared/interfaces/response.interface'
+import { AbleType } from '@shared/entities/base.entity'
 
 @Injectable()
 export class ImageAbleService extends BaseService {
@@ -25,26 +26,18 @@ export class ImageAbleService extends BaseService {
   /**
    * Attach imageAble when crate or update product, post, ...
    * @param params.imageId number
-   * @param params.imageAbleId number
-   * @param params.imageAbleType ImageAbleType
+   * @param params.ableId number
+   * @param params.ableType ableType
    */
   async attachImageAble(
     params: {
       imageId: number
-      imageAbleId: number
-      imageAbleType: ImageAbleType
+      ableId: number
+      ableType: AbleType
     }[],
   ): Promise<void> {
     params.forEach(async (param: any) => {
-      const { imageId, imageAbleId, imageAbleType } = param
-
-      const imageAble = new ImageAbleEntity()
-
-      imageAble.imageId = imageId
-      imageAble.imageAbleId = imageAbleId
-      imageAble.imageAbleType = imageAbleType
-
-      await this.imageAbleRepository.save(imageAble)
+      await this.imageAbleRepository.save(param)
     })
   }
 
@@ -58,52 +51,50 @@ export class ImageAbleService extends BaseService {
   /**
    * Detach imageAble when delete product, post, ...
    * Some image need to remove foreign key to this product, post
-   * @param params.imageAbleId
-   * @param params.imageAbleType
+   * @param params.ableId
+   * @param params.ableType
    */
-  async detachImageAble(
-    params: { imageAbleId: number; imageAbleType: string }[],
-  )
+  async detachImageAble(params: { ableId: number; ableType: string }[])
 
   /**
    * Detach imageAble
    * @param params.imageId
-   * @param params.imageAbleId
-   * @param params.imageAbleType
+   * @param params.ableId
+   * @param params.ableType
    * - Detach imageAble when delete image -> All product, post, ... need to remove foreign key to this image
    * - Detach imageAble when delete product, post, ... -> Some image need to remove foreign key to this product, post
    */
   async detachImageAble(
     params: {
       imageId?: number
-      imageAbleId?: number
-      imageAbleType?: string
+      ableId?: number
+      ableType?: string
     }[],
   ): Promise<void> {
-    const imageAbleIdsExisting: number[] = await this.findWhere(params, ['id'])
+    const ableIdsExisting: number[] = await this.findWhere(params, ['id'])
 
-    if (imageAbleIdsExisting.length > 0) {
-      await this.imageAbleRepository.delete(imageAbleIdsExisting)
+    if (ableIdsExisting.length > 0) {
+      await this.imageAbleRepository.delete(ableIdsExisting)
     }
   }
 
   /**
    * Update relation imageAble when update product, post, ...
    * @param params.imageId
-   * @param params.imageAbleId
-   * @param params.imageAbleType
+   * @param params.ableId
+   * @param params.ableType
    */
   async updateRelationImageAble(params: {
     imageIds: number[]
-    imageAbleId: number
-    imageAbleType: ImageAbleType
+    ableId: number
+    ableType: AbleType
   }): Promise<void> {
-    const { imageIds, imageAbleId, imageAbleType } = params
+    const { imageIds, ableId, ableType } = params
 
     const currentImageIds: number[] = await this.findWhere(
       {
-        imageAbleId,
-        imageAbleType,
+        ableId,
+        ableType,
       },
       ['imageId'],
     )
@@ -115,9 +106,9 @@ export class ImageAbleService extends BaseService {
     // detach new imageAble
     const detachImageIds: number[] = difference(currentImageIds, imageIds)
 
-    const imageAbles = detachImageIds.map((imageAbleId) => ({
-      imageAbleId,
-      imageAbleType,
+    const imageAbles = detachImageIds.map((ableId) => ({
+      ableId,
+      ableType,
     }))
 
     await this.detachImageAble(imageAbles)
@@ -131,8 +122,8 @@ export class ImageAbleService extends BaseService {
 
     const imagesAbleData = existingImages.map((image: ImageEntity) => ({
       imageId: image.id,
-      imageAbleId,
-      imageAbleType,
+      ableId,
+      ableType,
     }))
 
     await this.attachImageAble(imagesAbleData)

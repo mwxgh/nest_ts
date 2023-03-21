@@ -1,29 +1,15 @@
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm'
-import { ProductEntity } from '../../../components/product/entities/product.entity'
-import { TimeStampEntity } from '../../../shared/entities/base.entity'
+import { Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm'
+import { ProductEntity } from '../../product/entities/product.entity'
+import { AbleEntity } from '../../../shared/entities/base.entity'
 import { Notifiable } from '../../../shared/services/notification/decorators/notifiable.decorator'
 import { PostEntity } from '../../post/entities/post.entity'
 import { CategoryEntity } from './category.entity'
 
-export enum CategoryAbleType {
-  product = 'PRODUCT',
-  post = 'POST',
-}
-
 @Notifiable()
 @Entity({ name: 'categoryAble' })
-export class CategoryAbleEntity extends TimeStampEntity {
-  @Column({ type: 'int' })
+export class CategoryAbleEntity extends AbleEntity {
+  @PrimaryColumn({ type: 'int' })
   public categoryId: number
-
-  @Column({ type: 'int' })
-  public categoryAbleId: number
-
-  @Column({ type: 'enum', enum: CategoryAbleType })
-  public categoryAbleType: CategoryAbleType
-
-  @Column({ type: 'timestamp' })
-  public verifiedAt: Date
 
   @ManyToOne(() => CategoryEntity, (category) => category.categoryAbles)
   @JoinColumn({
@@ -34,14 +20,14 @@ export class CategoryAbleEntity extends TimeStampEntity {
 
   @ManyToOne(() => ProductEntity, (product) => product.categories)
   @JoinColumn({
-    name: 'categoryAbleId',
+    name: 'ableId',
     referencedColumnName: 'id',
   })
   product: ProductEntity
 
   @ManyToOne(() => PostEntity, (post) => post.categories)
   @JoinColumn({
-    name: 'categoryAbleId',
+    name: 'ableId',
     referencedColumnName: 'id',
   })
   post: PostEntity

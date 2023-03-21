@@ -5,6 +5,7 @@ import { Connection, Repository } from 'typeorm'
 import { TagEntity } from '../entities/tag.entity'
 import { TagRepository } from '../repositories/tag.repository'
 import { Entity } from '@shared/interfaces/response.interface'
+import { CreateTagDto } from '@tagModule/dto/tag.dto'
 
 @Injectable()
 export class TagService extends BaseService {
@@ -13,6 +14,11 @@ export class TagService extends BaseService {
   constructor(private connection: Connection) {
     super()
     this.repository = this.connection.getCustomRepository(TagRepository)
+  }
+
+  async createTag(data: CreateTagDto): Promise<TagEntity> {
+    await this.checkConflict({ where: { name: data.name } })
+    return this.create(data)
   }
 
   async queryTag(params: QueryParams) {
@@ -26,11 +32,11 @@ export class TagService extends BaseService {
       sortType,
     })
 
-    const tagQuery = baseQuery
-      .leftJoinAndSelect('tags.tagAbles', 'tagAbles')
-      .leftJoinAndSelect('tagAbles.post', 'posts')
-      .leftJoinAndSelect('tagAbles.product', 'products')
+    // const tagQuery = baseQuery
+    //   .leftJoinAndSelect('tags.tagAbles', 'tagAbles')
+    //   .leftJoinAndSelect('tagAbles.post', 'posts')
+    //   .leftJoinAndSelect('tagAbles.product', 'products')
 
-    return tagQuery
+    return baseQuery
   }
 }

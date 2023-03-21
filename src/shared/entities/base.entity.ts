@@ -1,9 +1,16 @@
 import {
+  Column,
   CreateDateColumn,
   DeleteDateColumn,
+  PrimaryColumn,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm'
+
+export enum AbleType {
+  product = 'PRODUCT',
+  post = 'POST',
+}
 
 export abstract class IdEntity {
   @PrimaryGeneratedColumn()
@@ -29,4 +36,12 @@ export abstract class BaseTimeStampEntity extends IdEntity {
 export abstract class TimeStampEntity extends BaseTimeStampEntity {
   @DeleteDateColumn({ type: 'timestamp', precision: null })
   public deletedAt: Date
+}
+
+export abstract class AbleEntity {
+  @PrimaryColumn({ name: 'ableId', type: 'int' })
+  ableId: number
+
+  @Column({ name: 'ableType', type: 'enum', enum: AbleType })
+  ableType: AbleType
 }
