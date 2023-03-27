@@ -80,9 +80,7 @@ export class UserController {
   @ApiOperation({ summary: 'Admin create user' })
   @ApiOkResponse({ description: 'New user entity' })
   async createUser(@Body() data: CreateUserDto): Promise<CreateResponse> {
-    const saveUser = await this.userService.saveUser({
-      data,
-    })
+    const saveUser = await this.userService.saveUser(data)
 
     return this.response.item(saveUser, new UserTransformer(this.relations))
   }

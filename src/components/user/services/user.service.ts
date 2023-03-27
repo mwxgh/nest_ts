@@ -153,13 +153,10 @@ export class UserService extends BaseService {
   /**
    * Save user and return user entity with relations
    *
-   * @param params.data  CreateUserDto | UserRegisterDto
+   * @param data  CreateUserDto | UserRegisterDto
    * @return User
    */
-  async saveUser(params: {
-    data: CreateUserDto | UserRegisterDto
-  }): Promise<UserEntity> {
-    let { data } = params
+  async saveUser(data: CreateUserDto | UserRegisterDto): Promise<UserEntity> {
     const { email, username, password } = data
 
     await this.checkIdentifier(email, username)
