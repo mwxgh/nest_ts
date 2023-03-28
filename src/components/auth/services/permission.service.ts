@@ -55,7 +55,7 @@ export class PermissionService extends BaseService {
 
     const slug = await this.generateSlug(data.name)
 
-    return this.update(id, assign(data, { slug: slug }))
+    return this.update(id, assign(data, { slug }))
   }
 
   /**

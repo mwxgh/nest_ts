@@ -16,6 +16,8 @@ import { JoinPostAbleType, PostEntity } from '../entities/post.entity'
 import { PostRepository } from '../repositories/post.repository'
 import { Entity } from '@shared/interfaces/response.interface'
 import { AbleType } from '@shared/entities/base.entity'
+import { TagEntity } from '@tagModule/entities/tag.entity'
+import { CategoryEntity } from '@categoryModule/entities/category.entity'
 
 @Injectable()
 export class PostService extends BaseService {
@@ -140,11 +142,12 @@ export class PostService extends BaseService {
    * @param params.data CreatePostDto
    */
   async savePost(data: CreatePostDto): Promise<PostEntity> {
-    const tagsAvailable = await this.tagService.findIdInOrFail(data.tagIds)
-
-    const categoriesAvailable = await this.categoryService.findIdInOrFail(
-      data.categoryIds,
+    const tagsAvailable: TagEntity[] = await this.tagService.findIdInOrFail(
+      data.tagIds,
     )
+
+    const categoriesAvailable: CategoryEntity[] =
+      await this.categoryService.findIdInOrFail(data.categoryIds)
 
     const imagesAvailable = await this.imageService.findIdInOrFail(
       data.imageIds,
@@ -160,7 +163,7 @@ export class PostService extends BaseService {
     const newPost: PostEntity = await this.create(dataToSave)
 
     // tagAble
-    const tagsAbleData = tagsAvailable.map((tag: any) => ({
+    const tagsAbleData = tagsAvailable.map((tag: TagEntity) => ({
       tagId: tag.id,
       ableId: newPost.id,
       ableType: AbleType.post,
@@ -168,11 +171,13 @@ export class PostService extends BaseService {
     await this.tagAbleService.attachTagAble(tagsAbleData)
 
     // categoryAble
-    const categoryAbleData = categoriesAvailable.map((category: any) => ({
-      categoryId: category.id,
-      ableId: newPost.id,
-      ableType: AbleType.post,
-    }))
+    const categoryAbleData = categoriesAvailable.map(
+      (category: CategoryEntity) => ({
+        categoryId: category.id,
+        ableId: newPost.id,
+        ableType: AbleType.post,
+      }),
+    )
     await this.categoryAbleService.attachCategoryAble(categoryAbleData)
 
     // imageAble
@@ -225,23 +230,24 @@ export class PostService extends BaseService {
     }
 
     // update post
-    const dataToUpdate = assign(data, { slug: slugify(data.title) })
+    const slug = await this.generateSlug(data.title)
+    const dataWithSlug = assign(data, { slug })
 
     const count = await this.count({
       where: {
         title: data.title,
         type: data.type,
-        slug: dataToUpdate.slug,
+        slug: dataWithSlug.slug,
       },
     })
 
     if (currentPost.title === data.title && currentPost.type === data.type) {
-      delete dataToUpdate.slug
+      delete dataWithSlug.slug
     } else if (count) {
-      dataToUpdate.slug = `${dataToUpdate.slug}-${count}`
+      dataWithSlug.slug = `${dataWithSlug.slug}-${count}`
     }
 
-    await this.update(Number(id), dataToUpdate)
+    await this.update(id, dataWithSlug)
   }
 
   /**
