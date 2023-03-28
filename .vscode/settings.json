@@ -7,6 +7,7 @@
         "ormconfig",
         "prepush",
         "typeorm",
-        "websockets"
+        "websockets",
+        "mwxgh"
     ]
 }

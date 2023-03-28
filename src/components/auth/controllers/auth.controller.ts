@@ -77,7 +77,7 @@ export class AuthController {
     @Req() request: Request,
     @AuthenticatedUser() currentUser: Me,
   ): Promise<SuccessfullyOperation> {
-    await this.authService.logout({ currentUser })
+    await this.authService.logout(currentUser)
 
     return this.response.success({
       message: this.authService.getMessage({

@@ -83,14 +83,12 @@ export class AuthService extends BaseService {
   /**
    * Register native user
    *
-   * @param params UserRegisterDto
+   * @param data UserRegisterDto
    *
    * @returns AuthenticationAttribute
    */
-  async register(params: UserRegisterDto): Promise<AuthenticationAttribute> {
-    const user = await this.userService.saveUser({
-      data: params,
-    })
+  async register(data: UserRegisterDto): Promise<AuthenticationAttribute> {
+    const user = await this.userService.saveUser(data)
 
     return this._generateToken({ user, refresh: false })
   }
@@ -226,7 +224,7 @@ export class AuthService extends BaseService {
     }
   }
 
-  async logout({ currentUser }: { currentUser: UserEntity }) {
+  async logout(currentUser: UserEntity) {
     await this.userService.update(currentUser.id, { refreshToken: null })
   }
 }
