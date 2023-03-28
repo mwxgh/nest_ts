@@ -1,40 +1,30 @@
 import { ApiProperty, OmitType, PartialType } from '@nestjs/swagger'
-import {
-  IsEmail,
-  IsEnum,
-  IsNumber,
-  IsString,
-  Min,
-  MinLength,
-} from 'class-validator'
+import { IsEnum, IsNotEmpty, IsNumber, IsString } from 'class-validator'
 import { CommentStatus } from '../entities/comment.entity'
+import { Index } from 'typeorm'
+import { Type } from 'class-transformer'
 
 export class CommentProperties {
   @ApiProperty()
-  @IsEmail()
-  email: string
-
-  @ApiProperty()
-  @IsString()
-  fullName: string
-
-  @ApiProperty()
-  @IsString()
-  contacts: string
-
-  @ApiProperty()
   @IsNumber()
-  @Min(1)
-  commentAbleId: number
+  @IsNotEmpty()
+  postId: number
 
   @ApiProperty()
+  @IsNotEmpty()
   @IsString()
-  @MinLength(3)
-  commentAbleType: string
+  content: string
 
   @ApiProperty()
   @IsEnum(CommentStatus)
   status: CommentStatus
+
+  @ApiProperty({ name: 'parentId', type: Number })
+  @IsNotEmpty()
+  @IsNumber()
+  @Index('parentId')
+  @Type(() => Number)
+  public parentId: number
 }
 
 export class CreateCommentDto extends OmitType(

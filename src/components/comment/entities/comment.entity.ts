@@ -1,13 +1,8 @@
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm'
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm'
 import { TimeStampEntity } from '../../../shared/entities/base.entity'
 import { Notifiable } from '../../../shared/services/notification/decorators/notifiable.decorator'
 import { PostEntity } from '../../post/entities/post.entity'
-import { ProductEntity } from '../../product/entities/product.entity'
-
-export enum CommentAbleType {
-  product = 'PRODUCT',
-  post = 'POST',
-}
+import { UserEntity } from '../../user/entities/user.entity'
 
 export enum CommentStatus {
   pending = 'PENDING',
@@ -24,38 +19,42 @@ export enum JoinCommentAble {
 @Notifiable()
 @Entity({ name: 'comment' })
 export class CommentEntity extends TimeStampEntity {
-  @Column({ type: 'varchar' })
-  email: string
+  @Column({ name: 'userId', type: 'int' })
+  userId: number
 
-  @Column({ type: 'varchar' })
-  fullName: string
+  @Column({ name: 'postId', type: 'int' })
+  postId: number
 
-  @Column({ type: 'varchar' })
-  contact: string
+  @Column({ name: 'content', type: 'varchar' })
+  content: string
 
   @Column({ type: 'enum', enum: CommentStatus })
   status: CommentStatus
 
-  @Column({ name: 'commentAbleId', type: 'int' })
-  commentAbleId: number
-
-  @Column({ name: 'commentAbleType', type: 'int' })
-  commentAbleType: string
+  @Column({ name: 'parentId', type: 'int' })
+  public parentId: number
 
   @Column({ type: 'timestamp' })
   public verifiedAt: Date
 
-  @ManyToOne(() => ProductEntity, (product) => product.comments)
+  @OneToMany(() => CommentEntity, (comment) => comment.children)
   @JoinColumn({
-    name: 'commentAbleId',
+    name: 'parentId',
     referencedColumnName: 'id',
   })
-  public product: ProductEntity
+  children: CommentEntity[]
 
   @ManyToOne(() => PostEntity, (post) => post.comments)
   @JoinColumn({
-    name: 'commentAbleId',
+    name: 'postId',
     referencedColumnName: 'id',
   })
   public post: PostEntity
+
+  @ManyToOne(() => UserEntity, (user) => user.comments)
+  @JoinColumn({
+    name: 'userId',
+    referencedColumnName: 'id',
+  })
+  public user: UserEntity
 }

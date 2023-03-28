@@ -15,15 +15,15 @@ export class CreateCommentsTable1650207390501 implements MigrationInterface {
             generationStrategy: 'increment',
           },
           {
-            name: 'email',
-            type: 'varchar',
+            name: 'userId',
+            type: 'int',
           },
           {
-            name: 'fullName',
-            type: 'varchar',
+            name: 'postId',
+            type: 'int',
           },
           {
-            name: 'contact',
+            name: 'content',
             type: 'varchar',
           },
           {
@@ -32,12 +32,8 @@ export class CreateCommentsTable1650207390501 implements MigrationInterface {
             enum: ['PENDING', 'FORWARD', 'PUBLISH', 'HIDE'],
           },
           {
-            name: 'commentAbleId',
+            name: 'parentId',
             type: 'int',
-          },
-          {
-            name: 'commentAbleType',
-            type: 'varchar',
           },
           {
             name: 'verifiedAt',

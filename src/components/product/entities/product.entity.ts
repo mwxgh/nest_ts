@@ -54,9 +54,6 @@ export class ProductEntity extends TimeStampEntity {
   @OneToMany(() => ImageAbleEntity, (imageAble) => imageAble.product)
   images: ImageAbleEntity[]
 
-  @OneToMany(() => CommentEntity, (comment) => comment.product)
-  comments: CommentEntity[]
-
   @OneToMany(() => OrderProductEntity, (orderItem) => orderItem.products)
   orders: OrderProductEntity[]
 

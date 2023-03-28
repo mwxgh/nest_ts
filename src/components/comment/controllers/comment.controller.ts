@@ -1,76 +1,89 @@
-import { ApiHeader, ApiQuery, ApiTags } from '@nestjs/swagger'
 import {
-  Body,
-  Controller,
-  Get,
-  NotFoundException,
-  Post,
-  Query,
-} from '@nestjs/common'
-import { getRepository } from 'typeorm'
-import { CreateResponse } from '@shared/interfaces/response.interface'
-import { PostEntity } from '../../post/entities/post.entity'
-import { ProductEntity } from '../../product/entities/product.entity'
-import { PostTransformer } from '@postModule/transformers/post.transformer'
-import { ProductTransformer } from '@productModule/transformers/product.transformer'
+  ApiBearerAuth,
+  ApiHeader,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger'
+import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common'
+import { SelectQueryBuilder } from 'typeorm'
+import {
+  CreateResponse,
+  GetListPaginationResponse,
+  GetListResponse,
+} from '@shared/interfaces/response.interface'
 import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.service'
 import { CreateCommentDto } from '../dto/comment.dto'
-import { CommentAbleType } from '../entities/comment.entity'
 import { CommentService } from '../services/comment.service'
 import { CommentTransformer } from '../transformers/comment.transformer'
+import { JwtAuthGuard } from '@authModule/guards/jwtAuth.guard'
+import { Auth } from '@authModule/decorators/auth.decorator'
+import { QueryManyDto } from '@shared/dto/queryParams.dto'
+import { CommentEntity } from '@commentModule/entities/comment.entity'
+import { IPaginationOptions } from '@shared/interfaces/request.interface'
 
 @ApiTags('Comments')
 @ApiHeader({
   name: 'Content-Type',
   description: 'application/json',
 })
-@Controller('api/comment')
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard)
+@Controller('api/v1/comment')
 export class UserCommentController {
   constructor(
     private comment: CommentService,
     private response: ApiResponseService,
   ) {}
 
-  @Get()
-  @ApiQuery({ name: 'id' })
-  @ApiQuery({ name: 'type' })
-  async show(@Query() query: any): Promise<any> {
-    if (!query.type.include('posts' || 'products')) {
-      throw new NotFoundException()
-    }
-
-    if (query.type == 'posts') {
-      const post = await getRepository(PostEntity)
-        .createQueryBuilder(query.type)
-        .leftJoinAndSelect(`${query.type}.comments`, 'comments')
-        .where(`${query.type}.id = :id`, { id: Number(query.id) })
-        .getOne()
-      if (!post) throw new NotFoundException()
-      return this.response.item(post, new PostTransformer())
-    }
-
-    if (query.type == 'products') {
-      const product = await getRepository(ProductEntity)
-        .createQueryBuilder(query.type)
-        .leftJoinAndSelect(`${query.type}.comments`, 'comments')
-        .where(`${query.type}.id = :id`, { id: Number(query.id) })
-        .getOne()
-      if (!product) throw new NotFoundException()
-      return this.response.item(product, new ProductTransformer(['comments']))
-    }
-  }
+  private entity = 'comment'
+  private fields = ['content']
 
   @Post()
-  async store(@Body() body: CreateCommentDto): Promise<CreateResponse> {
-    const value = Object.values(CommentAbleType)
+  @Auth('admin', 'user')
+  @ApiOperation({ summary: 'User create new category' })
+  @ApiOkResponse({ description: 'New comment entity' })
+  async createComment(@Body() data: CreateCommentDto): Promise<CreateResponse> {
+    const comment = await this.comment.create(data)
 
-    const arr = []
+    return this.response.item(comment, new CommentTransformer())
+  }
 
-    value.forEach((el) => arr.push(el))
-    if (!arr.includes(body.commentAbleType)) throw new NotFoundException()
+  @Get()
+  @ApiOperation({ summary: 'Get list comments' })
+  @ApiOkResponse({ description: 'List comments with param query' })
+  async readComments(
+    @Query() query: QueryManyDto,
+  ): Promise<GetListResponse | GetListPaginationResponse> {
+    const { search, includes, sortBy, sortType } = query
 
-    const data = await this.comment.create(body)
+    const queryBuilder: SelectQueryBuilder<CommentEntity> =
+      await this.comment.queryBuilder({
+        entity: this.entity,
+        fields: this.fields,
+        keyword: search,
+        includes,
+        sortBy,
+        sortType,
+      })
 
-    return this.response.item(data, new CommentTransformer())
+    if (query.perPage || query.page) {
+      const paginateOption: IPaginationOptions = {
+        limit: query.perPage ? query.perPage : 10,
+        page: query.page ? query.page : 1,
+      }
+
+      const data = await this.comment.paginationCalculate(
+        queryBuilder,
+        paginateOption,
+      )
+
+      return this.response.paginate(data, new CommentTransformer())
+    }
+
+    return this.response.collection(
+      await queryBuilder.getMany(),
+      new CommentTransformer(),
+    )
   }
 }

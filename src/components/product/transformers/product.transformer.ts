@@ -1,5 +1,4 @@
 import { CategoryAbleTransformer } from '@categoryModule/transformers/categoryAble.transformer'
-import { CommentTransformer } from '@commentModule/transformers/comment.transformer'
 import { ImageTransformer } from '@imageModule/transformers/image.transformer'
 import { Transformer } from '@shared/transformers/transformer'
 import { ProductEntity } from '../entities/product.entity'
@@ -25,9 +24,5 @@ export class ProductTransformer extends Transformer {
 
   includeCategories(model: ProductEntity): Entity[] {
     return this.collection(model.categories, new CategoryAbleTransformer())
-  }
-
-  includeComments(model: ProductEntity): Entity[] {
-    return this.collection(model.comments, new CommentTransformer())
   }
 }
