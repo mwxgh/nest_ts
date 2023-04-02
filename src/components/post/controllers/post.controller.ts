@@ -73,7 +73,7 @@ export class PostController {
     @Query() query: QueryManyPostDto,
   ): Promise<GetListResponse | GetListPaginationResponse> {
     const {
-      search,
+      keyword,
       sortBy,
       sortType,
       includes,
@@ -87,7 +87,7 @@ export class PostController {
       await this.postService.queryPost({
         entity: this.entity,
         fields: this.fields,
-        keyword: search,
+        keyword,
         includes,
         sortBy,
         sortType,

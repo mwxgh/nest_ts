@@ -91,13 +91,13 @@ export class ContactController {
   async readContacts(
     @Query() query: QueryManyDto,
   ): Promise<GetListResponse | GetListPaginationResponse> {
-    const { search, sortBy, sortType } = query
+    const { keyword, sortBy, sortType } = query
 
     const queryBuilder: SelectQueryBuilder<ContactEntity> =
       await this.contactService.queryBuilder({
         entity: this.entity,
         fields: this.fields,
-        keyword: search,
+        keyword,
         sortBy,
         sortType,
       })

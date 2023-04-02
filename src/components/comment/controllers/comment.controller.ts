@@ -55,13 +55,13 @@ export class UserCommentController {
   async readComments(
     @Query() query: QueryManyDto,
   ): Promise<GetListResponse | GetListPaginationResponse> {
-    const { search, includes, sortBy, sortType } = query
+    const { keyword, includes, sortBy, sortType } = query
 
     const queryBuilder: SelectQueryBuilder<CommentEntity> =
       await this.comment.queryBuilder({
         entity: this.entity,
         fields: this.fields,
-        keyword: search,
+        keyword,
         includes,
         sortBy,
         sortType,

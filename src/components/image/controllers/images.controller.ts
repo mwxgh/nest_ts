@@ -83,12 +83,12 @@ export class ImageController {
   async readImages(
     @Query() query: QueryManyDto,
   ): Promise<GetListResponse | GetListPaginationResponse> {
-    const { search, sortBy, sortType } = query
+    const { keyword, sortBy, sortType } = query
 
     const queryBuilder = await this.imageService.queryBuilder({
       entity: this.entity,
       fields: this.fields,
-      keyword: search,
+      keyword,
       sortBy,
       sortType,
     })

@@ -75,13 +75,13 @@ export class RoleController {
   async readRoles(
     @Query() query: QueryManyDto,
   ): Promise<GetListResponse | GetListPaginationResponse> {
-    const { search, includes, sortBy, sortType } = query
+    const { keyword, includes, sortBy, sortType } = query
 
     let queryBuilder: SelectQueryBuilder<RoleEntity> =
       await this.roleService.queryBuilder({
         entity: this.entity,
         fields: this.fields,
-        keyword: search,
+        keyword,
         sortBy,
         sortType,
       })

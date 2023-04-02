@@ -75,12 +75,12 @@ export class PermissionController {
   async readPermissions(
     @Query() query: QueryManyDto,
   ): Promise<GetListResponse | GetListPaginationResponse> {
-    const { search, sortBy, sortType } = query
+    const { keyword, sortBy, sortType } = query
 
     const queryBuilder = await this.permissionService.queryBuilder({
       entity: this.entity,
       fields: this.fields,
-      keyword: search,
+      keyword,
       sortBy,
       sortType,
     })

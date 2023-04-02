@@ -76,12 +76,12 @@ export class ProductController {
   async readProducts(
     @Query() query: QueryManyDto,
   ): Promise<GetListResponse | GetListPaginationResponse> {
-    const { search, includes, sortBy, sortType } = query
+    const { keyword, includes, sortBy, sortType } = query
 
     const queryBuilder = await this.productService.queryProduct({
       entity: this.entity,
       fields: this.fields,
-      keyword: search,
+      keyword,
       sortBy,
       sortType,
       includes,

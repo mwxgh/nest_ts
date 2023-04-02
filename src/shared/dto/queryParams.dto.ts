@@ -6,20 +6,18 @@ import {
 } from '@nestjs/swagger'
 import { PostFilterAttributes } from '@postModule/dto/post.dto'
 import { Type } from 'class-transformer'
-import { IsEnum, IsNumber, IsOptional, IsString, Min } from 'class-validator'
+import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator'
 import { SortType } from '../constant/constant'
 
 export class QueryProperties {
   @ApiProperty()
   @IsOptional()
-  @Min(0)
   @IsNumber()
   @Type(() => Number)
   page: number
 
   @ApiProperty()
   @IsOptional()
-  @Min(0)
   @IsNumber()
   @Type(() => Number)
   perPage: number
@@ -27,7 +25,7 @@ export class QueryProperties {
   @ApiProperty()
   @IsOptional()
   @IsString()
-  search: string
+  keyword: string
 
   @ApiProperty({
     oneOf: [
@@ -52,10 +50,6 @@ export class QueryProperties {
   @IsOptional()
   @IsEnum(SortType)
   sortType: SortType
-
-  @ApiProperty()
-  @IsOptional()
-  filter: { [key: string]: string }
 }
 
 export class QueryPaginateDto extends OmitType(QueryProperties, [] as const) {}
@@ -63,9 +57,8 @@ export class QueryPaginateDto extends OmitType(QueryProperties, [] as const) {}
 export class QueryManyDto extends OmitType(QueryProperties, [] as const) {}
 
 export class QueryListDto extends PickType(QueryProperties, [
-  'search',
+  'keyword',
   'includes',
-  'filter',
 ] as const) {}
 
 export class QueryOneDto extends PickType(QueryProperties, [

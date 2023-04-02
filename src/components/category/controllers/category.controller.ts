@@ -75,13 +75,13 @@ export class CategoryController {
   async readCategories(
     @Query() query: QueryManyDto,
   ): Promise<GetListResponse | GetListPaginationResponse> {
-    const { search, includes, sortBy, sortType } = query
+    const { keyword, includes, sortBy, sortType } = query
 
     const queryBuilder: SelectQueryBuilder<CategoryEntity> =
       await this.categoryService.queryCategory({
         entity: this.entity,
         fields: this.fields,
-        keyword: search,
+        keyword,
         includes,
         sortBy,
         sortType,

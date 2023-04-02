@@ -92,13 +92,13 @@ export class UserController {
   async readUsers(
     @Query() query: QueryManyDto,
   ): Promise<GetListResponse | GetListPaginationResponse> {
-    const { search, includes, sortBy, sortType } = query
+    const { keyword, includes, sortBy, sortType } = query
 
     let queryBuilder: SelectQueryBuilder<UserEntity> =
       await this.userService.queryBuilder({
         entity: this.entity,
         fields: this.fields,
-        keyword: search,
+        keyword,
         sortBy,
         sortType,
       })

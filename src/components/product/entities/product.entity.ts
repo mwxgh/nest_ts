@@ -1,6 +1,5 @@
 import { Column, Entity, OneToMany } from 'typeorm'
 import { CartItemEntity } from '../../../components/cart/entities/cartItem.entity'
-import { CommentEntity } from '../../../components/comment/entities/comment.entity'
 import { TimeStampEntity } from '../../../shared/entities/base.entity'
 import { Notifiable } from '../../../shared/services/notification/decorators/notifiable.decorator'
 import { CategoryAbleEntity } from '../../category/entities/categoryAble.entity'
