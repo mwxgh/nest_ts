@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common'
+import { Entity } from '@shared/interfaces/response.interface'
 import { BaseService } from '@sharedServices/base.service'
 import { Connection, Repository } from 'typeorm'
 import { CartEntity } from '../entities/cart.entity'
 import { CartRepository } from '../repositories/cart.repository'
-import { Entity } from '@shared/interfaces/response.interface'
 @Injectable()
 export class CartService extends BaseService {
   public repository: Repository<CartEntity>

@@ -1,8 +1,8 @@
 import * as fs from 'fs'
 import * as fse from 'fs-extra'
+import { isNil } from 'lodash'
 import * as path from 'path'
 import { Command, Error, IOption, Info } from './Command'
-import { isNil } from 'lodash'
 
 export class MakeSeederCommand extends Command {
   signature(): string {

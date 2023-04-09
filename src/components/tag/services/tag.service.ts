@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common'
+import { Entity } from '@shared/interfaces/response.interface'
 import { BaseService } from '@sharedServices/base.service'
+import { CreateTagDto } from '@tagModule/dto/tag.dto'
 import { Connection, Repository } from 'typeorm'
 import { TagEntity } from '../entities/tag.entity'
 import { TagRepository } from '../repositories/tag.repository'
-import { Entity } from '@shared/interfaces/response.interface'
-import { CreateTagDto } from '@tagModule/dto/tag.dto'
 
 @Injectable()
 export class TagService extends BaseService {

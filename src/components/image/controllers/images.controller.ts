@@ -34,13 +34,13 @@ import Messages from '@shared/message/message'
 import { PrimitiveService } from '@shared/services/primitive.service'
 import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.service'
 
+import { ImageEntity } from '@imageModule/entities/image.entity'
+import CustomFilesInterceptor from '@shared/uploads/customInterceptor'
+import { defaultPaginationOption } from '@shared/utils/defaultPaginationOption.util'
+import { SelectQueryBuilder } from 'typeorm'
 import { CreateImageDto, UpdateImageDto } from '../dto/image.dto'
 import { ImageService } from '../services/image.service'
 import { ImageTransformer } from '../transformers/image.transformer'
-import CustomFilesInterceptor from '@shared/uploads/customInterceptor'
-import { ImageEntity } from '@imageModule/entities/image.entity'
-import { SelectQueryBuilder } from 'typeorm'
-import { defaultPaginationOption } from '@shared/utils/defaultPaginationOption.util'
 
 @ApiTags('Images')
 @ApiHeader({

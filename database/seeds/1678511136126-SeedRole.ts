@@ -1,7 +1,7 @@
-import { Connection } from 'typeorm'
-import { RoleEntity } from '../../src/components/auth/entities/role.entity'
 import { filter } from 'lodash'
+import { Connection } from 'typeorm'
 import { PermissionEntity } from '../../src/components/auth/entities/permission.entity'
+import { RoleEntity } from '../../src/components/auth/entities/role.entity'
 
 export default class RolesTableSeeder {
   async up(connection: Connection): Promise<void> {

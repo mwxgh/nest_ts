@@ -1,6 +1,6 @@
+import { ResponseEntity } from '@shared/interfaces/response.interface'
 import { Transformer } from '@shared/transformers/transformer'
 import { TagEntity } from '../entities/tag.entity'
-import { ResponseEntity } from '@shared/interfaces/response.interface'
 
 export class TagTransformer extends Transformer {
   transform(model: TagEntity): ResponseEntity {

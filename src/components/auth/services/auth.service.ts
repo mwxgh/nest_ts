@@ -13,8 +13,8 @@ import { UserEntity } from '@userModule/entities/user.entity'
 import { UserService } from '@userModule/services/user.service'
 import { OAuth2Client } from 'google-auth-library'
 import { isNil, pick } from 'lodash'
-import { LoginGoogleDto, UserLoginDto, UserRegisterDto } from '../dto/auth.dto'
 import * as moment from 'moment'
+import { LoginGoogleDto, UserLoginDto, UserRegisterDto } from '../dto/auth.dto'
 
 @Injectable()
 export class AuthService extends BaseService {

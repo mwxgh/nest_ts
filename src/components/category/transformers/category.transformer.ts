@@ -1,6 +1,6 @@
+import { ResponseEntity } from '@shared/interfaces/response.interface'
 import { Transformer } from '@shared/transformers/transformer'
 import { CategoryEntity } from '../entities/category.entity'
-import { ResponseEntity } from '@shared/interfaces/response.interface'
 
 export class CategoryTransformer extends Transformer {
   transform(model: CategoryEntity): ResponseEntity {

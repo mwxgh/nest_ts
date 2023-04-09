@@ -31,6 +31,7 @@ import {
 } from '@shared/interfaces/response.interface'
 import Messages from '@shared/message/message'
 import { PrimitiveService } from '@shared/services/primitive.service'
+import { defaultPaginationOption } from '@shared/utils/defaultPaginationOption.util'
 import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.service'
 import { Me } from '@userModule/dto/user.dto'
 import { SelectQueryBuilder } from 'typeorm'
@@ -38,7 +39,6 @@ import { CreateContactDto, UpdateContactDto } from '../dto/contact.dto'
 import { ContactEntity } from '../entities/contact.entity'
 import { ContactService } from '../services/contact.service'
 import { ContactTransformer } from '../transformers/contact.transformer'
-import { defaultPaginationOption } from '@shared/utils/defaultPaginationOption.util'
 
 @ApiTags('Contacts')
 @ApiHeader({

@@ -1,7 +1,7 @@
+import { Entity, ResponseEntity } from '@shared/interfaces/response.interface'
 import { Transformer } from '@shared/transformers/transformer'
 import { RoleEntity } from '../entities/role.entity'
 import { PermissionTransformer } from './permission.transformer'
-import { Entity, ResponseEntity } from '@shared/interfaces/response.interface'
 
 export class RoleTransformer extends Transformer {
   transform(model: RoleEntity): ResponseEntity {

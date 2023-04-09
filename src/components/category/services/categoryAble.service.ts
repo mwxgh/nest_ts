@@ -1,4 +1,6 @@
 import { Injectable } from '@nestjs/common'
+import { AbleType } from '@shared/entities/base.entity'
+import { Entity } from '@shared/interfaces/response.interface'
 import { BaseService } from '@sharedServices/base.service'
 import { difference } from 'lodash'
 import { Connection, Repository } from 'typeorm'
@@ -6,8 +8,6 @@ import { CategoryEntity } from '../entities/category.entity'
 import { CategoryAbleEntity } from '../entities/categoryAble.entity'
 import { CategoryAbleRepository } from '../repositories/categoryAble.repository'
 import { CategoryService } from './category.service'
-import { Entity } from '@shared/interfaces/response.interface'
-import { AbleType } from '@shared/entities/base.entity'
 
 @Injectable()
 export class CategoryAbleService extends BaseService {

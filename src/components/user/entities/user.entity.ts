@@ -3,8 +3,8 @@ import { Notifiable } from '../../../shared/services/notification/decorators/not
 import { RoleEntity } from '../../auth/entities/role.entity'
 
 import { TimeStampEntity } from '../../../shared/entities/base.entity'
-import { ContactEntity } from '../../contact/entities/contact.entity'
 import { CommentEntity } from '../../comment/entities/comment.entity'
+import { ContactEntity } from '../../contact/entities/contact.entity'
 
 export enum UserStatus {
   active = 'ACTIVE',

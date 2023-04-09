@@ -1,4 +1,3 @@
-import { FileInterceptor } from '@nestjs/platform-express'
 import {
   HttpException,
   HttpStatus,
@@ -8,9 +7,10 @@ import {
   Type,
 } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
+import { FileInterceptor } from '@nestjs/platform-express'
 import { MulterOptions } from '@nestjs/platform-express/multer/interfaces/multer-options.interface'
-import { diskStorage } from 'multer'
 import { existsSync, mkdirSync } from 'fs'
+import { diskStorage } from 'multer'
 import * as path from 'path'
 
 interface CustomFilesInterceptorOptions {

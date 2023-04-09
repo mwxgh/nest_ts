@@ -14,13 +14,13 @@ import { SuccessfullyOperation } from '@shared/interfaces/response.interface'
 import Messages from '@shared/message/message'
 import { ApiResponseService } from '@shared/services/apiResponse/apiResponse.service'
 import { Me } from '@userModule/dto/user.dto'
+import { Request } from 'express'
 import {
   LoginGoogleDto,
   RefreshDto,
   UserLoginDto,
   UserRegisterDto,
 } from '../dto/auth.dto'
-import { Request } from 'express'
 
 @ApiTags('Auth')
 @ApiHeader({

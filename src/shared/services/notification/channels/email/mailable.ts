@@ -197,7 +197,7 @@ export class Mailable implements IMailable {
     this._content += `<div style="text-align:center">
                 <a href="${link}">
                     <button style="${MailableDefaultStyle.button} ${MailableDefaultStyle.button_default}" class="${type}">${text}</button>
-                </a>    
+                </a>
             </div>`
     return this
   }

@@ -4,6 +4,7 @@ import { RoleService } from '@authModule/services/role.service'
 import { UserRoleService } from '@authModule/services/userRole.service'
 import { Injectable } from '@nestjs/common'
 import { DEFAULT_USER_STATUS } from '@shared/defaultValue/defaultValue'
+import { Entity } from '@shared/interfaces/response.interface'
 import { BaseService } from '@sharedServices/base.service'
 import { HashService } from '@sharedServices/hash/hash.service'
 import { difference, pick } from 'lodash'
@@ -11,7 +12,6 @@ import { Connection, Repository } from 'typeorm'
 import { CreateUserDto, UpdateUserDto } from '../dto/user.dto'
 import { UserEntity } from '../entities/user.entity'
 import { UserRepository } from '../repositories/user.repository'
-import { Entity } from '@shared/interfaces/response.interface'
 
 @Injectable()
 export class UserService extends BaseService {

@@ -4,6 +4,14 @@ import {
   NotFoundException,
 } from '@nestjs/common'
 import {
+  IPaginationOptions,
+  QueryParams,
+} from '@shared/interfaces/request.interface'
+import Messages from '@shared/message/message'
+import { defaultPaginationOption } from '@shared/utils/defaultPaginationOption.util'
+import { filter, isArray, isNil, isUndefined, keys, omit } from 'lodash'
+import { default as slugify } from 'slugify'
+import {
   FindConditions,
   FindManyOptions,
   FindOneOptions,
@@ -12,12 +20,6 @@ import {
   SelectQueryBuilder,
   getManager,
 } from 'typeorm'
-import {
-  IPaginationOptions,
-  QueryParams,
-} from '@shared/interfaces/request.interface'
-import { filter, isArray, isNil, isUndefined, keys, omit } from 'lodash'
-import { default as slugify } from 'slugify'
 import { DEFAULT_SORT_BY, DEFAULT_SORT_TYPE } from '../constant/constant'
 import {
   Entity,
@@ -25,8 +27,6 @@ import {
   ResponseEntity,
 } from '../interfaces/response.interface'
 import { PrimitiveService } from './primitive.service'
-import { defaultPaginationOption } from '@shared/utils/defaultPaginationOption.util'
-import Messages from '@shared/message/message'
 
 /**
  * Base service

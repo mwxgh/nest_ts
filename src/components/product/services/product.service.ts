@@ -5,6 +5,8 @@ import { Injectable } from '@nestjs/common'
 import { QueryParams } from '@shared/interfaces/request.interface'
 import { BaseService } from '@sharedServices/base.service'
 
+import { AbleType } from '@shared/entities/base.entity'
+import { Entity } from '@shared/interfaces/response.interface'
 import { TagService } from '@tagModule/services/tag.service'
 import { TagAbleService } from '@tagModule/services/tagAble.service'
 import { assign } from 'lodash'
@@ -13,8 +15,6 @@ import { Connection, Repository, SelectQueryBuilder } from 'typeorm'
 import { CreateProductDto, UpdateProductDto } from '../dto/product.dto'
 import { ProductEntity } from '../entities/product.entity'
 import { ProductRepository } from '../repositories/product.repository'
-import { Entity } from '@shared/interfaces/response.interface'
-import { AbleType } from '@shared/entities/base.entity'
 
 @Injectable()
 export class ProductService extends BaseService {

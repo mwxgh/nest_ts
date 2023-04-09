@@ -32,6 +32,7 @@ import {
 } from '@shared/interfaces/response.interface'
 import Messages from '@shared/message/message'
 import { PrimitiveService } from '@shared/services/primitive.service'
+import { defaultPaginationOption } from '@shared/utils/defaultPaginationOption.util'
 import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.service'
 import { NotificationService } from '@sharedServices/notification/notification.service'
 import { isBoolean, pick } from 'lodash'
@@ -52,7 +53,6 @@ import { VerifyUserNotification } from '../notifications/verifyUser.notification
 import { InviteUserService } from '../services/inviteUser.service'
 import { UserService } from '../services/user.service'
 import { UserTransformer } from '../transformers/user.transformer'
-import { defaultPaginationOption } from '@shared/utils/defaultPaginationOption.util'
 
 @ApiTags('Users')
 @ApiHeader({

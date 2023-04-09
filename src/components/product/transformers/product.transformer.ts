@@ -1,8 +1,8 @@
 import { CategoryAbleTransformer } from '@categoryModule/transformers/categoryAble.transformer'
 import { ImageTransformer } from '@imageModule/transformers/image.transformer'
+import { Entity, ResponseEntity } from '@shared/interfaces/response.interface'
 import { Transformer } from '@shared/transformers/transformer'
 import { ProductEntity } from '../entities/product.entity'
-import { Entity, ResponseEntity } from '@shared/interfaces/response.interface'
 
 export class ProductTransformer extends Transformer {
   transform(model: ProductEntity): ResponseEntity {

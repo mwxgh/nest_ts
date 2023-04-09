@@ -1,7 +1,7 @@
 import { RoleTransformer } from '@authModule/transformers/role.transformer'
+import { Entity, ResponseEntity } from '@shared/interfaces/response.interface'
 import { Transformer } from '@shared/transformers/transformer'
 import { UserEntity } from '../entities/user.entity'
-import { Entity, ResponseEntity } from '@shared/interfaces/response.interface'
 
 export class UserTransformer extends Transformer {
   transform(model: UserEntity): ResponseEntity {

@@ -9,5 +9,9 @@
         "typeorm",
         "websockets",
         "mwxgh"
-    ]
+    ],
+    "editor.codeActionsOnSave": {
+      "source.fixAll": true,
+      "source.organizeImports": true
+    },
 }

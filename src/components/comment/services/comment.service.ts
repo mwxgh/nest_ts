@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common'
+import { Entity } from '@shared/interfaces/response.interface'
 import { BaseService } from '@sharedServices/base.service'
 import { Connection, Repository, SelectQueryBuilder } from 'typeorm'
 import { CommentEntity, JoinCommentAble } from '../entities/comment.entity'
 import { CommentRepository } from '../repositories/comment.repository'
-import { Entity } from '@shared/interfaces/response.interface'
 
 @Injectable()
 export class CommentService extends BaseService {

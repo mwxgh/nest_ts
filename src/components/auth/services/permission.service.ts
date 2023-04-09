@@ -1,11 +1,11 @@
+import { UpdatePermissionDto } from '@authModule/dto/permission.dto'
 import { Injectable } from '@nestjs/common'
+import { Entity } from '@shared/interfaces/response.interface'
 import { BaseService } from '@sharedServices/base.service'
+import { assign } from 'lodash'
 import { Connection, Repository } from 'typeorm'
 import { PermissionEntity } from '../entities/permission.entity'
 import { PermissionRepository } from '../repositories/permission.repository'
-import { Entity } from '@shared/interfaces/response.interface'
-import { UpdatePermissionDto } from '@authModule/dto/permission.dto'
-import { assign } from 'lodash'
 import { RolePermissionService } from './rolePermission.service'
 
 @Injectable()

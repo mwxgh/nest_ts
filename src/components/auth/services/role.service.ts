@@ -1,14 +1,14 @@
+import { UpdateRoleDto } from '@authModule/dto/role.dto'
+import { PermissionEntity } from '@authModule/entities/permission.entity'
 import { ForbiddenException, Injectable } from '@nestjs/common'
+import { Entity } from '@shared/interfaces/response.interface'
 import { BaseService } from '@sharedServices/base.service'
+import { Me } from '@userModule/dto/user.dto'
+import { includes, map } from 'lodash'
 import { Connection, Repository } from 'typeorm'
 import { RoleEntity } from '../entities/role.entity'
 import { RoleRepository } from '../repositories/role.repository'
-import { UpdateRoleDto } from '@authModule/dto/role.dto'
-import { includes, map } from 'lodash'
-import { Entity } from '@shared/interfaces/response.interface'
 import { UserRoleService } from './userRole.service'
-import { Me } from '@userModule/dto/user.dto'
-import { PermissionEntity } from '@authModule/entities/permission.entity'
 
 @Injectable()
 export class RoleService extends BaseService {

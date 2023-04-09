@@ -1,8 +1,8 @@
 import { ApiProperty, OmitType, PartialType } from '@nestjs/swagger'
-import { IsEnum, IsNotEmpty, IsNumber, IsString } from 'class-validator'
-import { CommentStatus } from '../entities/comment.entity'
-import { Index } from 'typeorm'
 import { Type } from 'class-transformer'
+import { IsEnum, IsNotEmpty, IsNumber, IsString } from 'class-validator'
+import { Index } from 'typeorm'
+import { CommentStatus } from '../entities/comment.entity'
 
 export class CommentProperties {
   @ApiProperty()

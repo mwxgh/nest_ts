@@ -1,8 +1,8 @@
 import { Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm'
-import { ProductEntity } from '../../product/entities/product.entity'
 import { AbleEntity } from '../../../shared/entities/base.entity'
 import { Notifiable } from '../../../shared/services/notification/decorators/notifiable.decorator'
 import { PostEntity } from '../../post/entities/post.entity'
+import { ProductEntity } from '../../product/entities/product.entity'
 import { CategoryEntity } from './category.entity'
 
 @Notifiable()

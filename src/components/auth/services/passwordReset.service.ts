@@ -1,16 +1,16 @@
-import { BadRequestException, Injectable } from '@nestjs/common'
-import { BaseService } from '@sharedServices/base.service'
-import { HashService } from '@sharedServices/hash/hash.service'
-import { Connection, Repository } from 'typeorm'
-import { PasswordResetEntity } from '../entities/passwordReset.entity'
-import { PasswordResetRepository } from '../repositories/passwordReset.repository'
-import { Entity } from '@shared/interfaces/response.interface'
-import { UserEntity } from '@userModule/entities/user.entity'
-import { UserService } from '@userModule/services/user.service'
 import {
   ResetPasswordDto,
   SendResetLinkDto,
 } from '@authModule/dto/forgotPassword.dto'
+import { BadRequestException, Injectable } from '@nestjs/common'
+import { Entity } from '@shared/interfaces/response.interface'
+import { BaseService } from '@sharedServices/base.service'
+import { HashService } from '@sharedServices/hash/hash.service'
+import { UserEntity } from '@userModule/entities/user.entity'
+import { UserService } from '@userModule/services/user.service'
+import { Connection, Repository } from 'typeorm'
+import { PasswordResetEntity } from '../entities/passwordReset.entity'
+import { PasswordResetRepository } from '../repositories/passwordReset.repository'
 
 @Injectable()
 export class PasswordResetService extends BaseService {

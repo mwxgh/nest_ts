@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common'
+import { Entity } from '@shared/interfaces/response.interface'
 import { BaseService } from '@sharedServices/base.service'
 import { Connection, Repository } from 'typeorm'
 import { CreateImageDto, UpdateImageDto } from '../dto/image.dto'
 import { ImageEntity } from '../entities/image.entity'
 import { ImageRepository } from '../repositories/image.repository'
-import { Entity } from '@shared/interfaces/response.interface'
 
 @Injectable()
 export class ImageService extends BaseService {
