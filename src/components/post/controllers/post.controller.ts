@@ -36,6 +36,7 @@ import {
 } from '@shared/interfaces/response.interface'
 import Messages from '@shared/message/message'
 import { PrimitiveService } from '@shared/services/primitive.service'
+import { defaultPaginationOption } from '@shared/utils/defaultPaginationOption.util'
 import { PostEntity } from '../entities/post.entity'
 @ApiTags('Posts')
 @ApiHeader({
@@ -55,6 +56,7 @@ export class PostController {
 
   private entity = 'post'
   private fields = ['title', 'summary', 'releaseDate']
+  private relations = ['categories', 'tags', 'images']
 
   @Post()
   @Auth('admin')
@@ -83,37 +85,38 @@ export class PostController {
       type,
     } = query
 
-    const queryBuilder: SelectQueryBuilder<PostEntity> =
-      await this.postService.queryPost({
-        entity: this.entity,
-        fields: this.fields,
-        keyword,
-        includes,
-        sortBy,
-        sortType,
-        privacy,
-        status,
-        priority,
-        type,
-      })
+    const [queryBuilder, includesParams]: [
+      SelectQueryBuilder<PostEntity>,
+      string[],
+    ] = await this.postService.queryPost({
+      entity: this.entity,
+      fields: this.fields,
+      relations: this.relations,
+      keyword,
+      includes,
+      sortBy,
+      sortType,
+      privacy,
+      status,
+      priority,
+      type,
+    })
 
     if (query.perPage || query.page) {
-      const paginateOption: IPaginationOptions = {
-        limit: query.perPage ? query.perPage : 10,
-        page: query.page ? query.page : 1,
-      }
+      const paginateOption: IPaginationOptions = defaultPaginationOption(query)
 
-      const posts = await this.postService.paginationCalculate(
-        queryBuilder,
-        paginateOption,
+      return this.response.paginate(
+        await this.postService.paginationCalculate(
+          queryBuilder,
+          paginateOption,
+        ),
+        new PostTransformer(includesParams),
       )
-
-      return this.response.paginate(posts, new PostTransformer())
     }
 
     return this.response.collection(
       await queryBuilder.getMany(),
-      new PostTransformer(),
+      new PostTransformer(includesParams),
     )
   }
 

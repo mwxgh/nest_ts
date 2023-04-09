@@ -30,7 +30,7 @@ import { CommentTransformer } from '../transformers/comment.transformer'
 })
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
-@Controller('api/v1/comment')
+@Controller('api/comment')
 export class UserCommentController {
   constructor(
     private comment: CommentService,
@@ -66,12 +66,10 @@ export class UserCommentController {
     if (query.perPage || query.page) {
       const paginateOption: IPaginationOptions = defaultPaginationOption(query)
 
-      const data = await this.comment.paginationCalculate(
-        queryBuilder,
-        paginateOption,
+      return this.response.paginate(
+        await this.comment.paginationCalculate(queryBuilder, paginateOption),
+        new CommentTransformer(),
       )
-
-      return this.response.paginate(data, new CommentTransformer())
     }
 
     return this.response.collection(

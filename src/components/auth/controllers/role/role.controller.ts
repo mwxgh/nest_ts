@@ -78,7 +78,7 @@ export class RoleController {
   async readRoles(
     @Query() query: QueryManyDto,
   ): Promise<GetListResponse | GetListPaginationResponse> {
-    const [queryBuilder, joinAndSelects]: [
+    const [queryBuilder, includesParams]: [
       SelectQueryBuilder<RoleEntity>,
       string[],
     ] = await this.roleService.queryBuilder({
@@ -88,9 +88,6 @@ export class RoleController {
       ...query,
     })
 
-    const relationTransformer =
-      joinAndSelects.length > 0 ? joinAndSelects : undefined
-
     if (query.perPage || query.page) {
       const paginateOption: IPaginationOptions = defaultPaginationOption(query)
 
@@ -99,13 +96,13 @@ export class RoleController {
           queryBuilder,
           paginateOption,
         ),
-        new RoleTransformer(relationTransformer),
+        new RoleTransformer(includesParams),
       )
     }
 
     return this.response.collection(
       await queryBuilder.getMany(),
-      new RoleTransformer(relationTransformer),
+      new RoleTransformer(includesParams),
     )
   }
 

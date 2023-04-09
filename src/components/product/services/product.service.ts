@@ -9,7 +9,7 @@ import { AbleType } from '@shared/entities/base.entity'
 import { Entity } from '@shared/interfaces/response.interface'
 import { TagService } from '@tagModule/services/tag.service'
 import { TagAbleService } from '@tagModule/services/tagAble.service'
-import { assign } from 'lodash'
+import { assign, isNil } from 'lodash'
 import slugify from 'slugify'
 import { Connection, Repository, SelectQueryBuilder } from 'typeorm'
 import { CreateProductDto, UpdateProductDto } from '../dto/product.dto'
@@ -39,10 +39,11 @@ export class ProductService extends BaseService {
    */
   async queryProduct(
     params: QueryParams,
-  ): Promise<SelectQueryBuilder<ProductEntity>> {
-    const { entity, fields, keyword, sortBy, sortType, includes } = params
+  ): Promise<[SelectQueryBuilder<ProductEntity>, string[]]> {
+    const { entity, fields, keyword, sortBy, sortType, includes, relations } =
+      params
 
-    let [queryBuilder]: [SelectQueryBuilder<ProductEntity>, string[]] =
+    let [baseQuery]: [SelectQueryBuilder<ProductEntity>, string[]] =
       await this.queryBuilder({
         entity,
         fields,
@@ -51,26 +52,38 @@ export class ProductService extends BaseService {
         sortType,
       })
 
-    if (includes.length > 0) {
-      if (includes.includes('images')) {
-        queryBuilder = queryBuilder.leftJoinAndSelect(
-          'products.images',
+    let includesParams = undefined
+
+    if (!isNil(includes) && !isNil(relations)) {
+      includesParams = Array.isArray(includes) ? includes : [includes]
+
+      this.checkIncludeParam({
+        includesParams,
+        relations,
+      })
+
+      // query image association
+      if (includesParams.includes('images')) {
+        baseQuery = baseQuery.leftJoinAndSelect(
+          `${entity}.images`,
           'images',
-          'images.AbleType = :AbleType',
-          { AbleType: AbleType.product },
+          'images.ableType = :ableType',
+          { ableType: AbleType.product },
         )
       }
-      if (includes.includes('categories')) {
-        queryBuilder = queryBuilder.leftJoinAndSelect(
-          'products.categories',
+      // query category association
+      if (includesParams.includes('categories')) {
+        baseQuery = baseQuery.leftJoinAndSelect(
+          `${entity}.categories`,
           'categories',
           'categories.ableType = :ableType',
           { ableType: AbleType.product },
         )
       }
-      if (includes.includes('tags')) {
-        queryBuilder = queryBuilder.leftJoinAndSelect(
-          'products.tags',
+      // query tag association
+      if (includesParams.includes('tags')) {
+        baseQuery = baseQuery.leftJoinAndSelect(
+          `${entity}.tags`,
           'tags',
           'tags.ableType = :ableType',
           { ableType: AbleType.product },
@@ -78,7 +91,7 @@ export class ProductService extends BaseService {
       }
     }
 
-    return queryBuilder
+    return [baseQuery, includesParams]
   }
 
   /**

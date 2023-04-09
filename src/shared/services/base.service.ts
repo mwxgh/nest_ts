@@ -275,27 +275,27 @@ export class BaseService extends PrimitiveService {
       )
     }
 
-    let joinAndSelects = []
+    let includesParams = undefined
 
     if (!isNil(includes) && !isNil(relations)) {
-      const includesParams = Array.isArray(includes) ? includes : [includes]
+      includesParams = Array.isArray(includes) ? includes : [includes]
 
-      joinAndSelects = this.convertIncludesParamToJoinAndSelects({
+      this.checkIncludeParam({
         includesParams,
         relations,
       })
 
-      if (joinAndSelects.length > 0) {
-        joinAndSelects.forEach((joinAndSelect) => {
+      if (includesParams.length > 0) {
+        includesParams.forEach((include) => {
           baseQuery = baseQuery.leftJoinAndSelect(
-            `${entity}.${joinAndSelect}`,
-            `${joinAndSelect}`,
+            `${entity}.${include}`,
+            `${include}`,
           )
         })
       }
     }
 
-    return [baseQuery, joinAndSelects]
+    return [baseQuery, includesParams]
   }
 
   /**

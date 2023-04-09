@@ -26,7 +26,7 @@ export class CategoryService extends BaseService {
 
   async queryCategory(
     params: QueryParams,
-  ): Promise<SelectQueryBuilder<CategoryEntity>> {
+  ): Promise<[SelectQueryBuilder<CategoryEntity>, string[]]> {
     const { entity, fields, keyword, sortBy, sortType, includes, relations } =
       params
 
@@ -39,18 +39,18 @@ export class CategoryService extends BaseService {
         sortType,
       })
 
-    let joinAndSelects = []
+    let includesParams = undefined
 
     if (!isNil(includes) && !isNil(relations)) {
-      const includesParams = Array.isArray(includes) ? includes : [includes]
+      includesParams = Array.isArray(includes) ? includes : [includes]
 
-      joinAndSelects = this.convertIncludesParamToJoinAndSelects({
+      this.checkIncludeParam({
         includesParams,
         relations,
       })
 
-      if (joinAndSelects.length > 0) {
-        if (joinAndSelects.includes('products')) {
+      if (includesParams.length > 0) {
+        if (includesParams.includes('products')) {
           baseQuery = baseQuery.leftJoinAndSelect(
             `${entity}.products`,
             `products`,
@@ -61,7 +61,7 @@ export class CategoryService extends BaseService {
           )
         }
 
-        if (joinAndSelects.includes('posts')) {
+        if (includesParams.includes('posts')) {
           baseQuery = baseQuery.leftJoinAndSelect(
             `${entity}.posts`,
             `posts`,
@@ -74,6 +74,6 @@ export class CategoryService extends BaseService {
       }
     }
 
-    return baseQuery
+    return [baseQuery, includesParams]
   }
 }

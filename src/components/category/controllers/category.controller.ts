@@ -31,6 +31,7 @@ import {
   UpdateResponse,
 } from '@shared/interfaces/response.interface'
 import Messages from '@shared/message/message'
+import { defaultPaginationOption } from '@shared/utils/defaultPaginationOption.util'
 import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.service'
 import { SelectQueryBuilder } from 'typeorm'
 import { CreateCategoryDto, UpdateCategoryDto } from '../dto/category.dto'
@@ -77,33 +78,33 @@ export class CategoryController {
   ): Promise<GetListResponse | GetListPaginationResponse> {
     const { keyword, includes, sortBy, sortType } = query
 
-    const queryBuilder: SelectQueryBuilder<CategoryEntity> =
-      await this.categoryService.queryCategory({
-        entity: this.entity,
-        fields: this.fields,
-        keyword,
-        includes,
-        sortBy,
-        sortType,
-      })
+    const [queryBuilder, includesParams]: [
+      SelectQueryBuilder<CategoryEntity>,
+      string[],
+    ] = await this.categoryService.queryCategory({
+      entity: this.entity,
+      fields: this.fields,
+      keyword,
+      includes,
+      sortBy,
+      sortType,
+    })
 
     if (query.perPage || query.page) {
-      const paginateOption: IPaginationOptions = {
-        limit: query.perPage ? query.perPage : 10,
-        page: query.page ? query.page : 1,
-      }
+      const paginateOption: IPaginationOptions = defaultPaginationOption(query)
 
-      const data = await this.categoryService.paginationCalculate(
-        queryBuilder,
-        paginateOption,
+      return this.response.paginate(
+        await this.categoryService.paginationCalculate(
+          queryBuilder,
+          paginateOption,
+        ),
+        new CategoryTransformer(includesParams),
       )
-
-      return this.response.paginate(data, new CategoryTransformer())
     }
 
     return this.response.collection(
       await queryBuilder.getMany(),
-      new CategoryTransformer(),
+      new CategoryTransformer(includesParams),
     )
   }
 

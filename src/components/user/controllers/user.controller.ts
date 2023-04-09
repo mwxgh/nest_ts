@@ -93,7 +93,7 @@ export class UserController {
   async readUsers(
     @Query() query: QueryManyDto,
   ): Promise<GetListResponse | GetListPaginationResponse> {
-    const [queryBuilder, joinAndSelects]: [
+    const [queryBuilder, includesParams]: [
       SelectQueryBuilder<UserEntity>,
       string[],
     ] = await this.userService.queryBuilder({
@@ -103,9 +103,6 @@ export class UserController {
       ...query,
     })
 
-    const relationTransformer =
-      joinAndSelects.length > 0 ? joinAndSelects : undefined
-
     if (query.perPage || query.page) {
       const paginateOption: IPaginationOptions = defaultPaginationOption(query)
 
@@ -114,13 +111,13 @@ export class UserController {
           queryBuilder,
           paginateOption,
         ),
-        new UserTransformer(relationTransformer),
+        new UserTransformer(includesParams),
       )
     }
 
     return this.response.collection(
       await queryBuilder.getMany(),
-      new UserTransformer(relationTransformer),
+      new UserTransformer(includesParams),
     )
   }
 
@@ -132,7 +129,7 @@ export class UserController {
     @Param('id', ParseIntPipe) id: number,
   ): Promise<GetItemResponse> {
     const user = await this.userService.findOneOrFail(id, {
-      relations: ['roles'],
+      relations: this.relations,
     })
 
     return this.response.item(user, new UserTransformer(this.relations))

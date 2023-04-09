@@ -12,7 +12,7 @@ import { BaseService } from '@sharedServices/base.service'
 import { TagEntity } from '@tagModule/entities/tag.entity'
 import { TagService } from '@tagModule/services/tag.service'
 import { TagAbleService } from '@tagModule/services/tagAble.service'
-import { assign } from 'lodash'
+import { assign, isNil } from 'lodash'
 import slugify from 'slugify'
 import { Connection, Repository, SelectQueryBuilder } from 'typeorm'
 import { CreatePostDto, UpdatePostDto } from '../dto/post.dto'
@@ -44,12 +44,13 @@ export class PostService extends BaseService {
       priority?: string
       type?: string
     },
-  ): Promise<SelectQueryBuilder<PostEntity>> {
+  ): Promise<[SelectQueryBuilder<PostEntity>, string[]]> {
     const {
       entity,
       fields,
       keyword,
       includes,
+      relations,
       sortBy,
       sortType,
       privacy,
@@ -91,9 +92,26 @@ export class PostService extends BaseService {
       })
     }
 
-    if (includes && includes.length > 0) {
-      // query category detail
-      if (includes.includes('categories'))
+    let includesParams = undefined
+    if (!isNil(includes) && !isNil(relations)) {
+      includesParams = Array.isArray(includes) ? includes : [includes]
+
+      this.checkIncludeParam({
+        includesParams,
+        relations,
+      })
+
+      // query image association
+      if (includesParams.includes('images')) {
+        baseQuery = baseQuery.leftJoinAndSelect(
+          `${entity}.images`,
+          'images',
+          'images.ableType = :ableType',
+          { ableType: AbleType.post },
+        )
+      }
+      // query category association
+      if (includesParams.includes('categories'))
         baseQuery = baseQuery.leftJoinAndSelect(
           `${entity}.categories`,
           `categories`,
@@ -101,8 +119,8 @@ export class PostService extends BaseService {
           { ableType: AbleType.post },
         )
 
-      // query tag detail
-      if (includes.includes('tags'))
+      // query tag association
+      if (includesParams.includes('tags'))
         baseQuery = baseQuery.leftJoinAndSelect(
           `${entity}.tags`,
           `tags`,
@@ -112,7 +130,8 @@ export class PostService extends BaseService {
           },
         )
     }
-    return baseQuery
+
+    return [baseQuery, includesParams]
   }
 
   /**

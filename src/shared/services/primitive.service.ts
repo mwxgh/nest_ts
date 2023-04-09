@@ -71,21 +71,16 @@ export class PrimitiveService {
    *
    * @return join and select table
    */
-  convertIncludesParamToJoinAndSelects(params: {
+  checkIncludeParam({
+    includesParams,
+    relations,
+  }: {
     includesParams: string[]
     relations: string[]
-  }): string[] {
-    const { includesParams, relations } = params
-
-    const joinAndSelects = includesParams.filter((item) =>
-      relations.includes(item),
-    )
-
-    if (joinAndSelects.length === 0) {
+  }): void {
+    if (includesParams.some((item) => !relations.includes(item))) {
       throw new BadRequestException('Can not join table with includes params')
     }
-
-    return joinAndSelects
   }
 
   /**
