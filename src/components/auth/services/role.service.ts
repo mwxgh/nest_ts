@@ -3,11 +3,12 @@ import { BaseService } from '@sharedServices/base.service'
 import { Connection, Repository } from 'typeorm'
 import { RoleEntity } from '../entities/role.entity'
 import { RoleRepository } from '../repositories/role.repository'
-import { CreateRoleDto, UpdateRoleDto } from '@authModule/dto/role.dto'
-import { includes, map, pick } from 'lodash'
+import { UpdateRoleDto } from '@authModule/dto/role.dto'
+import { includes, map } from 'lodash'
 import { Entity } from '@shared/interfaces/response.interface'
 import { UserRoleService } from './userRole.service'
 import { Me } from '@userModule/dto/user.dto'
+import { PermissionEntity } from '@authModule/entities/permission.entity'
 
 @Injectable()
 export class RoleService extends BaseService {
@@ -23,24 +24,6 @@ export class RoleService extends BaseService {
   }
 
   /**
-   * Save role and return role entity with relations
-   *
-   * @param params.data  CreateRoleDto
-   *
-   * @return Role
-   */
-  async saveRole(data: CreateRoleDto): Promise<RoleEntity> {
-    const saveRole: RoleEntity = await this.create({
-      ...pick(data, ['name', 'level']),
-      ...{
-        slug: await this.generateSlug(data.name),
-      },
-    })
-
-    return await this.findOneOrFail(saveRole.id, { relations: ['permissions'] })
-  }
-
-  /**
    * Update role and return role entity with relations
    *
    * @param id  number
@@ -51,22 +34,21 @@ export class RoleService extends BaseService {
   async updateRole({
     id,
     data,
+    relations,
   }: {
     id: number
     data: UpdateRoleDto
+    relations: string[]
   }): Promise<RoleEntity> {
     await this.checkExisting({ where: { id } })
 
-    const updateRole = await this.update(id, {
-      ...pick(data, ['name', 'level']),
-      ...{
-        slug: await this.generateSlug(data.name),
-      },
-    })
+    if (data.name) {
+      Object.assign(data, { slug: await this.generateSlug(data.name) })
+    }
 
-    return await this.findOneOrFail(updateRole.id, {
-      relations: ['permissions'],
-    })
+    const updateRole: PermissionEntity = await this.update(id, data)
+
+    return await this.findOneOrFail(updateRole.id, { relations })
   }
 
   /**

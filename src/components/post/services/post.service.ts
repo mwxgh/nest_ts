@@ -12,7 +12,7 @@ import { assign } from 'lodash'
 import slugify from 'slugify'
 import { Connection, Repository, SelectQueryBuilder } from 'typeorm'
 import { CreatePostDto, UpdatePostDto } from '../dto/post.dto'
-import { JoinPostAbleType, PostEntity } from '../entities/post.entity'
+import { PostEntity } from '../entities/post.entity'
 import { PostRepository } from '../repositories/post.repository'
 import { Entity } from '@shared/interfaces/response.interface'
 import { AbleType } from '@shared/entities/base.entity'
@@ -43,8 +43,6 @@ export class PostService extends BaseService {
       status?: string
       priority?: string
       type?: string
-      // update include -> string[] in future
-      includes?: any
     },
   ): Promise<SelectQueryBuilder<PostEntity>> {
     const {
@@ -60,74 +58,54 @@ export class PostService extends BaseService {
       type,
     } = params
 
-    let baseQuery: SelectQueryBuilder<PostEntity> = await this.queryBuilder({
-      entity,
-      fields,
-      keyword,
-      sortBy,
-      sortType,
-    })
+    let [baseQuery]: [SelectQueryBuilder<PostEntity>, string[]] =
+      await this.queryBuilder({
+        entity,
+        fields,
+        keyword,
+        sortBy,
+        sortType,
+      })
 
     if (privacy && privacy !== '') {
-      baseQuery = baseQuery.andWhere('posts.privacy = :privacy', {
+      baseQuery = baseQuery.andWhere(`${entity}.privacy = :privacy`, {
         privacy,
       })
     }
 
     if (status && status !== '') {
-      baseQuery = baseQuery.andWhere('posts.status = :status', {
+      baseQuery = baseQuery.andWhere(`.status = :status`, {
         status,
       })
     }
 
     if (priority && priority !== '') {
-      baseQuery = baseQuery.andWhere('posts.priority = :priority', {
+      baseQuery = baseQuery.andWhere(`${entity}.priority = :priority`, {
         priority,
       })
     }
 
     if (type && type !== '') {
-      baseQuery = baseQuery.andWhere('posts.type = :type', {
+      baseQuery = baseQuery.andWhere(`${entity}.type = :type`, {
         type,
       })
     }
 
-    const keys = Object.keys(JoinPostAbleType)
-
-    const values = Object.values(JoinPostAbleType)
-
-    const value = []
-
-    let include = []
-
-    if (includes) {
-      const arr = includes.split(',')
-
-      include = [...arr]
-
-      arr.forEach((el) => {
-        if (keys.includes(el)) value.push(values[`${keys.indexOf(el)}`])
-      })
-      const key = arr.filter((item) => keys.includes(item))
-
-      for (let i = 0; i < key.length; i++) {
-        baseQuery = baseQuery.leftJoinAndSelect(`${value[i]}`, `${key[i]}`)
-      }
-
+    if (includes && includes.length > 0) {
       // query category detail
-      if (include.includes('categories'))
+      if (includes.includes('categories'))
         baseQuery = baseQuery.leftJoinAndSelect(
-          `categories.category`,
-          `category`,
+          `${entity}.categories`,
+          `categories`,
           'categories.ableType = :ableType',
           { ableType: AbleType.post },
         )
 
       // query tag detail
-      if (include.includes('tags'))
+      if (includes.includes('tags'))
         baseQuery = baseQuery.leftJoinAndSelect(
-          `tags.tag`,
-          `tag`,
+          `${entity}.tags`,
+          `tags`,
           'tags.ableType = :ableType',
           {
             ableType: AbleType.post,

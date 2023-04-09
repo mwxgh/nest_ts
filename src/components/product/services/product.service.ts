@@ -42,7 +42,7 @@ export class ProductService extends BaseService {
   ): Promise<SelectQueryBuilder<ProductEntity>> {
     const { entity, fields, keyword, sortBy, sortType, includes } = params
 
-    let queryBuilder: SelectQueryBuilder<ProductEntity> =
+    let [queryBuilder]: [SelectQueryBuilder<ProductEntity>, string[]] =
       await this.queryBuilder({
         entity,
         fields,

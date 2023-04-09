@@ -39,6 +39,8 @@ import { ImageService } from '../services/image.service'
 import { ImageTransformer } from '../transformers/image.transformer'
 import CustomFilesInterceptor from '@shared/uploads/customInterceptor'
 import { ImageEntity } from '@imageModule/entities/image.entity'
+import { SelectQueryBuilder } from 'typeorm'
+import { defaultPaginationOption } from '@shared/utils/defaultPaginationOption.util'
 
 @ApiTags('Images')
 @ApiHeader({
@@ -83,28 +85,23 @@ export class ImageController {
   async readImages(
     @Query() query: QueryManyDto,
   ): Promise<GetListResponse | GetListPaginationResponse> {
-    const { keyword, sortBy, sortType } = query
-
-    const queryBuilder = await this.imageService.queryBuilder({
-      entity: this.entity,
-      fields: this.fields,
-      keyword,
-      sortBy,
-      sortType,
-    })
+    const [queryBuilder]: [SelectQueryBuilder<ImageEntity>, string[]] =
+      await this.imageService.queryBuilder({
+        entity: this.entity,
+        fields: this.fields,
+        ...query,
+      })
 
     if (query.perPage || query.page) {
-      const paginateOption: IPaginationOptions = {
-        limit: query.perPage ? query.perPage : 10,
-        page: query.page ? query.page : 1,
-      }
+      const paginateOption: IPaginationOptions = defaultPaginationOption(query)
 
-      const images = await this.imageService.paginationCalculate(
-        queryBuilder,
-        paginateOption,
+      return this.response.paginate(
+        await this.imageService.paginationCalculate(
+          queryBuilder,
+          paginateOption,
+        ),
+        new ImageTransformer(),
       )
-
-      return this.response.paginate(images, new ImageTransformer())
     }
 
     return this.response.collection(

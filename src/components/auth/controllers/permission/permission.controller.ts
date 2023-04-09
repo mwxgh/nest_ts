@@ -37,7 +37,10 @@ import {
   UpdateResponse,
 } from '@shared/interfaces/response.interface'
 import Messages from '@shared/message/message'
+import { defaultPaginationOption } from '@shared/utils/defaultPaginationOption.util'
 import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.service'
+import { assign } from 'lodash'
+import { SelectQueryBuilder } from 'typeorm'
 
 @ApiTags('Permissions')
 @ApiHeader({
@@ -63,7 +66,11 @@ export class PermissionController {
   async savePermission(
     @Body() data: CreatePermissionDto,
   ): Promise<CreateResponse> {
-    const permission = await this.permissionService.savePermission(data)
+    const permission = await this.permissionService.create(
+      assign(data, {
+        slug: await this.permissionService.generateSlug(data.name),
+      }),
+    )
 
     return this.response.item(permission, new PermissionTransformer())
   }
@@ -75,27 +82,23 @@ export class PermissionController {
   async readPermissions(
     @Query() query: QueryManyDto,
   ): Promise<GetListResponse | GetListPaginationResponse> {
-    const { keyword, sortBy, sortType } = query
-
-    const queryBuilder = await this.permissionService.queryBuilder({
-      entity: this.entity,
-      fields: this.fields,
-      keyword,
-      sortBy,
-      sortType,
-    })
+    const [queryBuilder]: [SelectQueryBuilder<PermissionEntity>, string[]] =
+      await this.permissionService.queryBuilder({
+        entity: this.entity,
+        fields: this.fields,
+        ...query,
+      })
 
     if (query.perPage || query.page) {
-      const paginateOption: IPaginationOptions = {
-        limit: query.perPage ? query.perPage : 10,
-        page: query.page ? query.page : 1,
-      }
-      const permissions = await this.permissionService.paginationCalculate(
-        queryBuilder,
-        paginateOption,
-      )
+      const paginateOption: IPaginationOptions = defaultPaginationOption(query)
 
-      return this.response.paginate(permissions, new PermissionTransformer())
+      return this.response.paginate(
+        await this.permissionService.paginationCalculate(
+          queryBuilder,
+          paginateOption,
+        ),
+        new PermissionTransformer(),
+      )
     }
 
     return this.response.collection(

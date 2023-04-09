@@ -21,6 +21,7 @@ import { Auth } from '@authModule/decorators/auth.decorator'
 import { QueryManyDto } from '@shared/dto/queryParams.dto'
 import { CommentEntity } from '@commentModule/entities/comment.entity'
 import { IPaginationOptions } from '@shared/interfaces/request.interface'
+import { defaultPaginationOption } from '@shared/utils/defaultPaginationOption.util'
 
 @ApiTags('Comments')
 @ApiHeader({
@@ -55,23 +56,15 @@ export class UserCommentController {
   async readComments(
     @Query() query: QueryManyDto,
   ): Promise<GetListResponse | GetListPaginationResponse> {
-    const { keyword, includes, sortBy, sortType } = query
-
-    const queryBuilder: SelectQueryBuilder<CommentEntity> =
+    const [queryBuilder]: [SelectQueryBuilder<CommentEntity>, string[]] =
       await this.comment.queryBuilder({
         entity: this.entity,
         fields: this.fields,
-        keyword,
-        includes,
-        sortBy,
-        sortType,
+        ...query,
       })
 
     if (query.perPage || query.page) {
-      const paginateOption: IPaginationOptions = {
-        limit: query.perPage ? query.perPage : 10,
-        page: query.page ? query.page : 1,
-      }
+      const paginateOption: IPaginationOptions = defaultPaginationOption(query)
 
       const data = await this.comment.paginationCalculate(
         queryBuilder,

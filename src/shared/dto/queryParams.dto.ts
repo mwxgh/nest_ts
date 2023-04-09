@@ -6,7 +6,7 @@ import {
 } from '@nestjs/swagger'
 import { PostFilterAttributes } from '@postModule/dto/post.dto'
 import { Type } from 'class-transformer'
-import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator'
+import { IsEnum, IsNumber, IsOptional, IsString, Min } from 'class-validator'
 import { SortType } from '../constant/constant'
 
 export class QueryProperties {
@@ -14,11 +14,13 @@ export class QueryProperties {
   @IsOptional()
   @IsNumber()
   @Type(() => Number)
+  @Min(1)
   page: number
 
   @ApiProperty()
   @IsOptional()
   @IsNumber()
+  @Min(1)
   @Type(() => Number)
   perPage: number
 

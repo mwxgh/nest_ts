@@ -16,7 +16,7 @@ import {
   IPaginationOptions,
   QueryParams,
 } from '@shared/interfaces/request.interface'
-import { filter, isArray, isUndefined, keys, omit } from 'lodash'
+import { filter, isArray, isNil, isUndefined, keys, omit } from 'lodash'
 import { default as slugify } from 'slugify'
 import { DEFAULT_SORT_BY, DEFAULT_SORT_TYPE } from '../constant/constant'
 import {
@@ -248,8 +248,11 @@ export class BaseService extends PrimitiveService {
    *
    * @returns SelectQueryBuilder
    */
-  async queryBuilder<T>(params: QueryParams): Promise<SelectQueryBuilder<T>> {
-    const { entity, fields, keyword } = params
+
+  async queryBuilder<T>(
+    params: QueryParams,
+  ): Promise<[SelectQueryBuilder<T>, string[]]> {
+    const { entity, fields, keyword, includes, relations } = params
     const orderBy = params.sortBy ?? DEFAULT_SORT_BY
     const orderType = params.sortType ?? DEFAULT_SORT_TYPE
 
@@ -272,7 +275,27 @@ export class BaseService extends PrimitiveService {
       )
     }
 
-    return baseQuery
+    let joinAndSelects = []
+
+    if (!isNil(includes) && !isNil(relations)) {
+      const includesParams = Array.isArray(includes) ? includes : [includes]
+
+      joinAndSelects = this.convertIncludesParamToJoinAndSelects({
+        includesParams,
+        relations,
+      })
+
+      if (joinAndSelects.length > 0) {
+        joinAndSelects.forEach((joinAndSelect) => {
+          baseQuery = baseQuery.leftJoinAndSelect(
+            `${entity}.${joinAndSelect}`,
+            `${joinAndSelect}`,
+          )
+        })
+      }
+    }
+
+    return [baseQuery, joinAndSelects]
   }
 
   /**

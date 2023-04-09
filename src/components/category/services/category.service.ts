@@ -5,8 +5,9 @@ import { Connection, Repository, SelectQueryBuilder } from 'typeorm'
 import { CategoryEntity } from '../entities/category.entity'
 import { CategoryRepository } from '../repositories/category.repository'
 import { Entity } from '@shared/interfaces/response.interface'
-import { AbleType } from '@shared/entities/base.entity'
 import { CreateCategoryDto } from '@categoryModule/dto/category.dto'
+import { isNil } from 'lodash'
+import { AbleType } from '@shared/entities/base.entity'
 
 @Injectable()
 export class CategoryService extends BaseService {
@@ -24,41 +25,55 @@ export class CategoryService extends BaseService {
   }
 
   async queryCategory(
-    params: QueryParams & {
-      // update include -> string[] in future
-      includes?: any
-    },
+    params: QueryParams,
   ): Promise<SelectQueryBuilder<CategoryEntity>> {
-    const include = []
+    const { entity, fields, keyword, sortBy, sortType, includes, relations } =
+      params
 
-    if (params.includes) {
-      const arr = params.includes.split(',')
-      arr.map((i: any) => include.push(i))
-    }
-
-    const { entity, fields, keyword, sortBy, sortType } = params
-
-    let baseQuery: SelectQueryBuilder<CategoryEntity> = await this.queryBuilder(
-      {
+    let [baseQuery]: [SelectQueryBuilder<CategoryEntity>, string[]] =
+      await this.queryBuilder({
         entity,
         fields,
         keyword,
         sortBy,
         sortType,
-      },
-    )
-
-    if (include.includes('products')) {
-      baseQuery = baseQuery.where(`${entity}.categoryType = :type`, {
-        type: AbleType.product,
       })
+
+    let joinAndSelects = []
+
+    if (!isNil(includes) && !isNil(relations)) {
+      const includesParams = Array.isArray(includes) ? includes : [includes]
+
+      joinAndSelects = this.convertIncludesParamToJoinAndSelects({
+        includesParams,
+        relations,
+      })
+
+      if (joinAndSelects.length > 0) {
+        if (joinAndSelects.includes('products')) {
+          baseQuery = baseQuery.leftJoinAndSelect(
+            `${entity}.products`,
+            `products`,
+            `products.ableType = :ableType`,
+            {
+              ableType: AbleType.product,
+            },
+          )
+        }
+
+        if (joinAndSelects.includes('posts')) {
+          baseQuery = baseQuery.leftJoinAndSelect(
+            `${entity}.posts`,
+            `posts`,
+            `posts.ableType = :ableType`,
+            {
+              ableType: AbleType.post,
+            },
+          )
+        }
+      }
     }
 
-    if (include.includes('posts')) {
-      baseQuery = baseQuery.where(`${entity}.categoryType = :type`, {
-        type: AbleType.post,
-      })
-    }
     return baseQuery
   }
 }

@@ -35,6 +35,9 @@ import { CreateTagDto, UpdateTagDto } from '../dto/tag.dto'
 import { TagService } from '../services/tag.service'
 import { TagAbleService } from '../services/tagAble.service'
 import { TagTransformer } from '../transformers/tag.transformer'
+import { SelectQueryBuilder } from 'typeorm'
+import { TagEntity } from '@tagModule/entities/tag.entity'
+import { defaultPaginationOption } from '@shared/utils/defaultPaginationOption.util'
 
 @ApiTags('Tags')
 @ApiHeader({
@@ -71,28 +74,20 @@ export class TagController {
   async readTags(
     @Query() query: QueryManyDto,
   ): Promise<GetListResponse | GetListPaginationResponse> {
-    const { keyword, sortBy, sortType } = query
-
-    const queryBuilder = await this.tagService.queryTag({
-      entity: this.entity,
-      fields: this.fields,
-      keyword,
-      sortBy,
-      sortType,
-    })
+    const [queryBuilder]: [SelectQueryBuilder<TagEntity>, string[]] =
+      await this.tagService.queryBuilder({
+        entity: this.entity,
+        fields: this.fields,
+        ...query,
+      })
 
     if (query.perPage || query.page) {
-      const paginateOption: IPaginationOptions = {
-        limit: query.perPage ? query.perPage : 10,
-        page: query.page ? query.page : 1,
-      }
+      const paginateOption: IPaginationOptions = defaultPaginationOption(query)
 
-      const tags = await this.tagService.paginationCalculate(
-        queryBuilder,
-        paginateOption,
+      return this.response.paginate(
+        await this.tagService.paginationCalculate(queryBuilder, paginateOption),
+        new TagTransformer(),
       )
-
-      return this.response.paginate(tags, new TagTransformer())
     }
 
     return this.response.collection(

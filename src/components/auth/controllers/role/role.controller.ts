@@ -35,9 +35,10 @@ import {
   UpdateResponse,
 } from '@shared/interfaces/response.interface'
 import Messages from '@shared/message/message'
+import { defaultPaginationOption } from '@shared/utils/defaultPaginationOption.util'
 import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.service'
 import { Me } from '@userModule/dto/user.dto'
-import { isNil } from 'lodash'
+import { assign } from 'lodash'
 import { SelectQueryBuilder } from 'typeorm'
 
 @ApiTags('Roles')
@@ -63,9 +64,11 @@ export class RoleController {
   @ApiOperation({ summary: 'Admin create new role' })
   @ApiOkResponse({ description: 'New role entity' })
   async createRole(@Body() data: CreateRoleDto): Promise<CreateResponse> {
-    const saveRole = await this.roleService.saveRole(data)
+    const role = await this.roleService.create(
+      assign(data, { slug: await this.roleService.generateSlug(data.name) }),
+    )
 
-    return this.response.item(saveRole, new RoleTransformer(this.relations))
+    return this.response.item(role, new RoleTransformer())
   }
 
   @Get()
@@ -75,61 +78,34 @@ export class RoleController {
   async readRoles(
     @Query() query: QueryManyDto,
   ): Promise<GetListResponse | GetListPaginationResponse> {
-    const { keyword, includes, sortBy, sortType } = query
+    const [queryBuilder, joinAndSelects]: [
+      SelectQueryBuilder<RoleEntity>,
+      string[],
+    ] = await this.roleService.queryBuilder({
+      entity: this.entity,
+      fields: this.fields,
+      relations: this.relations,
+      ...query,
+    })
 
-    let queryBuilder: SelectQueryBuilder<RoleEntity> =
-      await this.roleService.queryBuilder({
-        entity: this.entity,
-        fields: this.fields,
-        keyword,
-        sortBy,
-        sortType,
-      })
-
-    let joinAndSelects = []
-
-    if (!isNil(includes)) {
-      const includesParams = Array.isArray(includes) ? includes : [includes]
-
-      joinAndSelects = this.roleService.convertIncludesParamToJoinAndSelects({
-        includesParams,
-        relations: this.relations,
-      })
-
-      if (joinAndSelects.length > 0) {
-        joinAndSelects.forEach((joinAndSelect) => {
-          queryBuilder = queryBuilder.leftJoinAndSelect(
-            `${this.entity}.${joinAndSelect}`,
-            `${joinAndSelect}`,
-          )
-        })
-      }
-    }
+    const relationTransformer =
+      joinAndSelects.length > 0 ? joinAndSelects : undefined
 
     if (query.perPage || query.page) {
-      const paginateOption: IPaginationOptions = {
-        limit: query.perPage ? query.perPage : 10,
-        page: query.page ? query.page : 1,
-      }
-
-      const roles = await this.roleService.paginationCalculate(
-        queryBuilder,
-        paginateOption,
-      )
+      const paginateOption: IPaginationOptions = defaultPaginationOption(query)
 
       return this.response.paginate(
-        roles,
-        new RoleTransformer(
-          joinAndSelects.length > 0 ? joinAndSelects : undefined,
+        await this.roleService.paginationCalculate(
+          queryBuilder,
+          paginateOption,
         ),
+        new RoleTransformer(relationTransformer),
       )
     }
 
     return this.response.collection(
       await queryBuilder.getMany(),
-      new RoleTransformer(
-        joinAndSelects.length > 0 ? joinAndSelects : undefined,
-      ),
+      new RoleTransformer(relationTransformer),
     )
   }
 
@@ -155,7 +131,11 @@ export class RoleController {
     @Param('id', ParseIntPipe) id: number,
     @Body() data: UpdateRoleDto,
   ): Promise<UpdateResponse> {
-    const updateRole = await this.roleService.updateRole({ id, data })
+    const updateRole = await this.roleService.updateRole({
+      id,
+      data,
+      relations: this.relations,
+    })
 
     return this.response.item(updateRole, new RoleTransformer(this.relations))
   }

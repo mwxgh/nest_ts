@@ -6,13 +6,6 @@ import { CommentEntity } from '../../comment/entities/comment.entity'
 import { ImageAbleEntity } from '../../image/entities/imageAble.entity'
 import { TagAbleEntity } from '../../tag/entities/tagAble.entity'
 
-export enum JoinPostAbleType {
-  images = 'posts.images',
-  comments = 'posts.comments',
-  tags = 'posts.tags',
-  categories = 'posts.categories',
-}
-
 export enum PostStatus {
   draft = 'DRAFT',
   pending = 'PENDING',

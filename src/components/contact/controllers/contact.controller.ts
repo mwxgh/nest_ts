@@ -38,6 +38,7 @@ import { CreateContactDto, UpdateContactDto } from '../dto/contact.dto'
 import { ContactEntity } from '../entities/contact.entity'
 import { ContactService } from '../services/contact.service'
 import { ContactTransformer } from '../transformers/contact.transformer'
+import { defaultPaginationOption } from '@shared/utils/defaultPaginationOption.util'
 
 @ApiTags('Contacts')
 @ApiHeader({
@@ -91,29 +92,23 @@ export class ContactController {
   async readContacts(
     @Query() query: QueryManyDto,
   ): Promise<GetListResponse | GetListPaginationResponse> {
-    const { keyword, sortBy, sortType } = query
-
-    const queryBuilder: SelectQueryBuilder<ContactEntity> =
+    const [queryBuilder]: [SelectQueryBuilder<ContactEntity>, string[]] =
       await this.contactService.queryBuilder({
         entity: this.entity,
         fields: this.fields,
-        keyword,
-        sortBy,
-        sortType,
+        ...query,
       })
 
     if (query.perPage || query.page) {
-      const paginateOption: IPaginationOptions = {
-        limit: query.perPage ? query.perPage : 10,
-        page: query.page ? query.page : 1,
-      }
+      const paginateOption: IPaginationOptions = defaultPaginationOption(query)
 
-      const contacts = await this.contactService.paginationCalculate(
-        queryBuilder,
-        paginateOption,
+      return this.response.paginate(
+        await this.contactService.paginationCalculate(
+          queryBuilder,
+          paginateOption,
+        ),
+        new ContactTransformer(),
       )
-
-      return this.response.paginate(contacts, new ContactTransformer())
     }
 
     return this.response.collection(

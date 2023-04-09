@@ -1,5 +1,4 @@
 import { MigrationInterface, QueryRunner, Table, TableIndex } from 'typeorm'
-import { baseTimeColumn } from './baseColumn'
 
 export class CreateImageAbleTable1650813488415 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {

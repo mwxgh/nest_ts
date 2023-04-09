@@ -4,10 +4,7 @@ import { Connection, Repository } from 'typeorm'
 import { PermissionEntity } from '../entities/permission.entity'
 import { PermissionRepository } from '../repositories/permission.repository'
 import { Entity } from '@shared/interfaces/response.interface'
-import {
-  CreatePermissionDto,
-  UpdatePermissionDto,
-} from '@authModule/dto/permission.dto'
+import { UpdatePermissionDto } from '@authModule/dto/permission.dto'
 import { assign } from 'lodash'
 import { RolePermissionService } from './rolePermission.service'
 
@@ -22,18 +19,6 @@ export class PermissionService extends BaseService {
   ) {
     super()
     this.repository = this.connection.getCustomRepository(PermissionRepository)
-  }
-
-  /**
-   * Save permission and return permission entity with relations
-   *
-   * @param data  CreatePermissionDto
-   * @return Permission
-   */
-  async savePermission(data: CreatePermissionDto): Promise<PermissionEntity> {
-    const slug = await this.generateSlug(data.name)
-
-    return this.create(assign(data, { slug: slug }))
   }
 
   /**

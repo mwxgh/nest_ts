@@ -34,7 +34,7 @@ import Messages from '@shared/message/message'
 import { PrimitiveService } from '@shared/services/primitive.service'
 import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.service'
 import { NotificationService } from '@sharedServices/notification/notification.service'
-import { isBoolean, isNil, pick } from 'lodash'
+import { isBoolean, pick } from 'lodash'
 import { SelectQueryBuilder } from 'typeorm'
 import {
   CreateUserDto,
@@ -52,6 +52,7 @@ import { VerifyUserNotification } from '../notifications/verifyUser.notification
 import { InviteUserService } from '../services/inviteUser.service'
 import { UserService } from '../services/user.service'
 import { UserTransformer } from '../transformers/user.transformer'
+import { defaultPaginationOption } from '@shared/utils/defaultPaginationOption.util'
 
 @ApiTags('Users')
 @ApiHeader({
@@ -92,61 +93,33 @@ export class UserController {
   async readUsers(
     @Query() query: QueryManyDto,
   ): Promise<GetListResponse | GetListPaginationResponse> {
-    const { keyword, includes, sortBy, sortType } = query
+    const [queryBuilder, joinAndSelects]: [
+      SelectQueryBuilder<UserEntity>,
+      string[],
+    ] = await this.userService.queryBuilder({
+      entity: this.entity,
+      fields: this.fields,
+      relations: this.relations,
+      ...query,
+    })
 
-    let queryBuilder: SelectQueryBuilder<UserEntity> =
-      await this.userService.queryBuilder({
-        entity: this.entity,
-        fields: this.fields,
-        keyword,
-        sortBy,
-        sortType,
-      })
-
-    let joinAndSelects = []
-
-    if (!isNil(includes)) {
-      const includesParams = Array.isArray(includes) ? includes : [includes]
-
-      joinAndSelects =
-        this.primitiveService.convertIncludesParamToJoinAndSelects({
-          includesParams,
-          relations: this.relations,
-        })
-
-      if (joinAndSelects.length > 0) {
-        joinAndSelects.forEach((joinAndSelect) => {
-          queryBuilder = queryBuilder.leftJoinAndSelect(
-            `${this.entity}.${joinAndSelect}`,
-            `${joinAndSelect}`,
-          )
-        })
-      }
-    }
     const relationTransformer =
       joinAndSelects.length > 0 ? joinAndSelects : undefined
 
     if (query.perPage || query.page) {
-      const paginateOption: IPaginationOptions = {
-        limit: query.perPage ? query.perPage : 10,
-        page: query.page ? query.page : 1,
-      }
-
-      const data = await this.userService.paginationCalculate(
-        queryBuilder,
-        paginateOption,
-      )
+      const paginateOption: IPaginationOptions = defaultPaginationOption(query)
 
       return this.response.paginate(
-        data,
+        await this.userService.paginationCalculate(
+          queryBuilder,
+          paginateOption,
+        ),
         new UserTransformer(relationTransformer),
       )
     }
 
-    const users = await queryBuilder.getMany()
-
     return this.response.collection(
-      users,
+      await queryBuilder.getMany(),
       new UserTransformer(relationTransformer),
     )
   }

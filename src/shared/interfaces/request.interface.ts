@@ -13,6 +13,10 @@ export interface QueryParams {
    */
   fields?: string[]
   /**
+   * Relation entity
+   */
+  relations?: string[]
+  /**
    * Keyword to search
    */
   keyword?: string | ''
