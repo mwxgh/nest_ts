@@ -27,12 +27,13 @@ import {
   GetListPaginationResponse,
   GetListResponse,
   SuccessfullyOperation,
+  UpdateResponse,
 } from '@shared/interfaces/response.interface'
 import Messages from '@shared/message/message'
-import { PrimitiveService } from '@shared/services/primitive.service'
 import { defaultPaginationOption } from '@shared/utils/defaultPaginationOption.util'
 import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.service'
 import { TagEntity } from '@tagModule/entities/tag.entity'
+import { APIDoc } from 'src/components/components.apidoc'
 import { SelectQueryBuilder } from 'typeorm'
 import { CreateTagDto, UpdateTagDto } from '../dto/tag.dto'
 import { TagService } from '../services/tag.service'
@@ -52,7 +53,6 @@ export class TagController {
     private tagService: TagService,
     private tagAbleService: TagAbleService,
     private response: ApiResponseService,
-    private primitiveService: PrimitiveService,
   ) {}
 
   private entity = 'tag'
@@ -60,8 +60,8 @@ export class TagController {
 
   @Post()
   @Auth('admin')
-  @ApiOperation({ summary: 'Admin create new tag' })
-  @ApiOkResponse({ description: 'New tag entity' })
+  @ApiOperation({ summary: APIDoc.tag.create.apiOperation })
+  @ApiOkResponse({ description: APIDoc.tag.create.apiOk })
   async createTag(@Body() data: CreateTagDto): Promise<CreateResponse> {
     const tag = await this.tagService.createTag(data)
 
@@ -69,8 +69,8 @@ export class TagController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'List tags' })
-  @ApiOkResponse({ description: 'List tag with query param' })
+  @ApiOperation({ summary: APIDoc.tag.read.apiOperation })
+  @ApiOkResponse({ description: APIDoc.tag.read.apiOk })
   async readTags(
     @Query() query: QueryManyDto,
   ): Promise<GetListResponse | GetListPaginationResponse> {
@@ -97,8 +97,8 @@ export class TagController {
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Get tag by id' })
-  @ApiOkResponse({ description: 'Tag entity' })
+  @ApiOperation({ summary: APIDoc.tag.detail.apiOperation })
+  @ApiOkResponse({ description: APIDoc.tag.detail.apiOk })
   async readTag(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<GetItemResponse> {
@@ -109,28 +109,23 @@ export class TagController {
 
   @Put(':id')
   @Auth('admin')
-  @ApiOperation({ summary: 'Admin update tag by id' })
-  @ApiOkResponse({ description: 'Update tag entity' })
+  @ApiOperation({ summary: APIDoc.tag.update.apiOperation })
+  @ApiOkResponse({ description: APIDoc.tag.update.apiOk })
   async updateTag(
     @Param('id', ParseIntPipe) id: number,
-    @Body() data: UpdateTagDto,
-  ): Promise<SuccessfullyOperation> {
+    @Body() body: UpdateTagDto,
+  ): Promise<UpdateResponse> {
     await this.tagService.checkExisting({ where: { id } })
 
-    await this.tagService.update(id, { ...data, updatedAt: new Date() })
+    const tag: TagEntity = await this.tagService.update(id, body)
 
-    return this.response.success({
-      message: this.primitiveService.getMessage({
-        message: Messages.successfullyOperation.update,
-        keywords: [this.entity],
-      }),
-    })
+    return this.response.item(tag, new TagTransformer())
   }
 
   @Delete(':id')
   @Auth('admin')
-  @ApiOperation({ summary: 'Admin delete tag by id' })
-  @ApiOkResponse({ description: 'Delete tag successfully' })
+  @ApiOperation({ summary: APIDoc.tag.delete.apiOperation })
+  @ApiOkResponse({ description: APIDoc.tag.delete.apiOk })
   async deleteTag(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<SuccessfullyOperation> {
@@ -141,7 +136,7 @@ export class TagController {
     await this.tagService.destroy(id)
 
     return this.response.success({
-      message: this.primitiveService.getMessage({
+      message: this.tagService.getMessage({
         message: Messages.successfullyOperation.delete,
         keywords: [this.entity],
       }),

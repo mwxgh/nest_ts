@@ -27,11 +27,13 @@ import {
   GetListPaginationResponse,
   GetListResponse,
   SuccessfullyOperation,
+  UpdateResponse,
 } from '@shared/interfaces/response.interface'
 import Messages from '@shared/message/message'
 import { PrimitiveService } from '@shared/services/primitive.service'
 import { defaultPaginationOption } from '@shared/utils/defaultPaginationOption.util'
 import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.service'
+import { APIDoc } from 'src/components/components.apidoc'
 import { SelectQueryBuilder } from 'typeorm'
 import { CreateProductDto, UpdateProductDto } from '../dto/product.dto'
 import { ProductService } from '../services/product.service'
@@ -58,8 +60,8 @@ export class ProductController {
 
   @Post()
   @Auth('admin')
-  @ApiOperation({ summary: 'Admin create new product' })
-  @ApiOkResponse({ description: 'New product entity' })
+  @ApiOperation({ summary: APIDoc.product.create.apiOperation })
+  @ApiOkResponse({ description: APIDoc.product.create.apiOk })
   async createProduct(
     @Body() data: CreateProductDto,
   ): Promise<SuccessfullyOperation> {
@@ -74,13 +76,11 @@ export class ProductController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'List products' })
-  @ApiOkResponse({ description: 'List products with query param' })
+  @ApiOperation({ summary: APIDoc.product.read.apiOperation })
+  @ApiOkResponse({ description: APIDoc.product.read.apiOk })
   async readProducts(
     @Query() query: QueryManyDto,
   ): Promise<GetListResponse | GetListPaginationResponse> {
-    const { keyword, includes, sortBy, sortType } = query
-
     const [queryBuilder, includesParams]: [
       SelectQueryBuilder<ProductEntity>,
       string[],
@@ -88,10 +88,7 @@ export class ProductController {
       entity: this.entity,
       fields: this.fields,
       relations: this.relations,
-      keyword,
-      sortBy,
-      sortType,
-      includes,
+      ...query,
     })
 
     if (query.perPage || query.page) {
@@ -113,8 +110,8 @@ export class ProductController {
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Get product by id' })
-  @ApiOkResponse({ description: 'Product entity' })
+  @ApiOperation({ summary: APIDoc.product.detail.apiOperation })
+  @ApiOkResponse({ description: APIDoc.product.detail.apiOk })
   async readProduct(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<GetItemResponse> {
@@ -126,26 +123,24 @@ export class ProductController {
   }
 
   @Put(':id')
-  @ApiOperation({ summary: 'Admin update product by id' })
-  @ApiOkResponse({ description: 'Update product entity' })
+  @ApiOperation({ summary: APIDoc.product.update.apiOperation })
+  @ApiOkResponse({ description: APIDoc.product.update.apiOk })
   async updateProduct(
     @Param('id', ParseIntPipe) id: number,
     @Body() data: UpdateProductDto,
-  ): Promise<SuccessfullyOperation> {
-    await this.productService.updateProduct({ id, data })
-
-    return this.response.success({
-      message: this.primitiveService.getMessage({
-        message: Messages.successfullyOperation.update,
-        keywords: [this.entity],
-      }),
+  ): Promise<UpdateResponse> {
+    const product: ProductEntity = await this.productService.updateProduct({
+      id,
+      data,
     })
+
+    return this.response.item(product, new ProductTransformer())
   }
 
   @Delete(':id')
   @Auth('admin')
-  @ApiOperation({ summary: 'Admin delete product by id' })
-  @ApiOkResponse({ description: 'Delete product successfully' })
+  @ApiOperation({ summary: APIDoc.product.delete.apiOperation })
+  @ApiOkResponse({ description: APIDoc.product.delete.apiOk })
   async deleteProduct(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<SuccessfullyOperation> {

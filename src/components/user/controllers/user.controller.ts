@@ -30,12 +30,12 @@ import {
   SuccessfullyOperation,
   UpdateResponse,
 } from '@shared/interfaces/response.interface'
-import Messages from '@shared/message/message'
 import { PrimitiveService } from '@shared/services/primitive.service'
 import { defaultPaginationOption } from '@shared/utils/defaultPaginationOption.util'
 import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.service'
 import { NotificationService } from '@sharedServices/notification/notification.service'
-import { isBoolean, pick } from 'lodash'
+import { isNil, pick } from 'lodash'
+import { APIDoc } from 'src/components/components.apidoc'
 import { SelectQueryBuilder } from 'typeorm'
 import {
   CreateUserDto,
@@ -78,8 +78,8 @@ export class UserController {
 
   @Post()
   @Auth('admin')
-  @ApiOperation({ summary: 'Admin create user' })
-  @ApiOkResponse({ description: 'New user entity' })
+  @ApiOperation({ summary: APIDoc.user.create.apiOperation })
+  @ApiOkResponse({ description: APIDoc.user.create.apiOk })
   async createUser(@Body() data: CreateUserDto): Promise<CreateResponse> {
     const saveUser = await this.userService.saveUser(data)
 
@@ -88,8 +88,8 @@ export class UserController {
 
   @Get()
   @Auth('admin')
-  @ApiOperation({ summary: 'Admin get list users' })
-  @ApiOkResponse({ description: 'List users with query params' })
+  @ApiOperation({ summary: APIDoc.user.read.apiOperation })
+  @ApiOkResponse({ description: APIDoc.user.read.apiOk })
   async readUsers(
     @Query() query: QueryManyDto,
   ): Promise<GetListResponse | GetListPaginationResponse> {
@@ -123,8 +123,8 @@ export class UserController {
 
   @Get(':id')
   @Auth('admin')
-  @ApiOperation({ summary: 'Admin get user by id' })
-  @ApiOkResponse({ description: 'User entity' })
+  @ApiOperation({ summary: APIDoc.user.detail.apiOperation })
+  @ApiOkResponse({ description: APIDoc.user.detail.apiOk })
   async readUser(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<GetItemResponse> {
@@ -137,51 +137,48 @@ export class UserController {
 
   @Put(':id')
   @Auth('admin')
-  @ApiOperation({ summary: 'Admin update user by id' })
-  @ApiOkResponse({ description: 'Update user entity' })
+  @ApiOperation({ summary: APIDoc.user.update.apiOperation })
+  @ApiOkResponse({ description: APIDoc.user.update.apiOk })
   async updateUser(
     @Param('id', ParseIntPipe) id: number,
     @Body() data: UpdateUserDto,
   ): Promise<UpdateResponse> {
-    const updateUser = await this.userService.updateUser({ id, data })
+    await this.userService.checkExisting({ where: { id } })
 
-    if (isBoolean(data.notifyUser) && data.notifyUser === true) {
-      this.notificationService.send(
-        updateUser,
-        new UserPasswordChangedNotification(data.password),
-      )
-    }
+    const user: UserEntity = await this.userService.updateUser({ id, data })
 
-    return this.response.item(updateUser, new UserTransformer(this.relations))
-  }
-
-  @Put(':id/password')
-  @Auth('admin')
-  @ApiOperation({ summary: 'Admin change password for user by id' })
-  @ApiOkResponse({ description: 'Update password user entity' })
-  async changePassword(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() data: UpdateUserPasswordDto,
-  ): Promise<SuccessfullyOperation> {
-    const user: UserEntity = await this.userService.findOneOrFail(id)
-
-    await this.userService.update(user.id, {
-      password: this.userService.hash(data.password),
-    })
-
-    if (isBoolean(data.notifyUser) && data.notifyUser === true) {
+    if (isNil(data.notifyUser) && data.notifyUser === true) {
       this.notificationService.send(
         user,
         new UserPasswordChangedNotification(data.password),
       )
     }
 
-    return this.response.success({
-      message: this.primitiveService.getMessage({
-        message: Messages.successfullyOperation.update,
-        keywords: ['password'],
-      }),
+    return this.response.item(user, new UserTransformer())
+  }
+
+  @Put(':id/password')
+  @Auth('admin')
+  @ApiOperation({ summary: APIDoc.user.updatePassword.apiOperation })
+  @ApiOkResponse({ description: APIDoc.user.updatePassword.apiOk })
+  async changePassword(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() data: UpdateUserPasswordDto,
+  ): Promise<UpdateResponse> {
+    await this.userService.checkExisting({ where: { id } })
+
+    const user: UserEntity = await this.userService.update(id, {
+      password: this.userService.hash(data.password),
     })
+
+    if (isNil(data.notifyUser) && data.notifyUser === true) {
+      this.notificationService.send(
+        user,
+        new UserPasswordChangedNotification(data.password),
+      )
+    }
+
+    return this.response.item(user, new UserTransformer())
   }
 
   @Post(':id/sendVerifyLink')

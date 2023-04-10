@@ -33,9 +33,10 @@ export class ImageService extends BaseService {
     file: Express.Multer.File
     data: CreateImageDto
   }): Promise<ImageEntity> {
-    Object.assign(data, { slug: await this.generateSlug(data.title) })
-
-    Object.assign(data, { url: file.path })
+    Object.assign(data, {
+      slug: await this.generateSlug(data.title),
+      url: file.path,
+    })
 
     return this.create(data)
   }

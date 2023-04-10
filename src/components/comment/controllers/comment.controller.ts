@@ -18,6 +18,7 @@ import {
 } from '@shared/interfaces/response.interface'
 import { defaultPaginationOption } from '@shared/utils/defaultPaginationOption.util'
 import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.service'
+import { APIDoc } from 'src/components/components.apidoc'
 import { SelectQueryBuilder } from 'typeorm'
 import { CreateCommentDto } from '../dto/comment.dto'
 import { CommentService } from '../services/comment.service'
@@ -42,8 +43,8 @@ export class UserCommentController {
 
   @Post()
   @Auth('admin', 'user')
-  @ApiOperation({ summary: 'User create new category' })
-  @ApiOkResponse({ description: 'New comment entity' })
+  @ApiOperation({ summary: APIDoc.comment.create.apiOperation })
+  @ApiOkResponse({ description: APIDoc.comment.create.apiOk })
   async createComment(@Body() data: CreateCommentDto): Promise<CreateResponse> {
     const comment = await this.comment.create(data)
 
@@ -51,8 +52,8 @@ export class UserCommentController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Get list comments' })
-  @ApiOkResponse({ description: 'List comments with param query' })
+  @ApiOperation({ summary: APIDoc.comment.read.apiOperation })
+  @ApiOkResponse({ description: APIDoc.comment.read.apiOk })
   async readComments(
     @Query() query: QueryManyDto,
   ): Promise<GetListResponse | GetListPaginationResponse> {

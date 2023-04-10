@@ -28,12 +28,14 @@ import {
   GetListPaginationResponse,
   GetListResponse,
   SuccessfullyOperation,
+  UpdateResponse,
 } from '@shared/interfaces/response.interface'
 import Messages from '@shared/message/message'
 import { PrimitiveService } from '@shared/services/primitive.service'
 import { defaultPaginationOption } from '@shared/utils/defaultPaginationOption.util'
 import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.service'
 import { Me } from '@userModule/dto/user.dto'
+import { APIDoc } from 'src/components/components.apidoc'
 import { SelectQueryBuilder } from 'typeorm'
 import { CreateContactDto, UpdateContactDto } from '../dto/contact.dto'
 import { ContactEntity } from '../entities/contact.entity'
@@ -56,12 +58,11 @@ export class ContactController {
   ) {}
 
   private entity = 'contact'
-
   private fields = ['email', 'phone', 'address']
 
   @Post()
-  @ApiOperation({ summary: 'Admin/user create new contact with userId param' })
-  @ApiOkResponse({ description: 'New contact entity' })
+  @ApiOperation({ summary: APIDoc.contact.create.apiOperation })
+  @ApiOkResponse({ description: APIDoc.contact.create.apiOk })
   async createContact(
     @AuthenticatedUser() currentUser: Me,
     @Body() data: CreateContactDto,
@@ -83,12 +84,8 @@ export class ContactController {
 
   @Get()
   @Auth('admin')
-  @ApiOperation({
-    summary: 'Admin get list contacts',
-  })
-  @ApiOkResponse({
-    description: 'List contacts with param query',
-  })
+  @ApiOperation({ summary: APIDoc.contact.read.apiOperation })
+  @ApiOkResponse({ description: APIDoc.contact.read.apiOk })
   async readContacts(
     @Query() query: QueryManyDto,
   ): Promise<GetListResponse | GetListPaginationResponse> {
@@ -119,8 +116,8 @@ export class ContactController {
 
   @Get(':id')
   @Auth('admin')
-  @ApiOperation({ summary: 'Admin get contact by id' })
-  @ApiOkResponse({ description: 'Contact entity' })
+  @ApiOperation({ summary: APIDoc.contact.detail.apiOperation })
+  @ApiOkResponse({ description: APIDoc.contact.detail.apiOk })
   async readContact(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<GetItemResponse> {
@@ -130,10 +127,8 @@ export class ContactController {
   }
 
   @Get('self')
-  @ApiOperation({
-    summary: 'Current user get contacts list with authenticate user',
-  })
-  @ApiOkResponse({ description: 'Contacts entity' })
+  @ApiOperation({ summary: APIDoc.contact.readThemselves.apiOperation })
+  @ApiOkResponse({ description: APIDoc.contact.readThemselves.apiOk })
   async readSelfContacts(
     @AuthenticatedUser() currentUser: Me,
   ): Promise<GetListResponse> {
@@ -149,10 +144,8 @@ export class ContactController {
   }
 
   @Get('self/:id')
-  @ApiOperation({
-    summary: 'Current user get contact by id with authenticate user',
-  })
-  @ApiOkResponse({ description: 'Contact entity' })
+  @ApiOperation({ summary: APIDoc.contact.detailThemselves.apiOperation })
+  @ApiOkResponse({ description: APIDoc.contact.detailThemselves.apiOk })
   async selfContact(
     @AuthenticatedUser() currentUser: Me,
     @Param('id', ParseIntPipe) id: number,
@@ -166,15 +159,13 @@ export class ContactController {
   }
 
   @Put(':id')
-  @ApiOperation({
-    summary: 'Update contact by id with authenticate user',
-  })
-  @ApiOkResponse({ description: 'Update contact entity' })
+  @ApiOperation({ summary: APIDoc.contact.update.apiOperation })
+  @ApiOkResponse({ description: APIDoc.contact.update.apiOk })
   async updateContact(
     @AuthenticatedUser() currentUser: Me,
     @Param('id', ParseIntPipe) id: number,
     @Body() data: UpdateContactDto,
-  ): Promise<SuccessfullyOperation> {
+  ): Promise<UpdateResponse> {
     const contact: ContactEntity = await this.contactService.findOneOrFail(id)
 
     this.primitiveService.checkUserPermissionOperation({
@@ -182,21 +173,14 @@ export class ContactController {
       userId: contact.userId,
     })
 
-    await this.contactService.update(contact.id, data)
+    const updateContact = await this.contactService.update(contact.id, data)
 
-    return this.response.success({
-      message: this.primitiveService.getMessage({
-        message: Messages.successfullyOperation.update,
-        keywords: [this.entity],
-      }),
-    })
+    return this.response.item(updateContact, new ContactTransformer())
   }
 
   @Delete(':id')
-  @ApiOperation({
-    summary: 'Delete contact by id with authenticate user',
-  })
-  @ApiOkResponse({ description: 'Delete contact successfully' })
+  @ApiOperation({ summary: APIDoc.contact.delete.apiOperation })
+  @ApiOkResponse({ description: APIDoc.contact.delete.apiOk })
   async deleteContact(
     @AuthenticatedUser() currentUser: Me,
     @Param('id', ParseIntPipe) id: number,

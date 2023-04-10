@@ -19,9 +19,10 @@ import { GetItemResponse } from '@shared/interfaces/response.interface'
 import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.service'
 import { HashService } from '@sharedServices/hash/hash.service'
 import { Me } from '@userModule/dto/user.dto'
+import { UserEntity } from '@userModule/entities/user.entity'
 import { UserService } from '@userModule/services/user.service'
 import { UserTransformer } from '@userModule/transformers/user.transformer'
-import { identity, pickBy } from 'lodash'
+import { APIDoc } from 'src/components/components.apidoc'
 import { UpdatePasswordDto, UpdateProfileDto } from '../dto/updateProfile.dto'
 
 @ApiTags('Profile')
@@ -42,8 +43,8 @@ export class ProfileController {
   private relations = ['roles']
 
   @Get()
-  @ApiOperation({ summary: 'Get profile current user' })
-  @ApiOkResponse({ description: 'Profile current user' })
+  @ApiOperation({ summary: APIDoc.profile.detail.apiOperation })
+  @ApiOkResponse({ description: APIDoc.profile.detail.apiOk })
   async profile(
     @AuthenticatedUser() currentUser: Me,
   ): Promise<GetItemResponse> {
@@ -51,28 +52,20 @@ export class ProfileController {
   }
 
   @Put()
-  @ApiOperation({ summary: 'Update profile current user' })
-  @ApiOkResponse({ description: 'New profile current user' })
+  @ApiOperation({ summary: APIDoc.profile.update.apiOperation })
+  @ApiOkResponse({ description: APIDoc.profile.update.apiOk })
   async updateProfile(
     @AuthenticatedUser() currentUser: Me,
     @Body() body: UpdateProfileDto,
   ): Promise<GetItemResponse> {
-    const data: UpdateProfileDto = {
-      username: body.username ? body.username : null,
-      firstName: body.firstName ? body.firstName : null,
-      lastName: body.lastName ? body.lastName : null,
-    }
+    const user: UserEntity = await this.userService.update(currentUser.id, body)
 
-    const existingData = pickBy(data, identity)
-
-    const user = await this.userService.update(currentUser.id, existingData)
-    // create updateProfile to transformer with relations
     return this.response.item(user, new UserTransformer())
   }
 
   @Put('password')
-  @ApiOperation({ summary: 'Update password current user' })
-  @ApiOkResponse({ description: 'New profile current user' })
+  @ApiOperation({ summary: APIDoc.profile.updatePassword.apiOperation })
+  @ApiOkResponse({ description: APIDoc.profile.updatePassword.apiOk })
   async changePassword(
     @AuthenticatedUser() currentUser: Me,
     @Body() body: UpdatePasswordDto,
@@ -87,7 +80,6 @@ export class ProfileController {
       password: this.hashService.hash(password),
     })
 
-    // create updateProfile to transformer with relations
     return this.response.item(user, new UserTransformer())
   }
 }

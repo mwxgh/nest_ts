@@ -1,14 +1,15 @@
 {
     "cSpell.words": [
-        "bccs",
-        "cockroachdb",
-        "datetime",
-        "nestjs",
-        "ormconfig",
-        "prepush",
-        "typeorm",
-        "websockets",
-        "mwxgh"
+      "apidoc",
+      "bccs",
+      "cockroachdb",
+      "datetime",
+      "mwxgh",
+      "nestjs",
+      "ormconfig",
+      "prepush",
+      "typeorm",
+      "websockets"
     ],
     "editor.codeActionsOnSave": {
       "source.fixAll": true,

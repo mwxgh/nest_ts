@@ -40,6 +40,7 @@ import Messages from '@shared/message/message'
 import { defaultPaginationOption } from '@shared/utils/defaultPaginationOption.util'
 import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.service'
 import { assign } from 'lodash'
+import { APIDoc } from 'src/components/components.apidoc'
 import { SelectQueryBuilder } from 'typeorm'
 
 @ApiTags('Permissions')
@@ -61,8 +62,8 @@ export class PermissionController {
 
   @Post('')
   @Auth('admin')
-  @ApiOperation({ summary: 'Admin create new permission' })
-  @ApiOkResponse({ description: 'New permission entity' })
+  @ApiOperation({ summary: APIDoc.permission.create.apiOperation })
+  @ApiOkResponse({ description: APIDoc.permission.create.apiOk })
   async savePermission(
     @Body() data: CreatePermissionDto,
   ): Promise<CreateResponse> {
@@ -77,8 +78,8 @@ export class PermissionController {
 
   @Get()
   @Auth('admin')
-  @ApiOperation({ summary: 'Admin get list permissions' })
-  @ApiOkResponse({ description: 'List permissions with query param' })
+  @ApiOperation({ summary: APIDoc.permission.read.apiOperation })
+  @ApiOkResponse({ description: APIDoc.permission.read.apiOk })
   async readPermissions(
     @Query() query: QueryManyDto,
   ): Promise<GetListResponse | GetListPaginationResponse> {
@@ -109,8 +110,8 @@ export class PermissionController {
 
   @Get(':id')
   @Auth('admin')
-  @ApiOperation({ summary: 'Admin get permission by id' })
-  @ApiOkResponse({ description: 'Permission entity' })
+  @ApiOperation({ summary: APIDoc.permission.detail.apiOperation })
+  @ApiOkResponse({ description: APIDoc.permission.detail.apiOk })
   async readPermission(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<GetItemResponse> {
@@ -122,8 +123,8 @@ export class PermissionController {
 
   @Put(':id')
   @Auth('admin')
-  @ApiOperation({ summary: 'Admin update permission by id' })
-  @ApiOkResponse({ description: 'Update permission entity' })
+  @ApiOperation({ summary: APIDoc.permission.update.apiOperation })
+  @ApiOkResponse({ description: APIDoc.permission.update.apiOk })
   async updatePermission(
     @Param('id', ParseIntPipe) id: number,
     @Body() data: UpdatePermissionDto,
@@ -138,8 +139,8 @@ export class PermissionController {
 
   @Delete(':id')
   @Auth('admin')
-  @ApiOperation({ summary: 'Admin delete permission by id' })
-  @ApiOkResponse({ description: 'Delete permission successfully' })
+  @ApiOperation({ summary: APIDoc.permission.delete.apiOperation })
+  @ApiOkResponse({ description: APIDoc.permission.delete.apiOk })
   async delete(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<SuccessfullyOperation> {

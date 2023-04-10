@@ -15,6 +15,7 @@ import Messages from '@shared/message/message'
 import { ApiResponseService } from '@shared/services/apiResponse/apiResponse.service'
 import { Me } from '@userModule/dto/user.dto'
 import { Request } from 'express'
+import { APIDoc } from 'src/components/components.apidoc'
 import {
   LoginGoogleDto,
   RefreshDto,
@@ -35,8 +36,8 @@ export class AuthController {
   ) {}
 
   @Post('loginGoogle')
-  @ApiOperation({ summary: 'Login with google token' })
-  @ApiOkResponse({ description: 'Token for access system' })
+  @ApiOperation({ summary: APIDoc.auth.loginGoogle.apiOperation })
+  @ApiOkResponse({ description: APIDoc.auth.loginGoogle.apiOk })
   async googleAuthCallback(
     @Body() data: LoginGoogleDto,
   ): Promise<AuthenticationAttribute> {
@@ -44,8 +45,8 @@ export class AuthController {
   }
 
   @Post('register')
-  @ApiOperation({ summary: 'Register user with email' })
-  @ApiOkResponse({ description: 'Token for access system' })
+  @ApiOperation({ summary: APIDoc.auth.register.apiOperation })
+  @ApiOkResponse({ description: APIDoc.auth.register.apiOk })
   async userRegister(
     @Body() data: UserRegisterDto,
   ): Promise<AuthenticationAttribute> {
@@ -53,8 +54,8 @@ export class AuthController {
   }
 
   @Post('login')
-  @ApiOperation({ summary: 'Login with email & password' })
-  @ApiOkResponse({ description: 'Token for access system' })
+  @ApiOperation({ summary: APIDoc.auth.login.apiOperation })
+  @ApiOkResponse({ description: APIDoc.auth.login.apiOk })
   async userLogin(
     @Body() data: UserLoginDto,
   ): Promise<AuthenticationAttribute> {
@@ -62,8 +63,8 @@ export class AuthController {
   }
 
   @Post('refresh')
-  @ApiOperation({ summary: 'Refresh login with refresh' })
-  @ApiOkResponse({ description: 'Token for access system' })
+  @ApiOperation({ summary: APIDoc.auth.refresh.apiOperation })
+  @ApiOkResponse({ description: APIDoc.auth.refresh.apiOk })
   async refresh(@Body() data: RefreshDto): Promise<AuthenticationAttribute> {
     return this.authService.refresh(data)
   }
@@ -71,8 +72,8 @@ export class AuthController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Delete('logout')
-  @ApiOperation({ summary: 'Logout' })
-  @ApiOkResponse({ description: 'Logout successfully' })
+  @ApiOperation({ summary: APIDoc.auth.logout.apiOperation })
+  @ApiOkResponse({ description: APIDoc.auth.logout.apiOk })
   async logout(
     @Req() request: Request,
     @AuthenticatedUser() currentUser: Me,

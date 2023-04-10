@@ -33,10 +33,12 @@ import {
   GetListPaginationResponse,
   GetListResponse,
   SuccessfullyOperation,
+  UpdateResponse,
 } from '@shared/interfaces/response.interface'
 import Messages from '@shared/message/message'
 import { PrimitiveService } from '@shared/services/primitive.service'
 import { defaultPaginationOption } from '@shared/utils/defaultPaginationOption.util'
+import { APIDoc } from 'src/components/components.apidoc'
 import { PostEntity } from '../entities/post.entity'
 @ApiTags('Posts')
 @ApiHeader({
@@ -60,8 +62,8 @@ export class PostController {
 
   @Post()
   @Auth('admin')
-  @ApiOperation({ summary: 'Admin create new post' })
-  @ApiOkResponse({ description: 'New post entity' })
+  @ApiOperation({ summary: APIDoc.product.create.apiOperation })
+  @ApiOkResponse({ description: APIDoc.product.create.apiOk })
   async createPost(@Body() data: CreatePostDto): Promise<CreateResponse> {
     const post = await this.postService.savePost(data)
 
@@ -69,22 +71,11 @@ export class PostController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Get list posts' })
-  @ApiOkResponse({ description: 'List posts with query param' })
+  @ApiOperation({ summary: APIDoc.product.read.apiOperation })
+  @ApiOkResponse({ description: APIDoc.product.read.apiOk })
   async readPosts(
     @Query() query: QueryManyPostDto,
   ): Promise<GetListResponse | GetListPaginationResponse> {
-    const {
-      keyword,
-      sortBy,
-      sortType,
-      includes,
-      privacy,
-      status,
-      priority,
-      type,
-    } = query
-
     const [queryBuilder, includesParams]: [
       SelectQueryBuilder<PostEntity>,
       string[],
@@ -92,14 +83,7 @@ export class PostController {
       entity: this.entity,
       fields: this.fields,
       relations: this.relations,
-      keyword,
-      includes,
-      sortBy,
-      sortType,
-      privacy,
-      status,
-      priority,
-      type,
+      ...query,
     })
 
     if (query.perPage || query.page) {
@@ -121,8 +105,8 @@ export class PostController {
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Get post by id' })
-  @ApiOkResponse({ description: 'Post entity' })
+  @ApiOperation({ summary: APIDoc.product.detail.apiOperation })
+  @ApiOkResponse({ description: APIDoc.product.detail.apiOk })
   async readPost(
     @Param('id', ParseIntPipe) id: number,
     @Query() query: QueryOneDto,
@@ -138,26 +122,21 @@ export class PostController {
 
   @Put(':id')
   @Auth('admin')
-  @ApiOperation({ summary: 'Admin update post by id' })
-  @ApiOkResponse({ description: 'Update post entity' })
+  @ApiOperation({ summary: APIDoc.product.update.apiOperation })
+  @ApiOkResponse({ description: APIDoc.product.update.apiOk })
   async updatePost(
     @Param('id', ParseIntPipe) id: number,
     @Body() data: UpdatePostDto,
-  ): Promise<SuccessfullyOperation> {
-    await this.postService.updatePost({ id, data })
+  ): Promise<UpdateResponse> {
+    const post: PostEntity = await this.postService.updatePost({ id, data })
 
-    return this.response.success({
-      message: this.primitiveService.getMessage({
-        message: Messages.successfullyOperation.update,
-        keywords: [this.entity],
-      }),
-    })
+    return this.response.item(post, new PostTransformer())
   }
 
   @Delete(':id')
   @Auth('admin')
-  @ApiOperation({ summary: 'Admin delete post by id' })
-  @ApiOkResponse({ description: 'Delete post successfully' })
+  @ApiOperation({ summary: APIDoc.product.delete.apiOperation })
+  @ApiOkResponse({ description: APIDoc.product.delete.apiOk })
   async deletePost(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<SuccessfullyOperation> {

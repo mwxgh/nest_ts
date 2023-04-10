@@ -156,12 +156,13 @@ export class ProductService extends BaseService {
    * @param params.id
    * @param params.data UpdateProductDto
    */
-  async updateProduct(params: {
+  async updateProduct({
+    id,
+    data,
+  }: {
     id: number
     data: UpdateProductDto
-  }): Promise<void> {
-    const { id, data } = params
-
+  }): Promise<ProductEntity> {
     const currentProduct: ProductEntity = await this.findOneOrFail(id)
 
     // tagAble
@@ -191,22 +192,11 @@ export class ProductService extends BaseService {
       })
     }
 
-    const dataToUpdate = assign(data, { slug: slugify(data.name) })
-
-    const count = await this.count({
-      where: {
-        name: data.name,
-        slug: dataToUpdate.slug,
-      },
-    })
-
-    if (currentProduct.name === data.name) {
-      delete dataToUpdate.slug
-    } else if (count) {
-      dataToUpdate.slug = `${dataToUpdate.slug}-${count}`
+    if (!isNil(data.name)) {
+      Object.assign(data, { slug: await this.generateSlug(data.name) })
     }
 
-    await this.update(id, dataToUpdate)
+    return this.update(id, data)
   }
 
   /**

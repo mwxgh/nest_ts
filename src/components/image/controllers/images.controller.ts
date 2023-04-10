@@ -37,6 +37,7 @@ import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.serv
 import { ImageEntity } from '@imageModule/entities/image.entity'
 import CustomFilesInterceptor from '@shared/uploads/customInterceptor'
 import { defaultPaginationOption } from '@shared/utils/defaultPaginationOption.util'
+import { APIDoc } from 'src/components/components.apidoc'
 import { SelectQueryBuilder } from 'typeorm'
 import { CreateImageDto, UpdateImageDto } from '../dto/image.dto'
 import { ImageService } from '../services/image.service'
@@ -58,14 +59,13 @@ export class ImageController {
   ) {}
 
   private entity = 'image'
-
   private fields = ['title']
 
   @ApiConsumes('multipart/form-data')
   @Post()
   @Auth('admin')
-  @ApiOperation({ summary: 'Admin upload new image' })
-  @ApiOkResponse({ description: 'Save image and return image entity' })
+  @ApiOperation({ summary: APIDoc.image.create.apiOperation })
+  @ApiOkResponse({ description: APIDoc.image.create.apiOk })
   @UseInterceptors(
     CustomFilesInterceptor({
       fieldName: 'file',
@@ -80,8 +80,8 @@ export class ImageController {
 
   @Get()
   @Auth('admin')
-  @ApiOperation({ summary: 'Admin get list image' })
-  @ApiOkResponse({ description: 'List images with param query' })
+  @ApiOperation({ summary: APIDoc.image.read.apiOperation })
+  @ApiOkResponse({ description: APIDoc.image.read.apiOk })
   async readImages(
     @Query() query: QueryManyDto,
   ): Promise<GetListResponse | GetListPaginationResponse> {
@@ -112,8 +112,8 @@ export class ImageController {
 
   @Get(':id')
   @Auth('admin')
-  @ApiOperation({ summary: 'Admin get image by id' })
-  @ApiOkResponse({ description: 'Image entity' })
+  @ApiOperation({ summary: APIDoc.image.detail.apiOperation })
+  @ApiOkResponse({ description: APIDoc.image.detail.apiOk })
   async readImage(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<GetItemResponse> {
@@ -123,8 +123,8 @@ export class ImageController {
   }
 
   @Put(':id')
-  @ApiOperation({ summary: 'Admin update image by id' })
-  @ApiOkResponse({ description: 'Update image entity' })
+  @ApiOperation({ summary: APIDoc.image.update.apiOperation })
+  @ApiOkResponse({ description: APIDoc.image.update.apiOk })
   async updateImage(
     @Param('id', ParseIntPipe) id: number,
     @Body() data: UpdateImageDto,
@@ -134,8 +134,8 @@ export class ImageController {
 
   @Delete(':id')
   @Auth('admin')
-  @ApiOperation({ summary: 'Admin delete image by id' })
-  @ApiOkResponse({ description: 'Delete image successfully' })
+  @ApiOperation({ summary: APIDoc.image.delete.apiOperation })
+  @ApiOkResponse({ description: APIDoc.image.delete.apiOk })
   async deleteImage(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<SuccessfullyOperation> {

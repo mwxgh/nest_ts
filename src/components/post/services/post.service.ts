@@ -194,9 +194,13 @@ export class PostService extends BaseService {
    * @param params.id
    * @param params.data UpdatePostDto
    */
-  async updatePost(params: { id: number; data: UpdatePostDto }): Promise<void> {
-    const { id, data } = params
-
+  async updatePost({
+    id,
+    data,
+  }: {
+    id: number
+    data: UpdatePostDto
+  }): Promise<PostEntity> {
     const currentPost: PostEntity = await this.findOneOrFail(id)
 
     // imageAble
@@ -227,24 +231,12 @@ export class PostService extends BaseService {
     }
 
     // update post
-    const slug = await this.generateSlug(data.title)
-    const dataWithSlug = assign(data, { slug })
 
-    const count = await this.count({
-      where: {
-        title: data.title,
-        type: data.type,
-        slug: dataWithSlug.slug,
-      },
-    })
-
-    if (currentPost.title === data.title && currentPost.type === data.type) {
-      delete dataWithSlug.slug
-    } else if (count) {
-      dataWithSlug.slug = `${dataWithSlug.slug}-${count}`
+    if (!isNil(data.title)) {
+      Object.assign(data, { slug: await this.generateSlug(data.title) })
     }
 
-    await this.update(id, dataWithSlug)
+    return this.update(id, data)
   }
 
   /**

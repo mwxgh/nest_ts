@@ -21,6 +21,7 @@ import Messages from '@shared/message/message'
 import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.service'
 import { NotificationService } from '@sharedServices/notification/notification.service'
 import { UserTransformer } from '@userModule/transformers/user.transformer'
+import { APIDoc } from 'src/components/components.apidoc'
 
 @ApiTags('Auth')
 @ApiHeader({
@@ -37,8 +38,8 @@ export class ForgotPasswordController {
   ) {}
 
   @Post('forgotPassword')
-  @ApiOperation({ summary: 'Send reset password link to email' })
-  @ApiOkResponse({ description: 'Reset password link sent success' })
+  @ApiOperation({ summary: APIDoc.auth.forgotPassword.apiOperation })
+  @ApiOkResponse({ description: APIDoc.auth.forgotPassword.apiOk })
   async sendResetLinkEmail(
     @Body() data: SendResetLinkDto,
   ): Promise<SuccessfullyOperation> {
@@ -62,9 +63,11 @@ export class ForgotPasswordController {
   }
 
   @Post('resetPassword')
-  @ApiOperation({ summary: 'Reset password' })
-  @ApiOkResponse({ description: 'Reset password successfully' })
-  @ApiBadRequestResponse({ description: 'Token is expired' })
+  @ApiOperation({ summary: APIDoc.auth.resetPassword.apiOperation })
+  @ApiOkResponse({ description: APIDoc.auth.resetPassword.apiOk })
+  @ApiBadRequestResponse({
+    description: APIDoc.auth.resetPassword.apiBadRequest,
+  })
   async resetPassword(@Body() data: ResetPasswordDto): Promise<ResponseEntity> {
     const user = await this.passwordResetService.resetPassword(data)
 

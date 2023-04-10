@@ -39,6 +39,7 @@ import { defaultPaginationOption } from '@shared/utils/defaultPaginationOption.u
 import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.service'
 import { Me } from '@userModule/dto/user.dto'
 import { assign } from 'lodash'
+import { APIDoc } from 'src/components/components.apidoc'
 import { SelectQueryBuilder } from 'typeorm'
 
 @ApiTags('Roles')
@@ -61,8 +62,8 @@ export class RoleController {
 
   @Post()
   @Auth('admin')
-  @ApiOperation({ summary: 'Admin create new role' })
-  @ApiOkResponse({ description: 'New role entity' })
+  @ApiOperation({ summary: APIDoc.role.create.apiOperation })
+  @ApiOkResponse({ description: APIDoc.role.create.apiOk })
   async createRole(@Body() data: CreateRoleDto): Promise<CreateResponse> {
     const role = await this.roleService.create(
       assign(data, { slug: await this.roleService.generateSlug(data.name) }),
@@ -73,8 +74,8 @@ export class RoleController {
 
   @Get()
   @Auth('admin')
-  @ApiOperation({ summary: 'Admin list roles' })
-  @ApiOkResponse({ description: 'List roles with query param' })
+  @ApiOperation({ summary: APIDoc.role.read.apiOperation })
+  @ApiOkResponse({ description: APIDoc.role.read.apiOk })
   async readRoles(
     @Query() query: QueryManyDto,
   ): Promise<GetListResponse | GetListPaginationResponse> {
@@ -108,8 +109,8 @@ export class RoleController {
 
   @Get(':id')
   @Auth('admin')
-  @ApiOperation({ summary: 'Admin get role by id' })
-  @ApiOkResponse({ description: 'Role entity' })
+  @ApiOperation({ summary: APIDoc.role.detail.apiOperation })
+  @ApiOkResponse({ description: APIDoc.role.detail.apiOk })
   async readRole(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<GetItemResponse> {
@@ -122,8 +123,8 @@ export class RoleController {
 
   @Put(':id')
   @Auth('admin')
-  @ApiOperation({ summary: 'Admin update role by id' })
-  @ApiOkResponse({ description: 'Update role entity' })
+  @ApiOperation({ summary: APIDoc.role.update.apiOperation })
+  @ApiOkResponse({ description: APIDoc.role.update.apiOk })
   async updateRole(
     @Param('id', ParseIntPipe) id: number,
     @Body() data: UpdateRoleDto,
@@ -139,8 +140,8 @@ export class RoleController {
 
   @Delete(':id')
   @Auth('admin')
-  @ApiOperation({ summary: 'Admin delete role by id' })
-  @ApiOkResponse({ description: 'Delete role successfully' })
+  @ApiOperation({ summary: APIDoc.role.delete.apiOperation })
+  @ApiOkResponse({ description: APIDoc.role.delete.apiOk })
   async deleteRole(
     @AuthenticatedUser() currentUser: Me,
     @Param('id', ParseIntPipe) id: number,

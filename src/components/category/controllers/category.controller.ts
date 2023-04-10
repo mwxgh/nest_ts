@@ -33,6 +33,7 @@ import {
 import Messages from '@shared/message/message'
 import { defaultPaginationOption } from '@shared/utils/defaultPaginationOption.util'
 import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.service'
+import { APIDoc } from 'src/components/components.apidoc'
 import { SelectQueryBuilder } from 'typeorm'
 import { CreateCategoryDto, UpdateCategoryDto } from '../dto/category.dto'
 import { CategoryEntity } from '../entities/category.entity'
@@ -57,11 +58,12 @@ export class CategoryController {
 
   private entity = 'category'
   private fields = ['name', 'categoryType']
+  private relations = ['products', 'posts']
 
   @Post()
   @Auth('admin')
-  @ApiOperation({ summary: 'Admin create new category' })
-  @ApiOkResponse({ description: 'New category entity' })
+  @ApiOperation({ summary: APIDoc.category.create.apiOperation })
+  @ApiOkResponse({ description: APIDoc.category.create.apiOk })
   async createCategory(
     @Body() data: CreateCategoryDto,
   ): Promise<CreateResponse> {
@@ -71,8 +73,8 @@ export class CategoryController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Get list categories' })
-  @ApiOkResponse({ description: 'List categories with param query' })
+  @ApiOperation({ summary: APIDoc.category.read.apiOperation })
+  @ApiOkResponse({ description: APIDoc.category.read.apiOk })
   async readCategories(
     @Query() query: QueryManyDto,
   ): Promise<GetListResponse | GetListPaginationResponse> {
@@ -84,6 +86,7 @@ export class CategoryController {
     ] = await this.categoryService.queryCategory({
       entity: this.entity,
       fields: this.fields,
+      relations: this.relations,
       keyword,
       includes,
       sortBy,
@@ -109,8 +112,8 @@ export class CategoryController {
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Get category by id' })
-  @ApiOkResponse({ description: 'Category entity' })
+  @ApiOperation({ summary: APIDoc.category.detail.apiOperation })
+  @ApiOkResponse({ description: APIDoc.category.detail.apiOk })
   async readCategory(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<GetItemResponse> {
@@ -121,8 +124,8 @@ export class CategoryController {
 
   @Put(':id')
   @Auth('admin')
-  @ApiOperation({ summary: 'Admin update category by id' })
-  @ApiOkResponse({ description: 'Update category entity' })
+  @ApiOperation({ summary: APIDoc.category.update.apiOperation })
+  @ApiOkResponse({ description: APIDoc.category.update.apiOk })
   async updateCategory(
     @Param('id', ParseIntPipe) id: number,
     @Body() data: UpdateCategoryDto,
@@ -136,8 +139,8 @@ export class CategoryController {
 
   @Delete(':id')
   @Auth('admin')
-  @ApiOperation({ summary: 'Admin delete category by id' })
-  @ApiOkResponse({ description: 'Delete category successfully' })
+  @ApiOperation({ summary: APIDoc.category.delete.apiOperation })
+  @ApiOkResponse({ description: APIDoc.category.delete.apiOk })
   async deleteCategory(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<SuccessfullyOperation> {
