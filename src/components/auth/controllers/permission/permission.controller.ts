@@ -39,7 +39,6 @@ import {
 import Messages from '@shared/message/message'
 import { defaultPaginationOption } from '@shared/utils/defaultPaginationOption.util'
 import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.service'
-import { assign } from 'lodash'
 import { APIDoc } from 'src/components/components.apidoc'
 import { SelectQueryBuilder } from 'typeorm'
 
@@ -67,11 +66,7 @@ export class PermissionController {
   async savePermission(
     @Body() data: CreatePermissionDto,
   ): Promise<CreateResponse> {
-    const permission = await this.permissionService.create(
-      assign(data, {
-        slug: await this.permissionService.generateSlug(data.name),
-      }),
-    )
+    const permission = await this.permissionService.createPermission(data)
 
     return this.response.item(permission, new PermissionTransformer())
   }

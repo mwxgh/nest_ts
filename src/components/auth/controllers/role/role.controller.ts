@@ -38,7 +38,6 @@ import Messages from '@shared/message/message'
 import { defaultPaginationOption } from '@shared/utils/defaultPaginationOption.util'
 import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.service'
 import { Me } from '@userModule/dto/user.dto'
-import { assign } from 'lodash'
 import { APIDoc } from 'src/components/components.apidoc'
 import { SelectQueryBuilder } from 'typeorm'
 
@@ -65,9 +64,7 @@ export class RoleController {
   @ApiOperation({ summary: APIDoc.role.create.apiOperation })
   @ApiOkResponse({ description: APIDoc.role.create.apiOk })
   async createRole(@Body() data: CreateRoleDto): Promise<CreateResponse> {
-    const role = await this.roleService.create(
-      assign(data, { slug: await this.roleService.generateSlug(data.name) }),
-    )
+    const role = await this.roleService.createRole(data)
 
     return this.response.item(role, new RoleTransformer())
   }
@@ -129,13 +126,9 @@ export class RoleController {
     @Param('id', ParseIntPipe) id: number,
     @Body() data: UpdateRoleDto,
   ): Promise<UpdateResponse> {
-    const updateRole = await this.roleService.updateRole({
-      id,
-      data,
-      relations: this.relations,
-    })
+    const role = await this.roleService.updateRole({ id, data })
 
-    return this.response.item(updateRole, new RoleTransformer(this.relations))
+    return this.response.item(role, new RoleTransformer())
   }
 
   @Delete(':id')

@@ -1,8 +1,10 @@
-import { UpdatePermissionDto } from '@authModule/dto/permission.dto'
+import {
+  CreatePermissionDto,
+  UpdatePermissionDto,
+} from '@authModule/dto/permission.dto'
 import { Injectable } from '@nestjs/common'
 import { Entity } from '@shared/interfaces/response.interface'
 import { BaseService } from '@sharedServices/base.service'
-import { assign } from 'lodash'
 import { Connection, Repository } from 'typeorm'
 import { PermissionEntity } from '../entities/permission.entity'
 import { PermissionRepository } from '../repositories/permission.repository'
@@ -22,7 +24,22 @@ export class PermissionService extends BaseService {
   }
 
   /**
-   * Update permission and return permission entity with relations
+   * Create permission and return permission entity
+   *
+   * @param data  CreatePermissionDto
+   *
+   * @return Permission
+   */
+  async createPermission(data: CreatePermissionDto): Promise<PermissionEntity> {
+    if (data.name) {
+      Object.assign(data, { slug: await this.generateSlug(data.name) })
+    }
+
+    return this.create(data)
+  }
+
+  /**
+   * Update permission and return permission entity
    *
    * @param id  number
    * @param data  UpdatePermissionDto
@@ -38,9 +55,11 @@ export class PermissionService extends BaseService {
   }): Promise<PermissionEntity> {
     await this.checkExisting({ where: { id } })
 
-    const slug = await this.generateSlug(data.name)
+    if (data.name) {
+      Object.assign(data, { slug: await this.generateSlug(data.name) })
+    }
 
-    return this.update(id, assign(data, { slug }))
+    return this.update(id, data)
   }
 
   /**

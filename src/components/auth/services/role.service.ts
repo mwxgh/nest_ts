@@ -1,5 +1,4 @@
-import { UpdateRoleDto } from '@authModule/dto/role.dto'
-import { PermissionEntity } from '@authModule/entities/permission.entity'
+import { CreateRoleDto, UpdateRoleDto } from '@authModule/dto/role.dto'
 import { ForbiddenException, Injectable } from '@nestjs/common'
 import { Entity } from '@shared/interfaces/response.interface'
 import { BaseService } from '@sharedServices/base.service'
@@ -24,7 +23,22 @@ export class RoleService extends BaseService {
   }
 
   /**
-   * Update role and return role entity with relations
+   * Create role and return role entity
+   *
+   * @param data  CreateRoleDto
+   *
+   * @return Role
+   */
+  async createRole(data: CreateRoleDto): Promise<RoleEntity> {
+    if (data.name) {
+      Object.assign(data, { slug: await this.generateSlug(data.name) })
+    }
+
+    return this.create(data)
+  }
+
+  /**
+   * Update role and return role entity
    *
    * @param id  number
    * @param data  UpdateRoleDto
@@ -34,11 +48,9 @@ export class RoleService extends BaseService {
   async updateRole({
     id,
     data,
-    relations,
   }: {
     id: number
     data: UpdateRoleDto
-    relations: string[]
   }): Promise<RoleEntity> {
     await this.checkExisting({ where: { id } })
 
@@ -46,9 +58,7 @@ export class RoleService extends BaseService {
       Object.assign(data, { slug: await this.generateSlug(data.name) })
     }
 
-    const updateRole: PermissionEntity = await this.update(id, data)
-
-    return await this.findOneOrFail(updateRole.id, { relations })
+    return this.update(id, data)
   }
 
   /**
