@@ -5,7 +5,6 @@ import {
   IsEmail,
   IsEnum,
   IsNotEmpty,
-  IsNumber,
   IsOptional,
   IsString,
   MaxLength,
@@ -96,20 +95,5 @@ export class UserSendMailReportDto {
   @IsNotEmpty()
   linkReport: string
 }
-
-export class UserRoleProperties {
-  @ApiProperty()
-  @IsNumber()
-  @IsNotEmpty()
-  roleId: number
-}
-
-export class UserAttachRoleDto extends PickType(UserRoleProperties, [
-  'roleId',
-] as const) {}
-
-export class UserDetachRoleDto extends PickType(UserRoleProperties, [
-  'roleId',
-] as const) {}
 
 export type Me = UserEntity

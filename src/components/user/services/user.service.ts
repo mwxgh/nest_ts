@@ -1,13 +1,11 @@
 import { UserRegisterDto } from '@authModule/dto/auth.dto'
-import { RoleEntity } from '@authModule/entities/role.entity'
 import { RoleService } from '@authModule/services/role.service'
-import { UserRoleService } from '@authModule/services/userRole.service'
-import { Injectable } from '@nestjs/common'
+import { Inject, Injectable, forwardRef } from '@nestjs/common'
 import { DEFAULT_USER_STATUS } from '@shared/defaultValue/defaultValue'
 import { Entity } from '@shared/interfaces/response.interface'
 import { BaseService } from '@sharedServices/base.service'
 import { HashService } from '@sharedServices/hash/hash.service'
-import { difference, pick } from 'lodash'
+import { isNil, pick } from 'lodash'
 import { Connection, Repository } from 'typeorm'
 import { CreateUserDto, UpdateUserDto } from '../dto/user.dto'
 import { UserEntity } from '../entities/user.entity'
@@ -21,8 +19,8 @@ export class UserService extends BaseService {
   constructor(
     private connection: Connection,
     private hashService: HashService,
+    @Inject(forwardRef(() => RoleService))
     private roleService: RoleService,
-    private userRoleService: UserRoleService,
   ) {
     super()
     this.repository = connection.getCustomRepository(UserRepository)
@@ -101,56 +99,6 @@ export class UserService extends BaseService {
   }
 
   /**
-   * Attach user and role
-   *
-   * @param params.userId userId
-   * @param params.roleId roleId
-   */
-  async attachRole({
-    userId,
-    roleId,
-  }: {
-    userId: number
-    roleId: number
-  }): Promise<void> {
-    const role: RoleEntity = await this.roleService.findOneOrFail(roleId)
-
-    const user: UserEntity = await this.repository.findOneOrFail(userId)
-
-    if (role && user) {
-      await this.userRoleService.firstOrCreate(
-        {
-          where: {
-            userId: user.id,
-            roleId: role.id,
-          },
-        },
-        { userId: user.id, roleId: role.id },
-      )
-    }
-  }
-
-  /**
-   * Detach user and role
-   *
-   * @param params.userId userId
-   * @param params.roleId roleId
-   */
-  async detachRole(params: { userId: number; roleId: number }): Promise<void> {
-    const { userId, roleId } = params
-    const role: RoleEntity = await this.roleService.findOneOrFail(roleId)
-
-    const user: UserEntity = await this.repository.findOneOrFail(userId)
-
-    if (role && user) {
-      await this.userRoleService.destroy({
-        userId: user.id,
-        roleId: role.id,
-      })
-    }
-  }
-
-  /**
    * Save user and return user entity with relations
    *
    * @param data  CreateUserDto | UserRegisterDto
@@ -193,7 +141,7 @@ export class UserService extends BaseService {
 
     if (data.roleIds && data.roleIds.length > 0) {
       for (const roleId of data.roleIds) {
-        await this.attachRole({ userId: saveUser.id, roleId })
+        await this.roleService.attachRole({ userId: saveUser.id, roleId })
       }
     }
 
@@ -203,90 +151,43 @@ export class UserService extends BaseService {
   /**
    * Update user and return user entity with relations
    *
+   * @param params.id  number
    * @param params.data  UpdateUserDto
    * @return User
    */
-  async updateUser(params: {
+  async updateUser({
+    id,
+    data,
+  }: {
     id: number
     data: UpdateUserDto
   }): Promise<UserEntity> {
-    const { id, data } = params
     const { email, username, password, roleIds } = data
 
-    const existingUser: UserEntity = await this.findOneOrFail(id)
+    await this.checkExisting({ where: { id } })
 
     await this.checkIdentifier(
       email ? email : undefined,
       username ? username : undefined,
     )
 
-    const updateUser: UserEntity = await this.update(existingUser.id, {
-      ...pick(data, [
-        'email',
-        'username',
-        'password',
-        'firstName',
-        'lastName',
-        'status',
-      ]),
-      ...{
-        password: this.hash(password),
-        email: this.sanitize(email),
-      },
-    })
+    if (!isNil(password)) {
+      Object.assign(data, { password: this.hash(password) })
+    }
 
-    if (data.roleIds.length > 0) {
-      await this.updateRelationUserAndRole({
+    if (!isNil(email)) {
+      Object.assign(data, { email: this.sanitize(email) })
+    }
+
+    const updateUser: UserEntity = await this.update(id, { data })
+
+    if (!isNil(roleIds) && roleIds.length > 0) {
+      await this.roleService.updateRelationUserAndRole({
         userId: updateUser.id,
         roleIds,
       })
     }
 
     return await this.findOneOrFail(updateUser.id, { relations: ['roles'] })
-  }
-
-  /**
-   * Update relation role when update user ...
-   * @param params.userId
-   * @param params.roleIds
-   */
-  async updateRelationUserAndRole(params: {
-    userId: number
-    roleIds: number[]
-  }): Promise<void> {
-    const { userId, roleIds } = params
-
-    const currentRoleIds: number[] = await this.userRoleService.findWhere(
-      {
-        userId,
-      },
-      ['roleId'],
-    )
-
-    if (currentRoleIds.length === 0) {
-      return
-    }
-
-    // detach role
-    const detachRoleIds: number[] = difference(currentRoleIds, roleIds)
-
-    for (const detachRoleId of detachRoleIds) {
-      await this.detachRole({ userId, roleId: detachRoleId })
-    }
-
-    // attach new role
-    const newAttachRoleIds: number[] = difference(roleIds, currentRoleIds)
-
-    const existingRoles: RoleEntity[] = await this.roleService.findIdInOrFail(
-      newAttachRoleIds,
-    )
-
-    if (existingRoles && existingRoles.length > 0) {
-      const roleIds = existingRoles.map((role) => role.id)
-
-      for (const roleId of roleIds) {
-        await this.attachRole({ userId, roleId })
-      }
-    }
   }
 }

@@ -30,7 +30,6 @@ import {
   SuccessfullyOperation,
   UpdateResponse,
 } from '@shared/interfaces/response.interface'
-import { PrimitiveService } from '@shared/services/primitive.service'
 import { defaultPaginationOption } from '@shared/utils/defaultPaginationOption.util'
 import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.service'
 import { NotificationService } from '@sharedServices/notification/notification.service'
@@ -42,8 +41,6 @@ import {
   InviteUserDto,
   UpdateUserDto,
   UpdateUserPasswordDto,
-  UserAttachRoleDto,
-  UserDetachRoleDto,
   UserSendMailReportDto,
 } from '../dto/user.dto'
 import { UserEntity } from '../entities/user.entity'
@@ -69,7 +66,6 @@ export class UserController {
     private notificationService: NotificationService,
     private configService: ConfigService,
     private inviteUserService: InviteUserService,
-    private primitiveService: PrimitiveService,
   ) {}
 
   private entity = 'use'
@@ -143,8 +139,6 @@ export class UserController {
     @Param('id', ParseIntPipe) id: number,
     @Body() data: UpdateUserDto,
   ): Promise<UpdateResponse> {
-    await this.userService.checkExisting({ where: { id } })
-
     const user: UserEntity = await this.userService.updateUser({ id, data })
 
     if (isNil(data.notifyUser) && data.notifyUser === true) {
@@ -239,32 +233,6 @@ export class UserController {
         this.configService.get('FRONTEND_URL'),
       ),
     )
-
-    return this.response.success()
-  }
-
-  @Post(':id/attachRole')
-  @Auth('admin')
-  @ApiOperation({ summary: 'Attach user and role' })
-  @ApiOkResponse({ description: 'Attach role successfully' })
-  async attachRole(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() data: UserAttachRoleDto,
-  ): Promise<SuccessfullyOperation> {
-    await this.userService.attachRole({ userId: id, roleId: data.roleId })
-
-    return this.response.success()
-  }
-
-  @Post(':id/detachRole')
-  @Auth('admin')
-  @ApiOperation({ summary: 'Detach user and role' })
-  @ApiOkResponse({ description: 'Detach role successfully' })
-  async detachRole(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() data: UserDetachRoleDto,
-  ): Promise<SuccessfullyOperation> {
-    await this.userService.detachRole({ userId: id, roleId: data.roleId })
 
     return this.response.success()
   }
