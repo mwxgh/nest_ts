@@ -1,5 +1,5 @@
 import { MigrationInterface, QueryRunner, Table, TableIndex } from 'typeorm'
-import { baseTimeColumn } from './baseColumn'
+import { baseTimeColumn } from '../abstract/baseColumn'
 
 export class CreatePasswordResetTable1650204687090
   implements MigrationInterface

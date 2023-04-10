@@ -1,5 +1,5 @@
 import { MigrationInterface, QueryRunner, Table } from 'typeorm'
-import { baseTimeColumn } from './baseColumn'
+import { baseTimeColumn } from '../abstract/baseColumn'
 
 export class CreateOrdersTable1650207746440 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
