@@ -10,6 +10,7 @@ import { ForgotPasswordController } from './controllers/forgotPassword/forgotPas
 import { PermissionController } from './controllers/permission/permission.controller'
 import { RoleController } from './controllers/role/role.controller'
 import { RoleService } from './services/role.service'
+import { UserRoleService } from './services/userRole.service'
 
 @Module({
   imports: [
@@ -25,6 +26,6 @@ import { RoleService } from './services/role.service'
     PermissionController,
     RoleController,
   ],
-  exports: [RoleService],
+  exports: [UserRoleService, RoleService],
 })
 export class AuthModule {}

@@ -1,5 +1,4 @@
 import { CreateRoleDto, UpdateRoleDto } from '@authModule/dto/role.dto'
-import { UserRoleEntity } from '@authModule/entities/userRole.entity'
 import {
   ForbiddenException,
   Inject,
@@ -9,8 +8,7 @@ import {
 import { Entity } from '@shared/interfaces/response.interface'
 import { BaseService } from '@sharedServices/base.service'
 import { Me } from '@userModule/dto/user.dto'
-import { UserService } from '@userModule/services/user.service'
-import { difference, includes, isNil, map } from 'lodash'
+import { includes, map } from 'lodash'
 import { Connection, Repository } from 'typeorm'
 import { RoleEntity } from '../entities/role.entity'
 import { RoleRepository } from '../repositories/role.repository'
@@ -23,8 +21,7 @@ export class RoleService extends BaseService {
 
   constructor(
     private connection: Connection,
-    @Inject(forwardRef(() => UserService))
-    private userService: UserService,
+    @Inject(forwardRef(() => UserRoleService))
     private userRoleService: UserRoleService,
   ) {
     super()
@@ -95,92 +92,5 @@ export class RoleService extends BaseService {
     await this.userRoleService.destroy({ roleId: id })
 
     await this.destroy(id)
-  }
-
-  /**
-   * Attach user and role
-   *
-   * @param params.userId userId
-   * @param params.roleId roleId
-   */
-  async attachRole({
-    userId,
-    roleId,
-  }: {
-    userId: number
-    roleId: number
-  }): Promise<void> {
-    await this.checkExisting({ where: { id: roleId } })
-
-    await this.userService.checkExisting({ where: { id: userId } })
-
-    await this.userRoleService.firstOrCreate(
-      { where: { userId, roleId } },
-      { userId, roleId },
-    )
-  }
-
-  /**
-   * Detach user and role
-   *
-   * @param params.userId userId
-   * @param params.roleId roleId
-   */
-  async detachRole({
-    userId,
-    roleId,
-  }: {
-    userId: number
-    roleId: number
-  }): Promise<void> {
-    await this.checkExisting({ where: { id: roleId } })
-
-    await this.userService.checkExisting({ where: { id: userId } })
-
-    await this.userRoleService.destroy({ userId, roleId })
-  }
-
-  /**
-   * Update relation role when update user ...
-   * @param params.userId
-   * @param params.roleIds
-   */
-  async updateRelationUserAndRole({
-    userId,
-    roleIds,
-  }: {
-    userId: number
-    roleIds: number[]
-  }): Promise<void> {
-    const userRoles: UserRoleEntity[] = await this.userRoleService.findWhere(
-      { userId },
-      ['roleId'],
-    )
-
-    if (userRoles.length === 0) {
-      return
-    }
-
-    const currentRoleIds = userRoles.map((userRole) => userRole.roleId)
-
-    // detach role
-    const detachRoleIds: number[] = difference(currentRoleIds, roleIds)
-
-    for (const detachRoleId of detachRoleIds) {
-      await this.detachRole({ userId, roleId: detachRoleId })
-    }
-
-    // attach new role
-    const newAttachRoleIds: number[] = difference(roleIds, currentRoleIds)
-
-    const roles: RoleEntity[] = await this.findIdInOrFail(newAttachRoleIds)
-
-    if (!isNil(roles) && roles.length > 0) {
-      const roleIds = roles.map((role) => role.id)
-
-      for (const roleId of roleIds) {
-        await this.attachRole({ userId, roleId })
-      }
-    }
   }
 }

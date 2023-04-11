@@ -1,5 +1,6 @@
 import { UserRegisterDto } from '@authModule/dto/auth.dto'
 import { RoleService } from '@authModule/services/role.service'
+import { UserRoleService } from '@authModule/services/userRole.service'
 import { Inject, Injectable, forwardRef } from '@nestjs/common'
 import { DEFAULT_USER_STATUS } from '@shared/defaultValue/defaultValue'
 import { Entity } from '@shared/interfaces/response.interface'
@@ -19,8 +20,9 @@ export class UserService extends BaseService {
   constructor(
     private connection: Connection,
     private hashService: HashService,
-    @Inject(forwardRef(() => RoleService))
     private roleService: RoleService,
+    @Inject(forwardRef(() => UserRoleService))
+    private userRoleService: UserRoleService,
   ) {
     super()
     this.repository = connection.getCustomRepository(UserRepository)
@@ -109,7 +111,7 @@ export class UserService extends BaseService {
 
     await this.checkIdentifier(email, username)
 
-    const userStatus = data.status ?? DEFAULT_USER_STATUS
+    Object.assign(data, { status: data.status ?? DEFAULT_USER_STATUS })
 
     if (data instanceof UserRegisterDto || data['roleIds'] === undefined) {
       const roleUser: number[] = await this.roleService.findWhere(
@@ -121,8 +123,6 @@ export class UserService extends BaseService {
 
       data = { ...data, roleIds: roleUser }
     }
-
-    data.status = userStatus
 
     const saveUser: UserEntity = await this.create({
       ...pick(data, [
@@ -141,7 +141,7 @@ export class UserService extends BaseService {
 
     if (data.roleIds && data.roleIds.length > 0) {
       for (const roleId of data.roleIds) {
-        await this.roleService.attachRole({ userId: saveUser.id, roleId })
+        await this.userRoleService.attachRole({ userId: saveUser.id, roleId })
       }
     }
 
@@ -182,7 +182,7 @@ export class UserService extends BaseService {
     const updateUser: UserEntity = await this.update(id, { data })
 
     if (!isNil(roleIds) && roleIds.length > 0) {
-      await this.roleService.updateRelationUserAndRole({
+      await this.userRoleService.updateRelationUserAndRole({
         userId: updateUser.id,
         roleIds,
       })
