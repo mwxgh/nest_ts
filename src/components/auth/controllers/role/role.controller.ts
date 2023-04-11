@@ -57,7 +57,7 @@ export class RoleController {
 
   private entity = 'role'
   private fields = ['name', 'level']
-  private relations = ['permissions']
+  private relations = ['permissions', 'users']
 
   @Post()
   @Auth('admin')

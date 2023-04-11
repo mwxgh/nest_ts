@@ -14,7 +14,20 @@ export class RoleEntity extends TimeStampEntity {
   @Column({ type: 'int' })
   level: number
 
-  @ManyToMany(() => UserEntity)
+  @ManyToMany(() => UserEntity, (user) => user.roles, {
+    cascade: ['insert'],
+  })
+  @JoinTable({
+    name: 'userRole',
+    joinColumn: {
+      name: 'roleId',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'userId',
+      referencedColumnName: 'id',
+    },
+  })
   users: RoleEntity[]
 
   @ManyToMany(() => PermissionEntity, (permission) => permission.roles, {

@@ -1,5 +1,6 @@
 import { Entity, ResponseEntity } from '@shared/interfaces/response.interface'
 import { Transformer } from '@shared/transformers/transformer'
+import { UserTransformer } from '@userModule/transformers/user.transformer'
 import { RoleEntity } from '../entities/role.entity'
 import { PermissionTransformer } from './permission.transformer'
 
@@ -17,5 +18,8 @@ export class RoleTransformer extends Transformer {
   }
   includePermissions(model: RoleEntity): Entity[] {
     return this.collection(model.permissions, new PermissionTransformer())
+  }
+  includeUsers(model: RoleEntity): Entity[] {
+    return this.collection(model.users, new UserTransformer())
   }
 }
