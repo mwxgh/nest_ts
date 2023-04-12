@@ -51,14 +51,16 @@ export class CategoryService extends BaseService {
 
       if (includesParams.length > 0) {
         if (includesParams.includes('products')) {
-          baseQuery = baseQuery.leftJoinAndSelect(
-            `${entity}.products`,
-            `products`,
-            `products.ableType = :ableType`,
-            {
-              ableType: AbleType.product,
-            },
-          )
+          baseQuery = baseQuery
+            .leftJoinAndSelect(
+              `${entity}.categoryAbles`,
+              `categoryAble`,
+              `categoryAble.ableType = :ableType`,
+              {
+                ableType: AbleType.product,
+              },
+            )
+            .leftJoinAndSelect('categoryAble.product', 'product')
         }
 
         if (includesParams.includes('posts')) {

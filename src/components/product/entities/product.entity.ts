@@ -1,8 +1,9 @@
-import { Column, Entity, OneToMany } from 'typeorm'
+import { CategoryEntity } from '@categoryModule/entities/category.entity'
+import { CategoryAbleEntity } from '@categoryModule/entities/categoryAble.entity'
+import { Column, Entity, ManyToMany, OneToMany } from 'typeorm'
 import { CartItemEntity } from '../../../components/cart/entities/cartItem.entity'
 import { TimeStampEntity } from '../../../shared/entities/base.entity'
 import { Notifiable } from '../../../shared/services/notification/decorators/notifiable.decorator'
-import { CategoryAbleEntity } from '../../category/entities/categoryAble.entity'
 import { ImageAbleEntity } from '../../image/entities/imageAble.entity'
 import { OrderProductEntity } from '../../order/entities/orderProduct.entity'
 import { TagAbleEntity } from '../../tag/entities/tagAble.entity'
@@ -44,8 +45,11 @@ export class ProductEntity extends TimeStampEntity {
   @Column({ type: 'timestamp' })
   public verifiedAt: Date
 
+  @ManyToMany(() => CategoryEntity, (category) => category.products)
+  categories: CategoryEntity[]
+
   @OneToMany(() => CategoryAbleEntity, (categoryAble) => categoryAble.product)
-  public categories!: CategoryAbleEntity[]
+  categoryAbles: CategoryAbleEntity[]
 
   @OneToMany(() => TagAbleEntity, (tag) => tag.product)
   tags: TagAbleEntity[]

@@ -9,8 +9,7 @@ import { AbleType } from '@shared/entities/base.entity'
 import { Entity } from '@shared/interfaces/response.interface'
 import { TagService } from '@tagModule/services/tag.service'
 import { TagAbleService } from '@tagModule/services/tagAble.service'
-import { assign, isNil } from 'lodash'
-import slugify from 'slugify'
+import { isNil } from 'lodash'
 import { Connection, Repository, SelectQueryBuilder } from 'typeorm'
 import { CreateProductDto, UpdateProductDto } from '../dto/product.dto'
 import { ProductEntity } from '../entities/product.entity'
@@ -99,54 +98,48 @@ export class ProductService extends BaseService {
    * @param params.data CreateProductDto
    */
   async createProduct(data: CreateProductDto): Promise<ProductEntity> {
-    const tagsAvailable = await this.tagService.findIdInOrFail(data.tagIds)
-    const categoriesAvailable = await this.categoryService.findIdInOrFail(
-      data.categoryIds,
-    )
-    const imagesAvailable = await this.imageService.findIdInOrFail(
-      data.imageIds,
-    )
-
-    const countProduct = await this.count({
-      where: {
-        name: data.name,
-      },
-    })
-
-    const dataToSave = assign(data, {
-      slug: slugify(data.name.toLowerCase()),
-    })
-
-    if (countProduct) dataToSave.slug = `${dataToSave.slug}-${countProduct}`
+    Object.assign(data, { slug: await this.generateSlug(data.name) })
 
     data.sku = data.sku || `MH${Date.now()}`
 
-    const product: ProductEntity = await this.repository.create(dataToSave)
+    const product: ProductEntity = await this.repository.save(data)
 
     // imageAble
-    const imageAbleData = imagesAvailable.map((image: any) => ({
-      imageId: image.id,
-      ableId: product.id,
-      ableType: AbleType.product,
-    }))
-    await this.imageAbleService.attachImageAble(imageAbleData)
+    if (!isNil(data.imageIds)) {
+      const imagesAvailable = await this.imageService.findIdInOrFail(
+        data.imageIds,
+      )
+      const imageAbleData = imagesAvailable.map((image: any) => ({
+        imageId: image.id,
+        ableId: product.id,
+        ableType: AbleType.product,
+      }))
+      await this.imageAbleService.attachImageAble(imageAbleData)
+    }
 
     // categoryAble
-    const categoryAbleData = categoriesAvailable.map((category: any) => ({
-      categoryId: category.id,
-      ableId: product.id,
-      ableType: AbleType.product,
-    }))
-
-    await this.categoryAbleService.attachCategoryAble(categoryAbleData)
+    if (!isNil(data.categoryIds)) {
+      const categoriesAvailable = await this.categoryService.findIdInOrFail(
+        data.categoryIds,
+      )
+      const categoryAbleData = categoriesAvailable.map((category: any) => ({
+        categoryId: category.id,
+        ableId: product.id,
+        ableType: AbleType.product,
+      }))
+      await this.categoryAbleService.attachCategoryAble(categoryAbleData)
+    }
 
     // tagAble
-    const tagsAbleData = tagsAvailable.map((tag: any) => ({
-      tagId: tag.id,
-      ableId: product.id,
-      ableType: AbleType.product,
-    }))
-    await this.tagAbleService.attachTagAble(tagsAbleData)
+    if (!isNil(data.tagIds)) {
+      const tagsAvailable = await this.tagService.findIdInOrFail(data.tagIds)
+      const tagsAbleData = tagsAvailable.map((tag: any) => ({
+        tagId: tag.id,
+        ableId: product.id,
+        ableType: AbleType.product,
+      }))
+      await this.tagAbleService.attachTagAble(tagsAbleData)
+    }
 
     return product
   }

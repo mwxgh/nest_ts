@@ -11,11 +11,6 @@ export enum CommentStatus {
   hide = 'HIDE',
 }
 
-export enum JoinCommentAble {
-  products = 'comments.product',
-  posts = 'comments.post',
-}
-
 @Notifiable()
 @Entity({ name: 'comment' })
 export class CommentEntity extends TimeStampEntity {

@@ -23,6 +23,7 @@ import { ProductEntity } from '@productModule/entities/product.entity'
 import { QueryManyDto } from '@shared/dto/queryParams.dto'
 import { IPaginationOptions } from '@shared/interfaces/request.interface'
 import {
+  CreateResponse,
   GetItemResponse,
   GetListPaginationResponse,
   GetListResponse,
@@ -62,17 +63,10 @@ export class ProductController {
   @Auth('admin')
   @ApiOperation({ summary: APIDoc.product.create.apiOperation })
   @ApiOkResponse({ description: APIDoc.product.create.apiOk })
-  async createProduct(
-    @Body() data: CreateProductDto,
-  ): Promise<SuccessfullyOperation> {
-    await this.productService.createProduct(data)
+  async createProduct(@Body() data: CreateProductDto): Promise<CreateResponse> {
+    const product = await this.productService.createProduct(data)
 
-    return this.response.success({
-      message: this.primitiveService.getMessage({
-        message: Messages.successfullyOperation.create,
-        keywords: [this.entity],
-      }),
-    })
+    return this.response.item(product, new ProductTransformer())
   }
 
   @Get()

@@ -1,7 +1,8 @@
-import { Column, Entity, OneToMany } from 'typeorm'
+import { CategoryEntity } from '@categoryModule/entities/category.entity'
+import { CategoryAbleEntity } from '@categoryModule/entities/categoryAble.entity'
+import { Column, Entity, ManyToMany, OneToMany } from 'typeorm'
 import { TimeStampEntity } from '../../../shared/entities/base.entity'
 import { Notifiable } from '../../../shared/services/notification/decorators/notifiable.decorator'
-import { CategoryAbleEntity } from '../../category/entities/categoryAble.entity'
 import { CommentEntity } from '../../comment/entities/comment.entity'
 import { ImageAbleEntity } from '../../image/entities/imageAble.entity'
 import { TagAbleEntity } from '../../tag/entities/tagAble.entity'
@@ -69,8 +70,11 @@ export class PostEntity extends TimeStampEntity {
   @OneToMany(() => TagAbleEntity, (tag) => tag.post)
   tags: TagAbleEntity[]
 
-  @OneToMany(() => CategoryAbleEntity, (category) => category.post)
-  categories: CategoryAbleEntity[]
+  @ManyToMany(() => CategoryEntity, (category) => category.posts)
+  categories: CategoryEntity[]
+
+  @OneToMany(() => CategoryAbleEntity, (categoryAble) => categoryAble.post)
+  categoryAbles: CategoryAbleEntity[]
 
   @OneToMany(() => ImageAbleEntity, (imageAble) => imageAble.post)
   images: ImageAbleEntity[]
