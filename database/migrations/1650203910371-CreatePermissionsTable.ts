@@ -22,6 +22,7 @@ export class CreatePermissionsTable1650203910371 implements MigrationInterface {
             name: 'slug',
             type: 'varchar',
           },
+
           ...baseTimeColumn,
         ],
       }),

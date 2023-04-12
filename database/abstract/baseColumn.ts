@@ -11,7 +11,7 @@ export const baseTimeColumn = [
   },
   {
     name: 'deletedAt',
+    type: 'timestamp',
     isNullable: true,
-    type: 'datetime',
   },
 ]

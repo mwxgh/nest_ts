@@ -52,6 +52,7 @@ export class CreateProductsTable1650204918437 implements MigrationInterface {
             isNullable: true,
             type: 'datetime',
           },
+
           ...baseTimeColumn,
         ],
       }),

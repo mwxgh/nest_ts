@@ -27,6 +27,7 @@ export class CreateImagesTable1650207084687 implements MigrationInterface {
             name: 'url',
             type: 'varchar',
           },
+
           ...baseTimeColumn,
         ],
       }),

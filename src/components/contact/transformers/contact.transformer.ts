@@ -7,11 +7,9 @@ export class ContactTransformer extends Transformer {
     return {
       id: contact.id,
       name: contact.name,
-      email: contact.email,
       phone: contact.phone,
       address: contact.address,
-      note: contact.note,
-      status: contact.status,
+      type: contact.type,
     }
   }
 }

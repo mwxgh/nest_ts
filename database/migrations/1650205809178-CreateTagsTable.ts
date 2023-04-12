@@ -19,15 +19,15 @@ export class CreateTagsTable1650205809178 implements MigrationInterface {
             type: 'varchar',
           },
           {
+            name: 'slug',
+            type: 'varchar',
+          },
+          {
             name: 'status',
             type: 'enum',
             enum: ['PUBLISH', 'HIDE'],
           },
-          {
-            name: 'verifiedAt',
-            isNullable: true,
-            type: 'datetime',
-          },
+
           ...baseTimeColumn,
         ],
       }),

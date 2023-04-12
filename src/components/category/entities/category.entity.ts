@@ -1,8 +1,8 @@
-import { PostEntity } from '@postModule/entities/post.entity'
-import { ProductEntity } from '@productModule/entities/product.entity'
 import { Column, Entity, JoinColumn, ManyToMany, OneToMany } from 'typeorm'
 import { TimeStampEntity } from '../../../shared/entities/base.entity'
 import { Notifiable } from '../../../shared/services/notification/decorators/notifiable.decorator'
+import { PostEntity } from '../../post/entities/post.entity'
+import { ProductEntity } from '../../product/entities/product.entity'
 import { CategoryAbleEntity } from './categoryAble.entity'
 
 export enum CategoryStatus {

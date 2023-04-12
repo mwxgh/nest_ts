@@ -40,6 +40,7 @@ export class CreateCommentsTable1650207390501 implements MigrationInterface {
             isNullable: true,
             type: 'datetime',
           },
+
           ...baseTimeColumn,
         ],
       }),

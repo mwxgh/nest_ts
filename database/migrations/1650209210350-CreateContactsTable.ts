@@ -23,10 +23,6 @@ export class CreateContactsTable1650209210350 implements MigrationInterface {
             type: 'varchar',
           },
           {
-            name: 'email',
-            type: 'varchar',
-          },
-          {
             name: 'phone',
             type: 'varchar',
           },
@@ -35,19 +31,11 @@ export class CreateContactsTable1650209210350 implements MigrationInterface {
             type: 'varchar',
           },
           {
-            name: 'note',
-            type: 'varchar',
-          },
-          {
-            name: 'status',
+            name: 'type',
             type: 'enum',
-            enum: ['DEFAULT', 'NORMAL'],
+            enum: ['PRIORITY', 'NORMAL'],
           },
-          {
-            name: 'verifiedAt',
-            isNullable: true,
-            type: 'datetime',
-          },
+
           ...baseTimeColumn,
         ],
       }),

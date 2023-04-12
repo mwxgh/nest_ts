@@ -64,6 +64,7 @@ export class CreatePostsTable1650206721948 implements MigrationInterface {
             isNullable: true,
             type: 'datetime',
           },
+
           ...baseTimeColumn,
         ],
       }),

@@ -27,6 +27,7 @@ export class CreateCategoriesTable1650206288109 implements MigrationInterface {
             type: 'enum',
             enum: ['PUBLISH', 'HIDE'],
           },
+
           ...baseTimeColumn,
         ],
       }),

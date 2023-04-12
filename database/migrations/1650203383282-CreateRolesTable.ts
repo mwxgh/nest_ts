@@ -27,6 +27,7 @@ export class CreateRolesTable1650203383282 implements MigrationInterface {
             default: 0,
             type: 'int',
           },
+
           ...baseTimeColumn,
         ],
       }),

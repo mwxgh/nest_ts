@@ -24,6 +24,7 @@ import {
 import { QueryManyDto } from '@shared/dto/queryParams.dto'
 import { IPaginationOptions } from '@shared/interfaces/request.interface'
 import {
+  CreateResponse,
   GetItemResponse,
   GetListPaginationResponse,
   GetListResponse,
@@ -31,7 +32,6 @@ import {
   UpdateResponse,
 } from '@shared/interfaces/response.interface'
 import Messages from '@shared/message/message'
-import { PrimitiveService } from '@shared/services/primitive.service'
 import { defaultPaginationOption } from '@shared/utils/defaultPaginationOption.util'
 import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.service'
 import { Me } from '@userModule/dto/user.dto'
@@ -54,7 +54,6 @@ export class ContactController {
   constructor(
     private contactService: ContactService,
     private response: ApiResponseService,
-    private primitiveService: PrimitiveService,
   ) {}
 
   private entity = 'contact'
@@ -66,20 +65,13 @@ export class ContactController {
   async createContact(
     @AuthenticatedUser() currentUser: Me,
     @Body() data: CreateContactDto,
-  ): Promise<SuccessfullyOperation> {
-    this.primitiveService.checkUserPermissionOperation({
+  ): Promise<CreateResponse> {
+    const contact: ContactEntity = await this.contactService.createContact({
       currentUser,
-      userId: data.userId,
+      data,
     })
 
-    await this.contactService.create(data)
-
-    return this.response.success({
-      message: this.primitiveService.getMessage({
-        message: Messages.successfullyOperation.create,
-        keywords: [this.entity],
-      }),
-    })
+    return this.response.item(contact, new ContactTransformer())
   }
 
   @Get()
@@ -168,7 +160,7 @@ export class ContactController {
   ): Promise<UpdateResponse> {
     const contact: ContactEntity = await this.contactService.findOneOrFail(id)
 
-    this.primitiveService.checkUserPermissionOperation({
+    this.contactService.checkUserPermissionOperation({
       currentUser,
       userId: contact.userId,
     })
@@ -187,7 +179,7 @@ export class ContactController {
   ): Promise<SuccessfullyOperation> {
     const contact: ContactEntity = await this.contactService.findOneOrFail(id)
 
-    this.primitiveService.checkUserPermissionOperation({
+    this.contactService.checkUserPermissionOperation({
       currentUser,
       userId: contact.userId,
     })
@@ -195,7 +187,7 @@ export class ContactController {
     await this.contactService.destroy(id)
 
     return this.response.success({
-      message: this.primitiveService.getMessage({
+      message: this.contactService.getMessage({
         message: Messages.successfullyOperation.delete,
         keywords: [this.entity],
       }),

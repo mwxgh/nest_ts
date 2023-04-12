@@ -5,17 +5,10 @@ import {
   PartialType,
 } from '@nestjs/swagger'
 import { Type } from 'class-transformer'
-import { IsEmail, IsEnum, IsNotEmpty, IsOptional } from 'class-validator'
-import { ContactStatus } from '../entities/contact.entity'
+import { IsEnum, IsNotEmpty } from 'class-validator'
+import { ContactType } from '../entities/contact.entity'
 
 export class ContactProperties {
-  @ApiPropertyOptional({
-    type: Number,
-  })
-  @IsNotEmpty()
-  @Type(() => Number)
-  userId: number
-
   @ApiPropertyOptional({
     type: String,
   })
@@ -24,19 +17,11 @@ export class ContactProperties {
   name: string
 
   @ApiPropertyOptional({
-    type: String,
-  })
-  @IsOptional()
-  @IsEmail()
-  @Type(() => String)
-  email: string
-
-  @ApiPropertyOptional({
     type: Number,
   })
   @IsNotEmpty()
   // @IsPhoneNumber()
-  @Type(() => Number)
+  @Type(() => String)
   phone: number
 
   @ApiPropertyOptional({
@@ -46,17 +31,10 @@ export class ContactProperties {
   @Type(() => String)
   address: string
 
-  @ApiPropertyOptional({
-    type: String,
-  })
-  @IsOptional()
-  @Type(() => String)
-  note: string
-
   @ApiProperty()
-  @IsEnum(ContactStatus)
-  @IsOptional()
-  status: ContactStatus
+  @IsEnum(ContactType)
+  @IsNotEmpty()
+  type: ContactType
 }
 
 export class CreateContactDto extends OmitType(

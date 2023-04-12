@@ -17,15 +17,15 @@ export class CreateUsersTable1650203158607 implements MigrationInterface {
           {
             name: 'email',
             type: 'varchar',
+            isUnique: true,
           },
           {
             name: 'username',
             type: 'varchar',
-            default: "''",
+            isUnique: true,
           },
           {
             name: 'password',
-            default: "''",
             type: 'varchar',
           },
           {
@@ -55,12 +55,12 @@ export class CreateUsersTable1650203158607 implements MigrationInterface {
           },
           {
             name: 'verifyToken',
-            default: "''",
+            isNullable: true,
             type: 'varchar',
           },
           {
             name: 'verified',
-            default: 0,
+            default: false,
             type: 'boolean',
           },
           {

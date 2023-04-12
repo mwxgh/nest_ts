@@ -32,19 +32,19 @@ export class UserEntity extends TimeStampEntity {
   @Column({ type: 'enum', enum: UserStatus, default: UserStatus.active })
   public status: UserStatus
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', nullable: true })
   public socketId: string
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', nullable: true })
   public refreshToken: string
 
-  @Column({ type: 'varchar', default: '' })
+  @Column({ type: 'varchar', nullable: true })
   public verifyToken: string
 
   @Column({ type: 'boolean', default: false })
   public verified: boolean
 
-  @Column({ type: 'timestamp' })
+  @Column({ type: 'timestamp', nullable: true })
   public verifiedAt: Date
 
   @ManyToMany(() => RoleEntity, (role) => role.users, { cascade: ['insert'] })

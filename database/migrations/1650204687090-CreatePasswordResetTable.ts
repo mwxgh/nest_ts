@@ -30,6 +30,7 @@ export class CreatePasswordResetTable1650204687090
             type: 'datetime',
             default: '(DATE_ADD(NOW(), INTERVAL 2 DAY))',
           },
+
           ...baseTimeColumn,
         ],
       }),
