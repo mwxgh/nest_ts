@@ -31,7 +31,6 @@ import {
   SuccessfullyOperation,
 } from '@shared/interfaces/response.interface'
 import Messages from '@shared/message/message'
-import { PrimitiveService } from '@shared/services/primitive.service'
 import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.service'
 
 import { ImageEntity } from '@imageModule/entities/image.entity'
@@ -55,7 +54,6 @@ export class ImageController {
   constructor(
     private response: ApiResponseService,
     private imageService: ImageService,
-    private primitiveService: PrimitiveService,
   ) {}
 
   private entity = 'image'
@@ -142,7 +140,7 @@ export class ImageController {
     await this.imageService.deleteImage(id)
 
     return this.response.success({
-      message: this.primitiveService.getMessage({
+      message: this.imageService.getMessage({
         message: Messages.successfullyOperation.delete,
         keywords: [this.entity],
       }),

@@ -4,36 +4,38 @@ import { Entity } from '@shared/interfaces/response.interface'
 import { BaseService } from '@sharedServices/base.service'
 import { difference } from 'lodash'
 import { Connection, Repository } from 'typeorm'
-import { TagEntity } from '../entities/tag.entity'
 import { TagAbleEntity } from '../entities/tagAble.entity'
 import { TagAbleRepository } from '../repositories/tagAble.repository'
 import { TagService } from './tag.service'
 
 @Injectable()
 export class TagAbleService extends BaseService {
-  public tagAbleRepository: Repository<TagAbleEntity>
+  public repository: Repository<TagAbleEntity>
   public entity: Entity = TagAbleEntity
   constructor(private connection: Connection, private tagService: TagService) {
     super()
-    this.tagAbleRepository =
-      this.connection.getCustomRepository(TagAbleRepository)
+    this.repository = this.connection.getCustomRepository(TagAbleRepository)
   }
 
   /**
    * Attach tagAble
-   * @param params.tagId
-   * @param params.ableId
-   * @param params.ableType
+   * @param params.tagIds number[]
+   * @param params.ableId number
+   * @param params.ableType AbleType
    */
-  async attachTagAble(
-    params: {
-      tagId: number
-      ableId: number
-      ableType: AbleType
-    }[],
-  ): Promise<void> {
-    params.forEach(async (param: any) => {
-      await this.tagAbleRepository.save(param)
+  async attachTagAble({
+    tagIds,
+    ableId,
+    ableType,
+  }: {
+    tagIds: number[]
+    ableId: number
+    ableType: AbleType
+  }): Promise<void> {
+    tagIds.map(async (tagId) => {
+      await this.tagService.checkExisting({ where: { id: tagId } })
+
+      await this.save({ tagId, ableId, ableType })
     })
   }
 
@@ -68,7 +70,7 @@ export class TagAbleService extends BaseService {
     const tagAbleIdsExisting: number[] = await this.findWhere(params, ['id'])
 
     if (tagAbleIdsExisting.length > 0) {
-      await this.tagAbleRepository.delete(tagAbleIdsExisting)
+      await this.destroy(tagAbleIdsExisting)
     }
   }
 
@@ -110,14 +112,10 @@ export class TagAbleService extends BaseService {
     // attach new tagAble
     const newAttachTagIds: number[] = difference(tagIds, currentTagIds)
 
-    const existingTags = await this.tagService.findIdInOrFail(newAttachTagIds)
-
-    const tagsAbleData = existingTags.map((tag: TagEntity) => ({
-      tagId: tag.id,
+    await this.attachTagAble({
+      tagIds: newAttachTagIds,
       ableId,
       ableType,
-    }))
-
-    await this.attachTagAble(tagsAbleData)
+    })
   }
 }

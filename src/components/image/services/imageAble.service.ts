@@ -4,14 +4,13 @@ import { Entity } from '@shared/interfaces/response.interface'
 import { BaseService } from '@sharedServices/base.service'
 import { difference } from 'lodash'
 import { Connection, Repository } from 'typeorm'
-import { ImageEntity } from '../entities/image.entity'
 import { ImageAbleEntity } from '../entities/imageAble.entity'
 import { ImageAbleRepository } from '../repositories/imageAble.repository'
 import { ImageService } from './image.service'
 
 @Injectable()
 export class ImageAbleService extends BaseService {
-  public imageAbleRepository: Repository<ImageAbleEntity>
+  public repository: Repository<ImageAbleEntity>
   public entity: Entity = ImageAbleEntity
 
   constructor(
@@ -19,25 +18,28 @@ export class ImageAbleService extends BaseService {
     private imageService: ImageService,
   ) {
     super()
-    this.imageAbleRepository =
-      this.connection.getCustomRepository(ImageAbleRepository)
+    this.repository = this.connection.getCustomRepository(ImageAbleRepository)
   }
 
   /**
    * Attach imageAble when crate or update product, post, ...
-   * @param params.imageId number
+   * @param params.imageIds number[]
    * @param params.ableId number
-   * @param params.ableType ableType
+   * @param params.ableType AbleType
    */
-  async attachImageAble(
-    params: {
-      imageId: number
-      ableId: number
-      ableType: AbleType
-    }[],
-  ): Promise<void> {
-    params.forEach(async (param: any) => {
-      await this.imageAbleRepository.save(param)
+  async attachImageAble({
+    imageIds,
+    ableId,
+    ableType,
+  }: {
+    imageIds: number[]
+    ableId: number
+    ableType: AbleType
+  }): Promise<void> {
+    imageIds.map(async (imageId) => {
+      await this.imageService.checkExisting({ where: { id: imageId } })
+
+      await this.save({ imageId, ableId, ableType })
     })
   }
 
@@ -74,7 +76,7 @@ export class ImageAbleService extends BaseService {
     const ableIdsExisting: number[] = await this.findWhere(params, ['id'])
 
     if (ableIdsExisting.length > 0) {
-      await this.imageAbleRepository.delete(ableIdsExisting)
+      await this.destroy(ableIdsExisting)
     }
   }
 
@@ -116,16 +118,10 @@ export class ImageAbleService extends BaseService {
     // attach new imageAble
     const newAttachImageIds: number[] = difference(imageIds, currentImageIds)
 
-    const existingImages = await this.imageService.findIdInOrFail(
-      newAttachImageIds,
-    )
-
-    const imagesAbleData = existingImages.map((image: ImageEntity) => ({
-      imageId: image.id,
+    await this.attachImageAble({
+      imageIds: newAttachImageIds,
       ableId,
       ableType,
-    }))
-
-    await this.attachImageAble(imagesAbleData)
+    })
   }
 }

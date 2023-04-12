@@ -1,4 +1,4 @@
-import { PrimitiveService } from '@shared/services/primitive.service'
 import { ImageService } from './services/image.service'
+import { ImageAbleService } from './services/imageAble.service'
 
-export const imageProviders = [ImageService, PrimitiveService]
+export const imageProviders = [ImageService, ImageAbleService]

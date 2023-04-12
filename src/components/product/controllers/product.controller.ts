@@ -31,7 +31,6 @@ import {
   UpdateResponse,
 } from '@shared/interfaces/response.interface'
 import Messages from '@shared/message/message'
-import { PrimitiveService } from '@shared/services/primitive.service'
 import { defaultPaginationOption } from '@shared/utils/defaultPaginationOption.util'
 import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.service'
 import { APIDoc } from 'src/components/components.apidoc'
@@ -52,7 +51,6 @@ export class ProductController {
   constructor(
     private response: ApiResponseService,
     private productService: ProductService,
-    private primitiveService: PrimitiveService,
   ) {}
 
   private entity = 'product'
@@ -141,7 +139,7 @@ export class ProductController {
     await this.productService.deleteProduct(id)
 
     return this.response.success({
-      message: this.primitiveService.getMessage({
+      message: this.productService.getMessage({
         message: Messages.successfullyOperation.delete,
         keywords: [this.entity],
       }),

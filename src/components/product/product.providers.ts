@@ -2,7 +2,6 @@ import { CategoryService } from '@categoryModule/services/category.service'
 import { CategoryAbleService } from '@categoryModule/services/categoryAble.service'
 import { ImageService } from '@imageModule/services/image.service'
 import { ImageAbleService } from '@imageModule/services/imageAble.service'
-import { PrimitiveService } from '@shared/services/primitive.service'
 import { TagService } from '@tagModule/services/tag.service'
 import { TagAbleService } from '@tagModule/services/tagAble.service'
 import { ProductService } from './services/product.service'
@@ -15,5 +14,4 @@ export const productProviders = [
   CategoryAbleService,
   TagService,
   TagAbleService,
-  PrimitiveService,
 ]

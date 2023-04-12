@@ -1,13 +1,10 @@
 import { CategoryAbleService } from '@categoryModule/services/categoryAble.service'
-import { ImageService } from '@imageModule/services/image.service'
 import { ImageAbleService } from '@imageModule/services/imageAble.service'
 import { Injectable } from '@nestjs/common'
-import { QueryParams } from '@shared/interfaces/request.interface'
-import { BaseService } from '@sharedServices/base.service'
-
 import { AbleType } from '@shared/entities/base.entity'
+import { QueryParams } from '@shared/interfaces/request.interface'
 import { Entity } from '@shared/interfaces/response.interface'
-import { TagService } from '@tagModule/services/tag.service'
+import { BaseService } from '@sharedServices/base.service'
 import { TagAbleService } from '@tagModule/services/tagAble.service'
 import { isNil } from 'lodash'
 import { Connection, Repository, SelectQueryBuilder } from 'typeorm'
@@ -22,12 +19,9 @@ export class ProductService extends BaseService {
 
   constructor(
     private connection: Connection,
-    private imageService: ImageService,
     private imageAbleService: ImageAbleService,
-    private categoryService: CategoryAbleService,
     private categoryAbleService: CategoryAbleService,
     private tagAbleService: TagAbleService,
-    private tagService: TagService,
   ) {
     super()
     this.repository = this.connection.getCustomRepository(ProductRepository)
@@ -106,39 +100,29 @@ export class ProductService extends BaseService {
 
     // imageAble
     if (!isNil(data.imageIds)) {
-      const imagesAvailable = await this.imageService.findIdInOrFail(
-        data.imageIds,
-      )
-      const imageAbleData = imagesAvailable.map((image: any) => ({
-        imageId: image.id,
+      await this.imageAbleService.attachImageAble({
+        imageIds: data.imageIds,
         ableId: product.id,
         ableType: AbleType.product,
-      }))
-      await this.imageAbleService.attachImageAble(imageAbleData)
+      })
     }
 
     // categoryAble
     if (!isNil(data.categoryIds)) {
-      const categoriesAvailable = await this.categoryService.findIdInOrFail(
-        data.categoryIds,
-      )
-      const categoryAbleData = categoriesAvailable.map((category: any) => ({
-        categoryId: category.id,
+      await this.categoryAbleService.attachCategoryAble({
+        categoryIds: data.categoryIds,
         ableId: product.id,
         ableType: AbleType.product,
-      }))
-      await this.categoryAbleService.attachCategoryAble(categoryAbleData)
+      })
     }
 
     // tagAble
     if (!isNil(data.tagIds)) {
-      const tagsAvailable = await this.tagService.findIdInOrFail(data.tagIds)
-      const tagsAbleData = tagsAvailable.map((tag: any) => ({
-        tagId: tag.id,
+      await this.tagAbleService.attachTagAble({
+        tagIds: data.tagIds,
         ableId: product.id,
         ableType: AbleType.product,
-      }))
-      await this.tagAbleService.attachTagAble(tagsAbleData)
+      })
     }
 
     return product

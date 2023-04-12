@@ -36,7 +36,6 @@ import {
   UpdateResponse,
 } from '@shared/interfaces/response.interface'
 import Messages from '@shared/message/message'
-import { PrimitiveService } from '@shared/services/primitive.service'
 import { defaultPaginationOption } from '@shared/utils/defaultPaginationOption.util'
 import { APIDoc } from 'src/components/components.apidoc'
 import { PostEntity } from '../entities/post.entity'
@@ -53,7 +52,6 @@ export class PostController {
     private connection: Connection,
     private postService: PostService,
     private response: ApiResponseService,
-    private primitiveService: PrimitiveService,
   ) {}
 
   private entity = 'post'
@@ -143,7 +141,7 @@ export class PostController {
     await this.postService.deletePost(id)
 
     return this.response.success({
-      message: this.primitiveService.getMessage({
+      message: this.postService.getMessage({
         message: Messages.successfullyOperation.delete,
         keywords: [this.entity],
       }),
