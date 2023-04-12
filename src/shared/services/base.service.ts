@@ -18,14 +18,11 @@ import {
   ObjectID,
   Repository,
   SelectQueryBuilder,
+  UpdateResult,
   getManager,
 } from 'typeorm'
 import { DEFAULT_SORT_BY, DEFAULT_SORT_TYPE } from '../constant/constant'
-import {
-  Entity,
-  Pagination,
-  ResponseEntity,
-} from '../interfaces/response.interface'
+import { Entity, Pagination } from '../interfaces/response.interface'
 import { PrimitiveService } from './primitive.service'
 
 /**
@@ -96,11 +93,16 @@ export class BaseService extends PrimitiveService {
    *
    * @returns entity | error
    */
-  async findAllOrFail(): Promise<ResponseEntity> {
-    const items = await this.repository.find()
+  async findAllOrFail<T>(option?: FindConditions<Entity>): Promise<T[]> {
+    const items: T[] = await this.repository.find(option)
 
-    if (!items) {
-      throw new BadRequestException('Resource not found')
+    if (items.length === 0) {
+      throw new NotFoundException(
+        this.getMessage({
+          message: Messages.errorsOperation.notFound,
+          keywords: [this.repository.metadata.tableName],
+        }),
+      )
     }
 
     return items
@@ -411,6 +413,23 @@ export class BaseService extends PrimitiveService {
     const item = await this.repository.findOne(option)
 
     const result = await getManager().save(this.entity, { ...item, ...data })
+
+    return result
+  }
+
+  /**
+   * Bulk update some entities by option
+   *
+   * @param option: FindConditions,
+   * @param data Entity
+   */
+  async bulkUpdate(
+    option: FindConditions<Entity>,
+    data: Entity,
+  ): Promise<UpdateResult> {
+    const items = await this.repository.find(option)
+
+    const result = await getManager().update(this.entity, items, data)
 
     return result
   }

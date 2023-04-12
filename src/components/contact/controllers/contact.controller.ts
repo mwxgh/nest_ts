@@ -6,7 +6,6 @@ import {
   Controller,
   Delete,
   Get,
-  NotFoundException,
   Param,
   ParseIntPipe,
   Post,
@@ -106,6 +105,19 @@ export class ContactController {
     )
   }
 
+  @Get('self')
+  @ApiOperation({ summary: APIDoc.contact.readThemselves.apiOperation })
+  @ApiOkResponse({ description: APIDoc.contact.readThemselves.apiOk })
+  async readSelfContacts(
+    @AuthenticatedUser() currentUser: Me,
+  ): Promise<GetListResponse> {
+    const contacts: ContactEntity[] = await this.contactService.findWhere({
+      userId: currentUser.id,
+    })
+
+    return this.response.collection(contacts, new ContactTransformer())
+  }
+
   @Get(':id')
   @Auth('admin')
   @ApiOperation({ summary: APIDoc.contact.detail.apiOperation })
@@ -118,23 +130,6 @@ export class ContactController {
     return this.response.item(contact, new ContactTransformer())
   }
 
-  @Get('self')
-  @ApiOperation({ summary: APIDoc.contact.readThemselves.apiOperation })
-  @ApiOkResponse({ description: APIDoc.contact.readThemselves.apiOk })
-  async readSelfContacts(
-    @AuthenticatedUser() currentUser: Me,
-  ): Promise<GetListResponse> {
-    const contacts: ContactEntity[] = await this.contactService.findWhere({
-      userId: currentUser.id,
-    })
-
-    if (!contacts) {
-      throw new NotFoundException('Contact')
-    }
-
-    return this.response.collection(contacts, new ContactTransformer())
-  }
-
   @Get('self/:id')
   @ApiOperation({ summary: APIDoc.contact.detailThemselves.apiOperation })
   @ApiOkResponse({ description: APIDoc.contact.detailThemselves.apiOk })
@@ -142,10 +137,11 @@ export class ContactController {
     @AuthenticatedUser() currentUser: Me,
     @Param('id', ParseIntPipe) id: number,
   ): Promise<GetItemResponse> {
-    const contact = await this.contactService.findWhere({
-      id,
-      userId: currentUser.id,
-    })
+    const contact: ContactEntity =
+      await this.contactService.getSelfDetailContact({
+        id,
+        currentUser,
+      })
 
     return this.response.item(contact, new ContactTransformer())
   }
@@ -158,16 +154,13 @@ export class ContactController {
     @Param('id', ParseIntPipe) id: number,
     @Body() data: UpdateContactDto,
   ): Promise<UpdateResponse> {
-    const contact: ContactEntity = await this.contactService.findOneOrFail(id)
-
-    this.contactService.checkUserPermissionOperation({
+    const contact: ContactEntity = await this.contactService.updateContact({
+      id,
       currentUser,
-      userId: contact.userId,
+      data,
     })
 
-    const updateContact = await this.contactService.update(contact.id, data)
-
-    return this.response.item(updateContact, new ContactTransformer())
+    return this.response.item(contact, new ContactTransformer())
   }
 
   @Delete(':id')
@@ -177,14 +170,7 @@ export class ContactController {
     @AuthenticatedUser() currentUser: Me,
     @Param('id', ParseIntPipe) id: number,
   ): Promise<SuccessfullyOperation> {
-    const contact: ContactEntity = await this.contactService.findOneOrFail(id)
-
-    this.contactService.checkUserPermissionOperation({
-      currentUser,
-      userId: contact.userId,
-    })
-
-    await this.contactService.destroy(id)
+    await this.contactService.deleteContact({ id, currentUser })
 
     return this.response.success({
       message: this.contactService.getMessage({

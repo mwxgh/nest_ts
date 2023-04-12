@@ -46,20 +46,19 @@ export class PrimitiveService {
    * @param currentUser User
    * @param userId userId
    */
-  checkUserPermissionOperation(params: {
+  checkUserPermissionOperation({
+    currentUser,
+    userId,
+  }: {
     currentUser: Me
     userId: number
   }): void {
-    const { currentUser, userId } = params
-
     const userRoles = map(currentUser.roles, (r) => r.slug)
 
-    if (includes(userRoles, 'user') && userRoles.length == 1) {
-      if (currentUser.id !== userId) {
-        throw new ForbiddenException(
-          'Permission denied : User role can not operation',
-        )
-      }
+    if (!includes(userRoles, 'admin') && currentUser.id !== userId) {
+      throw new ForbiddenException(
+        'Permission denied : User role can not operation',
+      )
     }
   }
 
