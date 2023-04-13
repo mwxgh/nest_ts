@@ -21,7 +21,6 @@ export class CreateImagesTable1650207084687 implements MigrationInterface {
           {
             name: 'slug',
             type: 'varchar',
-            default: "''",
           },
           {
             name: 'url',

@@ -17,6 +17,7 @@ export class TagService extends BaseService {
 
   async createTag(data: CreateTagDto): Promise<TagEntity> {
     await this.checkConflict({ where: { name: data.name } })
+
     return this.create(data)
   }
 }

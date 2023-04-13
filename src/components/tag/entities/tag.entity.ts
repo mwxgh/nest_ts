@@ -14,9 +14,6 @@ export class TagEntity extends TimeStampEntity {
   @Column({ type: 'varchar' })
   name: string
 
-  @Column({ type: 'varchar' })
-  slug: string
-
   @Column({ type: 'enum', enum: TagStatus, default: TagStatus.publish })
   status: TagStatus
 

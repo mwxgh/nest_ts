@@ -9,7 +9,6 @@ export class TagProperties {
 
   @ApiProperty({
     enum: TagStatus,
-    isArray: true,
     example: TagStatus.publish,
   })
   @IsNotEmpty()

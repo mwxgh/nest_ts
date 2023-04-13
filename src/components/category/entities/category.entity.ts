@@ -1,4 +1,11 @@
-import { Column, Entity, JoinColumn, ManyToMany, OneToMany } from 'typeorm'
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToMany,
+  ManyToOne,
+  OneToMany,
+} from 'typeorm'
 import { TimeStampEntity } from '../../../shared/entities/base.entity'
 import { Notifiable } from '../../../shared/services/notification/decorators/notifiable.decorator'
 import { PostEntity } from '../../post/entities/post.entity'
@@ -21,11 +28,11 @@ export class CategoryEntity extends TimeStampEntity {
   @Column({ type: 'enum', enum: CategoryStatus })
   status: CategoryStatus
 
+  @ManyToOne(() => CategoryEntity, { nullable: true })
+  @JoinColumn({ name: 'parentId' })
+  parent: CategoryEntity
+
   @OneToMany(() => CategoryEntity, (cate) => cate.children)
-  @JoinColumn({
-    name: 'parentId',
-    referencedColumnName: 'id',
-  })
   children: CategoryEntity[]
 
   @ManyToMany(() => PostEntity, (post) => post.categories)

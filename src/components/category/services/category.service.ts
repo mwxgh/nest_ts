@@ -1,4 +1,7 @@
-import { CreateCategoryDto } from '@categoryModule/dto/category.dto'
+import {
+  CreateCategoryDto,
+  UpdateCategoryDto,
+} from '@categoryModule/dto/category.dto'
 import { Injectable } from '@nestjs/common'
 import { AbleType } from '@shared/entities/base.entity'
 import { QueryParams } from '@shared/interfaces/request.interface'
@@ -21,7 +24,24 @@ export class CategoryService extends BaseService {
 
   async createCategory(data: CreateCategoryDto): Promise<CategoryEntity> {
     await this.checkConflict({ where: { name: data.name } })
+
     return this.create(data)
+  }
+
+  async updateCategory({
+    id,
+    data,
+  }: {
+    id: number
+    data: UpdateCategoryDto
+  }): Promise<CategoryEntity> {
+    await this.checkExisting({ where: id })
+
+    if (!isNil(data.name)) {
+      await this.checkConflict({ where: { name: data.name } })
+    }
+
+    return this.update(id, data)
   }
 
   async queryCategory(

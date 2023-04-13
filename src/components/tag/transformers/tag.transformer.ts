@@ -8,7 +8,6 @@ export class TagTransformer extends Transformer {
       id: model.id,
       name: model.name,
       status: model.status,
-      slug: model.slug,
       createdAt: model.createdAt,
       updatedAt: model.updatedAt,
       deletedAt: model.deletedAt,

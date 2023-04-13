@@ -17,7 +17,7 @@ export class UserEntity extends TimeStampEntity {
   @Column({ type: 'varchar', unique: true })
   public email: string
 
-  @Column({ type: 'varchar', unique: true })
+  @Column({ type: 'varchar' })
   public username: string
 
   @Column({ type: 'varchar' })

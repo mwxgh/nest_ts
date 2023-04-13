@@ -57,7 +57,7 @@ export class CategoryController {
   ) {}
 
   private entity = 'category'
-  private fields = ['name', 'categoryType']
+  private fields = ['name']
   private relations = ['products', 'posts']
 
   @Post()
@@ -122,6 +122,17 @@ export class CategoryController {
     return this.response.item(category, new CategoryTransformer())
   }
 
+  @Get(':id/children')
+  @ApiOperation({ summary: APIDoc.category.detail.apiOperation })
+  @ApiOkResponse({ description: APIDoc.category.detail.apiOk })
+  async readCategoryRecursive(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<GetItemResponse> {
+    const category = await this.categoryService.findOneOrFail(id)
+
+    return this.response.item(category, new CategoryTransformer())
+  }
+
   @Put(':id')
   @Auth('admin')
   @ApiOperation({ summary: APIDoc.category.update.apiOperation })
@@ -130,9 +141,7 @@ export class CategoryController {
     @Param('id', ParseIntPipe) id: number,
     @Body() data: UpdateCategoryDto,
   ): Promise<UpdateResponse> {
-    await this.categoryService.checkExisting({ where: id })
-
-    const category = await this.categoryService.update(id, data)
+    const category = await this.categoryService.updateCategory({ id, data })
 
     return this.response.item(category, new CategoryTransformer())
   }
