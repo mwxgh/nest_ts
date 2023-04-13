@@ -429,6 +429,10 @@ export class BaseService extends PrimitiveService {
   ): Promise<UpdateResult> {
     const items = await this.repository.find(option)
 
+    if (items.length === 0) {
+      return
+    }
+
     const result = await getManager().update(this.entity, items, data)
 
     return result

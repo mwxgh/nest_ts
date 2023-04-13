@@ -9,6 +9,7 @@ import { AuthController } from './controllers/auth.controller'
 import { ForgotPasswordController } from './controllers/forgotPassword/forgotPassword.controller'
 import { PermissionController } from './controllers/permission/permission.controller'
 import { RoleController } from './controllers/role/role.controller'
+import { PasswordResetService } from './services/passwordReset.service'
 import { RoleService } from './services/role.service'
 import { UserRoleService } from './services/userRole.service'
 
@@ -26,6 +27,6 @@ import { UserRoleService } from './services/userRole.service'
     PermissionController,
     RoleController,
   ],
-  exports: [UserRoleService, RoleService],
+  exports: [UserRoleService, RoleService, PasswordResetService],
 })
 export class AuthModule {}

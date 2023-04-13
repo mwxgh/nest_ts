@@ -1,4 +1,5 @@
 import { Auth } from '@authModule/decorators/auth.decorator'
+import { PasswordResetEntity } from '@authModule/entities/passwordReset.entity'
 import { JwtAuthGuard } from '@authModule/guards/jwtAuth.guard'
 import { SendInviteUserLinkNotification } from '@authModule/notifications/sendInviteUserLink.notification'
 import {
@@ -33,7 +34,7 @@ import {
 import { defaultPaginationOption } from '@shared/utils/defaultPaginationOption.util'
 import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.service'
 import { NotificationService } from '@sharedServices/notification/notification.service'
-import { isNil, pick } from 'lodash'
+import { isNil } from 'lodash'
 import { APIDoc } from 'src/components/components.apidoc'
 import { SelectQueryBuilder } from 'typeorm'
 import {
@@ -47,7 +48,6 @@ import { UserEntity } from '../entities/user.entity'
 import { UserPasswordChangedNotification } from '../notifications/userPasswordChanged.notification'
 import { UserSendMailReportNotification } from '../notifications/userSendEmailReport.notification'
 import { VerifyUserNotification } from '../notifications/verifyUser.notification'
-import { InviteUserService } from '../services/inviteUser.service'
 import { UserService } from '../services/user.service'
 import { UserTransformer } from '../transformers/user.transformer'
 
@@ -65,7 +65,6 @@ export class UserController {
     private response: ApiResponseService,
     private notificationService: NotificationService,
     private configService: ConfigService,
-    private inviteUserService: InviteUserService,
   ) {}
 
   private entity = 'use'
@@ -216,16 +215,8 @@ export class UserController {
   async inviteUser(
     @Body() data: InviteUserDto,
   ): Promise<SuccessfullyOperation> {
-    await this.userService.checkExisting({ where: { email: data.email } })
-
-    const user: UserEntity = await this.userService.create(
-      pick(data, ['email']),
-    )
-
-    await this.inviteUserService.expireAllToken(user.email)
-
-    const passwordReset = await this.inviteUserService.generate(user.email)
-
+    const [user, passwordReset]: [UserEntity, PasswordResetEntity] =
+      await this.userService.inviteUser(data)
     await this.notificationService.send(
       user,
       new SendInviteUserLinkNotification(

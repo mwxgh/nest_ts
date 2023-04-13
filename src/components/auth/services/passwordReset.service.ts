@@ -2,13 +2,18 @@ import {
   ResetPasswordDto,
   SendResetLinkDto,
 } from '@authModule/dto/forgotPassword.dto'
-import { BadRequestException, Injectable } from '@nestjs/common'
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  forwardRef,
+} from '@nestjs/common'
 import { Entity } from '@shared/interfaces/response.interface'
 import { BaseService } from '@sharedServices/base.service'
 import { HashService } from '@sharedServices/hash/hash.service'
 import { UserEntity } from '@userModule/entities/user.entity'
 import { UserService } from '@userModule/services/user.service'
-import { Connection, Repository } from 'typeorm'
+import { Connection, MoreThan, Repository } from 'typeorm'
 import { PasswordResetEntity } from '../entities/passwordReset.entity'
 import { PasswordResetRepository } from '../repositories/passwordReset.repository'
 
@@ -20,6 +25,7 @@ export class PasswordResetService extends BaseService {
   constructor(
     private connection: Connection,
     private hashService: HashService,
+    @Inject(forwardRef(() => UserService))
     private userService: UserService,
   ) {
     super()
@@ -41,9 +47,11 @@ export class PasswordResetService extends BaseService {
    * @param token string
    */
   async expireAllToken(email: string): Promise<void> {
-    await this.update(
-      { where: { email, expire: new Date() } },
-      { expire: new Date() },
+    const now = new Date()
+
+    await this.bulkUpdate(
+      { where: { email, expire: MoreThan(now.getTime()) } },
+      { expire: now },
     )
   }
 

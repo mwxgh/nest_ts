@@ -1,4 +1,5 @@
 import { JwtCustomService } from '@authModule/services/jwt.service'
+import { PasswordResetService } from '@authModule/services/passwordReset.service'
 import { RoleService } from '@authModule/services/role.service'
 import { UserRoleService } from '@authModule/services/userRole.service'
 import { ConfigService } from '@nestjs/config'
@@ -14,4 +15,5 @@ export const gatewayProviders = [
   GatewayRoomNamingStrategy,
   RoleService,
   UserRoleService,
+  PasswordResetService,
 ]

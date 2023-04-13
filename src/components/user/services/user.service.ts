@@ -1,4 +1,6 @@
 import { UserRegisterDto } from '@authModule/dto/auth.dto'
+import { PasswordResetEntity } from '@authModule/entities/passwordReset.entity'
+import { PasswordResetService } from '@authModule/services/passwordReset.service'
 import { RoleService } from '@authModule/services/role.service'
 import { UserRoleService } from '@authModule/services/userRole.service'
 import { Inject, Injectable, forwardRef } from '@nestjs/common'
@@ -8,7 +10,7 @@ import { BaseService } from '@sharedServices/base.service'
 import { HashService } from '@sharedServices/hash/hash.service'
 import { isNil, pick } from 'lodash'
 import { Connection, Repository } from 'typeorm'
-import { CreateUserDto, UpdateUserDto } from '../dto/user.dto'
+import { CreateUserDto, InviteUserDto, UpdateUserDto } from '../dto/user.dto'
 import { UserEntity } from '../entities/user.entity'
 import { UserRepository } from '../repositories/user.repository'
 
@@ -21,6 +23,8 @@ export class UserService extends BaseService {
     private connection: Connection,
     private hashService: HashService,
     private roleService: RoleService,
+    @Inject(forwardRef(() => PasswordResetService))
+    private passwordResetService: PasswordResetService,
     @Inject(forwardRef(() => UserRoleService))
     private userRoleService: UserRoleService,
   ) {
@@ -189,5 +193,30 @@ export class UserService extends BaseService {
     }
 
     return await this.findOneOrFail(updateUser.id, { relations: ['roles'] })
+  }
+
+  /**
+   * Invite user
+   *
+   * @param params.data  InviteUserDto
+   * @return [UserEntity, PasswordResetEntity]
+   */
+  async inviteUser(
+    data: InviteUserDto,
+  ): Promise<[UserEntity, PasswordResetEntity]> {
+    await this.checkConflict({ where: { email: data.email } })
+
+    Object.assign(data, {
+      username: 'invite-user',
+      password: this.hash('password'),
+    })
+
+    const user: UserEntity = await this.create(data)
+
+    await this.passwordResetService.expireAllToken(user.email)
+
+    const passwordReset = await this.passwordResetService.generate(user.email)
+
+    return [user, passwordReset]
   }
 }
