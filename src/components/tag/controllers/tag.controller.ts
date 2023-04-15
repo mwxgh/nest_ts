@@ -37,7 +37,6 @@ import { APIDoc } from 'src/components/components.apidoc'
 import { SelectQueryBuilder } from 'typeorm'
 import { CreateTagDto, UpdateTagDto } from '../dto/tag.dto'
 import { TagService } from '../services/tag.service'
-import { TagAbleService } from '../services/tagAble.service'
 import { TagTransformer } from '../transformers/tag.transformer'
 
 @ApiTags('Tags')
@@ -49,11 +48,7 @@ import { TagTransformer } from '../transformers/tag.transformer'
 @UseGuards(JwtAuthGuard)
 @Controller('api/tags')
 export class TagController {
-  constructor(
-    private tagService: TagService,
-    private tagAbleService: TagAbleService,
-    private response: ApiResponseService,
-  ) {}
+  constructor(private tag: TagService, private response: ApiResponseService) {}
 
   private entity = 'tag'
   private fields = ['name']
@@ -63,7 +58,7 @@ export class TagController {
   @ApiOperation({ summary: APIDoc.tag.create.apiOperation })
   @ApiOkResponse({ description: APIDoc.tag.create.apiOk })
   async createTag(@Body() data: CreateTagDto): Promise<CreateResponse> {
-    const tag = await this.tagService.createTag(data)
+    const tag = await this.tag.createTag(data)
 
     return this.response.item(tag, new TagTransformer())
   }
@@ -75,7 +70,7 @@ export class TagController {
     @Query() query: QueryManyDto,
   ): Promise<GetListResponse | GetListPaginationResponse> {
     const [queryBuilder]: [SelectQueryBuilder<TagEntity>, string[]] =
-      await this.tagService.queryBuilder({
+      await this.tag.queryBuilder({
         entity: this.entity,
         fields: this.fields,
         ...query,
@@ -85,7 +80,7 @@ export class TagController {
       const paginateOption: IPaginationOptions = defaultPaginationOption(query)
 
       return this.response.paginate(
-        await this.tagService.paginationCalculate(queryBuilder, paginateOption),
+        await this.tag.paginationCalculate(queryBuilder, paginateOption),
         new TagTransformer(),
       )
     }
@@ -102,7 +97,7 @@ export class TagController {
   async readTag(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<GetItemResponse> {
-    const tag = await this.tagService.findOneOrFail(id)
+    const tag = await this.tag.findOneOrFail(id)
 
     return this.response.item(tag, new TagTransformer())
   }
@@ -115,9 +110,9 @@ export class TagController {
     @Param('id', ParseIntPipe) id: number,
     @Body() body: UpdateTagDto,
   ): Promise<UpdateResponse> {
-    await this.tagService.checkExisting({ where: { id } })
+    await this.tag.checkExisting({ where: { id } })
 
-    const tag: TagEntity = await this.tagService.update(id, body)
+    const tag: TagEntity = await this.tag.update(id, body)
 
     return this.response.item(tag, new TagTransformer())
   }
@@ -129,14 +124,10 @@ export class TagController {
   async deleteTag(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<SuccessfullyOperation> {
-    await this.tagService.checkExisting({ where: { id } })
-
-    await this.tagAbleService.detachTagAble([{ tagId: id }])
-
-    await this.tagService.destroy(id)
+    await this.tag.deleteTag(id)
 
     return this.response.success({
-      message: this.tagService.getMessage({
+      message: this.tag.getMessage({
         message: Messages.successfullyOperation.delete,
         keywords: [this.entity],
       }),

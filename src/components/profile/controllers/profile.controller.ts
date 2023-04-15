@@ -35,9 +35,9 @@ import { UpdatePasswordDto, UpdateProfileDto } from '../dto/updateProfile.dto'
 @Controller('api/profile')
 export class ProfileController {
   constructor(
+    private user: UserService,
+    private hash: HashService,
     private response: ApiResponseService,
-    private userService: UserService,
-    private hashService: HashService,
   ) {}
 
   private relations = ['roles']
@@ -58,7 +58,7 @@ export class ProfileController {
     @AuthenticatedUser() currentUser: Me,
     @Body() body: UpdateProfileDto,
   ): Promise<GetItemResponse> {
-    const user: UserEntity = await this.userService.update(currentUser.id, body)
+    const user: UserEntity = await this.user.update(currentUser.id, body)
 
     return this.response.item(user, new UserTransformer())
   }
@@ -72,12 +72,12 @@ export class ProfileController {
   ): Promise<GetItemResponse> {
     const { password, oldPassword } = body
 
-    if (!this.hashService.compare(oldPassword, currentUser.password)) {
+    if (!this.hash.compare(oldPassword, currentUser.password)) {
       throw new BadRequestException('Old password is not correct')
     }
 
-    const user = await this.userService.update(currentUser.id, {
-      password: this.hashService.hash(password),
+    const user = await this.user.update(currentUser.id, {
+      password: this.hash.hash(password),
     })
 
     return this.response.item(user, new UserTransformer())

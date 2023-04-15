@@ -53,7 +53,7 @@ import { ImageTransformer } from '../transformers/image.transformer'
 export class ImageController {
   constructor(
     private response: ApiResponseService,
-    private imageService: ImageService,
+    private image: ImageService,
   ) {}
 
   private entity = 'image'
@@ -73,7 +73,7 @@ export class ImageController {
     @UploadedFile() file: Express.Multer.File,
     @Body() data: CreateImageDto,
   ): Promise<ImageEntity> {
-    return this.imageService.saveImage({ file, data })
+    return this.image.saveImage({ file, data })
   }
 
   @Get()
@@ -84,7 +84,7 @@ export class ImageController {
     @Query() query: QueryManyDto,
   ): Promise<GetListResponse | GetListPaginationResponse> {
     const [queryBuilder]: [SelectQueryBuilder<ImageEntity>, string[]] =
-      await this.imageService.queryBuilder({
+      await this.image.queryBuilder({
         entity: this.entity,
         fields: this.fields,
         ...query,
@@ -94,10 +94,7 @@ export class ImageController {
       const paginateOption: IPaginationOptions = defaultPaginationOption(query)
 
       return this.response.paginate(
-        await this.imageService.paginationCalculate(
-          queryBuilder,
-          paginateOption,
-        ),
+        await this.image.paginationCalculate(queryBuilder, paginateOption),
         new ImageTransformer(),
       )
     }
@@ -115,7 +112,7 @@ export class ImageController {
   async readImage(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<GetItemResponse> {
-    const image = await this.imageService.findOneOrFail(id)
+    const image = await this.image.findOneOrFail(id)
 
     return this.response.item(image, new ImageTransformer())
   }
@@ -127,7 +124,7 @@ export class ImageController {
     @Param('id', ParseIntPipe) id: number,
     @Body() data: UpdateImageDto,
   ): Promise<ImageEntity> {
-    return this.imageService.updateImage({ id, data })
+    return this.image.updateImage({ id, data })
   }
 
   @Delete(':id')
@@ -137,10 +134,10 @@ export class ImageController {
   async deleteImage(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<SuccessfullyOperation> {
-    await this.imageService.deleteImage(id)
+    await this.image.deleteImage(id)
 
     return this.response.success({
-      message: this.imageService.getMessage({
+      message: this.image.getMessage({
         message: Messages.successfullyOperation.delete,
         keywords: [this.entity],
       }),

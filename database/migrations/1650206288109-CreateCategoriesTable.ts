@@ -21,6 +21,7 @@ export class CreateCategoriesTable1650206288109 implements MigrationInterface {
           {
             name: 'parentId',
             type: 'int',
+            isNullable: true,
           },
           {
             name: 'status',

@@ -1,7 +1,6 @@
 import { ProductTransformer } from '@productModule/transformers/product.transformer'
 import { Entity, ResponseEntity } from '@shared/interfaces/response.interface'
 import { Transformer } from '@shared/transformers/transformer'
-import { isNil } from 'lodash'
 import { CategoryEntity } from '../entities/category.entity'
 
 export class CategoryTransformer extends Transformer {
@@ -18,8 +17,10 @@ export class CategoryTransformer extends Transformer {
   }
 
   includeProducts(model: CategoryEntity): Entity[] {
-    return !isNil(model.products)
-      ? this.collection(model.products, new ProductTransformer())
-      : null
+    return this.collection(model.products, new ProductTransformer())
+  }
+
+  includeChildren(model: CategoryEntity): Entity[] {
+    return this.collection(model.children, new CategoryTransformer())
   }
 }

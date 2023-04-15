@@ -22,7 +22,7 @@ export class RoleService extends BaseService {
   constructor(
     private connection: Connection,
     @Inject(forwardRef(() => UserRoleService))
-    private userRoleService: UserRoleService,
+    private userRole: UserRoleService,
   ) {
     super()
     this.repository = connection.getCustomRepository(RoleRepository)
@@ -89,7 +89,7 @@ export class RoleService extends BaseService {
       throw new ForbiddenException('Your only role cannot be deleted')
     }
 
-    await this.userRoleService.destroy({ roleId: id })
+    await this.userRole.destroy({ roleId: id })
 
     await this.destroy(id)
   }

@@ -17,7 +17,7 @@ export class PermissionService extends BaseService {
 
   constructor(
     private connection: Connection,
-    private rolePermissionService: RolePermissionService,
+    private rolePermission: RolePermissionService,
   ) {
     super()
     this.repository = this.connection.getCustomRepository(PermissionRepository)
@@ -72,7 +72,7 @@ export class PermissionService extends BaseService {
   async deletePermission(id: number): Promise<void> {
     await this.checkExisting({ where: { id } })
 
-    await this.rolePermissionService.destroy({ permissionId: id })
+    await this.rolePermission.destroy({ permissionId: id })
 
     await this.destroy(id)
   }

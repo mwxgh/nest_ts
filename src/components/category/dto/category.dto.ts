@@ -17,7 +17,7 @@ export class CategoryProperties {
   name: string
 
   @ApiProperty({ name: 'parentId', type: Number })
-  @IsNotEmpty()
+  @IsOptional()
   @IsNumber()
   @Index('parentId')
   @Type(() => Number)

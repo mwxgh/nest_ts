@@ -61,10 +61,10 @@ import { UserTransformer } from '../transformers/user.transformer'
 @Controller('api/users')
 export class UserController {
   constructor(
-    private userService: UserService,
+    private user: UserService,
     private response: ApiResponseService,
-    private notificationService: NotificationService,
-    private configService: ConfigService,
+    private notification: NotificationService,
+    private config: ConfigService,
   ) {}
 
   private entity = 'use'
@@ -76,7 +76,7 @@ export class UserController {
   @ApiOperation({ summary: APIDoc.user.create.apiOperation })
   @ApiOkResponse({ description: APIDoc.user.create.apiOk })
   async createUser(@Body() data: CreateUserDto): Promise<CreateResponse> {
-    const saveUser = await this.userService.saveUser(data)
+    const saveUser = await this.user.saveUser(data)
 
     return this.response.item(saveUser, new UserTransformer(this.relations))
   }
@@ -91,7 +91,7 @@ export class UserController {
     const [queryBuilder, includesParams]: [
       SelectQueryBuilder<UserEntity>,
       string[],
-    ] = await this.userService.queryBuilder({
+    ] = await this.user.queryBuilder({
       entity: this.entity,
       fields: this.fields,
       relations: this.relations,
@@ -102,10 +102,7 @@ export class UserController {
       const paginateOption: IPaginationOptions = defaultPaginationOption(query)
 
       return this.response.paginate(
-        await this.userService.paginationCalculate(
-          queryBuilder,
-          paginateOption,
-        ),
+        await this.user.paginationCalculate(queryBuilder, paginateOption),
         new UserTransformer(includesParams),
       )
     }
@@ -123,7 +120,7 @@ export class UserController {
   async readUser(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<GetItemResponse> {
-    const user = await this.userService.findOneOrFail(id, {
+    const user = await this.user.findOneOrFail(id, {
       relations: this.relations,
     })
 
@@ -138,10 +135,10 @@ export class UserController {
     @Param('id', ParseIntPipe) id: number,
     @Body() data: UpdateUserDto,
   ): Promise<UpdateResponse> {
-    const user: UserEntity = await this.userService.updateUser({ id, data })
+    const user: UserEntity = await this.user.updateUser({ id, data })
 
     if (isNil(data.notifyUser) && data.notifyUser === true) {
-      this.notificationService.send(
+      this.notification.send(
         user,
         new UserPasswordChangedNotification(data.password),
       )
@@ -158,14 +155,14 @@ export class UserController {
     @Param('id', ParseIntPipe) id: number,
     @Body() data: UpdateUserPasswordDto,
   ): Promise<UpdateResponse> {
-    await this.userService.checkExisting({ where: { id } })
+    await this.user.checkExisting({ where: { id } })
 
-    const user: UserEntity = await this.userService.update(id, {
-      password: this.userService.hash(data.password),
+    const user: UserEntity = await this.user.update(id, {
+      password: this.user.hashPassword(data.password),
     })
 
     if (isNil(data.notifyUser) && data.notifyUser === true) {
-      this.notificationService.send(
+      this.notification.send(
         user,
         new UserPasswordChangedNotification(data.password),
       )
@@ -181,14 +178,14 @@ export class UserController {
   async sendVerifyLink(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<SuccessfullyOperation> {
-    const user: UserEntity = await this.userService.findOneOrFail(id)
+    const user: UserEntity = await this.user.findOneOrFail(id)
 
-    await this.userService.generateVerifyToken(user.id)
+    await this.user.generateVerifyToken(user.id)
 
-    this.notificationService.send(
+    this.notification.send(
       user,
       new VerifyUserNotification(
-        user.generateVerifyEmailLink(this.configService.get('FRONTEND_URL')),
+        user.generateVerifyEmailLink(this.config.get('FRONTEND_URL')),
       ),
     )
 
@@ -199,11 +196,11 @@ export class UserController {
   @ApiOperation({ summary: 'Verify token' })
   @ApiOkResponse({ description: 'User verified successfully' })
   async verify(@Query('token') token: string): Promise<UpdateResponse> {
-    const user: UserEntity = await this.userService.firstOrFail({
+    const user: UserEntity = await this.user.firstOrFail({
       where: { verifyToken: token, verified: false, verifiedAt: null },
     })
 
-    const result = await this.userService.verify(user.id)
+    const result = await this.user.verify(user.id)
 
     return this.response.item(result, new UserTransformer())
   }
@@ -216,12 +213,12 @@ export class UserController {
     @Body() data: InviteUserDto,
   ): Promise<SuccessfullyOperation> {
     const [user, passwordReset]: [UserEntity, PasswordResetEntity] =
-      await this.userService.inviteUser(data)
-    await this.notificationService.send(
+      await this.user.inviteUser(data)
+    await this.notification.send(
       user,
       new SendInviteUserLinkNotification(
         passwordReset,
-        this.configService.get('FRONTEND_URL'),
+        this.config.get('FRONTEND_URL'),
       ),
     )
 
@@ -236,9 +233,9 @@ export class UserController {
     @Body() data: UserSendMailReportDto,
     @Param('id', ParseIntPipe) id: number,
   ): Promise<SuccessfullyOperation> {
-    const user = await this.userService.findOneOrFail(id)
+    const user = await this.user.findOneOrFail(id)
 
-    this.notificationService.send(
+    this.notification.send(
       user,
       new UserSendMailReportNotification(data.toEmail, data.linkReport),
     )

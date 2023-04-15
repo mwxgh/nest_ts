@@ -28,11 +28,11 @@ export class CategoryEntity extends TimeStampEntity {
   @Column({ type: 'enum', enum: CategoryStatus })
   status: CategoryStatus
 
-  @ManyToOne(() => CategoryEntity, { nullable: true })
+  @ManyToOne(() => CategoryEntity, (category) => category.children)
   @JoinColumn({ name: 'parentId' })
   parent: CategoryEntity
 
-  @OneToMany(() => CategoryEntity, (cate) => cate.children)
+  @OneToMany(() => CategoryEntity, (category) => category.parent)
   children: CategoryEntity[]
 
   @ManyToMany(() => PostEntity, (post) => post.categories)

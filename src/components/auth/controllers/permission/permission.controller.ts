@@ -53,7 +53,7 @@ import { SelectQueryBuilder } from 'typeorm'
 export class PermissionController {
   constructor(
     private response: ApiResponseService,
-    private permissionService: PermissionService,
+    private permission: PermissionService,
   ) {}
 
   private entity = 'permission'
@@ -66,7 +66,7 @@ export class PermissionController {
   async savePermission(
     @Body() data: CreatePermissionDto,
   ): Promise<CreateResponse> {
-    const permission = await this.permissionService.createPermission(data)
+    const permission = await this.permission.createPermission(data)
 
     return this.response.item(permission, new PermissionTransformer())
   }
@@ -79,7 +79,7 @@ export class PermissionController {
     @Query() query: QueryManyDto,
   ): Promise<GetListResponse | GetListPaginationResponse> {
     const [queryBuilder]: [SelectQueryBuilder<PermissionEntity>, string[]] =
-      await this.permissionService.queryBuilder({
+      await this.permission.queryBuilder({
         entity: this.entity,
         fields: this.fields,
         ...query,
@@ -89,10 +89,7 @@ export class PermissionController {
       const paginateOption: IPaginationOptions = defaultPaginationOption(query)
 
       return this.response.paginate(
-        await this.permissionService.paginationCalculate(
-          queryBuilder,
-          paginateOption,
-        ),
+        await this.permission.paginationCalculate(queryBuilder, paginateOption),
         new PermissionTransformer(),
       )
     }
@@ -110,8 +107,7 @@ export class PermissionController {
   async readPermission(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<GetItemResponse> {
-    const permission: PermissionEntity =
-      await this.permissionService.findOneOrFail(id)
+    const permission: PermissionEntity = await this.permission.findOneOrFail(id)
 
     return this.response.item(permission, new PermissionTransformer())
   }
@@ -124,7 +120,7 @@ export class PermissionController {
     @Param('id', ParseIntPipe) id: number,
     @Body() data: UpdatePermissionDto,
   ): Promise<UpdateResponse> {
-    const permission = await this.permissionService.updatePermission({
+    const permission = await this.permission.updatePermission({
       id,
       data,
     })
@@ -139,10 +135,10 @@ export class PermissionController {
   async delete(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<SuccessfullyOperation> {
-    await this.permissionService.deletePermission(id)
+    await this.permission.deletePermission(id)
 
     return this.response.success({
-      message: this.permissionService.getMessage({
+      message: this.permission.getMessage({
         message: Messages.successfullyOperation.delete,
         keywords: [this.entity],
       }),

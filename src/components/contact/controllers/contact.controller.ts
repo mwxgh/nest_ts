@@ -51,7 +51,7 @@ import { ContactTransformer } from '../transformers/contact.transformer'
 @Controller('/api/contacts')
 export class ContactController {
   constructor(
-    private contactService: ContactService,
+    private contact: ContactService,
     private response: ApiResponseService,
   ) {}
 
@@ -65,7 +65,7 @@ export class ContactController {
     @AuthenticatedUser() currentUser: Me,
     @Body() data: CreateContactDto,
   ): Promise<CreateResponse> {
-    const contact: ContactEntity = await this.contactService.createContact({
+    const contact: ContactEntity = await this.contact.createContact({
       currentUser,
       data,
     })
@@ -81,7 +81,7 @@ export class ContactController {
     @Query() query: QueryManyDto,
   ): Promise<GetListResponse | GetListPaginationResponse> {
     const [queryBuilder]: [SelectQueryBuilder<ContactEntity>, string[]] =
-      await this.contactService.queryBuilder({
+      await this.contact.queryBuilder({
         entity: this.entity,
         fields: this.fields,
         ...query,
@@ -91,10 +91,7 @@ export class ContactController {
       const paginateOption: IPaginationOptions = defaultPaginationOption(query)
 
       return this.response.paginate(
-        await this.contactService.paginationCalculate(
-          queryBuilder,
-          paginateOption,
-        ),
+        await this.contact.paginationCalculate(queryBuilder, paginateOption),
         new ContactTransformer(),
       )
     }
@@ -111,7 +108,7 @@ export class ContactController {
   async readSelfContacts(
     @AuthenticatedUser() currentUser: Me,
   ): Promise<GetListResponse> {
-    const contacts: ContactEntity[] = await this.contactService.findWhere({
+    const contacts: ContactEntity[] = await this.contact.findWhere({
       userId: currentUser.id,
     })
 
@@ -125,7 +122,7 @@ export class ContactController {
   async readContact(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<GetItemResponse> {
-    const contact = await this.contactService.findOneOrFail(id)
+    const contact = await this.contact.findOneOrFail(id)
 
     return this.response.item(contact, new ContactTransformer())
   }
@@ -137,11 +134,10 @@ export class ContactController {
     @AuthenticatedUser() currentUser: Me,
     @Param('id', ParseIntPipe) id: number,
   ): Promise<GetItemResponse> {
-    const contact: ContactEntity =
-      await this.contactService.getSelfDetailContact({
-        id,
-        currentUser,
-      })
+    const contact: ContactEntity = await this.contact.getSelfDetailContact({
+      id,
+      currentUser,
+    })
 
     return this.response.item(contact, new ContactTransformer())
   }
@@ -154,7 +150,7 @@ export class ContactController {
     @Param('id', ParseIntPipe) id: number,
     @Body() data: UpdateContactDto,
   ): Promise<UpdateResponse> {
-    const contact: ContactEntity = await this.contactService.updateContact({
+    const contact: ContactEntity = await this.contact.updateContact({
       id,
       currentUser,
       data,
@@ -170,10 +166,10 @@ export class ContactController {
     @AuthenticatedUser() currentUser: Me,
     @Param('id', ParseIntPipe) id: number,
   ): Promise<SuccessfullyOperation> {
-    await this.contactService.deleteContact({ id, currentUser })
+    await this.contact.deleteContact({ id, currentUser })
 
     return this.response.success({
-      message: this.contactService.getMessage({
+      message: this.contact.getMessage({
         message: Messages.successfullyOperation.delete,
         keywords: [this.entity],
       }),

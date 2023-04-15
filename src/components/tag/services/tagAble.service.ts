@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { Inject, Injectable, forwardRef } from '@nestjs/common'
 import { AbleType } from '@shared/entities/base.entity'
 import { Entity } from '@shared/interfaces/response.interface'
 import { BaseService } from '@sharedServices/base.service'
@@ -12,7 +12,11 @@ import { TagService } from './tag.service'
 export class TagAbleService extends BaseService {
   public repository: Repository<TagAbleEntity>
   public entity: Entity = TagAbleEntity
-  constructor(private connection: Connection, private tagService: TagService) {
+  constructor(
+    private connection: Connection,
+    @Inject(forwardRef(() => TagService))
+    private tagService: TagService,
+  ) {
     super()
     this.repository = this.connection.getCustomRepository(TagAbleRepository)
   }

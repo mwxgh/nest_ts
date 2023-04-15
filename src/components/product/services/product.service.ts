@@ -19,9 +19,9 @@ export class ProductService extends BaseService {
 
   constructor(
     private connection: Connection,
-    private imageAbleService: ImageAbleService,
-    private categoryAbleService: CategoryAbleService,
-    private tagAbleService: TagAbleService,
+    private imageAble: ImageAbleService,
+    private categoryAble: CategoryAbleService,
+    private tagAble: TagAbleService,
   ) {
     super()
     this.repository = this.connection.getCustomRepository(ProductRepository)
@@ -100,7 +100,7 @@ export class ProductService extends BaseService {
 
     // imageAble
     if (!isNil(data.imageIds)) {
-      await this.imageAbleService.attachImageAble({
+      await this.imageAble.attachImageAble({
         imageIds: data.imageIds,
         ableId: product.id,
         ableType: AbleType.product,
@@ -109,7 +109,7 @@ export class ProductService extends BaseService {
 
     // categoryAble
     if (!isNil(data.categoryIds)) {
-      await this.categoryAbleService.attachCategoryAble({
+      await this.categoryAble.attachCategoryAble({
         categoryIds: data.categoryIds,
         ableId: product.id,
         ableType: AbleType.product,
@@ -118,7 +118,7 @@ export class ProductService extends BaseService {
 
     // tagAble
     if (!isNil(data.tagIds)) {
-      await this.tagAbleService.attachTagAble({
+      await this.tagAble.attachTagAble({
         tagIds: data.tagIds,
         ableId: product.id,
         ableType: AbleType.product,
@@ -144,7 +144,7 @@ export class ProductService extends BaseService {
 
     // tagAble
     if (data.tagIds && data.tagIds.length > 0) {
-      await this.tagAbleService.updateRelationTagAble({
+      await this.tagAble.updateRelationTagAble({
         ableId: currentProduct.id,
         ableType: AbleType.product,
         tagIds: data.tagIds,
@@ -153,7 +153,7 @@ export class ProductService extends BaseService {
 
     // categoryAble
     if (data.categoryIds && data.categoryIds.length > 0) {
-      await this.categoryAbleService.updateRelationCategoryAble({
+      await this.categoryAble.updateRelationCategoryAble({
         ableId: currentProduct.id,
         ableType: AbleType.product,
         categoryIds: data.categoryIds,
@@ -162,7 +162,7 @@ export class ProductService extends BaseService {
 
     // imageAble
     if (data.imageIds && data.imageIds.length > 0) {
-      await this.imageAbleService.updateRelationImageAble({
+      await this.imageAble.updateRelationImageAble({
         ableId: currentProduct.id,
         ableType: AbleType.product,
         imageIds: data.categoryIds,
@@ -183,21 +183,21 @@ export class ProductService extends BaseService {
   async deleteProduct(id: number): Promise<void> {
     const currentProduct: ProductEntity = await this.findOneOrFail(id)
 
-    await this.tagAbleService.detachTagAble([
+    await this.tagAble.detachTagAble([
       {
         ableId: currentProduct.id,
         ableType: AbleType.product,
       },
     ])
 
-    await this.categoryAbleService.detachCategoryAble([
+    await this.categoryAble.detachCategoryAble([
       {
         ableId: currentProduct.id,
         ableType: AbleType.product,
       },
     ])
 
-    await this.imageAbleService.detachImageAble([
+    await this.imageAble.detachImageAble([
       {
         ableId: currentProduct.id,
         ableType: AbleType.product,

@@ -31,9 +31,9 @@ import { APIDoc } from 'src/components/components.apidoc'
 @Controller('api/auth')
 export class ForgotPasswordController {
   constructor(
-    private notificationService: NotificationService,
-    private passwordResetService: PasswordResetService,
-    private configService: ConfigService,
+    private notification: NotificationService,
+    private passwordReset: PasswordResetService,
+    private config: ConfigService,
     private response: ApiResponseService,
   ) {}
 
@@ -43,19 +43,20 @@ export class ForgotPasswordController {
   async sendResetLinkEmail(
     @Body() data: SendResetLinkDto,
   ): Promise<SuccessfullyOperation> {
-    const [user, passwordReset] =
-      await this.passwordResetService.requestResetPassword(data)
+    const [user, passwordReset] = await this.passwordReset.requestResetPassword(
+      data,
+    )
 
-    await this.notificationService.send(
+    await this.notification.send(
       user,
       new SendResetLinkNotification(
         passwordReset,
-        this.configService.get('FRONTEND_URL'),
+        this.config.get('FRONTEND_URL'),
       ),
     )
 
     return this.response.success({
-      message: this.passwordResetService.getMessage({
+      message: this.passwordReset.getMessage({
         message: Messages.successfullyOperation.sent,
         keywords: ['request reset password'],
       }),
@@ -69,7 +70,7 @@ export class ForgotPasswordController {
     description: APIDoc.auth.resetPassword.apiBadRequest,
   })
   async resetPassword(@Body() data: ResetPasswordDto): Promise<ResponseEntity> {
-    const user = await this.passwordResetService.resetPassword(data)
+    const user = await this.passwordReset.resetPassword(data)
 
     return this.response.item(user, new UserTransformer())
   }

@@ -17,9 +17,9 @@ export class UserRoleService extends BaseService {
   constructor(
     private connection: Connection,
     @Inject(forwardRef(() => RoleService))
-    private roleService: RoleService,
+    private role: RoleService,
     @Inject(forwardRef(() => UserService))
-    private userService: UserService,
+    private user: UserService,
   ) {
     super()
     this.repository = connection.getCustomRepository(UserRoleRepository)
@@ -38,9 +38,9 @@ export class UserRoleService extends BaseService {
     userId: number
     roleId: number
   }): Promise<void> {
-    await this.roleService.checkExisting({ where: { id: roleId } })
+    await this.role.checkExisting({ where: { id: roleId } })
 
-    await this.userService.checkExisting({ where: { id: userId } })
+    await this.user.checkExisting({ where: { id: userId } })
 
     await this.firstOrCreate({ where: { userId, roleId } }, { userId, roleId })
   }
@@ -58,9 +58,9 @@ export class UserRoleService extends BaseService {
     userId: number
     roleId: number
   }): Promise<void> {
-    await this.roleService.checkExisting({ where: { id: roleId } })
+    await this.role.checkExisting({ where: { id: roleId } })
 
-    await this.userService.checkExisting({ where: { id: userId } })
+    await this.user.checkExisting({ where: { id: userId } })
 
     await this.destroy({ userId, roleId })
   }
@@ -97,9 +97,7 @@ export class UserRoleService extends BaseService {
     // attach new role
     const newAttachRoleIds: number[] = difference(roleIds, currentRoleIds)
 
-    const roles: RoleEntity[] = await this.roleService.findIdInOrFail(
-      newAttachRoleIds,
-    )
+    const roles: RoleEntity[] = await this.role.findIdInOrFail(newAttachRoleIds)
 
     if (!isNil(roles) && roles.length > 0) {
       const roleIds = roles.map((role) => role.id)

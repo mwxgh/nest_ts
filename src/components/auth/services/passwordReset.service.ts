@@ -24,9 +24,9 @@ export class PasswordResetService extends BaseService {
 
   constructor(
     private connection: Connection,
-    private hashService: HashService,
+    private hash: HashService,
     @Inject(forwardRef(() => UserService))
-    private userService: UserService,
+    private user: UserService,
   ) {
     super()
     this.repository = connection.getCustomRepository(PasswordResetRepository)
@@ -63,7 +63,7 @@ export class PasswordResetService extends BaseService {
   async generate(email: string): Promise<PasswordResetEntity> {
     return await this.create({
       email: email,
-      token: this.hashService.md5(new Date().toISOString()),
+      token: this.hash.md5(new Date().toISOString()),
     })
   }
 
@@ -89,7 +89,7 @@ export class PasswordResetService extends BaseService {
     data: SendResetLinkDto,
   ): Promise<[UserEntity, PasswordResetEntity]> {
     const { email } = data
-    const user: UserEntity = await this.userService.firstOrFail({
+    const user: UserEntity = await this.user.firstOrFail({
       where: { email: this.sanitize(email) },
     })
 
@@ -121,11 +121,11 @@ export class PasswordResetService extends BaseService {
       await this.expire(token)
     }
 
-    const user: UserEntity = await this.userService.firstOrFail({
+    const user: UserEntity = await this.user.firstOrFail({
       where: { email: passwordReset.email },
     })
 
-    await this.userService.changePassword(user.id, password)
+    await this.user.changePassword(user.id, password)
 
     return user
   }

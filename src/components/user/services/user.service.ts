@@ -21,12 +21,12 @@ export class UserService extends BaseService {
 
   constructor(
     private connection: Connection,
-    private hashService: HashService,
-    private roleService: RoleService,
+    private hash: HashService,
+    private role: RoleService,
     @Inject(forwardRef(() => PasswordResetService))
-    private passwordResetService: PasswordResetService,
+    private passwordReset: PasswordResetService,
     @Inject(forwardRef(() => UserRoleService))
-    private userRoleService: UserRoleService,
+    private userRole: UserRoleService,
   ) {
     super()
     this.repository = connection.getCustomRepository(UserRepository)
@@ -54,9 +54,9 @@ export class UserService extends BaseService {
    */
   async generateVerifyToken(id: number): Promise<boolean> {
     const item = await this.update(id, {
-      verifyToken: `${this.hashService.md5(
-        id.toString(),
-      )}${this.hashService.md5(new Date().toISOString())}`,
+      verifyToken: `${this.hash.md5(id.toString())}${this.hash.md5(
+        new Date().toISOString(),
+      )}`,
     })
     return item
   }
@@ -77,11 +77,11 @@ export class UserService extends BaseService {
   }
 
   /**
-   * Hash data
+   * Hash password
    * @param data string
    */
-  hash(data: string): string {
-    return this.hashService.hash(data)
+  hashPassword(data: string): string {
+    return this.hash.hash(data)
   }
 
   /**
@@ -91,7 +91,7 @@ export class UserService extends BaseService {
    * @param hashed string
    */
   checkPassword(password: string, hashed: string): boolean {
-    return this.hashService.compare(password, hashed)
+    return this.hash.compare(password, hashed)
   }
 
   /**
@@ -101,7 +101,7 @@ export class UserService extends BaseService {
    * @param password string
    */
   async changePassword(id: number, password: string): Promise<UserEntity> {
-    return await this.update(id, { password: this.hashService.hash(password) })
+    return await this.update(id, { password: this.hash.hash(password) })
   }
 
   /**
@@ -118,7 +118,7 @@ export class UserService extends BaseService {
     Object.assign(data, { status: data.status ?? DEFAULT_USER_STATUS })
 
     if (data instanceof UserRegisterDto || data['roleIds'] === undefined) {
-      const roleUser: number[] = await this.roleService.findWhere(
+      const roleUser: number[] = await this.role.findWhere(
         {
           slug: 'user',
         },
@@ -138,14 +138,14 @@ export class UserService extends BaseService {
         'status',
       ]),
       ...{
-        password: this.hash(password),
+        password: this.hashPassword(password),
         email: this.sanitize(email),
       },
     })
 
     if (data.roleIds && data.roleIds.length > 0) {
       for (const roleId of data.roleIds) {
-        await this.userRoleService.attachRole({ userId: saveUser.id, roleId })
+        await this.userRole.attachRole({ userId: saveUser.id, roleId })
       }
     }
 
@@ -176,7 +176,7 @@ export class UserService extends BaseService {
     )
 
     if (!isNil(password)) {
-      Object.assign(data, { password: this.hash(password) })
+      Object.assign(data, { password: this.hashPassword(password) })
     }
 
     if (!isNil(email)) {
@@ -186,7 +186,7 @@ export class UserService extends BaseService {
     const updateUser: UserEntity = await this.update(id, { data })
 
     if (!isNil(roleIds) && roleIds.length > 0) {
-      await this.userRoleService.updateRelationUserAndRole({
+      await this.userRole.updateRelationUserAndRole({
         userId: updateUser.id,
         roleIds,
       })
@@ -208,14 +208,14 @@ export class UserService extends BaseService {
 
     Object.assign(data, {
       username: 'invite-user',
-      password: this.hash('password'),
+      password: this.hashPassword('password'),
     })
 
     const user: UserEntity = await this.create(data)
 
-    await this.passwordResetService.expireAllToken(user.email)
+    await this.passwordReset.expireAllToken(user.email)
 
-    const passwordReset = await this.passwordResetService.generate(user.email)
+    const passwordReset = await this.passwordReset.generate(user.email)
 
     return [user, passwordReset]
   }

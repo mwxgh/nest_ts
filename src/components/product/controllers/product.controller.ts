@@ -50,7 +50,7 @@ import { ProductTransformer } from '../transformers/product.transformer'
 export class ProductController {
   constructor(
     private response: ApiResponseService,
-    private productService: ProductService,
+    private product: ProductService,
   ) {}
 
   private entity = 'product'
@@ -62,7 +62,7 @@ export class ProductController {
   @ApiOperation({ summary: APIDoc.product.create.apiOperation })
   @ApiOkResponse({ description: APIDoc.product.create.apiOk })
   async createProduct(@Body() data: CreateProductDto): Promise<CreateResponse> {
-    const product = await this.productService.createProduct(data)
+    const product = await this.product.createProduct(data)
 
     return this.response.item(product, new ProductTransformer())
   }
@@ -76,7 +76,7 @@ export class ProductController {
     const [queryBuilder, includesParams]: [
       SelectQueryBuilder<ProductEntity>,
       string[],
-    ] = await this.productService.queryProduct({
+    ] = await this.product.queryProduct({
       entity: this.entity,
       fields: this.fields,
       relations: this.relations,
@@ -87,10 +87,7 @@ export class ProductController {
       const paginateOption: IPaginationOptions = defaultPaginationOption(query)
 
       return this.response.paginate(
-        await this.productService.paginationCalculate(
-          queryBuilder,
-          paginateOption,
-        ),
+        await this.product.paginationCalculate(queryBuilder, paginateOption),
         new ProductTransformer(includesParams),
       )
     }
@@ -107,7 +104,7 @@ export class ProductController {
   async readProduct(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<GetItemResponse> {
-    const product = await this.productService.findOneOrFail(id, {
+    const product = await this.product.findOneOrFail(id, {
       relations: this.relations,
     })
 
@@ -121,7 +118,7 @@ export class ProductController {
     @Param('id', ParseIntPipe) id: number,
     @Body() data: UpdateProductDto,
   ): Promise<UpdateResponse> {
-    const product: ProductEntity = await this.productService.updateProduct({
+    const product: ProductEntity = await this.product.updateProduct({
       id,
       data,
     })
@@ -136,10 +133,10 @@ export class ProductController {
   async deleteProduct(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<SuccessfullyOperation> {
-    await this.productService.deleteProduct(id)
+    await this.product.deleteProduct(id)
 
     return this.response.success({
-      message: this.productService.getMessage({
+      message: this.product.getMessage({
         message: Messages.successfullyOperation.delete,
         keywords: [this.entity],
       }),

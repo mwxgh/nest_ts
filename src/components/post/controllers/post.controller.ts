@@ -50,7 +50,7 @@ import { PostEntity } from '../entities/post.entity'
 export class PostController {
   constructor(
     private connection: Connection,
-    private postService: PostService,
+    private post: PostService,
     private response: ApiResponseService,
   ) {}
 
@@ -63,7 +63,7 @@ export class PostController {
   @ApiOperation({ summary: APIDoc.product.create.apiOperation })
   @ApiOkResponse({ description: APIDoc.product.create.apiOk })
   async createPost(@Body() data: CreatePostDto): Promise<CreateResponse> {
-    const post = await this.postService.savePost(data)
+    const post = await this.post.savePost(data)
 
     return this.response.item(post, new PostTransformer())
   }
@@ -77,7 +77,7 @@ export class PostController {
     const [queryBuilder, includesParams]: [
       SelectQueryBuilder<PostEntity>,
       string[],
-    ] = await this.postService.queryPost({
+    ] = await this.post.queryPost({
       entity: this.entity,
       fields: this.fields,
       relations: this.relations,
@@ -88,10 +88,7 @@ export class PostController {
       const paginateOption: IPaginationOptions = defaultPaginationOption(query)
 
       return this.response.paginate(
-        await this.postService.paginationCalculate(
-          queryBuilder,
-          paginateOption,
-        ),
+        await this.post.paginationCalculate(queryBuilder, paginateOption),
         new PostTransformer(includesParams),
       )
     }
@@ -111,7 +108,7 @@ export class PostController {
   ): Promise<GetItemResponse> {
     const { includes } = query
 
-    const post = await this.postService.findOneOrFail(id, {
+    const post = await this.post.findOneOrFail(id, {
       relations: includes,
     })
 
@@ -126,7 +123,7 @@ export class PostController {
     @Param('id', ParseIntPipe) id: number,
     @Body() data: UpdatePostDto,
   ): Promise<UpdateResponse> {
-    const post: PostEntity = await this.postService.updatePost({ id, data })
+    const post: PostEntity = await this.post.updatePost({ id, data })
 
     return this.response.item(post, new PostTransformer())
   }
@@ -138,10 +135,10 @@ export class PostController {
   async deletePost(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<SuccessfullyOperation> {
-    await this.postService.deletePost(id)
+    await this.post.deletePost(id)
 
     return this.response.success({
-      message: this.postService.getMessage({
+      message: this.post.getMessage({
         message: Messages.successfullyOperation.delete,
         keywords: [this.entity],
       }),

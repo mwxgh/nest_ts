@@ -1,10 +1,11 @@
-import { Injectable } from '@nestjs/common'
+import { Inject, Injectable, forwardRef } from '@nestjs/common'
 import { Entity } from '@shared/interfaces/response.interface'
 import { BaseService } from '@sharedServices/base.service'
 import { Connection, Repository } from 'typeorm'
 import { CreateImageDto, UpdateImageDto } from '../dto/image.dto'
 import { ImageEntity } from '../entities/image.entity'
 import { ImageRepository } from '../repositories/image.repository'
+import { ImageAbleService } from './imageAble.service'
 
 @Injectable()
 export class ImageService extends BaseService {
@@ -12,7 +13,9 @@ export class ImageService extends BaseService {
   public entity: Entity = ImageEntity
 
   constructor(
-    private connection: Connection, // private imageAbleService: ImageAbleService,
+    private connection: Connection,
+    @Inject(forwardRef(() => ImageAbleService))
+    private imageAble: ImageAbleService,
   ) {
     super()
     this.repository = this.connection.getCustomRepository(ImageRepository)
@@ -71,7 +74,7 @@ export class ImageService extends BaseService {
   async deleteImage(id: number): Promise<void> {
     await this.checkExisting({ where: { id } })
 
-    // await this.imageAbleService.detachImageAble([{ imageId: id }])
+    await this.imageAble.detachImageAble([{ imageId: id }])
 
     await this.destroy(id)
   }

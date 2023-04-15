@@ -20,9 +20,9 @@ export class PostService extends BaseService {
 
   constructor(
     private connection: Connection,
-    private tagAbleService: TagAbleService,
-    private categoryAbleService: CategoryAbleService,
-    private imageAbleService: ImageAbleService,
+    private tagAble: TagAbleService,
+    private categoryAble: CategoryAbleService,
+    private imageAble: ImageAbleService,
   ) {
     super()
     this.repository = this.connection.getCustomRepository(PostRepository)
@@ -136,7 +136,7 @@ export class PostService extends BaseService {
 
     // tagAble
     if (!isNil(data.categoryIds)) {
-      await this.tagAbleService.attachTagAble({
+      await this.tagAble.attachTagAble({
         tagIds: data.tagIds,
         ableId: post.id,
         ableType: AbleType.post,
@@ -145,7 +145,7 @@ export class PostService extends BaseService {
 
     // categoryAble
     if (!isNil(data.categoryIds)) {
-      await this.categoryAbleService.attachCategoryAble({
+      await this.categoryAble.attachCategoryAble({
         categoryIds: data.categoryIds,
         ableId: post.id,
         ableType: AbleType.post,
@@ -154,7 +154,7 @@ export class PostService extends BaseService {
 
     // imageAble
     if (!isNil(data.imageIds)) {
-      await this.imageAbleService.attachImageAble({
+      await this.imageAble.attachImageAble({
         imageIds: data.imageIds,
         ableId: post.id,
         ableType: AbleType.post,
@@ -180,7 +180,7 @@ export class PostService extends BaseService {
 
     // imageAble
     if (data.imageIds && data.imageIds.length > 0) {
-      await this.imageAbleService.updateRelationImageAble({
+      await this.imageAble.updateRelationImageAble({
         ableId: id,
         ableType: AbleType.post,
         imageIds: data.imageIds,
@@ -189,7 +189,7 @@ export class PostService extends BaseService {
 
     // tagAble
     if (data.tagIds && data.tagIds.length > 0) {
-      await this.tagAbleService.updateRelationTagAble({
+      await this.tagAble.updateRelationTagAble({
         ableId: id,
         ableType: AbleType.post,
         tagIds: data.tagIds,
@@ -198,7 +198,7 @@ export class PostService extends BaseService {
 
     // categoryAble
     if (data.categoryIds && data.categoryIds.length > 0) {
-      await this.categoryAbleService.updateRelationCategoryAble({
+      await this.categoryAble.updateRelationCategoryAble({
         ableId: id,
         ableType: AbleType.post,
         categoryIds: data.categoryIds,
@@ -221,21 +221,21 @@ export class PostService extends BaseService {
   async deletePost(id: number): Promise<void> {
     const currentPost: PostEntity = await this.findOneOrFail(id)
 
-    await this.tagAbleService.detachTagAble([
+    await this.tagAble.detachTagAble([
       {
         ableId: currentPost.id,
         ableType: AbleType.post,
       },
     ])
 
-    await this.categoryAbleService.detachCategoryAble([
+    await this.categoryAble.detachCategoryAble([
       {
         ableId: currentPost.id,
         ableType: AbleType.post,
       },
     ])
 
-    await this.imageAbleService.detachImageAble([
+    await this.imageAble.detachImageAble([
       {
         ableId: currentPost.id,
         ableType: AbleType.post,

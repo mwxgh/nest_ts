@@ -31,7 +31,7 @@ import {
 @Controller('api/auth')
 export class AuthController {
   constructor(
-    private authService: AuthService,
+    private auth: AuthService,
     private response: ApiResponseService,
   ) {}
 
@@ -41,7 +41,7 @@ export class AuthController {
   async googleAuthCallback(
     @Body() data: LoginGoogleDto,
   ): Promise<AuthenticationAttribute> {
-    return this.authService.googleLogin(data)
+    return this.auth.googleLogin(data)
   }
 
   @Post('register')
@@ -50,7 +50,7 @@ export class AuthController {
   async userRegister(
     @Body() data: UserRegisterDto,
   ): Promise<AuthenticationAttribute> {
-    return this.authService.register(data)
+    return this.auth.register(data)
   }
 
   @Post('login')
@@ -59,14 +59,14 @@ export class AuthController {
   async userLogin(
     @Body() data: UserLoginDto,
   ): Promise<AuthenticationAttribute> {
-    return this.authService.login(data)
+    return this.auth.login(data)
   }
 
   @Post('refresh')
   @ApiOperation({ summary: APIDoc.auth.refresh.apiOperation })
   @ApiOkResponse({ description: APIDoc.auth.refresh.apiOk })
   async refresh(@Body() data: RefreshDto): Promise<AuthenticationAttribute> {
-    return this.authService.refresh(data)
+    return this.auth.refresh(data)
   }
 
   @ApiBearerAuth()
@@ -78,10 +78,10 @@ export class AuthController {
     @Req() request: Request,
     @AuthenticatedUser() currentUser: Me,
   ): Promise<SuccessfullyOperation> {
-    await this.authService.logout(currentUser)
+    await this.auth.logout(currentUser)
 
     return this.response.success({
-      message: this.authService.getMessage({
+      message: this.auth.getMessage({
         message: Messages.successfullyOperation.logout,
       }),
     })

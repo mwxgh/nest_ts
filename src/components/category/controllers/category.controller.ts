@@ -38,7 +38,6 @@ import { SelectQueryBuilder } from 'typeorm'
 import { CreateCategoryDto, UpdateCategoryDto } from '../dto/category.dto'
 import { CategoryEntity } from '../entities/category.entity'
 import { CategoryService } from '../services/category.service'
-import { CategoryAbleService } from '../services/categoryAble.service'
 import { CategoryTransformer } from '../transformers/category.transformer'
 
 @ApiTags('Categories')
@@ -51,9 +50,8 @@ import { CategoryTransformer } from '../transformers/category.transformer'
 @Controller('/api/categories')
 export class CategoryController {
   constructor(
-    private categoryService: CategoryService,
+    private category: CategoryService,
     private response: ApiResponseService,
-    private categoryAbleService: CategoryAbleService,
   ) {}
 
   private entity = 'category'
@@ -67,7 +65,7 @@ export class CategoryController {
   async createCategory(
     @Body() data: CreateCategoryDto,
   ): Promise<CreateResponse> {
-    const category = await this.categoryService.createCategory(data)
+    const category = await this.category.createCategory(data)
 
     return this.response.item(category, new CategoryTransformer())
   }
@@ -83,7 +81,7 @@ export class CategoryController {
     const [queryBuilder, includesParams]: [
       SelectQueryBuilder<CategoryEntity>,
       string[],
-    ] = await this.categoryService.queryCategory({
+    ] = await this.category.queryCategory({
       entity: this.entity,
       fields: this.fields,
       relations: this.relations,
@@ -97,10 +95,7 @@ export class CategoryController {
       const paginateOption: IPaginationOptions = defaultPaginationOption(query)
 
       return this.response.paginate(
-        await this.categoryService.paginationCalculate(
-          queryBuilder,
-          paginateOption,
-        ),
+        await this.category.paginationCalculate(queryBuilder, paginateOption),
         new CategoryTransformer(includesParams),
       )
     }
@@ -111,24 +106,33 @@ export class CategoryController {
     )
   }
 
+  @Get('/hierarchical')
+  @ApiOperation({ summary: APIDoc.category.detail.apiOperation })
+  @ApiOkResponse({ description: APIDoc.category.detail.apiOk })
+  async readCategoryHierarchical(): Promise<GetItemResponse> {
+    const categories = await this.category.findAllHierarchical()
+
+    return categories
+  }
+
+  @Get('/:id/children')
+  @ApiOperation({ summary: APIDoc.category.detail.apiOperation })
+  @ApiOkResponse({ description: APIDoc.category.detail.apiOk })
+  async readCategoryChildren(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<GetItemResponse> {
+    const category = await this.category.findOneWithChildren(id)
+
+    return this.response.item(category, new CategoryTransformer(['children']))
+  }
+
   @Get(':id')
   @ApiOperation({ summary: APIDoc.category.detail.apiOperation })
   @ApiOkResponse({ description: APIDoc.category.detail.apiOk })
   async readCategory(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<GetItemResponse> {
-    const category = await this.categoryService.findOneOrFail(id)
-
-    return this.response.item(category, new CategoryTransformer())
-  }
-
-  @Get(':id/children')
-  @ApiOperation({ summary: APIDoc.category.detail.apiOperation })
-  @ApiOkResponse({ description: APIDoc.category.detail.apiOk })
-  async readCategoryRecursive(
-    @Param('id', ParseIntPipe) id: number,
-  ): Promise<GetItemResponse> {
-    const category = await this.categoryService.findOneOrFail(id)
+    const category = await this.category.findOneOrFail(id)
 
     return this.response.item(category, new CategoryTransformer())
   }
@@ -141,7 +145,7 @@ export class CategoryController {
     @Param('id', ParseIntPipe) id: number,
     @Body() data: UpdateCategoryDto,
   ): Promise<UpdateResponse> {
-    const category = await this.categoryService.updateCategory({ id, data })
+    const category = await this.category.updateCategory({ id, data })
 
     return this.response.item(category, new CategoryTransformer())
   }
@@ -153,14 +157,10 @@ export class CategoryController {
   async deleteCategory(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<SuccessfullyOperation> {
-    await this.categoryService.checkExisting({ where: { id } })
-
-    await this.categoryService.destroy(id)
-
-    await this.categoryAbleService.detachCategoryAble([{ categoryId: id }])
+    await this.category.deleteCategory(id)
 
     return this.response.success({
-      message: this.categoryService.getMessage({
+      message: this.category.getMessage({
         message: Messages.successfullyOperation.delete,
         keywords: [this.entity],
       }),

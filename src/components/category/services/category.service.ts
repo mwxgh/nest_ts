@@ -2,7 +2,7 @@ import {
   CreateCategoryDto,
   UpdateCategoryDto,
 } from '@categoryModule/dto/category.dto'
-import { Injectable } from '@nestjs/common'
+import { Inject, Injectable, forwardRef } from '@nestjs/common'
 import { AbleType } from '@shared/entities/base.entity'
 import { QueryParams } from '@shared/interfaces/request.interface'
 import { Entity } from '@shared/interfaces/response.interface'
@@ -11,13 +11,18 @@ import { isNil } from 'lodash'
 import { Connection, Repository, SelectQueryBuilder } from 'typeorm'
 import { CategoryEntity } from '../entities/category.entity'
 import { CategoryRepository } from '../repositories/category.repository'
+import { CategoryAbleService } from './categoryAble.service'
 
 @Injectable()
 export class CategoryService extends BaseService {
   public repository: Repository<CategoryEntity>
   public entity: Entity = CategoryEntity
 
-  constructor(private connection: Connection) {
+  constructor(
+    private connection: Connection,
+    @Inject(forwardRef(() => CategoryAbleService))
+    private categoryAble: CategoryAbleService,
+  ) {
     super()
     this.repository = this.connection.getCustomRepository(CategoryRepository)
   }
@@ -97,5 +102,44 @@ export class CategoryService extends BaseService {
     }
 
     return [baseQuery, includesParams]
+  }
+
+  async findOneWithChildren(id: number): Promise<CategoryEntity> {
+    const category = await this.repository.findOne(id, {
+      relations: ['children'],
+    })
+    return category
+  }
+
+  async findAllHierarchical(): Promise<CategoryEntity[]> {
+    const categories = await this.repository.find({
+      relations: ['children'],
+    })
+    return this.buildTree(categories)
+  }
+
+  private buildTree(
+    categories: CategoryEntity[],
+    parentId?: number,
+  ): CategoryEntity[] {
+    const result: CategoryEntity[] = []
+    for (const category of categories) {
+      if (category.parent?.id === parentId) {
+        const children = this.buildTree(categories, category.id)
+        if (children.length > 0) {
+          category.children = children
+        }
+        result.push(category)
+      }
+    }
+    return result
+  }
+
+  async deleteCategory(id: number): Promise<void> {
+    await this.checkExisting({ where: { id } })
+
+    await this.destroy(id)
+
+    await this.categoryAble.detachCategoryAble([{ categoryId: id }])
   }
 }

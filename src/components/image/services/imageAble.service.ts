@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { Inject, Injectable, forwardRef } from '@nestjs/common'
 import { AbleType } from '@shared/entities/base.entity'
 import { Entity } from '@shared/interfaces/response.interface'
 import { BaseService } from '@sharedServices/base.service'
@@ -15,7 +15,8 @@ export class ImageAbleService extends BaseService {
 
   constructor(
     private connection: Connection,
-    private imageService: ImageService,
+    @Inject(forwardRef(() => ImageService))
+    private image: ImageService,
   ) {
     super()
     this.repository = this.connection.getCustomRepository(ImageAbleRepository)
@@ -37,7 +38,7 @@ export class ImageAbleService extends BaseService {
     ableType: AbleType
   }): Promise<void> {
     imageIds.map(async (imageId) => {
-      await this.imageService.checkExisting({ where: { id: imageId } })
+      await this.image.checkExisting({ where: { id: imageId } })
 
       await this.save({ imageId, ableId, ableType })
     })

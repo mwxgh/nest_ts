@@ -20,10 +20,10 @@ import { LoginGoogleDto, UserLoginDto, UserRegisterDto } from '../dto/auth.dto'
 export class AuthService extends BaseService {
   private authenticatedUserFields = ['id', 'email']
   constructor(
-    private userService: UserService,
-    private jwtService: JwtService,
+    private user: UserService,
+    private jwt: JwtService,
     private config: ConfigService,
-    private hashService: HashService,
+    private hash: HashService,
   ) {
     super()
   }
@@ -52,18 +52,16 @@ export class AuthService extends BaseService {
       user,
       this.authenticatedUserFields,
     )
-    const token = this.jwtService.sign(partialUserProperties)
+    const token = this.jwt.sign(partialUserProperties)
 
     if (refresh === true) {
-      const refreshToken = this.jwtService.sign(partialUserProperties, {
+      const refreshToken = this.jwt.sign(partialUserProperties, {
         secret: process.env.APP_KEY,
         expiresIn: process.env.JWT_REFRESH_TTL,
       })
 
-      await this.userService.update(partialUserProperties.id, {
-        refreshToken: this.hashService.hash(
-          refreshToken.split('').reverse().join(''),
-        ),
+      await this.user.update(partialUserProperties.id, {
+        refreshToken: this.hash.hash(refreshToken.split('').reverse().join('')),
       })
 
       return {
@@ -88,7 +86,7 @@ export class AuthService extends BaseService {
    * @returns AuthenticationAttribute
    */
   async register(data: UserRegisterDto): Promise<AuthenticationAttribute> {
-    const user = await this.userService.saveUser(data)
+    const user = await this.user.saveUser(data)
 
     return this._generateToken({ user, refresh: false })
   }
@@ -103,17 +101,14 @@ export class AuthService extends BaseService {
   async login(params: UserLoginDto): Promise<AuthenticationAttribute> {
     const { email, password } = params
 
-    const user: Partial<UserEntity> = await this.userService.firstOrFail({
+    const user: Partial<UserEntity> = await this.user.firstOrFail({
       where: {
-        email: this.userService.sanitize(email),
+        email: this.user.sanitize(email),
       },
       select: [...this.authenticatedUserFields, 'password'],
     })
 
-    const isValidPassword = this.userService.checkPassword(
-      password,
-      user.password,
-    )
+    const isValidPassword = this.user.checkPassword(password, user.password)
 
     if (isValidPassword != true) {
       throw new UnauthorizedException('Password does not match')
@@ -155,10 +150,10 @@ export class AuthService extends BaseService {
       throw new BadRequestException('Can not get email address')
     }
 
-    const user = await this.userService.firstOrCreate(
+    const user = await this.user.firstOrCreate(
       { where: { email } },
       {
-        email: this.userService.sanitize(email),
+        email: this.user.sanitize(email),
         firstName: familyName,
         lastName: givenName,
       },
@@ -181,11 +176,11 @@ export class AuthService extends BaseService {
   }): Promise<UserEntity> {
     const { email, refreshToken } = params
 
-    const user: UserEntity = await this.userService.firstOrFail({
+    const user: UserEntity = await this.user.firstOrFail({
       where: { email },
     })
 
-    const isEqual = this.hashService.compare(
+    const isEqual = this.hash.compare(
       refreshToken.split('').reverse().join(''),
       user.refreshToken,
     )
@@ -209,7 +204,7 @@ export class AuthService extends BaseService {
     const { refreshToken } = param
 
     try {
-      const payload = await this.jwtService.verifyAsync(refreshToken, {
+      const payload = await this.jwt.verifyAsync(refreshToken, {
         secret: process.env.APP_KEY,
       })
 
@@ -225,6 +220,6 @@ export class AuthService extends BaseService {
   }
 
   async logout(currentUser: UserEntity) {
-    await this.userService.update(currentUser.id, { refreshToken: null })
+    await this.user.update(currentUser.id, { refreshToken: null })
   }
 }

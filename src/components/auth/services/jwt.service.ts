@@ -8,15 +8,15 @@ import * as jwt from 'jsonwebtoken'
 @Injectable()
 export class JwtCustomService {
   constructor(
-    private configService: ConfigService,
-    private userService: UserService, // private readonly jwtService: JwtService,
+    private config: ConfigService,
+    private user: UserService, // private readonly jwtService: JwtService,
   ) {}
 
   async verify(token: string, isWs = false): Promise<UserEntity | null> {
     try {
-      const payload = <any>jwt.verify(token, this.configService.get('APP_KEY'))
+      const payload = <any>jwt.verify(token, this.config.get('APP_KEY'))
 
-      const user: UserEntity = await this.userService.findOneOrFail(payload.id)
+      const user: UserEntity = await this.user.findOneOrFail(payload.id)
 
       if (!user) {
         if (isWs) {
