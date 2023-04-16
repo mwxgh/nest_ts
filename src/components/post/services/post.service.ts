@@ -130,7 +130,10 @@ export class PostService extends BaseService {
    * @param params.data CreatePostDto
    */
   async savePost(data: CreatePostDto): Promise<PostEntity> {
-    Object.assign(data, { slug: await this.generateSlug(data.title) })
+    Object.assign(data, {
+      slug: await this.generateSlug(data.title),
+      releaseDate: new Date(),
+    })
 
     const post: PostEntity = await this.create(data)
 
@@ -179,7 +182,7 @@ export class PostService extends BaseService {
     await this.checkExisting({ where: { id } })
 
     // imageAble
-    if (data.imageIds && data.imageIds.length > 0) {
+    if (!isNil(data.imageIds) && data.imageIds.length > 0) {
       await this.imageAble.updateRelationImageAble({
         ableId: id,
         ableType: AbleType.post,
@@ -188,7 +191,7 @@ export class PostService extends BaseService {
     }
 
     // tagAble
-    if (data.tagIds && data.tagIds.length > 0) {
+    if (!isNil(data.tagIds) && data.tagIds.length > 0) {
       await this.tagAble.updateRelationTagAble({
         ableId: id,
         ableType: AbleType.post,
@@ -197,7 +200,7 @@ export class PostService extends BaseService {
     }
 
     // categoryAble
-    if (data.categoryIds && data.categoryIds.length > 0) {
+    if (!isNil(data.categoryIds) && data.categoryIds.length > 0) {
       await this.categoryAble.updateRelationCategoryAble({
         ableId: id,
         ableType: AbleType.post,

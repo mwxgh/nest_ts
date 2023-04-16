@@ -1,7 +1,7 @@
 import { Inject, Injectable, forwardRef } from '@nestjs/common'
 import { Entity } from '@shared/interfaces/response.interface'
 import { BaseService } from '@sharedServices/base.service'
-import { CreateTagDto } from '@tagModule/dto/tag.dto'
+import { CreateTagDto, UpdateTagDto } from '@tagModule/dto/tag.dto'
 import { Connection, Repository } from 'typeorm'
 import { TagEntity } from '../entities/tag.entity'
 import { TagRepository } from '../repositories/tag.repository'
@@ -24,6 +24,19 @@ export class TagService extends BaseService {
     await this.checkConflict({ where: { name: data.name } })
 
     return this.create(data)
+  }
+
+  async updateTag({
+    id,
+    data,
+  }: {
+    id: number
+    data: UpdateTagDto
+  }): Promise<TagEntity> {
+    await this.checkExisting({ where: { id } })
+    await this.checkConflict({ where: { name: data.name } })
+
+    return this.update(id, data)
   }
 
   async deleteTag(id: number): Promise<void> {

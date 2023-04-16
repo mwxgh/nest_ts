@@ -58,7 +58,7 @@ export class TagController {
   @ApiOperation({ summary: APIDoc.tag.create.apiOperation })
   @ApiOkResponse({ description: APIDoc.tag.create.apiOk })
   async createTag(@Body() data: CreateTagDto): Promise<CreateResponse> {
-    const tag = await this.tag.createTag(data)
+    const tag: TagEntity = await this.tag.createTag(data)
 
     return this.response.item(tag, new TagTransformer())
   }
@@ -97,7 +97,7 @@ export class TagController {
   async readTag(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<GetItemResponse> {
-    const tag = await this.tag.findOneOrFail(id)
+    const tag: TagEntity = await this.tag.findOneOrFail(id)
 
     return this.response.item(tag, new TagTransformer())
   }
@@ -108,11 +108,9 @@ export class TagController {
   @ApiOkResponse({ description: APIDoc.tag.update.apiOk })
   async updateTag(
     @Param('id', ParseIntPipe) id: number,
-    @Body() body: UpdateTagDto,
+    @Body() data: UpdateTagDto,
   ): Promise<UpdateResponse> {
-    await this.tag.checkExisting({ where: { id } })
-
-    const tag: TagEntity = await this.tag.update(id, body)
+    const tag: TagEntity = await this.tag.updateTag({ id, data })
 
     return this.response.item(tag, new TagTransformer())
   }

@@ -1,5 +1,5 @@
 import { ApiProperty, PartialType, PickType } from '@nestjs/swagger'
-import { IsEnum, IsNotEmpty } from 'class-validator'
+import { IsEnum, IsNotEmpty, IsOptional } from 'class-validator'
 import { TagStatus } from '../entities/tag.entity'
 
 export class TagProperties {
@@ -11,7 +11,7 @@ export class TagProperties {
     enum: TagStatus,
     example: TagStatus.publish,
   })
-  @IsNotEmpty()
+  @IsOptional()
   @IsEnum(TagStatus)
   status: TagStatus
 }

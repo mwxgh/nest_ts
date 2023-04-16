@@ -17,27 +17,27 @@ export class CreatePostsTable1650206721948 implements MigrationInterface {
           {
             name: 'title',
             type: 'varchar',
-            default: "''",
+            isNullable: false,
           },
           {
             name: 'slug',
             type: 'varchar',
-            default: "''",
+            isNullable: false,
           },
           {
             name: 'summary',
             type: 'varchar',
-            default: "''",
+            isNullable: false,
           },
           {
             name: 'description',
             type: 'varchar',
-            default: "''",
+            isNullable: false,
           },
           {
             name: 'content',
             type: 'varchar',
-            default: "''",
+            isNullable: false,
           },
           {
             name: 'status',

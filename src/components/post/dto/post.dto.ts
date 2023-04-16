@@ -11,7 +11,6 @@ import {
   IsEnum,
   IsNotEmpty,
   IsOptional,
-  MinLength,
 } from 'class-validator'
 import {
   PostPriority,
@@ -23,22 +22,18 @@ import {
 export class PostBaseAttributes {
   @ApiProperty()
   @IsNotEmpty()
-  @MinLength(5)
   title: string
 
   @ApiProperty()
   @IsNotEmpty()
-  @MinLength(10)
   summary: string
 
   @ApiProperty()
   @IsNotEmpty()
-  @MinLength(10)
   description: string
 
   @ApiProperty()
   @IsNotEmpty()
-  @MinLength(10)
   content: string
 
   @ApiProperty()
@@ -79,7 +74,7 @@ export class PostProperties extends IntersectionType(
       type: 'int',
     },
   })
-  @IsNotEmpty()
+  @IsOptional()
   @IsArray()
   tagIds: []
 
@@ -89,7 +84,7 @@ export class PostProperties extends IntersectionType(
       type: 'int',
     },
   })
-  @IsNotEmpty()
+  @IsOptional()
   @IsArray()
   categoryIds: []
 
@@ -99,7 +94,7 @@ export class PostProperties extends IntersectionType(
       type: 'int',
     },
   })
-  @IsNotEmpty()
+  @IsOptional()
   @IsArray()
   imageIds: []
 }

@@ -1,6 +1,12 @@
-import { ApiProperty, OmitType, PartialType } from '@nestjs/swagger'
+import { ApiProperty, OmitType, PartialType, PickType } from '@nestjs/swagger'
 import { Type } from 'class-transformer'
-import { IsEnum, IsNotEmpty, IsNumber, IsString } from 'class-validator'
+import {
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator'
 import { Index } from 'typeorm'
 import { CommentStatus } from '../entities/comment.entity'
 
@@ -16,6 +22,7 @@ export class CommentProperties {
   content: string
 
   @ApiProperty()
+  @IsOptional()
   @IsEnum(CommentStatus)
   status: CommentStatus
 
@@ -32,4 +39,6 @@ export class CreateCommentDto extends OmitType(
   [] as const,
 ) {}
 
-export class UpdateCommentDto extends PartialType(CommentProperties) {}
+export class UpdateCommentDto extends PartialType(
+  PickType(CommentProperties, ['content', 'status']),
+) {}

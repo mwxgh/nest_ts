@@ -23,7 +23,7 @@ export class CommentEntity extends TimeStampEntity {
   @Column({ name: 'content', type: 'varchar' })
   content: string
 
-  @Column({ type: 'enum', enum: CommentStatus })
+  @Column({ type: 'enum', enum: CommentStatus, default: CommentStatus.pending })
   status: CommentStatus
 
   @Column({ name: 'parentId', type: 'int' })

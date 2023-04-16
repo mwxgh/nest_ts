@@ -84,13 +84,15 @@ export class TagAbleService extends BaseService {
    * @param params.ableId
    * @param params.ableType
    */
-  async updateRelationTagAble(params: {
+  async updateRelationTagAble({
+    tagIds,
+    ableId,
+    ableType,
+  }: {
     tagIds: number[]
     ableId: number
     ableType: AbleType
   }): Promise<void> {
-    const { tagIds, ableId, ableType } = params
-
     const currentTagIds: number[] = await this.findWhere(
       {
         ableId,
