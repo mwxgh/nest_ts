@@ -34,11 +34,12 @@ export class CreateCommentsTable1650207390501 implements MigrationInterface {
           {
             name: 'parentId',
             type: 'int',
+            isNullable: true,
           },
           {
-            name: 'verifiedAt',
+            name: 'releaseDate',
             isNullable: true,
-            type: 'datetime',
+            type: 'timestamp',
           },
 
           ...baseTimeColumn,

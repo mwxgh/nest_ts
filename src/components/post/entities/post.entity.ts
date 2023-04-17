@@ -64,7 +64,7 @@ export class PostEntity extends TimeStampEntity {
   @Column({ type: 'enum', enum: PostPrivacy, default: PostPrivacy.public })
   privacy: PostPrivacy
 
-  @Column({ type: 'date' })
+  @Column({ type: 'timestamp' })
   releaseDate: Date
 
   @OneToMany(() => TagAbleEntity, (tag) => tag.post)

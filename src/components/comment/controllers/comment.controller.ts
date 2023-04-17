@@ -1,7 +1,17 @@
 import { Auth } from '@authModule/decorators/auth.decorator'
+import { AuthenticatedUser } from '@authModule/decorators/authenticatedUser.decorator'
 import { JwtAuthGuard } from '@authModule/guards/jwtAuth.guard'
 import { CommentEntity } from '@commentModule/entities/comment.entity'
-import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common'
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common'
 import {
   ApiBearerAuth,
   ApiHeader,
@@ -13,11 +23,13 @@ import { QueryManyDto } from '@shared/dto/queryParams.dto'
 import { IPaginationOptions } from '@shared/interfaces/request.interface'
 import {
   CreateResponse,
+  GetItemResponse,
   GetListPaginationResponse,
   GetListResponse,
 } from '@shared/interfaces/response.interface'
 import { defaultPaginationOption } from '@shared/utils/defaultPaginationOption.util'
 import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.service'
+import { Me } from '@userModule/dto/user.dto'
 import { APIDoc } from 'src/components/components.apidoc'
 import { SelectQueryBuilder } from 'typeorm'
 import { CreateCommentDto } from '../dto/comment.dto'
@@ -45,8 +57,14 @@ export class UserCommentController {
   @Auth('admin', 'user')
   @ApiOperation({ summary: APIDoc.comment.create.apiOperation })
   @ApiOkResponse({ description: APIDoc.comment.create.apiOk })
-  async createComment(@Body() data: CreateCommentDto): Promise<CreateResponse> {
-    const comment = await this.comment.create(data)
+  async createComment(
+    @Body() data: CreateCommentDto,
+    @AuthenticatedUser() currentUser: Me,
+  ): Promise<CreateResponse> {
+    const comment: CommentEntity = await this.comment.createComment({
+      currentUser,
+      data,
+    })
 
     return this.response.item(comment, new CommentTransformer())
   }
@@ -78,4 +96,33 @@ export class UserCommentController {
       new CommentTransformer(),
     )
   }
+
+  @Get(':id')
+  @Auth('admin')
+  @ApiOperation({ summary: APIDoc.contact.detail.apiOperation })
+  @ApiOkResponse({ description: APIDoc.contact.detail.apiOk })
+  async readComment(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<GetItemResponse> {
+    const comment = await this.comment.findOneOrFail(id)
+
+    return this.response.item(comment, new CommentTransformer())
+  }
+
+  // @Put(':id')
+  // @ApiOperation({ summary: APIDoc.contact.update.apiOperation })
+  // @ApiOkResponse({ description: APIDoc.contact.update.apiOk })
+  // async updateContact(
+  //   @AuthenticatedUser() currentUser: Me,
+  //   @Param('id', ParseIntPipe) id: number,
+  //   @Body() data: UpdateCommentDto,
+  // ): Promise<UpdateResponse> {
+  //   const comment: CommentEntity = await this.comment.updateComment({
+  //     id,
+  //     currentUser,
+  //     data,
+  //   })
+
+  //   return this.response.item(comment, new CommentTransformer())
+  // }
 }

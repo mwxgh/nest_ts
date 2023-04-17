@@ -29,8 +29,8 @@ export class CommentEntity extends TimeStampEntity {
   @Column({ name: 'parentId', type: 'int' })
   public parentId: number
 
-  @Column({ type: 'timestamp' })
-  public verifiedAt: Date
+  @Column({ type: 'timestamp', default: new Date() })
+  releaseDate: Date
 
   @OneToMany(() => CommentEntity, (comment) => comment.children)
   @JoinColumn({

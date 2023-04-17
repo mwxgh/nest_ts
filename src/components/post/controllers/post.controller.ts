@@ -21,7 +21,7 @@ import {
 import { QueryManyPostDto, QueryOneDto } from '@shared/dto/queryParams.dto'
 import { IPaginationOptions } from '@shared/interfaces/request.interface'
 import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.service'
-import { Connection, SelectQueryBuilder } from 'typeorm'
+import { SelectQueryBuilder } from 'typeorm'
 import { CreatePostDto, UpdatePostDto } from '../dto/post.dto'
 import { PostService } from '../services/post.service'
 import { PostTransformer } from '../transformers/post.transformer'
@@ -49,7 +49,6 @@ import { PostEntity } from '../entities/post.entity'
 @Controller('api/posts')
 export class PostController {
   constructor(
-    private connection: Connection,
     private post: PostService,
     private response: ApiResponseService,
   ) {}
