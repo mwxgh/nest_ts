@@ -1,7 +1,6 @@
 import { ApiProperty, OmitType, PartialType, PickType } from '@nestjs/swagger'
 import { Type } from 'class-transformer'
 import {
-  IsDate,
   IsEnum,
   IsNotEmpty,
   IsNumber,
@@ -28,16 +27,11 @@ export class CommentProperties {
   status: CommentStatus
 
   @ApiProperty({ name: 'parentId', type: Number })
-  @IsNotEmpty()
+  @IsOptional()
   @IsNumber()
   @Index('parentId')
   @Type(() => Number)
   public parentId: number
-
-  @ApiProperty()
-  @IsDate()
-  @IsOptional()
-  releaseDate: Date
 }
 
 export class CreateCommentDto extends OmitType(

@@ -10,7 +10,6 @@ export class CommentTransformer extends Transformer {
       postId: comment.postId,
       parentId: comment.parentId,
       status: comment.status,
-      releaseDate: comment.releaseDate,
       createdAt: comment.createdAt,
       updatedAt: comment.updatedAt,
       deletedAt: comment.deletedAt,

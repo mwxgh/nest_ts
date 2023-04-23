@@ -11,7 +11,7 @@ export enum TagStatus {
 @Notifiable()
 @Entity({ name: 'tag' })
 export class TagEntity extends TimeStampEntity {
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', unique: true })
   name: string
 
   @Column({ type: 'enum', enum: TagStatus, default: TagStatus.publish })

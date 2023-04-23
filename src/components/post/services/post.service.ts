@@ -1,5 +1,6 @@
 import { CategoryAbleService } from '@categoryModule/services/categoryAble.service'
 
+import { CommentService } from '@commentModule/services/comment.service'
 import { ImageAbleService } from '@imageModule/services/imageAble.service'
 import { Injectable } from '@nestjs/common'
 import { AbleType } from '@shared/entities/base.entity'
@@ -10,7 +11,13 @@ import { TagAbleService } from '@tagModule/services/tagAble.service'
 import { isNil } from 'lodash'
 import { Connection, Repository, SelectQueryBuilder } from 'typeorm'
 import { CreatePostDto, UpdatePostDto } from '../dto/post.dto'
-import { PostEntity } from '../entities/post.entity'
+import {
+  PostEntity,
+  PostPriority,
+  PostPrivacy,
+  PostStatus,
+  PostType,
+} from '../entities/post.entity'
 import { PostRepository } from '../repositories/post.repository'
 
 @Injectable()
@@ -23,6 +30,7 @@ export class PostService extends BaseService {
     private tagAble: TagAbleService,
     private categoryAble: CategoryAbleService,
     private imageAble: ImageAbleService,
+    private comment: CommentService,
   ) {
     super()
     this.repository = this.connection.getCustomRepository(PostRepository)
@@ -120,6 +128,13 @@ export class PostService extends BaseService {
             ableType: AbleType.post,
           },
         )
+
+      // query comments association
+      if (includesParams.includes('comments'))
+        baseQuery = baseQuery.leftJoinAndSelect(
+          `${entity}.comments`,
+          'postComments',
+        )
     }
 
     return [baseQuery, includesParams]
@@ -130,10 +145,12 @@ export class PostService extends BaseService {
    * @param params.data CreatePostDto
    */
   async savePost(data: CreatePostDto): Promise<PostEntity> {
-    Object.assign(data, {
-      slug: await this.generateSlug(data.title),
-      releaseDate: new Date(),
-    })
+    data.releaseDate = data.releaseDate ?? new Date()
+    data.status = data.status ?? PostStatus.pending
+    data.priority = data.priority ?? PostPriority.medium
+    data.type = data.type ?? PostType.content
+    data.privacy = data.privacy ?? PostPrivacy.public
+    Object.assign(data, { slug: await this.generateSlug(data.title) })
 
     const post: PostEntity = await this.create(data)
 
@@ -244,6 +261,8 @@ export class PostService extends BaseService {
         ableType: AbleType.post,
       },
     ])
+
+    await this.comment.destroy({ where: { postId: currentPost.id } })
 
     await this.destroy(currentPost.id)
   }

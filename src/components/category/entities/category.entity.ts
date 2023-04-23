@@ -19,7 +19,7 @@ export enum CategoryStatus {
 @Notifiable()
 @Entity({ name: 'category' })
 export class CategoryEntity extends TimeStampEntity {
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', unique: true })
   name: string
 
   @Column({ name: 'parentId', type: 'int' })

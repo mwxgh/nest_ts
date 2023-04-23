@@ -64,7 +64,7 @@ export class ContactService extends BaseService {
   }): Promise<ContactEntity> {
     const contact: ContactEntity = await this.findOneOrFail(id)
 
-    this.checkUserPermissionOperation({
+    this.checkRoleOperation({
       currentUser,
       userId: contact.userId,
     })
@@ -93,7 +93,7 @@ export class ContactService extends BaseService {
     const userId: number = currentUser.id
     const contact: ContactEntity = await this.findOneOrFail(id)
 
-    this.checkUserPermissionOperation({
+    this.checkRoleOperation({
       currentUser,
       userId: contact.userId,
     })
@@ -123,7 +123,7 @@ export class ContactService extends BaseService {
   }): Promise<void> {
     const contact: ContactEntity = await this.findOneOrFail(id)
 
-    this.checkUserPermissionOperation({
+    this.checkRoleOperation({
       currentUser,
       userId: contact.userId,
     })

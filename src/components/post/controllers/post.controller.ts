@@ -55,7 +55,7 @@ export class PostController {
 
   private entity = 'post'
   private fields = ['title', 'summary', 'releaseDate']
-  private relations = ['categories', 'tags', 'images']
+  private relations = ['categories', 'tags', 'images', 'comments']
 
   @Post()
   @Auth('admin')

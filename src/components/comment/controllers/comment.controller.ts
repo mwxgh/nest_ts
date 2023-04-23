@@ -5,10 +5,12 @@ import { CommentEntity } from '@commentModule/entities/comment.entity'
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   ParseIntPipe,
   Post,
+  Put,
   Query,
   UseGuards,
 } from '@nestjs/common'
@@ -26,13 +28,15 @@ import {
   GetItemResponse,
   GetListPaginationResponse,
   GetListResponse,
+  SuccessfullyOperation,
+  UpdateResponse,
 } from '@shared/interfaces/response.interface'
 import { defaultPaginationOption } from '@shared/utils/defaultPaginationOption.util'
 import { ApiResponseService } from '@sharedServices/apiResponse/apiResponse.service'
 import { Me } from '@userModule/dto/user.dto'
 import { APIDoc } from 'src/components/components.apidoc'
 import { SelectQueryBuilder } from 'typeorm'
-import { CreateCommentDto } from '../dto/comment.dto'
+import { CreateCommentDto, UpdateCommentDto } from '../dto/comment.dto'
 import { CommentService } from '../services/comment.service'
 import { CommentTransformer } from '../transformers/comment.transformer'
 
@@ -43,7 +47,7 @@ import { CommentTransformer } from '../transformers/comment.transformer'
 })
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
-@Controller('api/comment')
+@Controller('api/comments')
 export class UserCommentController {
   constructor(
     private comment: CommentService,
@@ -109,20 +113,32 @@ export class UserCommentController {
     return this.response.item(comment, new CommentTransformer())
   }
 
-  // @Put(':id')
-  // @ApiOperation({ summary: APIDoc.contact.update.apiOperation })
-  // @ApiOkResponse({ description: APIDoc.contact.update.apiOk })
-  // async updateContact(
-  //   @AuthenticatedUser() currentUser: Me,
-  //   @Param('id', ParseIntPipe) id: number,
-  //   @Body() data: UpdateCommentDto,
-  // ): Promise<UpdateResponse> {
-  //   const comment: CommentEntity = await this.comment.updateComment({
-  //     id,
-  //     currentUser,
-  //     data,
-  //   })
+  @Put(':id')
+  @ApiOperation({ summary: APIDoc.contact.update.apiOperation })
+  @ApiOkResponse({ description: APIDoc.contact.update.apiOk })
+  async updateComment(
+    @AuthenticatedUser() currentUser: Me,
+    @Param('id', ParseIntPipe) id: number,
+    @Body() data: UpdateCommentDto,
+  ): Promise<UpdateResponse> {
+    const comment: CommentEntity = await this.comment.updateComment({
+      id,
+      currentUser,
+      data,
+    })
 
-  //   return this.response.item(comment, new CommentTransformer())
-  // }
+    return this.response.item(comment, new CommentTransformer())
+  }
+
+  @Delete(':id')
+  @ApiOperation({ summary: APIDoc.contact.update.apiOperation })
+  @ApiOkResponse({ description: APIDoc.contact.update.apiOk })
+  async deleteComment(
+    @AuthenticatedUser() currentUser: Me,
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<SuccessfullyOperation> {
+    await this.comment.deleteComment({ id, currentUser })
+
+    return this.response.success()
+  }
 }

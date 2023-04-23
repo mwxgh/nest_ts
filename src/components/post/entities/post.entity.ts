@@ -49,19 +49,19 @@ export class PostEntity extends TimeStampEntity {
   @Column()
   description: string
 
-  @Column({ type: 'varchar', default: '' })
+  @Column({ type: 'varchar' })
   content: string
 
-  @Column({ type: 'enum', enum: PostStatus, default: PostStatus.draft })
+  @Column({ type: 'enum', enum: PostStatus })
   status: PostStatus
 
-  @Column({ type: 'enum', enum: PostPriority, default: PostPriority.medium })
+  @Column({ type: 'enum', enum: PostPriority })
   priority: PostPriority
 
-  @Column({ type: 'enum', enum: PostType, default: PostType.content })
+  @Column({ type: 'enum', enum: PostType })
   type: PostType
 
-  @Column({ type: 'enum', enum: PostPrivacy, default: PostPrivacy.public })
+  @Column({ type: 'enum', enum: PostPrivacy })
   privacy: PostPrivacy
 
   @Column({ type: 'timestamp' })

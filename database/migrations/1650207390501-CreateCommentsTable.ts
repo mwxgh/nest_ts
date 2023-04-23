@@ -36,11 +36,6 @@ export class CreateCommentsTable1650207390501 implements MigrationInterface {
             type: 'int',
             isNullable: true,
           },
-          {
-            name: 'releaseDate',
-            isNullable: true,
-            type: 'timestamp',
-          },
 
           ...baseTimeColumn,
         ],

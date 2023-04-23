@@ -41,12 +41,12 @@ export class PrimitiveService {
   }
 
   /**
-   * Check user permission operation with userId
+   * Check role operation
    *
    * @param currentUser User
    * @param userId userId
    */
-  checkUserPermissionOperation({
+  checkRoleOperation({
     currentUser,
     userId,
   }: {
@@ -56,12 +56,42 @@ export class PrimitiveService {
     const userRoles = map(currentUser.roles, (r) => r.slug)
 
     if (!includes(userRoles, 'admin') && currentUser.id !== userId) {
-      throw new ForbiddenException(
-        'Permission denied : User role can not operation',
-      )
+      throw new ForbiddenException('This role can not operation')
     }
   }
 
+  /**
+   * Check user operation with userId
+   *
+   * @param currentUser User
+   * @param userId userId
+   */
+  checkUserOperation({
+    currentUser,
+    userId,
+  }: {
+    currentUser: Me
+    userId: number
+  }): void {
+    if (userId !== currentUser.id) {
+      throw new ForbiddenException('This user can not operation')
+    }
+  }
+
+  /**
+   * Check role user only
+   *
+   * @param currentUser User
+   */
+  checkRoleUserOnly(currentUser: Me): boolean {
+    const userRoles = map(currentUser.roles, (r) => r.slug)
+
+    if (userRoles.every((item) => ['user'].includes(item))) {
+      return true
+    }
+
+    return false
+  }
   /**
    * Check includes param and convert to join and select table
    *

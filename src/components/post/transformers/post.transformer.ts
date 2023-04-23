@@ -1,4 +1,5 @@
 import { CategoryTransformer } from '@categoryModule/transformers/category.transformer'
+import { CommentTransformer } from '@commentModule/transformers/comment.transformer'
 import { ImageTransformer } from '@imageModule/transformers/image.transformer'
 import { Entity, ResponseEntity } from '@shared/interfaces/response.interface'
 import { Transformer } from '@shared/transformers/transformer'
@@ -35,5 +36,9 @@ export class PostTransformer extends Transformer {
 
   includeTags(model: PostEntity): Entity[] {
     return this.collection(model.tags, new TagTransformer())
+  }
+
+  includeComments(model: PostEntity): Entity[] {
+    return this.collection(model.comments, new CommentTransformer())
   }
 }

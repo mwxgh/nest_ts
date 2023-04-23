@@ -21,7 +21,7 @@ export interface TransformerInterface {
   item(entity: Entity, transformer: TransformerInterface): ResponseEntity
 
   /**
-   * Create a new collection resource\
+   * Create a new collection resource
    *
    * @param collection Entity[]
    * @param transformer TransformerInterface

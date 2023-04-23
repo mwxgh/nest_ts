@@ -17,6 +17,7 @@ export class CreateTagsTable1650205809178 implements MigrationInterface {
           {
             name: 'name',
             type: 'varchar',
+            isUnique: true,
           },
           {
             name: 'status',
