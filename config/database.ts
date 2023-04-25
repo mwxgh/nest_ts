@@ -15,6 +15,7 @@ import { OrderEntity } from '../src/components/order/entities/order.entity'
 import { OrderProductEntity } from '../src/components/order/entities/orderProduct.entity'
 import { PostEntity } from '../src/components/post/entities/post.entity'
 import { ProductEntity } from '../src/components/product/entities/product.entity'
+import { ReactionEntity } from '../src/components/reaction/entities/reaction.entity'
 import { TagEntity } from '../src/components/tag/entities/tag.entity'
 import { TagAbleEntity } from '../src/components/tag/entities/tagAble.entity'
 import { UserEntity } from '../src/components/user/entities/user.entity'
@@ -47,6 +48,7 @@ export default (): any => ({
     PostEntity,
     TagEntity,
     ContactEntity,
+    ReactionEntity,
   ],
   // autoLoadEntities: true,
 

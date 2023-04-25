@@ -5,6 +5,7 @@ import { CategoryEntity } from '../../category/entities/category.entity'
 import { CategoryAbleEntity } from '../../category/entities/categoryAble.entity'
 import { CommentEntity } from '../../comment/entities/comment.entity'
 import { ImageAbleEntity } from '../../image/entities/imageAble.entity'
+import { ReactionEntity } from '../../reaction/entities/reaction.entity'
 import { TagAbleEntity } from '../../tag/entities/tagAble.entity'
 
 export enum PostStatus {
@@ -81,4 +82,7 @@ export class PostEntity extends TimeStampEntity {
 
   @OneToMany(() => CommentEntity, (comment) => comment.post)
   comments: CommentEntity[]
+
+  @OneToMany(() => ReactionEntity, (reaction) => reaction.post)
+  reactions: ReactionEntity[]
 }

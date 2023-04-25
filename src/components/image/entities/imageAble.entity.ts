@@ -1,13 +1,24 @@
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm'
-import { AbleEntity } from '../../../shared/entities/base.entity'
 import { Notifiable } from '../../../shared/services/notification/decorators/notifiable.decorator'
 import { PostEntity } from '../../post/entities/post.entity'
 import { ProductEntity } from '../../product/entities/product.entity'
 import { ImageEntity } from './image.entity'
 
+export enum ImageAbleType {
+  product = 'PRODUCT',
+  post = 'POST',
+  comment = 'COMMENT',
+}
+
 @Notifiable()
 @Entity({ name: 'imageAble' })
-export class ImageAbleEntity extends AbleEntity {
+export class ImageAbleEntity {
+  @PrimaryColumn({ name: 'ableId', type: 'int' })
+  ableId: number
+
+  @Column({ name: 'ableType', type: 'enum', enum: ImageAbleType })
+  ableType: ImageAbleType
+
   @PrimaryColumn({ type: 'int' })
   public imageId: number
 

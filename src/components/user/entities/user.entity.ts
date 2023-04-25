@@ -5,6 +5,7 @@ import { RoleEntity } from '../../auth/entities/role.entity'
 import { TimeStampEntity } from '../../../shared/entities/base.entity'
 import { CommentEntity } from '../../comment/entities/comment.entity'
 import { ContactEntity } from '../../contact/entities/contact.entity'
+import { ReactionEntity } from '../../reaction/entities/reaction.entity'
 
 export enum UserStatus {
   active = 'ACTIVE',
@@ -66,6 +67,9 @@ export class UserEntity extends TimeStampEntity {
 
   @OneToMany(() => CommentEntity, (comment) => comment.user)
   comments: CommentEntity[]
+
+  @OneToMany(() => ReactionEntity, (reaction) => reaction.user)
+  reactions: ReactionEntity[]
 
   getEmail(): string {
     return this.email
