@@ -1,13 +1,13 @@
 import { MigrationInterface, QueryRunner, Table, TableIndex } from 'typeorm'
 
-export class CreateImageAbleTable1650813488415 implements MigrationInterface {
+export class CreateReactionTable1682524395719 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.createTable(
       new Table({
-        name: 'imageAble',
+        name: 'reaction',
         columns: [
           {
-            name: 'imageId',
+            name: 'userId',
             type: 'int',
             isPrimary: true,
           },
@@ -19,26 +19,26 @@ export class CreateImageAbleTable1650813488415 implements MigrationInterface {
           {
             name: 'ableType',
             type: 'enum',
-            enum: ['PRODUCT', 'POST', 'COMMENT'],
+            enum: ['COMMENT', 'POST'],
           },
           {
-            name: 'isThumbnail',
-            default: false,
-            type: 'boolean',
+            name: 'reaction',
+            type: 'enum',
+            enum: ['LIKE', 'CARE', 'LOVE', 'HAHA', 'WOW', 'SAD', 'ANGRY'],
           },
         ],
       }),
       true,
     )
     await queryRunner.createIndex(
-      'imageAble',
+      'reaction',
       new TableIndex({
-        name: 'IDX_IMAGE_ID',
-        columnNames: ['imageId'],
+        name: 'IDX_USER_ID',
+        columnNames: ['userId'],
       }),
     )
     await queryRunner.createIndex(
-      'imageAble',
+      'reaction',
       new TableIndex({
         name: 'IDX_ABLE_ID',
         columnNames: ['ableId'],
@@ -47,6 +47,6 @@ export class CreateImageAbleTable1650813488415 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.dropTable('imageAble')
+    await queryRunner.dropTable('reaction')
   }
 }
