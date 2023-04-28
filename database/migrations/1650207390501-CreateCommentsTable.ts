@@ -1,4 +1,4 @@
-import { MigrationInterface, QueryRunner, Table } from 'typeorm'
+import { MigrationInterface, QueryRunner, Table, TableIndex } from 'typeorm'
 import { baseTimeColumn } from '../abstract/baseColumn'
 
 export class CreateCommentsTable1650207390501 implements MigrationInterface {
@@ -42,9 +42,25 @@ export class CreateCommentsTable1650207390501 implements MigrationInterface {
       }),
       true,
     )
+    await queryRunner.createIndex(
+      'comment',
+      new TableIndex({
+        name: 'IDX_COMMENT_USER_ID',
+        columnNames: ['userId'],
+      }),
+    )
+    await queryRunner.createIndex(
+      'comment',
+      new TableIndex({
+        name: 'IDX_COMMENT_POST_ID',
+        columnNames: ['postId'],
+      }),
+    )
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.dropIndex('comment', 'IDX_COMMENT_USER_ID')
+    await queryRunner.dropIndex('comment', 'IDX_COMMENT_POST_ID')
     await queryRunner.dropTable('comment')
   }
 }

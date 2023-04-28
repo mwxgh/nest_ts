@@ -38,6 +38,7 @@ export class CreatePermissionsTable1650203910371 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.dropIndex('permission', 'IDX_PERMISSION_SLUG')
     await queryRunner.dropTable('permission')
   }
 }

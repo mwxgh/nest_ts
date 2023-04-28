@@ -33,20 +33,14 @@ export class CreateReactionTable1682524395719 implements MigrationInterface {
     await queryRunner.createIndex(
       'reaction',
       new TableIndex({
-        name: 'IDX_USER_ID',
-        columnNames: ['userId'],
-      }),
-    )
-    await queryRunner.createIndex(
-      'reaction',
-      new TableIndex({
-        name: 'IDX_ABLE_ID',
-        columnNames: ['ableId'],
+        name: 'IDX_REACTION_COMPOSITE',
+        columnNames: ['userId', 'ableId'],
       }),
     )
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.dropIndex('reaction', 'IDX_REACTION_COMPOSITE')
     await queryRunner.dropTable('reaction')
   }
 }

@@ -30,20 +30,14 @@ export class CreateCategoryAblesTable1650206464855
     await queryRunner.createIndex(
       'categoryAble',
       new TableIndex({
-        name: 'IDX_CATEGORY_ID',
-        columnNames: ['categoryId'],
-      }),
-    )
-    await queryRunner.createIndex(
-      'categoryAble',
-      new TableIndex({
-        name: 'IDX_ABLE_ID',
-        columnNames: ['ableId'],
+        name: 'IDX_CATEGORY_ABLE_COMPOSITE',
+        columnNames: ['categoryId', 'ableId'],
       }),
     )
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.dropIndex('categoryAble', 'IDX_CATEGORY_ABLE_COMPOSITE')
     await queryRunner.dropTable('categoryAble')
   }
 }

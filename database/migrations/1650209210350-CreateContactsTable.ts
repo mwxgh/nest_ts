@@ -1,4 +1,4 @@
-import { MigrationInterface, QueryRunner, Table } from 'typeorm'
+import { MigrationInterface, QueryRunner, Table, TableIndex } from 'typeorm'
 import { baseTimeColumn } from '../abstract/baseColumn'
 
 export class CreateContactsTable1650209210350 implements MigrationInterface {
@@ -41,9 +41,17 @@ export class CreateContactsTable1650209210350 implements MigrationInterface {
       }),
       true,
     )
+    await queryRunner.createIndex(
+      'contact',
+      new TableIndex({
+        name: 'IDX_CONTACT_USER_ID',
+        columnNames: ['userId'],
+      }),
+    )
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.dropIndex('contact', 'IDX_CONTACT_USER_ID')
     await queryRunner.dropTable('contact')
   }
 }

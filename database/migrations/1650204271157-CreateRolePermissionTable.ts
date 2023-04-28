@@ -25,16 +25,13 @@ export class CreateRolePermissionTable1650204271157
 
     await queryRunner.createIndex(
       'rolePermission',
-      new TableIndex({
-        name: 'IDX_ROLE_PERMISSION_ROLE_ID',
-        columnNames: ['roleId'],
-      }),
+      new TableIndex({ name: 'IDX_RP_ROLE_ID', columnNames: ['roleId'] }),
     )
 
     await queryRunner.createIndex(
       'rolePermission',
       new TableIndex({
-        name: 'IDX_ROLE_PERMISSION_PERMISSION_ID',
+        name: 'IDX_RP_PERMISSION_ID',
         columnNames: ['permissionId'],
       }),
     )
@@ -61,6 +58,8 @@ export class CreateRolePermissionTable1650204271157
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.dropIndex('rolePermission', 'IDX_RP_ROLE_ID')
+    await queryRunner.dropIndex('rolePermission', 'IDX_RP_PERMISSION_ID')
     await queryRunner.dropTable('rolePermission')
   }
 }

@@ -33,20 +33,14 @@ export class CreateImageAbleTable1650813488415 implements MigrationInterface {
     await queryRunner.createIndex(
       'imageAble',
       new TableIndex({
-        name: 'IDX_IMAGE_ID',
-        columnNames: ['imageId'],
-      }),
-    )
-    await queryRunner.createIndex(
-      'imageAble',
-      new TableIndex({
-        name: 'IDX_ABLE_ID',
-        columnNames: ['ableId'],
+        name: 'IDX_IMAGE_ABLE_COMPOSITE',
+        columnNames: ['imageId', 'ableId'],
       }),
     )
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.dropIndex('imageAble', 'IDX_IMAGE_ABLE_COMPOSITE')
     await queryRunner.dropTable('imageAble')
   }
 }

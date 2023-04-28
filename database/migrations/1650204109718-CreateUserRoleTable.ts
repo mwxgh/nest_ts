@@ -22,18 +22,12 @@ export class CreateUserRoleTable1650204109718 implements MigrationInterface {
     )
     await queryRunner.createIndex(
       'userRole',
-      new TableIndex({
-        name: 'IDX_USER_ROLE_USER_ID',
-        columnNames: ['userId'],
-      }),
+      new TableIndex({ name: 'IDX_UR_USER_ID', columnNames: ['userId'] }),
     )
 
     await queryRunner.createIndex(
       'userRole',
-      new TableIndex({
-        name: 'IDX_USER_ROLE_ROLE_ID',
-        columnNames: ['roleId'],
-      }),
+      new TableIndex({ name: 'IDX_UR_ROLE_ID', columnNames: ['roleId'] }),
     )
 
     // await queryRunner.createForeignKey(
@@ -58,6 +52,8 @@ export class CreateUserRoleTable1650204109718 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.dropIndex('userRole', 'IDX_UR_USER_ID')
+    await queryRunner.dropIndex('userRole', 'IDX_UR_ROLE_ID')
     await queryRunner.dropTable('userRole')
   }
 }

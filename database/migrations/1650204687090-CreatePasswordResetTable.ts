@@ -46,6 +46,7 @@ export class CreatePasswordResetTable1650204687090
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.dropIndex('passwordReset', 'IDX_PWD_RESET_EMAIL')
     await queryRunner.dropTable('passwordReset')
   }
 }

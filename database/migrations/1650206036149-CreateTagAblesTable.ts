@@ -28,20 +28,14 @@ export class CreateTagAblesTable1650206036149 implements MigrationInterface {
     await queryRunner.createIndex(
       'tagAble',
       new TableIndex({
-        name: 'IDX_TAG_ID',
-        columnNames: ['tagId'],
-      }),
-    )
-    await queryRunner.createIndex(
-      'tagAble',
-      new TableIndex({
-        name: 'IDX_ABLE_ID',
-        columnNames: ['ableId'],
+        name: 'IDX_TAG_ABLE_COMPOSITE',
+        columnNames: ['tagId', 'ableId'],
       }),
     )
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.dropIndex('tagAble', 'IDX_TAG_ABLE_COMPOSITE')
     await queryRunner.dropTable('tagAble')
   }
 }
