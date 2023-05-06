@@ -1,3 +1,4 @@
+import { ReactionEntity } from 'src/components/reaction/entities/reaction.entity'
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm'
 import { TimeStampEntity } from '../../../shared/entities/base.entity'
 import { Notifiable } from '../../../shared/services/notification/decorators/notifiable.decorator'
@@ -49,4 +50,7 @@ export class CommentEntity extends TimeStampEntity {
     referencedColumnName: 'id',
   })
   public user: UserEntity
+
+  @OneToMany(() => ReactionEntity, (reaction) => reaction.comment)
+  reactions: ReactionEntity[]
 }

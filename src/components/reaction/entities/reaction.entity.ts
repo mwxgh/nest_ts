@@ -1,3 +1,4 @@
+import { CommentEntity } from '@commentModule/entities/comment.entity'
 import {
   Column,
   Entity,
@@ -8,7 +9,6 @@ import {
 } from 'typeorm'
 import { Notifiable } from '../../../../src/shared/services/notification/decorators/notifiable.decorator'
 import { PostEntity } from '../../post/entities/post.entity'
-import { ProductEntity } from '../../product/entities/product.entity'
 import { UserEntity } from '../../user/entities/user.entity'
 
 export enum ReactionAbleType {
@@ -51,15 +51,15 @@ export class ReactionEntity {
 
   @ManyToOne(() => PostEntity, (post) => post.reactions)
   @JoinColumn({
-    name: 'ableType',
+    name: 'ableId',
     referencedColumnName: 'id',
   })
   post: PostEntity
 
-  @ManyToOne(() => ProductEntity, (product) => product.reactions)
+  @ManyToOne(() => CommentEntity, (comment) => comment.reactions)
   @JoinColumn({
-    name: 'ableType',
+    name: 'ableId',
     referencedColumnName: 'id',
   })
-  product: ProductEntity
+  comment: CommentEntity
 }

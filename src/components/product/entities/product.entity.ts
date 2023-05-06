@@ -6,7 +6,6 @@ import { CategoryEntity } from '../../category/entities/category.entity'
 import { CategoryAbleEntity } from '../../category/entities/categoryAble.entity'
 import { ImageAbleEntity } from '../../image/entities/imageAble.entity'
 import { OrderProductEntity } from '../../order/entities/orderProduct.entity'
-import { ReactionEntity } from '../../reaction/entities/reaction.entity'
 import { TagAbleEntity } from '../../tag/entities/tagAble.entity'
 
 export enum ProductStatus {
@@ -63,7 +62,4 @@ export class ProductEntity extends TimeStampEntity {
 
   @OneToMany(() => CartItemEntity, (cartItem) => cartItem.cart)
   products: Promise<CartItemEntity[]>
-
-  @OneToMany(() => ReactionEntity, (reaction) => reaction.product)
-  reactions: ReactionEntity[]
 }
