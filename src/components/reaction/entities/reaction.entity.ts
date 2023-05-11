@@ -1,4 +1,3 @@
-import { CommentEntity } from '@commentModule/entities/comment.entity'
 import {
   Column,
   Entity,
@@ -8,6 +7,7 @@ import {
   PrimaryColumn,
 } from 'typeorm'
 import { Notifiable } from '../../../../src/shared/services/notification/decorators/notifiable.decorator'
+import { CommentEntity } from '../../comment/entities/comment.entity'
 import { PostEntity } from '../../post/entities/post.entity'
 import { UserEntity } from '../../user/entities/user.entity'
 

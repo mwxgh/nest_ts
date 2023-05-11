@@ -1,8 +1,8 @@
-import { ReactionEntity } from 'src/components/reaction/entities/reaction.entity'
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm'
 import { TimeStampEntity } from '../../../shared/entities/base.entity'
 import { Notifiable } from '../../../shared/services/notification/decorators/notifiable.decorator'
 import { PostEntity } from '../../post/entities/post.entity'
+import { ReactionEntity } from '../../reaction/entities/reaction.entity'
 import { UserEntity } from '../../user/entities/user.entity'
 
 export enum CommentStatus {
