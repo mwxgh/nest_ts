@@ -1,4 +1,5 @@
 import { MigrationInterface, QueryRunner, Table, TableIndex } from 'typeorm'
+import { baseAbleColumn } from '../abstract/baseColumn'
 
 export class CreateTagAblesTable1650206036149 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
@@ -11,16 +12,8 @@ export class CreateTagAblesTable1650206036149 implements MigrationInterface {
             type: 'int',
             isPrimary: true,
           },
-          {
-            name: 'ableId',
-            type: 'int',
-            isPrimary: true,
-          },
-          {
-            name: 'ableType',
-            type: 'enum',
-            enum: ['POST', 'PRODUCT'],
-          },
+
+          ...baseAbleColumn,
         ],
       }),
       true,

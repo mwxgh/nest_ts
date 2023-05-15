@@ -15,3 +15,16 @@ export const baseTimeColumn = [
     isNullable: true,
   },
 ]
+
+export const baseAbleColumn = [
+  {
+    name: 'ableId',
+    type: 'int',
+    isPrimary: true,
+  },
+  {
+    name: 'ableType',
+    type: 'enum',
+    enum: ['POST', 'PRODUCT'],
+  },
+]

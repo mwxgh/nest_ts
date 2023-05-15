@@ -1,4 +1,5 @@
 import { MigrationInterface, QueryRunner, Table, TableIndex } from 'typeorm'
+import { baseAbleColumn } from '../abstract/baseColumn'
 
 export class CreateCategoryAblesTable1650206464855
   implements MigrationInterface
@@ -13,16 +14,8 @@ export class CreateCategoryAblesTable1650206464855
             type: 'int',
             isPrimary: true,
           },
-          {
-            name: 'ableId',
-            type: 'int',
-            isPrimary: true,
-          },
-          {
-            name: 'ableType',
-            type: 'enum',
-            enum: ['PRODUCT', 'POST'],
-          },
+
+          ...baseAbleColumn,
         ],
       }),
       true,
